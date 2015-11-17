@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<link rel="shortcut icon"
+		href="#{request.contextPath}/resources/rock/global/images/icon_contabilidad.ico" />
+
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta content="" name="description" />
+	<meta content="" name="author" />
+	<link type="text/css" rel="stylesheet"
+		href="http://fonts.googleapis.com/css?family=Roboto:400italic,400,300,700" />
+	<link type="text/css" rel="stylesheet"
+		href="http://fonts.googleapis.com/css?family=Squada+One" />
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/global/plugins/font-awesome/css/font-awesome.min.css" />
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/global/plugins/ionicons/css/ionicons.min.css" />
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/global/plugins/simple-line-icons/simple-line-icons.css" />
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/global/css/style.css" />
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/assets/css/themes/default.css"
+		id="theme-color" />
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/assets/plugins/jquery-file-input/file-input.css" />
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/global/plugins/animate.css/animate.css" />
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/global/plugins/iCheck/skins/all.css" />
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/assets/plugins/rickshaw/rickshaw.min.css" />
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/assets/css/page-demo.css" />
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/assets/css/style-admin.css" />
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/assets/css/style-plugins.css" />
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/assets/css/style-responsive.css" />
+
+	<!-- start notificacion -->
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/assets/plugins/jquery-gritter/jquery.gritter-custom.css" />
+	<!-- end notificacion -->
+
+	<ui:insert name="head">
+		[Main Title of Web Page]
+	</ui:insert>
+
+</h:head>
+<h:body class="page-header-fixed page-sidebar-fixed  page-quick-sidebar-push page-sidebar-left-closed">
+
+	<ui:insert name="security">
+	</ui:insert>
+
+	<div>
+		<div class="page-wrapper">
+			<!--BEGIN HEADER-->
+			<header class="header">
+			<div class="logo">
+				<a href="#" class="logo-text" style="font-size: 18px;"><i
+					class="ion-cube"></i> CONTABILIDAD TEST</a><a href="#"
+					data-toggle="offcanvas" class="sidebar-toggle pull-right"><i
+					class="fa fa-bars"></i></a>
+			</div>
+			<nav role="navigation" class="navbar navbar-static-top">
+			<form action="#" class="search-form navbar-left hidden-xs">
+				<div class="input-icon left" style="text-align: center;">
+				</div>
+			</form>
+			<div class="navbar-right">
+				<ul class="nav navbar-nav">
+					
+				</ul>
+			</div>
+			</nav> </header>
+			<!--END HEADER-->
+
+			<!--BEGIN WRAPPER-->
+			<div class="wrapper row-offcanvas row-offcanvas-left">
+				<!--BEGIN SIDEBAR-->
+				<aside class="page-sidebar sidebar-offcanvas"> <section
+					class="sidebar">
+				<ul class="sidebar-menu">					
+					
+				</ul>
+				</section> </aside>
+				<!--END SIDERBAR-->
+				<!--BEGIN CONTENT-->
+				<ui:insert name="content">
+
+				</ui:insert>
+				<!--END CONTENT-->
+			</div>
+			<!--END WRAPPER-->
+		</div>
+	</div>
+
+
+	<!-- start script -->
+	<script
+		src="#{request.contextPath}/resources/rock/global/plugins/bootstrap/js/bootstrap.min.js"></script>
+	<script
+		src="#{request.contextPath}/resources/rock/global/plugins/slimScroll/jquery.slimscroll.js"></script>
+	<script
+		src="#{request.contextPath}/resources/rock/assets/plugins/jquery-metisMenu/jquery.menu.min.js"></script>
+	<script src="#{request.contextPath}/resources/rock/assets/js/layout.js"></script>
+	
+	<script src="#{request.contextPath}/resources/js/validator.js"></script>
+
+	<ui:insert name="scripts">
+
+	</ui:insert>
+
+</h:body>
+</html>

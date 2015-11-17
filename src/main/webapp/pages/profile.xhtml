@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/WEB-INF/templates/template_main.xhtml">
+
+	<ui:define name="head">
+		<title>Perfil</title>
+	</ui:define>
+
+	<ui:define name="security">
+
+	</ui:define>
+
+	<ui:define name="content">
+
+		<!--BEGIN CONTENT-->
+		<div class="content">
+			<section class="content-header">
+				<div class="pull-left">
+					<ol class="breadcrumb">
+						<li><a href="#">Inicio</a></li>
+						<li class="active">Perfil</li>
+					</ol>
+				</div>
+			</section>
+			<section class="main-content">
+				<div id="page-profile">
+					<div class="row">
+						<div class="col-md-4"></div>
+						<div class="col-md-4">
+							<div class="profile-sidebar">
+								<h:form id="formPerfil">
+									<ui:fragment rendered="#{! perfilController.modificar}">
+										<div class="panel">
+											<div class="panel-body">
+												<div class="profile-name text-center mtm mbsm">
+													<p:graphicImage value="#{loginController.imageUserSession}"
+														alt="User Image" styleClass="img-circle inline-block"
+														width="150" height="150" />
+												</div>
+												<div class="profile-name text-center mtm mbsm">
+													<h3>
+														<strong class="text-grey">#{perfilController.usuario.nombre}</strong>
+													</h3>
+												</div>
+												<div class="profile-actions text-center">
+													<p:commandLink value="Modificar" update=":formPerfil"
+														action="#{perfilController.setModificar(true)}"
+														styleClass="btn btn-primary btn-circle width-100 mrs">
+													</p:commandLink>
+												</div>
+											</div>
+										</div>
+										<div class="profile-menu mtl">
+											<div class="list-group list-group-striped list-group-border">
+												<div class="list-group-item active">
+													<a href="#tab-board" data-toggle="tab" class="block"><i
+														class="icon-home mrm"></i>#{perfilController.usuario.nombre}</a>
+												</div>
+												<div class="list-group-item">
+													<a href="#tab-followers" data-toggle="tab" class="block"><i
+														class="icon-star mrm"></i>#{perfilController.usuario.login}
+													</a>
+												</div>
+												<div class="list-group-item">
+													<a href="#tab-history" data-toggle="tab" class="block"><i
+														class="icon-clock mrm"></i>Ult. vez Logeado 11:39
+														19/07/2015</a>
+												</div>
+											</div>
+										</div>
+									</ui:fragment>
+									<ui:fragment rendered="#{perfilController.modificar}">
+										<div class="panel">
+											<div class="panel-body">
+												<div class="profile-name text-center mtm mbsm">
+
+													<div data-provides="fileinput"
+														class="fileinput fileinput-new">
+														<div style="width: 200px; height: 150px;"
+															class="fileinput-new thumbnail">
+															<p:graphicImage
+																value="#{loginController.imageUserSession}"
+																alt="User Image" />
+														</div>
+														<div style="max-width: 200px; max-height: 150px;"
+															class="fileinput-preview fileinput-exists thumbnail">
+															#{perfilController.file}</div>
+														<div>
+															<span class="btn btn-success btn-file"><span
+																class="fileinput-new">Seleccione una imagen</span><span
+																class="fileinput-exists">Cambiar</span> <input
+																type="file" name="..." /> </span> <a href="#"
+																data-dismiss="fileinput"
+																class="btn btn-danger fileinput-exists">Eliminar</a>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="profile-menu mtl">
+											<div class="list-group list-group-striped list-group-border">
+												<div class="list-group-item active">
+													<a class="block"> <i class="icon-home mrm"></i>
+														#{perfilController.usuario.nombre}
+													</a>
+												</div>
+												<div class="list-group-item">
+													<a href="#tab-followers" data-toggle="tab" class="block"><i
+														class="icon-star mrm"></i>#{perfilController.usuario.login}
+													</a>
+												</div>
+												<div class="list-group-item">
+													<a href="#tab-history" data-toggle="tab" class="block"><i
+														class="icon-clock mrm"></i>Ult. vez Logeado 11:39
+														19/07/2015</a>
+												</div>
+											</div>
+											<div class="profile-menu mtl">
+												<div class="col-md-6">
+													<p:commandLink value="Cancelar" update=":formPerfil"
+														action="#{perfilController.setModificar(false)}"
+														styleClass="btn btn-warning btn-block">
+													</p:commandLink>
+												</div>
+												<div class="col-md-6">
+													<p:commandLink value="Guardar" update=":formPerfil"
+														action="#{perfilController.setModificar(false)}"
+														styleClass="btn btn-success btn-block">
+													</p:commandLink>
+												</div>
+											</div>
+										</div>
+
+									</ui:fragment>
+								</h:form>
+							</div>
+						</div>
+						<div class="col-md-4"></div>
+					</div>
+				</div>
+			</section>
+		</div>
+		<!--END CONTENT-->
+
+		<!-- START GROWL -->
+		<h:form id="formGrowl">
+			<p:growl id="msgs1" showDetail="true" />
+		</h:form>
+		<!-- END GROWL -->
+
+		<!-- START DIALOG -->
+		<p:dialog header="DIALOG TEST" widgetVar="dlg1" modal="true"
+			height="100%">
+		</p:dialog>
+		<!-- END DIALOG -->
+
+
+	</ui:define>
+	<ui:define name="scripts">
+		<!-- START SCRIPT -->
+		<!-- start for file input -->
+		<script	src="/webapp/resources/rock/assets/plugins/bootstrap-daterangepicker/moment.min.js"></script>
+		<script src="/webapp/resources/rock/assets/plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
+		<script src="/webapp/resources/rock/assets/plugins/clockpicker/js/bootstrap-clockpicker.min.js"></script>
+		<script src="/webapp/resources/rock/assets/plugins/jquery-file-input/file-input.js"></script>
+		<script src="/webapp/resources/rock/assets/plugins/bootstrap-slider/js/bootstrap-slider.js"></script>
+		<script src="/webapp/resources/rock/assets/plugins/selectize/js/standalone/selectize.js"></script>
+		<script src="/webapp/resources/rock/assets/plugins/datetimepicker/jquery.datetimepicker.js"></script>
+		<script src="/webapp/resources/rock/assets/plugins/timepicker/jquery.timepicker.min.js"></script>
+		<script src="/webapp/resources/rock/assets/plugins/jquery-minicolors/jquery.minicolors.min.js"></script>
+		<script src="/webapp/resources/rock/assets/plugins/dropzone/js/dropzone.min.js"></script>
+		<script src="/webapp/resources/rock/assets/js/form-plugins.js"></script>
+		<!-- end for file input -->
+		<!-- END SCRIPT -->
+	</ui:define>
+</ui:composition>

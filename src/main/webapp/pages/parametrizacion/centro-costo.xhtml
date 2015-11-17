@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/WEB-INF/templates/template_main.xhtml">
+
+	<ui:define name="head">
+		<title>Centro de Costo</title>
+	</ui:define>
+
+	<ui:define name="content">
+
+		<!--BEGIN CONTENT-->
+		<div class="content">
+			<section class="content-header">
+				<div class="pull-left" style="padding-top: 8px;">
+					<h:form id="formBotonesHeader" style="padding-left: 10px;">
+						<div class="btn-group-demo">
+							<div class="btn-group">
+								<p:commandLink id="buttonCancelar" value="&#160; Cancelar"
+									styleClass="btn btn-warning ion-minus-circled"
+									rendered="#{centroCostoController.modificar or centroCostoController.registrar}"
+									style="height:31px; padding:center"
+									update=":formBotonesHeader,:formTablePrincipal,:formGroup"
+									action="#{centroCostoController.actualizarFormReg()}">
+								</p:commandLink>
+								<p:commandLink id="buttonCrear1" value="&#160; Nuevo Centro Costo"
+									styleClass="btn btn-success ion-plus-round"
+									rendered="#{centroCostoController.crear}"
+									update=":formBotonesHeader,:formTablePrincipal,:formGroup"
+									action="#{centroCostoController.cambiarAspecto()}"
+									style="height:31px;">
+								</p:commandLink>
+								<p:commandLink id="regButtonRegistrar" value="&#160; Registrar"
+									style="height:31px; padding:center"
+									styleClass="btn btn-success ion-checkmark"
+									rendered="#{centroCostoController.registrar}"
+									update=":formBotonesHeader,:formTablePrincipal,:formGroup,:formGrowl:msgs1"
+									action="#{centroCostoController.registrarGrupoCentroCosto()}">
+								</p:commandLink>
+								<p:commandLink id="regButtonModificar" value="&#160; Modificar"
+									style="height:31px; padding:center"
+									styleClass="btn btn-primary ion-edit"
+									rendered="#{centroCostoController.modificar}"
+									update=":formBotonesHeader,:formTablePrincipal,:formGroup,:formGrowl:msgs1"
+									action="#{centroCostoController.modificarGrupoCentroCosto()}">
+								</p:commandLink>
+								<p:commandLink id="regButtonEliminar" value="&#160; Eliminar"
+									style="height:31px; padding:center"
+									styleClass="btn btn-danger ion-trash-b"
+									rendered="#{centroCostoController.modificar}"
+									update=":formBotonesHeader,:formTablePrincipal,:formGroup,:formGrowl:msgs1"
+									action="#{centroCostoController.eliminarGrupoCentroCosto()}">
+								</p:commandLink>
+							</div>
+						</div>
+					</h:form>
+				</div>
+				<div class="pull-right">
+					<ol class="breadcrumb">
+						<li><a href="#{request.contextPath}/pages/dashboard.jsf" style="color: #0090FF; font-size: 12px;">Inicio</a></li>
+						<li><a href="#{request.contextPath}/pages/parametrizacion/centro-costo.xhtml" style="color: #0090FF; font-size: 12px;">Parametrización</a></li>
+						<li class="active" style="font-size: 12px;">Centro Costo</li>
+					</ol>
+				</div>
+			</section>
+			<section class="main-content">
+				<section class="main-content">
+					<div class="row">
+						<h:form id="formTablePrincipal">
+							<ui:fragment rendered="#{centroCostoController.crear}">
+								<div class="col-md-12">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Lista Centro de Costo</h3>
+										</div>
+										<p:dataTable id="tableGCC1" var="item"
+											value="#{listGrupoCentroCosto}" selectionMode="single"
+											style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+											selection="#{centroCostoController.selectedGrupoCentroCosto}"
+											emptyMessage="No se encontraron Centro de Costo."
+											rowKey="#{item.id}">
+											<p:ajax event="rowSelect"
+												update=":formBotonesHeader,:formTablePrincipal,:formGroup"
+												listener="#{centroCostoController.onRowSelectGCC}" />
+											<p:column width="10%" headerText="Id">
+												<h:outputText value="#{item.id}" />
+											</p:column>
+											<p:column headerText="Nombre">
+												<h:outputText value="#{item.nombre}" />
+											</p:column>
+											<p:column headerText="Descripción">
+												<h:outputText value="#{item.descripcion}" />
+											</p:column>
+											<p:column width="9%" headerText="Estado">
+												<span class="label label-success"><h:outputText
+														rendered="#{item.estado=='AC'}" value="Activo" /></span>
+												<span class="label label-danger"><h:outputText
+														rendered="#{item.estado=='IN'}" value="Inactivo" /></span>
+											</p:column>
+											<p:column width="10%" headerText="Usuario Reg.">
+												<h:outputText value="#{item.usuarioRegistro}" />
+											</p:column>
+											<p:column width="10%" headerText="Fecha Reg.">
+												<h:outputText value="#{item.fechaRegistro}">
+													<f:convertDateTime pattern="dd/MM/yyyy" />
+												</h:outputText>
+											</p:column>
+										</p:dataTable>
+										<div class="panel-body"></div>
+									</div>
+								</div>
+							</ui:fragment>
+						</h:form>
+					</div>
+					<div class="row">
+						<h:form id="formGroup">
+							<ui:fragment rendered="#{! centroCostoController.crear}">
+								<div class="col-md-4">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Centro de Costo</h3>
+										</div>
+										<div class="panel-body">
+											<!-- start here register -->
+											<div class="row">
+												<div class="col-md-12">
+													<div class="form-group ">
+														<div class="col-md-4">Nombre</div>
+														<div class="col-md-8">
+															<h:inputText value="#{newGrupoCentroCosto.nombre}"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control">
+																<f:ajax />
+															</h:inputText>
+														</div>
+													</div>
+													<br />
+													<div class="form-group ">
+														<div class="col-md-4">Descripción</div>
+														<div class="col-md-8">
+															<h:inputText value="#{newGrupoCentroCosto.descripcion}"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control">
+																<f:ajax />
+															</h:inputText>
+														</div>
+													</div>
+												</div>
+											</div>
+											<!-- end here register -->
+										</div>
+									</div>
+								</div>
+								<div class="col-md-8">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Lista Centro de Costo</h3>
+										</div>
+										<!-- start here datatable -->
+										<div class="row">
+											<div class="form-group">
+												<div class="col-md-12">
+													<p:dataTable id="tableGCC" var="item"
+														value="#{listGrupoCentroCosto}" selectionMode="single"
+														style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+														selection="#{centroCostoController.selectedGrupoCentroCosto}"
+														emptyMessage="No se encontraron Centro de Costo."
+														rowKey="#{item.id}">
+														<p:ajax event="rowSelect"
+															update=":formBotonesHeader,:formTablePrincipal,:formGroup"
+															listener="#{centroCostoController.onRowSelectGCC}" />
+														<p:column width="10%" headerText="Id">
+															<h:outputText value="#{item.id}" />
+														</p:column>
+														<p:column headerText="Nombre">
+															<h:outputText value="#{item.nombre}" />
+														</p:column>
+														<p:column headerText="Descripción">
+															<h:outputText value="#{item.descripcion}" />
+														</p:column>
+														<p:column width="9%" headerText="Estado">
+															<span class="label label-success"><h:outputText
+																	rendered="#{item.estado=='AC'}" value="Activo" /></span>
+															<span class="label label-danger"><h:outputText
+																	rendered="#{item.estado=='IN'}" value="Inactivo" /></span>
+														</p:column>
+														<p:column width="10%" headerText="Fecha Reg.">
+															<h:outputText value="#{item.fechaRegistro}">
+																<f:convertDateTime pattern="dd/MM/yyyy" />
+															</h:outputText>
+														</p:column>
+													</p:dataTable>
+												</div>
+											</div>
+										</div>
+										<br />
+										<div class="row">
+											<div class="form-group">
+												<div class="col-md-12">
+													<div class="col-md-6"></div>
+													<div class="col-md-6">
+														<p:commandLink id="verCentroCosto"
+															value="Ver SubCentro Costo"
+															styleClass="btn btn-primary btn-block"
+															update=":formGroup,:formGrowl:msgs1"
+															rendered="#{centroCostoController.buttonVerCentroCosto}"
+															action="#{centroCostoController.setVerCentroCosto(true)}">
+														</p:commandLink>
+														<p:commandLink id="ocultarCentroCosto"
+															value="Ocultar SubCentro Costo"
+															styleClass="btn btn-primary btn-block"
+															rendered="#{centroCostoController.verCentroCosto}"
+															update=":formGroup,:formGrowl:msgs1"
+															action="#{centroCostoController.setVerCentroCosto2(false)}">
+														</p:commandLink>
+													</div>
+												</div>
+											</div>
+										</div>
+										<br />
+										<ui:fragment
+											rendered="#{centroCostoController.verCentroCosto}">
+											<div class="row">
+												<div class="col-md-12">
+													<div class="form-group">
+														<p:dataTable id="tableCentroCosto" var="centro2"
+															value="#{listCentroCosto}" selectionMode="single"
+															style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+															selection="#{centroCostoController.selectedCentroCosto}"
+															emptyMessage="No se encontro SubCentro de Costo."
+															rowKey="#{centro2.id}">
+															<f:facet name="header">
+           														SubCentro de Costo
+        													</f:facet>
+															<p:ajax event="rowSelect"
+																listener="#{centroCostoController.onRowSelectCC}"
+																update=":formGroup,:formGrowl:msgs1,:formDialogRegCC,:formDialogModCC,:formDialogElimCC" />
+															<p:column width="20%" headerText="Id">
+																<h:outputText value="#{centro2.id}" />
+															</p:column>
+															<p:column headerText="Detalle">
+																<h:outputText value="#{centro2.nombre}" />
+															</p:column>
+														</p:dataTable>
+													</div>
+												</div>
+											</div>
+											<br />
+										</ui:fragment>
+										<ui:fragment
+											rendered="#{centroCostoController.verCentroCosto}">
+											<div class="row">
+												<div class="col-md-12">
+													<div class="form-group">
+														<div class="col-md-6"></div>
+														<div class="col-md-2">
+															<p:commandLink id="buttonCancelarCentroCosto"
+																value="&#160; Cancelar"
+																styleClass="btn btn-warning btn-block ion-minus-circled"
+																update=":formGroup,:formGrowl:msgs1"
+																rendered="#{centroCostoController.modificarCentroCosto}"
+																action="#{centroCostoController.setModificarCentroCosto(false)}">
+															</p:commandLink>
+														</div>
+														<div class="col-md-2">
+															<p:commandLink id="buttonRegistrarCentroCosto"
+																value="&#160; Nuevo"
+																styleClass="btn btn-success btn-block ion-plus-round"
+																update=":formGroup"
+																rendered="#{centroCostoController.buttonRegistrarCentroCosto}"
+																onclick="PF('dlgCentroCosto').show();"
+																action="#{centroCostoController.setVerCentroCosto3(true)}">
+															</p:commandLink>
+															<p:commandLink id="buttonModificarCentroCosto"
+																value="&#160; Modificar"
+																styleClass="btn btn-primary btn-block ion-edit"
+																onclick="PF('dlg2').show();"
+																rendered="#{centroCostoController.modificarCentroCosto}"
+																update=":formGroup"
+																action="#{centroCostoController.setVerCentroCosto3(true)}">
+															</p:commandLink>
+														</div>
+														<div class="col-md-2">
+															<p:commandLink id="buttonEliminarCentroCosto"
+																value="&#160; Eliminar"
+																styleClass="btn btn-danger btn-block ion-close"
+																onclick="PF('dlg3').show();"
+																rendered="#{centroCostoController.modificarCentroCosto}"
+																update=":formGroup"
+																action="#{centroCostoController.setVerCentroCosto3(true)}">
+															</p:commandLink>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="panel-body"></div>
+										</ui:fragment>
+										<!-- end here datatable -->
+									</div>
+								</div>
+							</ui:fragment>
+						</h:form>
+					</div>
+				</section>
+			</section>
+		</div>
+		<!--END CONTENT-->
+
+		<!-- START GROWL -->
+		<h:form id="formGrowl">
+			<p:growl id="msgs1" showDetail="true" />
+		</h:form>
+		<!-- END GROWL -->
+
+		<!-- START DIALOG -->
+		<p:dialog header="REGISTRO SUBCENTRO DE COSTO"
+			widgetVar="dlgCentroCosto" modal="true" height="100%">
+			<h:form id="formDialogRegCC">
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="form-group ">
+							<label class="col-sm-4 control-label">Nombre</label>
+							<div class="col-sm-8">
+								<h:inputText value="#{newCentroCosto.nombre}"
+									style=" color: #555555; background-image: none;"
+									styleClass="input-sm form-control">
+									<f:ajax />
+								</h:inputText>
+							</div>
+						</div>
+					</div>
+				</div>
+				<br />
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="form-group">
+							<div class="col-sm-6">
+								<p:commandLink id="cancelarCC" value="&#160; Cancelar"
+									styleClass="btn btn-warning btn-block ion-minus-circled"
+									onclick="PF('dlgCentroCosto').hide();">
+								</p:commandLink>
+							</div>
+							<div class="col-sm-6">
+								<p:commandLink id="registerCC" value="&#160; Registrar"
+									styleClass="btn btn-primary btn-block ion-checkmark"
+									onclick="PF('dlgCentroCosto').hide();">
+									<p:ajax update=":formGroup,:formGrowl:msgs1"
+										listener="#{centroCostoController.registrarCentroCosto()}" />
+								</p:commandLink>
+							</div>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+		<p:dialog header="MODIFICAR SUBCENTRO DE COSTO" widgetVar="dlg2"
+			modal="true" height="100%">
+			<h:form id="formDialogModCC">
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="form-group ">
+							<label class="col-sm-4 control-label">Nombre</label>
+							<div class="col-sm-8">
+								<h:inputText value="#{newCentroCosto.nombre}"
+									style=" color: #555555; background-image: none;"
+									styleClass="input-sm form-control">
+									<f:ajax />
+								</h:inputText>
+							</div>
+						</div>
+					</div>
+				</div>
+				<br />
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="form-group">
+							<div class="col-sm-6">
+								<p:commandLink id="cancelarCC" value="&#160; Cancelar"
+									styleClass="btn btn-warning btn-block ion-minus-circled"
+									onclick="PF('dlg2').hide();">
+								</p:commandLink>
+							</div>
+							<div class="col-sm-6">
+								<p:commandLink id="registerCC" value="&#160; Modificar"
+									styleClass="btn btn-primary btn-block ion-edit"
+									onclick="PF('dlg2').hide();">
+									<p:ajax update=":formGroup,:formGrowl:msgs1"
+										listener="#{centroCostoController.modificarCentroCosto()}" />
+								</p:commandLink>
+							</div>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+		<p:dialog header="ELIMINAR SUBCENTRO DE COSTO" widgetVar="dlg3"
+			modal="true" height="100%">
+			<h:form id="formDialogElimCC">
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="form-group ">
+							<label class="col-sm-4 control-label">Nombre</label>
+							<div class="col-sm-8">
+								<h:inputText value="#{newCentroCosto.nombre}"
+									style=" color: #555555; background-image: none;"
+									styleClass="input-sm form-control">
+									<f:ajax />
+								</h:inputText>
+							</div>
+						</div>
+					</div>
+				</div>
+				<br />
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="form-group">
+							<div class="col-sm-6">
+								<p:commandLink id="cancelarCC" value="&#160; Cancelar"
+									styleClass="btn btn-warning btn-block ion-minus-circled"
+									onclick="PF('dlg3').hide();">
+								</p:commandLink>
+							</div>
+							<div class="col-sm-6">
+								<p:commandLink id="registerCC" value="&#160; Eliminar"
+									styleClass="btn btn-primary btn-block ion-close"
+									onclick="PF('dlg3').hide();">
+									<p:ajax update=":formGroup,:formGrowl:msgs1"
+										listener="#{centroCostoController.eliminarCentroCosto()}" />
+								</p:commandLink>
+							</div>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+		<!-- END DIALOG -->
+	</ui:define>
+</ui:composition>

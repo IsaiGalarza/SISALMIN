@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/WEB-INF/templates/template_main.xhtml">
+	<ui:define name="head">
+		<title>Reporte Comprobante</title>
+	</ui:define>
+	<ui:define name="security">
+		<h:body onload="#{loginController.permisoValidado('Comprobante')}">
+		</h:body>
+	</ui:define>
+
+	<ui:define name="content">
+		<!--BEGIN CONTENT-->
+		<div class="content">
+			<section class="content-header">
+				<div class="pull-left" style="padding-top: 8px;">
+					<h:form id="formBotonesHeader" style="padding-left: 10px;">
+						<div class="btn-group-demo">
+							<div class="btn-group">
+								<p:commandLink id="buttonCancelar" value="&#160; Atras"
+									styleClass="btn btn-warning ion-minus-circled"
+									style="height:31px; padding:center"
+									onclick="location.href='/webapp/pages/formulario/comprobante_index.xhtml'">
+								</p:commandLink>
+								<p:commandLink id="buttonCargarReporte"
+									value="&#160; Ver Comprobante"
+									rendered="#{reporteComprobanteController.seleccionado}"
+									styleClass="btn btn-success ion-printer" style="height:31px;">
+									<p:ajax
+									    listener="#{reporteComprobanteController.actualizarForm()}"
+										update=":formTableComprobante,:formBotonesHeader,:formQuery,:formModalVistaPrevia"/>
+								</p:commandLink>
+							</div>
+						</div>
+					</h:form>
+				</div>
+				<div class="pull-right">
+					<ol class="breadcrumb">
+						<li><a href="#{request.contextPath}/pages/dashboard.jsf" style="color: #0090FF; font-size: 12px;">Inicio</a></li>
+						<li><a href="#{request.contextPath}/pages/formulario/comprobante_index.xhtml" style="color: #0090FF; font-size: 12px;">Parametrización</a></li>
+						<li><a href="#{request.contextPath}/pages/formulario/comprobante_index.xhtml" style="color: #0090FF; font-size: 12px;">Comprobante</a></li>
+						<li class="active" style="font-size: 12px;">Reporte</li>
+					</ol>
+				</div>
+			</section>
+			<section class="main-content">
+				<section class="main-content">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<h3 class="panel-title">Lista de Comprobante</h3>
+								</div>
+								<div class="panel-body">
+									<div class="row">
+										<h:form id="formQuery">
+											<div class="col-md-2">
+												<div class="form-group">
+													<div class="col-md-12">Sucursal:</div>
+													<div class="col-md-12">
+														<h:selectOneMenu id="sucursal"
+															styleClass="input-sm form-control" immediate="true"
+															value="#{reporteComprobanteController.nombreSucursal}">
+															<f:ajax />
+															<f:selectItem itemValue="TODO" />
+															<f:selectItems
+																value="#{reporteComprobanteController.listSucursal}" />
+														</h:selectOneMenu>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-2">
+												<div class="form-group">
+													<div class="col-md-12">Tipo Comp.</div>
+													<div class="col-md-12">
+														<h:selectOneMenu id="tipoComprobante"
+															style=" color: #555555; background-image: none;"
+															styleClass="input-sm form-control" immediate="true"
+															value="#{reporteComprobanteController.nombreTipoComprobante}">
+															<p:ajax />
+															<f:selectItem itemValue="TODO" />
+															<f:selectItems
+																value="#{reporteComprobanteController.listTipoComprobante}" />
+														</h:selectOneMenu>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-2">
+												<div class="form-group">
+													<div class="col-md-12">Mes</div>
+													<div class="col-md-12">
+														<h:selectOneMenu id="mes"
+															style=" color: #555555; background-image: none;"
+															styleClass="input-sm form-control" immediate="true"
+															value="#{reporteComprobanteController.nombreMes}">
+															<p:ajax />
+															<f:selectItems
+																value="#{reporteComprobanteController.arrayMes}" />
+														</h:selectOneMenu>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-2">
+												<div class="form-group">
+													<div class="col-md-12">&#160;</div>
+													<div class="col-md-12" style="text-align: center;">
+														<p:commandLink id="buttonProcesarReporte"
+															value="&#160; Procesar"
+															styleClass="btn btn-success ion-wand"
+															style="height:31px;">
+															<p:ajax
+																listener="#{reporteComprobanteController.procesar()}"
+																update=":formTableComprobante,:formBotonesHeader,:formQuery" />
+														</p:commandLink>
+													</div>
+												</div>
+											</div>
+										</h:form>
+									</div>
+									<br />
+									<div class="row">
+										<h:form id="formTableComprobante">
+											<ui:fragment rendered="true">
+												<div class="col-md-12">
+													<div class="panel panel-default">
+														<div class="panel-heading">
+															<h3 class="panel-title">Consulta de Comprobante</h3>
+														</div>
+														<!-- start here datatable -->
+														<div class="form-group">
+															<p:dataTable id="dataTableComprobante" var="item"
+																rendered="true"
+																selection="#{reporteComprobanteController.selectedComprobante}"
+																selectionMode="single"
+																value="#{reporteComprobanteController.listComprobante}"
+																reflow="true" emptyMessage="procese una consulta."
+																style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+																rowKey="#{item.id}">
+																<p:ajax event="rowSelect"
+																	listener="#{reporteComprobanteController.onRowSelect}"
+																	update=":formTableComprobante,:formBotonesHeader,:formQuery" />
+																<p:column headerText="Número" width="8%">
+																	<h:outputText value="#{item.numero}" />
+																</p:column>
+																<p:column headerText="Nombre" width="20%">
+																	<h:outputText value="#{item.nombre}" />
+																</p:column>
+																<p:column headerText="Glosa" width="20%">
+																	<h:outputText value="#{item.glosa}" />
+																</p:column>
+																<p:column headerText="monto" width="8%">
+																	<h:outputText
+																		value="#{item.importeTotalDebeExtranjero}">
+																		<f:convertNumber type="number" groupingUsed="true"
+																			minFractionDigits="2" pattern="#0.00" />
+																	</h:outputText>
+																</p:column>
+																<p:column headerText="Sucursal" width="10%">
+																	<h:outputText value="#{item.sucursal.nombre}" />
+																</p:column>
+																<p:column headerText="Tipo" width="10%">
+																	<h:outputText value="#{item.tipoComprobante.nombre}" />
+																</p:column>
+																<p:column headerText="Fecha" width="7%">
+																	<h:outputText value="#{item.fecha}">
+																		<f:convertDateTime pattern="dd/MM/yyyy" />
+																	</h:outputText>
+																</p:column>
+															</p:dataTable>
+														</div>
+														<!-- end here datatable -->
+														<div class="panel-body"></div>
+													</div>
+												</div>
+											</ui:fragment>
+										</h:form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+			</section>
+		</div>
+		<!--END CONTENT-->
+
+		<!-- START GROWL :formGrowl:msgs1 -->
+		<h:form id="formGrowl">
+			<p:growl id="msgs1" showDetail="true" />
+		</h:form>
+		<!-- END GROWL -->
+
+		<!-- START DIALOG -->
+		<!-- VISTA PREVIA REPORTE -->		
+		<p:dialog header="COMPROBANTE" widgetVar="dlgVistaPreviaComprobante2"
+			modal="true" visible="#{not empty facesContext.maximumSeverity}"
+			resizable="false" position="center" width="750px">
+			<h:form id="formModalVistaPrevia">
+				<div class="row">
+					<div class="form-group ">
+						<div class="col-md-12">
+							<p:media player="pdf" rendered="true"
+								value="#{reporteComprobanteController.urlComprobante}"
+								width="750px" height="480px" />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="form-group">
+							<div class="col-md-4"></div>
+							<div class="col-md-4"></div>
+							<div class="col-md-4">
+								<p:commandLink value="Aceptar"
+									styleClass="btn btn-primary btn-block"
+									onclick="PF('dlgVistaPreviaComprobante').hide();" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+		<!-- END DIALOG -->
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,344 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<link rel="shortcut icon"
+		href="#{request.contextPath}/resources/rock/global/images/icon_contabilidad.ico" />
+
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta content="" name="description" />
+	<meta content="" name="author" />
+	
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/global/plugins/font-awesome/css/font-awesome.min.css" />
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/global/plugins/ionicons/css/ionicons.min.css" />
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/global/plugins/simple-line-icons/simple-line-icons.css" />
+	<!-- borrado #{request.contextPath}/resources/rock/global/plugins/animate.css/animate.css  -->
+	<!-- borrado #{request.contextPath}/resources/rock/global/plugins/iCheck/skins/all.css  -->
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/global/css/style.css" />
+	<!-- borrado #{request.contextPath}/resources/rock/assets/css/page-demo.css  -->
+	<!-- borrado #{request.contextPath}/resources/rock/assets/css/style-admin.css  -->
+	<!-- borrado #{request.contextPath}/resources/rock/assets/css/style-plugins.css -->
+	<!-- borrado style-responsive.css"  -->
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/assets/css/themes/default.css"
+		id="theme-color" />
+	<!-- borrado daterangepicker-bs3.css  -->
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/assets/plugins/jquery-file-input/file-input.css" />
+	<!-- borrado slider.css  -->
+
+	<!-- borrado selectize-custom.css  -->
+	<!-- borrado jquery.datetimepicker.css  -->
+	<!-- borrado jquery.timepicker.css  -->
+	<!-- borrado bootstrap-clockpicker.min.css  -->
+	<!-- borrado jquery.minicolors.css  -->
+	<!-- borrado dropzone.css  -->
+
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/global/plugins/animate.css/animate.css" />
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/global/plugins/iCheck/skins/all.css" />
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/assets/plugins/rickshaw/rickshaw.min.css" />
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/assets/css/page-demo.css" />
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/assets/css/style-admin.css" />
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/assets/css/style-plugins.css" />
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/assets/css/style-responsive.css" />
+
+	<!-- start notificacion -->
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/rock/assets/plugins/jquery-gritter/jquery.gritter-custom.css" />
+	<!-- end notificacion -->
+
+	<ui:insert name="head">
+		[Main Title of Web Page]
+	</ui:insert>
+	
+	<style type="text/css">
+			        .ui-growl {
+			            /*position:absolute;*/
+			            position: absolute; top: 100px; z-index: 2;
+			            top:55px;
+			            /*left:20px;*/
+						/*width:301px; */
+			            z-index:9999;
+			        }
+			  
+			    </style>
+
+
+</h:head>
+<!-- page-header-fixed page-sidebar-fixed page-layout-full-width page-quick-sidebar-push page-sidebar-left-closed -->
+<!-- page-header-fixed page-sidebar-fixed page-quick-sidebar-push page-sidebar-left-closed -->
+<h:body class="page-header-fixed page-sidebar-fixed  page-quick-sidebar-push page-sidebar-left-closed">
+	
+	<p:growl id="growl" showDetail="true" autoUpdate="true"/>
+
+	<ui:insert name="security">
+	
+	</ui:insert>
+
+	<div>
+		<div class="page-wrapper">
+			<!--BEGIN HEADER-->
+			<header class="header">
+			<div class="logo">
+				<a href="#{request.contextPath}/pages/dashboard.xhtml" class="logo-text" style="font-size: 18px;"><i
+					class="ion-cube"></i>#{' '}INVENTARIO</a><a href="#{request.contextPath}/pages/dashboard.xhtml"
+					data-toggle="offcanvas" class="sidebar-toggle pull-right"><i
+					class="fa fa-bars"></i></a>
+			</div>
+			<nav role="navigation" class="navbar navbar-static-top">
+			<form action="#" class="search-form navbar-left hidden-xs">
+				<div class="input-icon left" style="text-align: center;">
+				</div>
+			</form>
+			<div class="navbar-right">
+				<ul class="nav navbar-nav">
+				
+					<!-- NOTIFICACIONES -->
+					<li class="dropdown dropdown-extra dropdown-messages"><a href="#" data-toggle="dropdown" class="dropdown-toggle">
+						<i class="icon-folder-alt">
+						</i><span class="badge badge-primary">4</span></a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <p>Tiene 4 Ordenes de Ingreso</p>
+                                    </li>
+                                    <li>
+                                  	</li>
+                                </ul>
+                    </li>
+                    
+					<!-- PERFIL Y FOTOGRAFIA -->
+					<li class="dropdown dropdown-user menu-user"><a href="#"
+						data-toggle="dropdown" class="dropdown-toggle"> 
+						<h:graphicImage library="gfx" name="person.jpg" width="27" styleClass="img-circle"/>
+						<!-- 
+													<p:graphicImage
+								width="27" value="#{sessionMain.fotoPerfil}"
+								alt="User Image" styleClass="img-circle" /> 
+						 -->
+						<span
+							>#{sessionMain.usuarioLoggin.nombre}
+						</span>&nbsp;<b
+							class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<li><a href="#{request.contextPath}/logoutServlet"><i
+									class="icon-logout"></i>Salir</a></li>
+						</ul>
+					</li>
+					
+				</ul>
+			</div>
+			</nav> </header>
+			<!--END HEADER-->
+
+			<!--BEGIN WRAPPER-->
+			<div class="wrapper row-offcanvas row-offcanvas-left">
+			
+				
+				<!--BEGIN SIDEBAR-->
+				<aside class="page-sidebar sidebar-offcanvas"> <section
+					class="sidebar">
+				<ul class="sidebar-menu">
+					<ui:insert name="page_active_inicio">
+						<li class="#{(view.viewId.equals('/pages/dashboard.xhtml')) ? 'active' : 'inactive'}" style="background-color: #503099;">
+							<a href="#{request.contextPath}/pages/dashboard.xhtml"><i
+								class="icon-home"></i><span class="sidebar-text">Inicio</span></a></li>
+					</ui:insert>
+					<li
+						class="#{(view.viewId.equals('/pages/seguridad/usuario.xhtml')) ? 'active' : (view.viewId.equals('/pages/seguridad/rol.xhtml')) ? 'active' : (view.viewId.equals('/pages/seguridad/permiso.xhtml')) ? 'active' : 'inactive'}"><a
+						href="#"><i class="icon-lock"></i><span class="sidebar-text">Seguridad</span></a>
+						<ul class="nav nav-second-level">
+							<li
+								class="#{(view.viewId.equals('/pages/seguridad/usuario.xhtml')) ? 'active' : 'inactive'}"><a
+								href="#{request.contextPath}/pages/seguridad/usuario.xhtml"><i
+									class="icon-user"></i><span class="sidebar-text">Usuario</span></a></li>
+							<li
+								class="#{(view.viewId.equals('/pages/seguridad/rol.xhtml')) ? 'active' : 'inactive'}"><a
+								href="#{request.contextPath}/pages/seguridad/rol.xhtml"><i
+									class="icon-users"></i><span class="sidebar-text">Rol</span></a></li>
+							<li
+								class="#{(view.viewId.equals('/pages/seguridad/permiso.xhtml')) ? 'active' : 'inactive'}"><a
+								href="#{request.contextPath}/pages/seguridad/permiso.xhtml"><i
+									class="icon-shield"></i><span class="sidebar-text">Permiso</span></a></li>
+						</ul></li>
+					<ui:insert name="page_active_paremetrizacion">
+						<li
+							class="#{(view.viewId.equals('/pages/parametrizacion/proveedor.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/almacen.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/partida.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/proyecto.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/empresa.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/unidad.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/funcionario.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/tipo_ufv.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/proveedor.xhtml')) ? 'active' : 'inactive'}"><a
+							href="#"><i class="icon-equalizer"></i><span
+								class="sidebar-text">Parametrización</span></a>
+							<ul class="nav nav-second-level">
+								
+								<li class="#{(view.viewId.equals('/pages/parametrizacion/proveedor.xhtml')) ? 'active' :'inactive'}"><a
+									href="#{request.contextPath}/pages/parametrizacion/proveedor.xhtml">
+										<i class="icon-globe"></i><span class="sidebar-text">Proveedores</span>
+								</a></li>
+								
+								<li class="#{(view.viewId.equals('/pages/parametrizacion/almacen.xhtml')) ? 'active' :'inactive'}"><a
+									href="#{request.contextPath}/pages/parametrizacion/almacen.xhtml">
+										<i class="icon-globe"></i><span class="sidebar-text">Almacen</span>
+								</a></li>
+								
+								<li class="#{(view.viewId.equals('/pages/parametrizacion/partida.xhtml')) ? 'active' :'inactive'}"><a
+									href="#{request.contextPath}/pages/parametrizacion/partida.xhtml">
+										<i class="icon-globe"></i><span class="sidebar-text">Gestión Partida</span>
+								</a></li>
+								
+								
+								<li class="#{(view.viewId.equals('/pages/parametrizacion/proyecto.xhtml')) ? 'active' :'inactive'}"><a
+									href="#{request.contextPath}/pages/parametrizacion/proyecto.xhtml">
+										<i class="icon-globe"></i><span class="sidebar-text">Gestión Proyecto</span>
+								</a></li>
+								
+								
+								<li class="#{(view.viewId.equals('/pages/parametrizacion/unidad.xhtml')) ? 'active' :'inactive'}"><a
+									href="#{request.contextPath}/pages/parametrizacion/unidad.xhtml">
+										<i class="icon-globe"></i><span class="sidebar-text">Detalle Unidad</span>
+								</a></li>
+								
+								<li class="#{(view.viewId.equals('/pages/parametrizacion/funcionario.xhtml')) ? 'active' :'inactive'}"><a
+									href="#{request.contextPath}/pages/parametrizacion/funcionario.xhtml">
+										<i class="icon-globe"></i><span class="sidebar-text">Funcionario</span>
+								</a></li>
+								
+
+							</ul></li>
+					</ui:insert>
+					
+					<ui:insert name="page_active_inventario">
+						<li
+							class="#{(view.viewId.equals('/pages/inventario/gestion-producto.xhtml')) ? 'active' :'inactive'}">
+							<a 	href="#"><i class="icon-social-dropbox"></i><span
+								class="sidebar-text">Inventario</span></a>
+							<ul class="nav nav-second-level">
+								
+								<li class="#{(view.viewId.equals('/pages/inventario/gestion-producto.xhtml')) ? 'active' :'inactive'}"><a
+									href="#{request.contextPath}/pages/inventario/gestion-producto.xhtml">
+										<i class="icon-globe"></i><span class="sidebar-text">Gestión de Productos</span>
+								</a></li>
+					
+							</ul></li>
+					</ui:insert>
+					
+					<ui:insert name="page_active_proceso">
+						<li class="#{(view.viewId.equals('/pages/formulario/orden_compra.xhtml')) ? 'active' :'inactive'}">
+						<a href="#"><i class="icon-layers"></i><span
+								class="sidebar-text">Proceso</span></a>
+							<ul class="nav nav-second-level">
+								
+								<li class="#{(view.viewId.equals('/pages/formulario/orden_compra.xhtml')) ? 'active' :'inactive'}"><a
+									href="#{request.contextPath}/pages/formulario/orden_compra.xhtml">
+										<i class="icon-social-dropbox"></i><span class="sidebar-text">Orden de Ingreso
+									</span>
+								</a></li>
+							</ul></li>
+					</ui:insert>
+					
+					
+
+					<ui:insert name="page_active_reporte">
+						<li
+							class="#{(view.viewId.equals('/pages/reportes/libro_diario.xhtml')) ? 'active' : (view.viewId.equals('/pages/reportes/libro_mayor.xhtml')) ? 'active':(view.viewId.equals('/pages/reportes/sumas_saldos.xhtml')) ? 'active': (view.viewId.equals('/pages/reportes/balance_general.xhtml')) ? 'active': (view.viewId.equals('/pages/reportes/estado_resultado.xhtml')) ? 'active': 'inactive'}">
+							<a  href="#"><i class="icon-bar-chart"></i><span
+								class="sidebar-text">Reporte</span></a>
+							<ul class="nav nav-second-level">
+								<li class="inactive">
+									<a	href="#">
+										<i class="icon-notebook"></i>
+										<span class="sidebar-text">Ingresos</span>
+									</a>
+									<a	href="#">
+										<i class="icon-notebook"></i>
+										<span class="sidebar-text">Salidas</span>
+									</a>
+									<a	href="#">
+										<i class="icon-notebook"></i>
+										<span class="sidebar-text">Transpasos</span>
+									</a>
+								</li>
+							</ul>
+						</li>
+					</ui:insert>
+				</ul>
+				</section> </aside>
+				<!--END SIDERBAR-->
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				<!--BEGIN CONTENT-->
+				<ui:insert name="content">
+					
+					
+					
+				</ui:insert>
+				<!--END CONTENT-->
+			</div>
+			<!--END WRAPPER-->
+		</div>
+	</div>
+
+
+	<!-- start scrip -->
+	<script
+		src="#{request.contextPath}/resources/rock/global/plugins/bootstrap/js/bootstrap.min.js"></script>
+	<script
+		src="#{request.contextPath}/resources/rock/global/plugins/slimScroll/jquery.slimscroll.js"></script>
+	<script
+		src="#{request.contextPath}/resources/rock/assets/plugins/jquery-metisMenu/jquery.menu.min.js"></script>
+	<script src="#{request.contextPath}/resources/rock/assets/js/layout.js"></script>
+	<!-- borrado jquery.js  -->
+	<!-- borrado jquery-migrate-1.2.1.min.js  -->
+	<!-- borrado jquery-ui.js -->
+	<!-- borrado bootstrap-hover-dropdown.js  -->
+	<!-- borrado html5shiv.js  -->
+	<!-- borrado respond.min.js -->
+	<!-- borrado <script src="/webapp/resources/rock/global/plugins/slimScroll/jquery.slimscroll.js"></script>  -->
+	<!-- borrado <script src="/webapp/resources/rock/global/plugins/iCheck/icheck.min.js"></script> -->
+	<!-- borrado <script src="/webapp/resources/rock/global/plugins/iCheck/custom.min.js"></script> -->
+	<!-- borrado <script src="/webapp/resources/rock/assets/plugins/jquery.blockUI.js"></script> -->
+	<!-- borrado <script src="/webapp/resources/rock/global/js/app.js"></script> -->
+	<!-- borrado <script src="/webapp/resources/rock/assets/js/quick-sidebar.js"></script> -->
+	<!-- borrado <script src="/webapp/resources/rock/assets/js/admin-setting.js"></script>  -->
+
+	<!-- start notificacion -->
+	<!-- 	<script src="/webapp/resources/rock/global/js/jquery.js"></script> -->
+	<!--     <script src="/webapp/resources/rock/global/plugins/iCheck/icheck.min.js"></script> -->
+	<!--     <script src="/webapp/resources/rock/global/plugins/iCheck/custom.min.js"></script> -->
+	<!--     <script src="/webapp/resources/rock/assets/plugins/jquery-gritter/jquery.gritter.js"></script> -->
+	<!--     <script src="/webapp/resources/rock/assets/js/ui-modal-notification.js"></script> -->
+	<!-- start notificacion -->
+	<!-- validacion de input -->
+	<script src="#{request.contextPath}/resources/js/validator.js"></script>
+<!-- 	<script src="#{request.contextPath}/resources/rock/assets/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js"></script> -->
+<!-- 	<script src="#{request.contextPath}/resources/rock/assets/js/form-wizard.js"></script> -->
+	<!-- end scrip -->
+
+	<ui:insert name="scripts">
+
+	</ui:insert>
+
+</h:body>
+</html>

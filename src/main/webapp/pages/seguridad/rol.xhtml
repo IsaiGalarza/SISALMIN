@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/WEB-INF/templates/template_main.xhtml">
+	<ui:define name="head">
+		<title>Rol</title>
+		
+		<f:event listener="#{rolController.initConversation}"
+			type="preRenderView"></f:event>
+		
+	</ui:define>
+
+	<ui:define name="content">
+		<!--BEGIN CONTENT-->
+		<div class="content">
+			<section class="content-header">
+				<div class="pull-left" style="padding-top: 8px;">
+					<h:form id="formBotonesHeader" style="padding-left: 10px;">
+						<div class="btn-group-demo">
+							<div class="btn-group">
+								<p:commandLink id="buttonCancelar" value="&#160; Canccelar"
+									styleClass="btn btn-warning ion-minus-circled"
+									style="height:31px; padding:center"
+									rendered="#{rolController.modificar or rolController.registrar}"
+									update=":formReg,:formBotonesHeader,formTableRoles"
+									action="#{rolController.actualizarForm()}">
+								</p:commandLink>
+								<p:commandLink id="buttonCrear" value="&#160; Nuevo Rol"
+									styleClass="btn btn-success ion-plus-round"
+									rendered="#{rolController.crear}" style="height:31px;">
+									<p:ajax update="formTableRoles,formReg,:formBotonesHeader"
+										listener="#{rolController.cambiarAspecto()}" />
+										<p:ajax
+										listener="#{rolController.resetearFitrosTabla('formTableRoles:dataTableRoles')}" />
+								</p:commandLink>
+								<p:commandLink id="buttonRegistrar"
+									value="&#160; #{label['button.register']}"
+									styleClass="btn btn-success ion-plus-round"
+									style="height:31px; padding:center"
+									rendered="#{rolController.registrar}"
+									update=":formReg,:formTableRoles,:formBotonesHeader,:formGrowl:msgs1"
+									action="#{rolController.registrarRol()}">
+								</p:commandLink>
+								
+								
+								<p:commandLink id="buttonModificar"
+									value="&#160; #{label['button.modify']}"
+									update=":formReg,:formTableRoles,:formBotonesHeader,:formGrowl:msgs1"
+									styleClass="btn btn-primary ion-edit"
+									rendered="#{rolController.crear=='false'}"
+									style="height:31px; padding:center"
+									action="#{rolController.modificarRol()}">
+								</p:commandLink>
+								
+								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
+									styleClass="btn btn-danger ion-close"
+									style="height:31px; padding:center"
+									rendered="#{rolController.modificar}"
+									update=":formReg,:formTableRoles,:formBotonesHeader,:formGrowl:msgs1"
+									disabled="#{newRoles.state =='SU'}"
+									action="#{rolController.eliminarRol()}">
+								</p:commandLink>
+							</div>
+						</div>
+					</h:form>
+				</div>
+				<div class="pull-right">
+					<ol class="breadcrumb">
+						<li><a href="#{request.contextPath}/pages/dashboard.xhtml"
+							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
+						<li><a
+							href="#{request.contextPath}/pages/seguridad/rol.xhtml"
+							style="color: #0090FF; font-size: 12px;">Seguridad</a></li>
+						<li class="active" style="font-size: 12px;">Roles</li>
+					</ol>
+				</div>
+			</section>
+			<section class="main-content">
+				<section class="main-content">
+					<div class="row">
+						<h:form id="formReg">
+							<ui:fragment
+								rendered="#{rolController.registrar=='true'}">
+								<div class="col-md-4">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Registro Roles</h3>
+										</div>
+										<div class="panel-body">
+											<!-- start here register -->
+
+											<div class="row">
+												<div class="col-md-12 box-content form-horizontal">
+													<div class="form-group ">
+														<label class="col-md-4 control-label">Nombre</label>
+														<div class="col-md-8">
+															<h:inputText value="#{rolController.newRol.nombre}"
+																required="true"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control"
+																disabled="#{rolController.newRol.estado =='SU'}">
+																<p:ajax event="change" />
+															</h:inputText>
+														</div>
+													</div>
+													<div class="form-group ">
+														<label class="col-md-4 control-label">Descripcion</label>
+														<div class="col-md-8">
+															<h:inputTextarea  value="#{rolController.newRol.descripcion}"
+																required="true"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control" rows="4">
+																<p:ajax event="change" />
+															</h:inputTextarea>
+														</div>
+													</div>
+													<div class="form-group">
+															<label class="col-md-4 control-label">Estado</label>
+															<div class="col-md-8">
+																<h:selectOneMenu id="estado"
+																	styleClass="input-sm form-control"
+																	style=" color: #555555; height:25px; font-size:11px;"
+																	disabled="#{rolController.newRol.estado =='SU'}" immediate="true"
+																	value="#{rolController.nombreEstado}">
+																	<f:ajax />
+																	<f:selectItems value="#{rolController.listEstado}" />
+																</h:selectOneMenu>
+															</div>
+													</div>
+												</div>
+											</div>
+
+											<!-- end here register -->
+										</div>
+									</div>
+								</div>
+							</ui:fragment>
+						</h:form>
+						<h:form id="formTableRoles">
+							
+							<ui:fragment
+								rendered="#{rolController.registrar=='false'}">
+							
+							<div class="col-md-12">
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h3 class="panel-title">Lista Roles</h3>
+									</div>
+									<!-- start here datatable -->
+									<div class="box-content no-padding">
+										<p:dataTable id="dataTableRoles" var="item"
+											value="#{rolController.listRol}" selectionMode="single"
+											filteredValue="#{rolController.listFilterRol}"
+											style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+											selection="#{rolController.selectedRol}"
+											emptyMessage="No se encontraron roles" reflow="true"
+											rowKey="#{item.id}">
+											
+											<p:ajax event="rowSelect"
+												listener="#{rolController.onRowSelect}"
+												update=":formReg,:formBotonesHeader,:formTableRoles" />
+											<p:column width="20%" filterStyle="width: 100%; height:25px;"
+												headerText="Id" filterBy="#{item.id}">
+												<h:outputText value="#{item.id}" />
+											</p:column>
+											<p:column filterStyle="width: 100%; height:25px;"
+												headerText="Nombre" filterBy="#{item.nombre}">
+												<h:outputText value="#{item.nombre}" />
+											</p:column>
+											<p:column filterStyle="width: 100%; height:25px;"
+												headerText="Descripcion" filterBy="#{item.descripcion}">
+												<h:outputText value="#{item.descripcion}" />
+											</p:column>
+											<p:column filterStyle="width: 100%; height:25px;"
+												headerText="Estado" filterBy="#{item.estado}">
+												<h:outputText value="#{item.estado}" />
+											</p:column>
+											<p:column filterStyle="width: 100%; height:25px;"
+												headerText="Fecha Reg." filterBy="#{item.fechaRegistro}">
+												<h:outputText value="#{item.fechaRegistro}" >
+													<f:convertDateTime pattern="dd/MM/yyyy H:mm"/>
+												</h:outputText>
+											</p:column>
+										</p:dataTable>
+									</div>
+									<!-- end here datatable -->
+									<div class="panel-body"></div>
+								</div>
+							</div>
+							
+							</ui:fragment>
+							
+						</h:form>
+					</div>
+				</section>
+			</section>
+		</div>
+		<!--END CONTENT-->
+
+		<!-- START GROWL formGrowl:msgs1 -->
+		<h:form id="formGrowl">
+			<p:growl id="msgs1" showDetail="true" />
+		</h:form>
+		<!-- END GROWL -->
+
+		<!-- START DIALOG -->
+		<p:dialog header="DIALOG TEST" widgetVar="dlg1" modal="true"
+			height="100%">
+		</p:dialog>
+		<!-- END DIALOG -->
+
+	</ui:define>
+</ui:composition>

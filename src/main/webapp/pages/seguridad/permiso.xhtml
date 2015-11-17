@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/WEB-INF/templates/template_main.xhtml">
+	<ui:define name="head">
+		<title>Permiso</title>
+	</ui:define>
+
+	<ui:define name="content">
+		<!--BEGIN CONTENT-->
+		<div class="content">
+			<section class="content-header">
+				<div class="pull-left" style="padding-top: 8px;">
+					<h:form id="formBotonesHeader" style="padding-left: 10px;">
+						<div class="btn-group-demo">
+							<div class="btn-group">
+								<h:form id="formReg">
+									<h:commandLink id="buttonLimpar" value="&#160; Limpiar Todo"
+										style="height:31px; padding:center"
+										styleClass="btn btn-primary icon-refresh">
+										<p:ajax update=":formTree"
+											listener="#{privilegioController.limpiarTodo()}" />
+									</h:commandLink>
+									<h:commandLink id="buttonGuardar" value="&#160; Guardar"
+										style="height:31px; padding:center"
+										styleClass="btn btn-success ion-checkmark"
+										action="#{privilegioController.test()}">
+										<f:ajax />
+									</h:commandLink>
+								</h:form>
+							</div>
+						</div>
+					</h:form>
+				</div>
+				<div class="pull-right">
+					<ol class="breadcrumb">
+						<li><a href="#{request.contextPath}/pages/dashboard.jsf" style="color: #0090FF; font-size: 12px;">Inicio</a></li>
+						<li><a href="#{request.contextPath}/pages/seguridad/permiso.xhtml" style="color: #0090FF; font-size: 12px;">Seguridad</a></li>
+						<li class="active" style="font-size: 12px;">Permiso</li>
+					</ol>
+				</div>
+			</section>
+			<section class="main-content">
+				<section class="main-content">
+					<div class="row">
+						<div class="col-md-4">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<h3 class="panel-title">Roles</h3>
+								</div>
+								<div class="panel-body">
+									<!-- start here register -->
+									<div class="row">
+										<div class="col-sm-12">
+											<div class="form-group">
+												<div class="col-md-6">Seleccione un Rol</div>
+												<div class="col-md-6">
+													<h:form>
+														<h:selectOneMenu id="roles" styleClass="form-control"
+															immediate="true"
+															value="#{privilegioController.nombreRol}">
+															<!-- 	<f:ajax render=":formTablePermiso" /> -->
+															<f:selectItems value="#{privilegioController.listaRoles}" />
+															<p:ajax update=":formTree" />
+														</h:selectOneMenu>
+													</h:form>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!-- end here register -->
+								</div>
+							</div>
+						</div>
+						<div class="col-md-8">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<h3 class="panel-title">Permisos de Usuarios</h3>
+								</div>
+								<div class="panel-body">
+									<!-- start here register -->
+									<div class="row">
+										<h:form id="formTree">
+											<p:tree id="docs" value="#{privilegioController.root}"
+												var="node" selectionMode="checkbox"
+												style="font-size: 13px !important; padding: 0 0 0 16px !important; width: 100%; font-family: sans-serif !important;"
+												selection="#{privilegioController.selectedNodes2}">
+												<p:treeNode icon="ui-icon-star">
+													<h:outputText value="#{node.nombre}" />
+												</p:treeNode>
+												<p:treeNode type="1" icon="ui-icon-newwin" >
+													<h:outputText value="#{node.nombre}" />
+												</p:treeNode>
+												<p:treeNode type="2" icon="ui-icon-newwin" >
+													<h:outputText value="#{node.nombre}" />
+												</p:treeNode>
+												<p:treeNode type="3" icon="ui-icon-newwin" >
+													<h:outputText value="#{node.nombre}" />
+												</p:treeNode>
+											</p:tree>
+											
+										</h:form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+			</section>
+		</div>
+		<!--END CONTENT-->
+
+		<!-- START GROWL -->
+		<h:form id="formGrowl">
+			<p:growl id="msgs1" showDetail="true" />
+		</h:form>
+		<!-- END GROWL -->
+
+		<!-- START DIALOG -->
+		<p:dialog header="DIALOG TEST" widgetVar="dlg1" modal="true"
+			height="100%">
+		</p:dialog>
+		<!-- END DIALOG -->
+
+	</ui:define>
+</ui:composition>

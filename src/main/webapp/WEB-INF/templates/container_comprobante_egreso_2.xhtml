@@ -1,0 +1,47 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<!-- START CONTENT -->
+	<div class="col-md-12">
+		<div class="row">
+			<div class="form-group ">
+				<div class="col-md-2" style="padding-left: 0px; padding-right: 0px;">
+					<div class="form-group">
+						<div class="col-md-12">Cuenta Bancaria</div>
+						<div class="col-md-12">
+							<h:selectOneMenu id="cuentaBancariaMenu" styleClass="input-sm form-control"
+								immediate="true"
+								value="#{comprobanteController.nombreCuentaBancaria}">
+								<p:ajax 
+									event="change" />
+									<f:selectItem itemLabel="NINGUNO" itemValue="NINGUNO" />
+								<f:selectItems
+									value="#{comprobanteController.listPlanCuentaBancaria}" />
+							</h:selectOneMenu>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-2" style="padding-left: 0px; padding-right: 0px;">
+					<div class="form-group">
+						<div class="col-md-12">Nro. Doc.</div>
+						<div class="col-md-12">
+							<h:inputText value="#{comprobanteController.egreso.nroDocumento}"
+								style=" color: #555555; background-image: none;"
+								styleClass="input-sm form-control">
+								<p:ajax event="change" />
+							</h:inputText>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-2"></div>
+				<div class="col-md-2"></div>
+				<div class="col-md-2"></div>
+			</div>
+		</div>
+		<br />
+	</div>
+	<!-- END CONTEN -->
+</ui:composition>

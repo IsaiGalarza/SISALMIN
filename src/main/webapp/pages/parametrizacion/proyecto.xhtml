@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/WEB-INF/templates/template_main.xhtml">
+	<ui:define name="head">
+		<title>Proyecto</title>
+	</ui:define>
+
+	<ui:define name="content">
+		<!--BEGIN CONTENT-->
+		<div class="content">
+			<section class="content-header">
+				<div class="pull-left" style="padding-top: 8px;">
+					<h:form id="formBotonesHeader" style="padding-left: 10px;">
+						<div class="btn-group-demo">
+							<div class="btn-group">
+								
+								<p:commandLink id="buttonCancelar" value="&#160; Cancelar"
+									styleClass="btn btn-warning ion-minus-circled"
+									update=":formTableProyecto, :formBotonesHeader"
+									rendered="#{proyectoController.modificar=='true'}"
+									style="height:31px; padding:center"
+									action="#{proyectoController.initNewProyecto()}">
+								</p:commandLink>
+								<p:commandLink id="buttonCrear1" value="&#160; Nuevo Proyecto"
+									styleClass="btn btn-success ion-plus-round"
+									rendered="#{proyectoController.crear}"
+									update=":formTableProyecto, :formBotonesHeader"
+									action="#{proyectoController.cambiarAspecto()}"
+									style="height:31px;">
+								</p:commandLink>
+								
+								<p:commandLink id="buttonRegistrar" value="&#160; Registrar"
+									styleClass="btn btn-success ion-checkmark"
+									rendered="#{proyectoController.registrar}"
+									update=":formTableProyecto, :formBotonesHeader"
+									style="height:31px; padding:center"
+									action="#{proyectoController.registrarProyecto()}">
+								</p:commandLink>
+								
+								<p:commandLink id="buttonVerModificar" value="&#160; Modificar"
+									styleClass="btn btn-primary ion-edit"
+									rendered="#{proyectoController.selectedProyecto!=null and proyectoController.crear=='true'}"
+									style="height:31px; padding:center"
+									update=":formTableProyecto, :formBotonesHeader"
+									action="#{proyectoController.cambiarAspectoModificar()}">
+								</p:commandLink>
+								
+								<p:commandLink id="buttonModificar" value="&#160; Modificar"
+									styleClass="btn btn-primary ion-edit"
+									rendered="#{proyectoController.modificar=='true'}"
+									style="height:31px; padding:center"
+									update=":formTableProyecto, :formBotonesHeader"
+									action="#{proyectoController.modificarProyecto()}">
+								</p:commandLink>
+								
+								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
+									styleClass="btn btn-danger ion-close"
+									rendered="#{proyectoController.modificar=='true'}"
+									update=":formTableProyecto, :formBotonesHeader"
+									onclick="dlgEliminar.show()"
+									style="height:31px; padding:center">
+								</p:commandLink>
+								
+								
+								<p:dialog header="Desea Eliminar el Proyecto?"
+												widgetVar="dlgEliminar" minHeight="40" modal="true">
+												<h:panelGrid columns="2" cellpadding="5">
+
+													<p:outputLabel value="ID" />
+													<p:outputLabel value="#{proyectoController.newProyecto.id}"
+														style="text-transform: uppercase" required="true"
+														size="20">
+													</p:outputLabel>
+
+													<p:outputLabel value="Nombre" />
+													<p:outputLabel style="text-transform: uppercase" size="20"
+														value="#{proyectoController.newProyecto.nombre}"
+														required="true" requiredMessage="Requerido.">
+													</p:outputLabel>
+
+												</h:panelGrid>
+												<p:commandButton value="Si"
+													actionListener="#{proyectoController.eliminarProyecto()}"
+													icon="ui-icon-trash"
+													style="width: 90px; text-color: white;"
+													update=":formTableProyecto"
+													oncomplete="dlgEliminar.hide()"
+													styleClass="btn btn-default" immediate="true" />
+												<p:commandButton value="No"
+													style="width: 90px; text-color: white;"
+													update=":formTableProyecto"
+													oncomplete="dlgEliminar.hide()"
+													styleClass="btn btn-default" immediate="true" />
+								</p:dialog>
+								
+								
+							</div>
+						</div>
+					</h:form>
+				</div>
+				<div class="pull-right">
+					<ol class="breadcrumb">
+						<li><a href="#{request.contextPath}/pages/dashboard.jsf"
+							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
+						<li><a
+							href="#{request.contextPath}/pages/parametrizacion/proyecto.xhtml"
+							style="color: #0090FF; font-size: 12px;">Parametrización</a></li>
+						<li class="active" style="font-size: 12px;">Proyecto</li>
+					</ol>
+				</div>
+			</section>
+			<section class="main-content">
+				<section class="main-content">
+					<div class="row">
+
+						<h:form id="formTableProyecto" styleClass="form-horizontal">
+						
+							<ui:fragment
+								rendered="#{proyectoController.modificar or proyectoController.registrar}">
+								<div class="col-md-4">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Registro Datos Proyecto</h3>
+										</div>
+										<div class="panel-body">
+											<!-- start here register -->
+											<div class="row">
+												<div class="col-md-12 box-content form-horizontal">
+												
+													
+													<div class="form-group ">
+														<div class="col-md-4">Código</div>
+														<div class="col-md-8">
+															<p:inputText id="codigoID" styleClass="form-control"
+																size="40" value="#{proyectoController.newProyecto.codigo}"
+																required="true" requiredMessage="Requerido.">
+																<p:ajax event="change" />
+															</p:inputText>
+														</div>
+													</div>
+													
+													<div class="form-group ">
+														<div class="col-md-4">Nombre Proyecto</div>
+														<div class="col-md-8">
+															<p:inputText id="nombreID" styleClass="form-control"
+																size="40" value="#{proyectoController.newProyecto.nombre}"
+																required="true" requiredMessage="Requerido.">
+																<p:ajax event="change" />
+															</p:inputText>
+														</div>
+													</div>
+													
+													<div class="form-group ">
+														<div class="col-md-4">Descripción</div>
+														<div class="col-md-8">
+															<p:inputTextarea id="descripcionID" styleClass="form-control"
+																size="40" value="#{proyectoController.newProyecto.descripcion}"
+																required="true" requiredMessage="Requerido." rows="5">
+																<p:ajax event="change" />
+															</p:inputTextarea>
+														</div>
+													</div>
+													
+													<div class="form-group ">
+														<div class="col-md-4">Registro</div>
+														<div class="col-md-8">
+															<p:inputText id="usuarioRegistroID"
+																styleClass="form-control" size="40"
+																value="#{proyectoController.newProyecto.usuarioRegistro}"
+																disabled="true" required="true"
+																requiredMessage="Usuario Registro Requerido." />
+														</div>
+													</div>
+													
+													<div class="form-group ">
+														<div class="col-md-4">Fecha</div>
+														<div class="col-md-8">
+															<p:inputText id="fechaRegistroID" 
+																styleClass="form-control" size="40"
+																value="#{proyectoController.newProyecto.fechaRegistro}"
+																disabled="true" required="true"
+																requiredMessage="Requerido." >
+																<f:convertDateTime pattern="dd/MM/yyyy H:mm"/>
+															</p:inputText>
+														</div>
+													</div>
+													
+													
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</ui:fragment>
+							
+							
+							<ui:fragment rendered="#{proyectoController.crear}">
+							
+							<div class="col-md-12" align="left">
+									
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Lista de Proyectos</h3>
+										</div>
+										<!-- start here datatable -->
+										<div class="box-content no-padding">
+											
+											<p:dataTable
+												styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+												selection="#{proyectoController.selectedProyecto}"
+												selectionMode="single" rowKey="#{_Proyecto.id}"
+												id="ProyectoTable" var="_Proyecto" value="#{listaProyecto}"
+												rendered="#{not empty listaProyecto}"
+												emptyMessage="No se encontraron Registros.">
+
+												<p:ajax event="rowSelect" update=":formTableProyecto, :formBotonesHeader"
+													listener="#{proyectoController.onRowSelectProyectoClick}" />
+
+												<p:column headerText="Codigo"
+													filterBy="#{_Proyecto.codigo}" filterStyle="width: 100%;"
+													filterMatchMode="contains">
+													<h:outputText value="#{_Proyecto.codigo}" />
+												</p:column>
+												
+												<p:column headerText="Nombre Proyecto" filterBy="#{_Proyecto.nombre}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_Proyecto.nombre}" />
+												</p:column>
+												
+												<p:column headerText="Descripcion"
+													filterBy="#{_Proyecto.descripcion}" filterStyle="width: 100%;"
+													filterMatchMode="contains">
+													<h:outputText value="#{_Proyecto.descripcion}" />
+												</p:column>
+												
+												<p:column headerText="Estado" 
+													filterBy="#{_Proyecto.estado}" filterStyle="width: 100%;"
+													filterMatchMode="contains">
+													<span class="label label-success"><h:outputText
+															rendered="#{_Proyecto.estado=='AC'}" value="Activo" /></span>
+													<span class="label label-danger"><h:outputText
+															rendered="#{_Proyecto.estado=='IN'}" value="Inactivo" /></span>
+												</p:column>
+
+												<p:column headerText="Fecha"
+													filterBy="#{_Proyecto.fechaRegistro}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_Proyecto.fechaRegistro}">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</h:outputText>
+												</p:column>
+												<p:column headerText="Registro"
+													filterBy="#{_Proyecto.usuarioRegistro}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_Proyecto.usuarioRegistro}" />
+												</p:column>
+												
+											</p:dataTable>
+										
+										</div>
+										
+										<!-- end here datatable -->
+										<div class="panel-body"></div>
+										
+									</div>
+									</div>
+								
+							</ui:fragment>
+							
+
+						</h:form>
+
+
+					</div>
+				</section>
+			</section>
+		</div>
+
+		<!--END CONTENT-->
+
+		<!-- START GROWL formGrowl:msgs1 -->
+		<h:form id="formGrowl">
+			<p:growl id="msgs1" showDetail="true" />
+		</h:form>
+		<!-- END GROWL -->
+
+
+
+	</ui:define>
+
+	<ui:insert name="scripts">
+
+	</ui:insert>
+</ui:composition>

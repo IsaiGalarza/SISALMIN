@@ -1,0 +1,157 @@
+body {
+	margin: 0em;
+	padding: 0;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 13px;
+	color: #000;
+}
+
+h1, h2, h3 {
+	margin: 0.4em;
+	font-weight: normal;
+}
+
+.error {
+	color:#BF0303;
+}
+
+div#wrapper{
+	margin:auto;
+	width:790px;
+}
+
+
+	
+div#header{
+	height:4em;
+	width:100%;
+	margin-top:2em;
+	margin-bottom:2em;
+}
+div#header h1{
+	float:right;
+}
+
+div#header #logos{
+	float:left;
+	width:100%;
+	padding-bottom: 1em;
+	margin-bottom: 1em;
+	border-bottom: 1px solid #837669;
+}
+div#header #logos img{
+	border: 0px;
+	margin-left:75px;
+}
+
+div#main{
+	width:100%;
+	padding:0.5em;
+	margin-top:0.5em;
+}
+
+div#main div#title{
+	margin-top:0.5em;
+	font-size: 2em;
+}
+
+div#main div#content{
+	padding:1em;
+}
+
+
+.inputFormData{
+	margin:3em;
+}
+
+.inputFormData label{
+	display:block;
+	font-size: 1.5em;
+	margin-bottom:0.3em;
+}
+
+.ui-message-error{
+	margin:0;
+	margin-top:0.5em;
+}
+
+.ui-growl{
+	width:450px;
+}
+.ui-growl-message{
+	width:380px;
+}
+.ui-growl-message pre{
+	margin:0;
+}
+input.ui-button {
+	padding: 1em;
+}
+input.ui-button:hover{
+	cursor:pointer;
+}
+.ui-datatable th{
+	text-align:left;
+}
+.recentTracksTitle{
+	font-size: 1.2em;
+}
+.ui-editable-column-options .ui-icon{
+	background-repeat: repeat;
+}	
+.ui-editable-column-options .ui-icon-pencil{
+	background-image: url(./images/pencil.png)
+}
+.ui-editable-column-options .ui-icon-check{
+	background-image: url(./images/check.png)
+}
+.ui-editable-column-options .ui-icon-close{
+	margin-left:0.5em;
+	background-image: url(./images/close.png)
+}
+.ui-editable-column-options .ui-icon-remove{
+	float:left;
+	margin-left:0.5em;
+	background-image: url(./images/remove.png)
+}
+.ui-icon-home{
+	float:left;
+	margin-left:0.5em;
+	background-image: url(./images/home.png)
+}
+
+a{
+	color: #123456;
+    text-decoration: none;
+}
+a:hover{
+	color:#60BE3A;
+}
+.middleColumns{
+	width:48%;
+	vertical-align: top;
+}
+.shortColumn{
+	width:25%;
+	vertical-align: top;
+}
+.ui-datepicker-trigger{
+	margin-left: 0.5em;
+}
+.hasDatepicker{
+	width:100px;
+}
+.h2{
+   font-size: 2em;
+   font-weight:boler;
+}
+.h3{
+   font-size: 1.5em;
+   font-weight:boler;
+}
+.results{
+	font-size:1.1em;
+}
+.chart{
+	width:100%;
+}

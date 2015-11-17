@@ -1,0 +1,85 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<!-- START DIALOG -->
+	<p:dialog header="CAMBIAR DE EMPRESA" widgetVar="dlg1" modal="true"
+		width="28%">
+
+		<!--BEGIN CONTENT-->
+		<div class="row">
+			<div class="col-md-12">
+				<h:form id="formEmpresa">
+					<ui:fragment
+						rendered="#{empresaController.seleccionadaFormEmpresa}">
+						<p:growl id="msgs" showDetail="true" />
+						<div class="row">
+							<div class="col-md-12">
+								<p:dataTable id="dataTableEmpresa" var="item"
+									scrollable="true" scrollHeight="100"
+									value="#{listaEmpresaActivas}" selectionMode="single"
+									selection="#{empresaController.selectedEmpresa}"
+									style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+									rowKey="#{item.id}">
+									<f:facet name="header">
+           								SELECCIONE UNA EMPRESA
+        							</f:facet>
+									<p:ajax event="rowSelect"
+										listener="#{empresaController.onRowSelectEmpresa2}"
+										update=":formGestion,:formEmpresa" />
+									<p:column headerText="Detalle" style="color: #555555;">
+										<h:outputText value="#{item.razonSocial}" />
+									</p:column>
+								</p:dataTable>
+							</div>
+						</div>
+						<br />
+					</ui:fragment>
+				</h:form>
+				<h:form id="formGestion">
+					<ui:fragment
+						rendered="#{empresaController.seleccionadaFormGestion}">
+						<div class="row">
+							<div class="col-md-12">
+								<!-- tabla -->
+								<p:dataTable id="dataTableGestion" var="item"
+									value="#{empresaController.listaGestion}"
+									scrollable="true" scrollHeight="100"
+									selectionMode="single"
+									style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+									selection="#{empresaController.selectedGestion}"
+									emptyMessage="Agregue una nueva gestión" rowKey="#{item.id}">
+									<f:facet name="header">
+           								SELECCIONE UNA GESTIÓN
+        							</f:facet>
+									<p:ajax event="rowSelect"
+										listener="#{empresaController.onRowSelectGestion}"
+										update=":formGestion,:formEmpresa" />
+									<p:column headerText="Detalle" style="color: #555555;">
+										<h:outputText value="#{item.gestion}" />
+									</p:column>
+								</p:dataTable>
+								<!-- /tabla -->
+							</div>
+						</div>
+						<br />
+						<div class="row">
+							<div class="col-md-6">
+								<p:commandLink id="buttonAtras" value="Atras"
+									styleClass="btn btn-warning btn-block">
+									<p:ajax update=":formGestion,:formEmpresa"
+										listener="#{empresaController.formButtonAtras()}" />
+								</p:commandLink>
+							</div>
+						</div>
+					</ui:fragment>
+				</h:form>
+
+			</div>
+		</div>
+		<!-- END CONTENT -->
+	</p:dialog>
+	<!-- END DIALOG -->
+</ui:composition>

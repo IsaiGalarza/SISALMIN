@@ -1,0 +1,729 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/WEB-INF/templates/template_main.xhtml">
+	<ui:define name="head">
+		<title>Cotización</title>
+	</ui:define>
+
+	<ui:define name="content">
+		<!--BEGIN CONTENT-->
+		<div class="content">
+			<section class="content-header">
+				<div class="pull-left" style="padding-top: 8px;">
+					<h:form id="formBotonesHeader" style="padding-left: 10px;">
+						<div class="btn-group-demo">
+							<div class="btn-group">
+								<p:commandLink id="buttonCancelar1" value="&#160; Cancelar"
+									styleClass="btn btn-warning ion-minus-circled"
+									style="height:31px;"
+									onclick="location.href='/webapp/pages/formulario/cotizacion_index.xhtml'">
+								</p:commandLink>
+								
+								<p:commandLink id="buttonGuardar1" value="&#160; Guardar"
+									styleClass="btn btn-success ion-checkmark" style="height:31px;">
+									<p:ajax
+										listener="#{cotizacionController.registrarCotizacion()}"
+										update=":formGrowl:msgs1,:formRegisterComprobante,:formTableCotizacion,:formTotales" />
+								</p:commandLink>
+
+								<p:commandLink id="buttonImprimir1"
+									value="&#160; Guardar e Imprimir"
+									styleClass="btn btn-info ion-printer" style="height:31px;">
+									<p:ajax
+										update=":formGrowl:msgs1,:formRegisterComprobante,:formTableCotizacion,:formTotales"
+										listener="#{cotizacionController.registrarEImprimir()}" />
+								</p:commandLink>
+							</div>
+						</div>
+					</h:form>
+				</div>
+				<div class="pull-right">
+					<ol class="breadcrumb">
+						<li><a href="#{request.contextPath}/pages/dashboard.jsf" style="color: #0090FF; font-size: 12px;">Inicio</a></li>
+						<li><a href="#{request.contextPath}/pages/formulario/cotizacion_index.xhtml" style="color: #0090FF; font-size: 12px;">Formualrio</a></li>
+						<li class="active" style="font-size: 12px;">Proforma Cotización</li>
+					</ol>
+				</div>
+			</section>
+			<section class="main-content">
+				<section class="main-content">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<h3 class="panel-title">Registro de Cotización</h3>
+								</div>
+								<div class="panel-body">
+									<!-- start here register -->
+									<h:form id="formRegisterComprobante">
+										<div class="row">
+											<!-- start register -->
+											<div class="col-md-4">
+												<div class="form-group">
+													<div class="col-md-12">Cliente:</div>
+													<div class="col-md-12">
+														<div class="form-group">
+															<div class="col-md-10">
+																<p:autoComplete id="autoCompleteCuenta"
+																	inputStyleClass="input-sm form-control"
+																	style="width:100%; height:100%; color: #555555; background-image: none;"
+																	value="#{cotizacionController.textoAutoCompleteCliente}"
+																	completeMethod="#{cotizacionController.completeTextCliente}"
+																	maxResults="10">
+																	<p:ajax event="itemSelect"
+																		listener="#{cotizacionController.onItemSelectCliente}" />
+																</p:autoComplete>
+															</div>
+															<div class="col-md-2">
+																<p:commandLink id="buttonCrear1"
+																	styleClass="btn btn-success ion-plus-round"
+																	onclick="PF('dlgNuevoCliente').show();"
+																	style="height:28px;">
+																</p:commandLink>
+															</div>
+														</div>
+													</div>
+
+												</div>
+											</div>
+											<div class="col-md-2">
+												<div class="form-group">
+													<div class="col-md-12">Fecha Venc.:</div>
+													<div class="col-md-12">
+														<p:calendar id="popup" pattern="dd/MM/yyyy"
+															value="#{newCotizacion.fechaVencimiento}"
+															style=" width:100%; color: #555555; background-image: none !important;">
+															<p:ajax />
+														</p:calendar>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-2">
+												<div class="form-group ">
+													<div class="col-md-12">Forma Pago:</div>
+													<div class="col-md-12">
+														<h:selectOneMenu id="formaPago"
+															styleClass="input-sm form-control" immediate="true"
+															value=" " disabled="true">
+															<p:ajax update=":formTableCotizacion" />
+															<f:selectItem itemValue="CONTADO" />
+															<f:selectItem itemValue="CREDITO" />
+														</h:selectOneMenu>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-2">
+												<div class="form-group">
+													<div class="col-md-12">Moneda:</div>
+													<div class="col-md-12">
+														<h:selectOneMenu id="r_moneda"
+															styleClass="input-sm form-control" immediate="true"
+															value="#{cotizacionController.nombreMonedaEmpresa}">
+															<p:ajax update=":formTableCotizacion,:formTotales" event="change" />
+															<f:selectItems value="#{cotizacionController.listMonedaEmpresa}" />
+														</h:selectOneMenu>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-2">
+												<div class="form-group ">
+													<div class="col-md-12">Nro. Cotizacion:</div>
+													<div class="col-md-12">
+														<h:inputText
+															value="#{cotizacionController.numeroCotizacion}"
+															style=" color: #555555; background-image: none;"
+															styleClass="input-sm form-control" readonly="true">
+														</h:inputText>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-md-8">
+												<div class="form-group">
+													<div class="col-md-12">Observación:</div>
+													<div class="col-md-12">
+														<h:inputTextarea value="#{newCotizacion.observacion}"
+															styleClass="input-sm form-control">
+															<p:ajax />
+														</h:inputTextarea>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-4"></div>
+											<!-- end register -->
+										</div>
+										<br />
+										<div class="row">
+											<div class="col-md-8">
+												<div class="form-group ">
+													<div class="col-md-4">
+														<p:commandLink id="dynaButton3"
+															update=":formGrowl:msgs1,:formTableCotizacion"
+															styleClass="btn btn-labeled orange"
+															onclick="PF('dlgServicio').show();">
+															<p:ajax
+																listener="#{cotizacionController.resetDatosServicio()}" />
+															<span class="btn-label"><i class="icon-plus"></i></span>Servicio
+														</p:commandLink>
+													</div>
+													<div class="col-md-4"></div>
+													<div class="col-md-4"></div>
+												</div>
+											</div>
+										</div>
+									</h:form>
+									<br />
+									<div class="row">
+										<div class="col-md-12">
+											<!-- start data table -->
+											<h:form id="formTableCotizacion">
+												<p:growl id="msgs" showDetail="true" />
+												<p:dataTable id="dataTableAsiento" var="var" rendered="true"
+													value="#{cotizacionController.listEDCotizacion}"
+													binding="#{cotizacionController.usersDataTable}"
+													emptyMessage="Agregue servicios" reflow="true"
+													style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+													editable="true">
+													<f:facet name="header">
+           												Servicios
+       												</f:facet>
+													<p:ajax event="rowEdit" update=":formTotales"
+														listener="#{cotizacionController.onRowEdit}" />
+													<p:column width="10%" headerText="Código"
+														disabledSelection="true">
+														<p:cellEditor>
+															<f:facet name="output">
+																<h:outputText value="#{var.id}" />
+															</f:facet>
+															<f:facet name="input">
+																<h:outputText value="#{var.id}" style="width:100%" />
+															</f:facet>
+														</p:cellEditor>
+													</p:column>
+													<p:column width="35%" headerText="Descripcion Servicio">
+														<p:cellEditor>
+															<f:facet name="output">
+																<h:outputText value="#{var.descripcion}" />
+															</f:facet>
+															<f:facet name="input">
+																<p:commandLink id="buttonAceptarModal1"
+																	value="Seleccione serivicio"
+																	onclick="PF('dlg0').show();">
+																	<p:ajax
+																		listener="#{cotizacionController.setSelectedIdEDCotizacion(var.id)}" />
+																</p:commandLink>
+															</f:facet>
+														</p:cellEditor>
+													</p:column>
+													<p:column width="10%" headerText="Cantidad">
+														<p:cellEditor>
+															<f:facet name="output">
+																<ui:fragment rendered="#{var.cantidad == 0}">
+																	<h:outputText value="" />
+																</ui:fragment>
+																<ui:fragment rendered="#{var.cantidad != 0}">
+																	<h:outputText value="#{var.cantidad}" />
+																</ui:fragment>
+															</f:facet>
+															<f:facet name="input">
+																<p:inputText id="debeE" value="#{var.cantidad}"
+																	label="label">
+																	<p:ajax
+																		listener="#{cotizacionController.verificarSeleccionado('CANTIDAD',var.id)}" />
+																</p:inputText>
+															</f:facet>
+														</p:cellEditor>
+													</p:column>
+													<p:column headerText="Precio Unitario">
+														<p:cellEditor>
+															<f:facet name="output">
+																<ui:fragment rendered="#{var.precioUnitario == 0}">
+																	<h:outputText value="" />
+																</ui:fragment>
+																<ui:fragment rendered="#{var.precioUnitario != 0}">
+																	<h:outputText value="#{var.precioUnitario}">
+																		<f:convertNumber type="number" groupingUsed="true"
+																			minFractionDigits="2" pattern="#0.00" />
+																	</h:outputText>
+																</ui:fragment>
+															</f:facet>
+															<f:facet name="input">
+																<p:inputText id="haberB" value="#{var.precioUnitario}"
+																	style="width:100%;" label="label">
+																	<p:ajax
+																		listener="#{cotizacionController.verificarSeleccionado('PRECIO UNITARIO',var.id)}" />
+																</p:inputText>
+															</f:facet>
+														</p:cellEditor>
+													</p:column>
+													<p:column width="12%" headerText="Dcto. %">
+														<p:cellEditor>
+															<f:facet name="output">
+																<h:outputText value="#{var.descuento}" />
+															</f:facet>
+															<f:facet name="input">
+																<p:inputText id="desc" value="#{var.descuento}"
+																	style="width:100%;" label="label">
+
+																	<p:ajax
+																		listener="#{cotizacionController.verificarSeleccionado('PORCENTAJE 1',var.id)}" />
+																</p:inputText>
+															</f:facet>
+														</p:cellEditor>
+													</p:column>
+													<p:column id="columnImporte" headerText="Importe">
+														<ui:fragment rendered="#{var.importe == 0}">
+															<h:outputText value="" />
+														</ui:fragment>
+														<ui:fragment rendered="#{var.importe != 0}">
+															<h:outputText value="#{var.importe}">
+																<f:convertNumber type="number" groupingUsed="true"
+																	minFractionDigits="2" pattern="#0.00" />
+															</h:outputText>
+														</ui:fragment>
+													</p:column>
+													<p:column width="10%" headerText="Edición"
+														style="width:50px">
+														<p:rowEditor>
+														</p:rowEditor>
+														<p:cellEditor>
+															<f:facet name="output">
+																<p:commandLink id="deleteLink"
+																			styleClass="ui-icon ui-icon-trash" />
+															</f:facet>
+															<f:facet name="input">
+															<h:outputText value="" />
+															</f:facet>
+														</p:cellEditor>
+													</p:column>
+												</p:dataTable>
+											</h:form>
+											<!-- end data table -->
+										</div>
+									</div>
+									<div class="row">
+										<h:form id="formTotales">
+											<div class="form-group ">
+												<div class="col-md-2"></div>
+												<div class="col-md-2"></div>
+												<div class="col-md-2"></div>
+												<div class="col-md-2"></div>
+												<div class="col-md-2">
+													<h3>TOTAL #{cotizacionController.monedaEmpresa.simbolo}</h3>
+												</div>
+												<div class="col-md-2">
+													<h:inputText value="#{cotizacionController.totalImporte}"
+														style="font-size: 20pt; color: #555555; background-image: none;"
+														styleClass="input-lg form-control" readonly="true">
+														<f:convertNumber type="number" groupingUsed="true"
+															minFractionDigits="2" pattern="#0.00" />
+													</h:inputText>
+												</div>
+											</div>
+										</h:form>
+									</div>
+									<!-- end here register -->
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+				<!-- andterior section -->
+
+				<!--END CONTENT-->
+
+				<!-- START GROWL -->
+				<h:form id="formGrowl">
+					<p:growl id="msgs1" showDetail="true" />
+				</h:form>
+				<!-- END GROWL -->
+
+				<!-- START DIALOG -->
+				<p:dialog header="MODIFICAR SERVICIO" widgetVar="dlg0" modal="true"
+					height="100%">
+					<h:form id="formDialogTipoCambio">
+						<div class="row">
+							<div class="form-group ">
+								<label class="col-sm-6 ">Cambiar de servicio</label>
+							</div>
+							<div class="form-group ">
+								<p:commandButton value="Modal" type="Cancelar"
+									styleClass="GreenButton" onclick="PF('dlg0').hide();" />
+							</div>
+						</div>
+						<br />
+						<div class="row">
+							<div class="col-md-12">
+								<div class="form-group">
+									<div class="col-md-6">
+										<p:commandLink value="Cancelar"
+											styleClass="btn btn-warning btn-block"
+											onclick="PF('dlg0').hide();" />
+									</div>
+									<div class="col-md-6">
+										<p:commandLink id="buttonAceptarDialog0" value="Aceptar"
+											styleClass="btn btn-success btn-block"
+											onclick="PF('dlg0').hide();">
+										</p:commandLink>
+									</div>
+								</div>
+							</div>
+						</div>
+					</h:form>
+				</p:dialog>
+
+				<p:dialog header="NUEVO CLIENTE" widgetVar="dlgNuevoCliente"
+					modal="true" width="40%">
+					<h:form id="formDialogNuevoCliente">
+						<div class="row">
+							<div class="col-md-12 box-content form-horizontal">
+								<div class="form-group ">
+									<div class="col-md-4">Nombre</div>
+									<div class="col-md-8">
+										<h:inputText value="#{cotizacionController.newClientes.nombre}"
+											style=" color: #555555; background-image: none;"
+											styleClass="input-sm form-control">
+											<f:ajax />
+										</h:inputText>
+									</div>
+								</div>
+								<div class="form-group ">
+									<div class="col-md-4">Dirección</div>
+									<div class="col-md-8">
+										<h:inputText value="#{cotizacionController.newClientes.direccion}"
+											style=" color: #555555; background-image: none;"
+											styleClass="input-sm form-control">
+											<f:ajax />
+										</h:inputText>
+									</div>
+								</div>
+								<div class="form-group ">
+									<div class="col-md-4">Correo</div>
+									<div class="col-md-8">
+										<h:inputText value="#{cotizacionController.newClientes.correo}"
+											style=" color: #555555; background-image: none;"
+											styleClass="input-sm form-control">
+											<f:ajax />
+										</h:inputText>
+									</div>
+								</div>
+								<div class="form-group ">
+									<div class="col-md-4">NIT</div>
+									<div class="col-md-8">
+										<h:inputText value="#{cotizacionController.newClientes.nit}"
+											style=" color: #555555; background-image: none;"
+											styleClass="input-sm form-control ">
+											<f:ajax />
+										</h:inputText>
+									</div>
+								</div>
+								<div class="form-group ">
+									<div class="col-md-4">Telefono</div>
+									<div class="col-md-8">
+										<h:inputText value="#{cotizacionController.newClientes.telefono}"
+											style=" color: #555555; background-image: none;"
+											styleClass="input-sm form-control">
+											<f:ajax />
+										</h:inputText>
+									</div>
+								</div>
+								<div class="form-group ">
+									<div class="col-md-4">Permitir Credito</div>
+									<div class="col-md-2">
+										<label class="switch switch-success switch-sm"> <h:selectBooleanCheckbox
+												value="#{cotizacionController.permitirCredito}"
+												styleClass="switch">
+												<p:ajax update=":formDialogNuevoCliente" />
+											</h:selectBooleanCheckbox><span class="switch"></span>
+										</label>
+									</div>
+									<div class="col-md-6">
+										<ui:fragment rendered="#{cotizacionController.permitirCredito}">
+											<div class="form-group ">
+												<div class="col-md-8">
+													<h:inputText value="#{cotizacionController.newClientes.diasPermitidosCredito}"
+														style=" color: #555555; background-image: none;"
+														styleClass="input-sm form-control">
+														<f:ajax />
+														<f:validateLongRange minimum="1" maximum="100"></f:validateLongRange>
+													</h:inputText>
+												</div>
+												<div class="col-md-4">Dias</div>
+											</div>
+										</ui:fragment>
+									</div>
+								</div>
+								<div class="form-group ">
+									<div class="col-md-6">
+										<p:commandLink id="buttonCancelarDialogNuevoCliente"
+											value="Cancelar" styleClass="btn btn-warning btn-block"
+											onclick="PF('dlgNuevoCliente').hide();">
+											<p:ajax>
+											</p:ajax>
+										</p:commandLink>
+									</div>
+									<div class="col-md-6">
+										<p:commandLink id="buttonAceptarDialogNuevoCliente"
+											value="Agregar" styleClass="btn btn-success btn-block"
+											onclick="PF('dlgNuevoCliente').hide();">
+											<p:ajax update=":formRegisterComprobante" 
+											listener="#{cotizacionController.registrarCliente()}" />
+										</p:commandLink>
+									</div>
+								</div>
+							</div>
+						</div>
+					</h:form>
+				</p:dialog>
+
+				<p:dialog header="SERVICIO" widgetVar="dlgServicio" modal="true"
+					width="45%">
+					<div class="row">
+						<div class="col-md-12">
+							<h:form id="formDialogServicio">
+								<ui:fragment
+									rendered="#{! cotizacionController.agregarServicio}">
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<div class="col-md-4">Buscar Servicio:</div>
+												<div class="col-md-6">
+													<p:autoComplete id="event" inputStyleClass="form-control"
+														style="width:100%; height:100%;"
+														value="#{cotizacionController.texto}"
+														completeMethod="#{cotizacionController.completeText}"
+														maxResults="10">
+														<p:ajax event="itemSelect"
+															listener="#{cotizacionController.onItemSelect}"
+															update=":formGrowl:msgs1,:formDialogServicio" />
+													</p:autoComplete>
+												</div>
+												<div class="col-md-1">
+													<p:commandLink id="buttonAgregarServicio"
+														style="height:29px;" styleClass="btn btn-success"
+														update=":formDialogServicio"
+														action="#{cotizacionController.buttonAgregarServicio()}"
+														onclick="PF('dlgServicio').show();" >
+														<span class="btn-label"><i class="icon-plus"></i></span>
+													</p:commandLink>
+												</div>
+											</div>
+										</div>
+									</div>
+									<hr />
+									<div class="row">
+										<div class="panel-body">
+											<div class="form-group">
+												<div class="col-md-3">Precio Uniario</div>
+												<div class="col-md-3">
+													<h:inputText
+														value="#{cotizacionController.busquedaServicio.precioReferencial}"
+														style=" color: #555555; background-image: none;"
+														styleClass="input-sm form-control">
+														<p:ajax update=":formDialogServicio"
+															listener="#{cotizacionController.modificarDetalleServicio()}" />
+													</h:inputText>
+												</div>
+												<div class="col-md-3">Cantidad</div>
+												<div class="col-md-3">
+													<h:inputText value="#{cotizacionController.cantidad}"
+														style=" color: #555555; background-image: none;"
+														styleClass="input-sm form-control">
+														<p:ajax update=":formDialogServicio"
+															listener="#{cotizacionController.modificarDetalleServicio()}" />
+													</h:inputText>
+												</div>
+											</div>
+											<br />
+											<div class="form-group">
+												<div class="col-md-3">Descuento</div>
+												<div class="col-md-3">
+													<h:inputText value="#{cotizacionController.descuento}"
+														style=" color: #555555; background-image: none;"
+														styleClass="input-sm form-control">
+														<p:ajax update=":formDialogServicio"
+															listener="#{cotizacionController.modificarDetalleServicio()}" />
+													</h:inputText>
+												</div>
+												<div class="col-md-3">Importe</div>
+												<div class="col-md-3">
+													<h:inputText
+														value="#{cotizacionController.totalImportePorServicio}"
+														style=" color: #555555; background-image: none;"
+														styleClass="input-sm form-control" disabled="true">
+													</h:inputText>
+												</div>
+											</div>
+										</div>
+									</div>
+									<br />
+									<div class="row">
+										<div class="col-sm-12">
+											<div class="form-group">
+												<div class="col-sm-6">
+													<p:commandLink value="Cancelar"
+														styleClass="btn btn-warning btn-block"
+														onclick="PF('dlgServicio').hide();">
+														<p:ajax update=":formDialogServicio"
+															listener="#{cotizacionController.cancelarAgregarServicio()}">
+														</p:ajax>
+													</p:commandLink>
+												</div>
+												<div class="col-sm-6">
+													<p:commandLink id="buttonAceptarDialog1" value="Agregar"
+														styleClass="btn btn-success btn-block"
+														onclick="PF('dlgServicio').hide();">
+														<p:ajax
+															update=":formTableCotizacion,:formTotales,:formDialogServicio"
+															listener="#{cotizacionController.cargarListServicioATabla()}" />
+													</p:commandLink>
+												</div>
+											</div>
+										</div>
+									</div>
+								</ui:fragment>
+								<ui:fragment rendered="#{ cotizacionController.agregarServicio}">
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<div class="col-md-4">
+													<h4>Nuevo Servicio</h4>
+												</div>
+												<div class="col-md-8"></div>
+											</div>
+										</div>
+									</div>
+									<hr />
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group ">
+												<div class="col-md-4">Nombre</div>
+												<div class="col-md-6">
+													<h:inputText
+														value="#{cotizacionController.newServicio.nombre}"
+														style=" color: #555555; background-image: none;"
+														styleClass="input-sm form-control">
+														<f:ajax />
+													</h:inputText>
+												</div>
+												<div class="col-md-2"></div>
+											</div>
+											<br />
+											<div class="form-group ">
+												<div class="col-md-4">Precio</div>
+												<div class="col-md-6">
+													<h:inputText
+														value="#{cotizacionController.newServicio.precioReferencial}"
+														style=" color: #555555; background-image: none;"
+														styleClass="input-sm form-control">
+														<f:ajax />
+													</h:inputText>
+												</div>
+												<div class="col-md-2"></div>
+											</div>
+											<br />
+											<div class="form-group ">
+												<div class="col-md-4">Cuenta</div>
+												<div class="col-md-6">
+													<p:autoComplete id="autoCompleteCuenta"
+														inputStyleClass="input-sm form-control"
+														style="width:100%; height:100%; color: #555555; background-image: none;"
+														value="#{cotizacionController.textoAutoCompleteCuenta}"
+														completeMethod="#{cotizacionController.completeTextCuenta}"
+														maxResults="10">
+														<p:ajax event="itemSelect"
+															listener="#{cotizacionController.onItemSelectCuenta}" />
+													</p:autoComplete>
+												</div>
+												<div class="col-md-2"></div>
+											</div>
+											<br />
+											<div class="form-group ">
+												<div class="col-md-4">Centro Costo</div>
+												<div class="col-md-6">
+													<p:autoComplete id="autoCompleteCC"
+														inputStyleClass="input-sm form-control"
+														style="width:100%; height:100%; color: #555555; background-image: none;"
+														value="#{cotizacionController.textoAutoCompleteCentroCosto}"
+														completeMethod="#{cotizacionController.completeTextCentroCosto}"
+														maxResults="10">
+														<p:ajax event="itemSelect"
+															listener="#{cotizacionController.onItemSelectCentroCosto}" />
+													</p:autoComplete>
+												</div>
+												<div class="col-md-2"></div>
+											</div>
+										</div>
+									</div>
+									<br />
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group ">
+												<div class="col-md-4"></div>
+												<div class="col-md-4">
+													<p:commandLink id="buttonCancelarServicio2"
+														value="Cancelar" styleClass="btn btn-warning btn-block" >
+														<p:ajax update=":formDialogServicio"
+														listener="#{cotizacionController.setAgregarServicio(false)}"/>
+													</p:commandLink>
+												</div>
+												<div class="col-md-4">
+													<p:commandLink id="buttonRegistrarServicio2"
+														value="Registrar" styleClass="btn btn-success btn-block">
+														<p:ajax update=":formDialogServicio"
+															listener="#{cotizacionController.registrarNuevoServicio()}" />
+													</p:commandLink>
+												</div>
+											</div>
+										</div>
+									</div>
+								</ui:fragment>
+							</h:form>
+						</div>
+					</div>
+				</p:dialog>
+				<!-- VISTA PREVIA REPORTE -->
+				<p:dialog showEffect="explode" header="Vista Previa"
+					widgetVar="dlgCotizacionVistaPrevia" resizable="false" modal="true"
+					position="center" width="750" styleClass="customDialog"
+					visible="#{not empty facesContext.maximumSeverity}"
+					id="modalVistaPrevia">
+					<h:form id="formModalVistaPrevia">
+						<div class="row">
+					<div class="form-group ">
+						<div class="col-md-12">
+							<p:media player="pdf" rendered="true"
+								value="#{cotizacionController.URLImprimir}"
+								width="750px" height="480px" />
+						</div>
+					</div>
+				</div>
+					<div class="row">
+					<div class="col-sm-12">
+						<div class="form-group">
+							<div class="col-md-4"></div>
+							<div class="col-md-4"></div>
+							<div class="col-md-4">
+								<p:commandLink value="Aceptar"
+									styleClass="btn btn-primary btn-block"
+									onclick="PF('dlgVistaPreviaCotizacion').hide();" />
+							</div>
+						</div>
+					</div>
+				</div>
+				</h:form>
+				</p:dialog>
+
+				<!-- END DIALOG -->
+			</section>
+		</div>
+		<!--END CONTENT-->
+	</ui:define>
+</ui:composition>

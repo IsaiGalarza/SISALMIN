@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/WEB-INF/templates/template_main.xhtml">
+
+	<ui:define name="head">
+		<title>Bienvenido al Sistema</title>
+	</ui:define>
+
+	<ui:define name="content">
+		<!--BEGIN CONTENT-->
+		<div class="content">
+
+			<section class="main-content">
+				
+				<h:form id="form0">
+					
+
+					<section class="main-content" style="background-color: #f9fafa;">
+						<div class="row">
+							<div class="col-md-8">
+								<div class="panel panel-primary">
+									<div class="panel-heading">
+										<h3 class="panel-title">GENERACIÓN DE CODIGO DE CONTROL</h3>
+									</div>
+
+									<div class="panel-body">
+										<div class="row">
+											<div class="col-md-12 box-content form-horizontal">
+												<div class="form-group ">
+													<div class="col-md-4">
+														<h:outputLabel for="llaveControlID"
+															value="Llave Dosificación" />
+													</div>
+													<div class="col-md-8">
+														<p:inputTextarea id="llaveControlID"
+															value="#{certificacionController.llaveDosificacion}"
+															cols="60" rows="4"
+															style=" color: #555555; background-image: none; "
+															styleClass="input-sm form-control " required="true"
+															requiredMessage="Llave Dosificacion Requerido.">
+														</p:inputTextarea>
+
+													</div>
+
+													<p:watermark value="Llave de Dosificacion"
+														for="llaveControlID" />
+													<p:message for="llaveControlID" errorClass="invalid" />
+
+												</div>
+
+												<div class="form-group ">
+													<div class="col-md-4">
+														<h:outputLabel for="nroAutorizacionID"
+															value="Nro. Autorización" />
+													</div>
+													<div class="col-md-8">
+														<p:inputText id="nroAutorizacionID"
+															value="#{certificacionController.numeroAutorizacion}"
+															size="40"
+															style=" color: #555555; background-image: none; "
+															styleClass="input-sm form-control " required="true"
+															requiredMessage="Nro. Autorizacion Requerido.">
+
+														</p:inputText>
+													</div>
+
+													<p:watermark value="Numero Autorizacion"
+														for="nroAutorizacionID" />
+													<p:message for="nroAutorizacionID" errorClass="invalid" />
+
+												</div>
+
+												<div class="form-group ">
+													<div class="col-md-4">
+														<h:outputLabel for="nroFacturaID" value="Nro. Factura" />
+													</div>
+													<div class="col-md-8">
+														<p:inputText id="nroFacturaID"
+															value="#{certificacionController.numeroFactura}"
+															size="40"
+															style=" color: #555555; background-image: none; "
+															styleClass="input-sm form-control " required="true"
+															requiredMessage="Nro. Factura Requerido.">
+														</p:inputText>
+													</div>
+													<p:watermark value="Numero Factura" for="nroFacturaID" />
+													<p:message for="nroFacturaID" errorClass="invalid" />
+												</div>
+
+												<div class="form-group ">
+													<div class="col-md-4">
+														<h:outputLabel for="nitciID" value="CI/NIT Cliente" />
+													</div>
+													<div class="col-md-8">
+														<p:inputText id="nitciID"
+															value="#{certificacionController.nitCI}" size="40"
+															style=" color: #555555; background-image: none; "
+															styleClass="input-sm form-control " required="true"
+															requiredMessage="CI/NIT Requerido.">
+														</p:inputText>
+													</div>
+													<p:watermark value="CI/NIT Cliente" for="nitciID" />
+													<p:message for="nitciID" errorClass="invalid" />
+												</div>
+
+												<div class="form-group ">
+													<div class="col-md-4">
+														<h:outputLabel for="fechaTransaccionID"
+															value="Fecha Transacción" />
+													</div>
+													<div class="col-md-8">
+														<p:inputText id="fechaTransaccionID"
+															value="#{certificacionController.fechaTransaccion}"
+															size="40"
+															style=" color: #555555; background-image: none; "
+															styleClass="input-sm form-control " required="true"
+															requiredMessage="Fecha Transacción Requerido.">
+														</p:inputText>
+													</div>
+													<p:watermark value="MM / dd / aaaa"
+														for="fechaTransaccionID" />
+													<p:message for="fechaTransaccionID" errorClass="invalid" />
+												</div>
+
+												<div class="form-group ">
+													<div class="col-md-4">
+														<h:outputLabel for="montoID" value="Monto Bs." />
+													</div>
+													<div class="col-md-8">
+														<p:inputText id="montoID"
+															value="#{certificacionController.monto}" size="40"
+															style=" color: #555555; background-image: none; "
+															styleClass="input-sm form-control " required="true"
+															requiredMessage="Monto Bs Requerido.">
+														</p:inputText>
+													</div>
+													<p:watermark value="Monto Bs" for="montoID" />
+													<p:message for="montoID" errorClass="invalid" />
+												</div>
+
+												<div class="form-group ">
+													<div class="col-md-4">
+														<h:outputLabel for="codigoControlID"
+															value="Código Control" />
+													</div>
+													<div class="col-md-8">
+														<p:inputText id="codigoControlID"
+															value="#{certificacionController.codigoControl}"
+															readonly="true" size="40"
+															style=" color: #555555; background-image: none; "
+															styleClass="input-sm form-control ">
+														</p:inputText>
+
+													</div>
+													<p:watermark value="Codigo Control Generado"
+														for="codigoControlID" />
+													<p:message for="codigoControlID" errorClass="invalid" />
+												</div>
+											</div>
+										</div>
+
+									</div>
+								</div>
+							</div>
+							<div class="col-md-4"></div>
+						</div>
+					</section>
+				</h:form>
+				
+			</section>
+		</div>
+
+		<!--END CONTENT-->
+
+		<!-- START GROWL -->
+		<h:form id="formGrowl">
+			<p:growl id="msgs1" showDetail="true" />
+		</h:form>
+		<!-- END GROWL -->
+
+		<!-- START DIALOG -->
+		<p:dialog header="DIALOG TEST" widgetVar="dlgTest" modal="true"
+			height="100%">
+		</p:dialog>
+		<!-- END DIALOG -->
+
+	</ui:define>
+</ui:composition>

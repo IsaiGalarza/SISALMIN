@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/WEB-INF/templates/template_test.xhtml">
+	<ui:define name="head">
+		<title>Test</title>
+	</ui:define>
+
+	<ui:define name="content">
+
+		<!--BEGIN CONTENT-->
+		<div class="content">
+			<section class="content-header">
+				<div class="pull-left" style="padding-top: 8px;">
+					<h:form id="formBotonesHeader" style="padding-left: 10px;">
+						<div class="btn-group-demo">
+							<div class="btn-group">
+								<p:commandLink id="buttonCancelar" value="&#160; Cancelar"
+									styleClass="btn btn-warning ion-minus-circled"
+									update=":formTableTest,:formBotonesHeader,:formRegTest,formGrowl:msgs1"
+									style="height:31px; padding:center">
+								</p:commandLink>
+								<p:commandLink id="buttonRegistrar" value="&#160; Registrar"
+									styleClass="btn btn-success ion-checkmark"
+									style="height:31px; padding:center"
+									update=":formTableTest,:formBotonesHeader,:formRegTest,formGrowl:msgs1">
+								</p:commandLink>
+							</div>
+						</div>
+					</h:form>
+				</div>
+				<div class="pull-right">
+					<ol class="breadcrumb">
+						<li><a href="#" style="color: #0090FF; font-size: 12px;">Inicio</a></li>
+						<li><a href="#" style="color: #0090FF; font-size: 12px;">Test</a></li>
+					</ol>
+				</div>
+			</section>
+			<section class="main-content">
+				<section class="main-content">
+					<div class="row">
+						<h:form id="formRegTest">
+							<div class="col-md-4">
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h3 class="panel-title">Registro Test</h3>
+									</div>
+									<div class="panel-body">
+										<!-- start here register -->
+										<div class="row">
+											<div class="col-md-12 box-content form-horizontal">
+												<p:outputLabel value="test" />
+											</div>
+										</div>
+										<!-- end here register -->
+									</div>
+								</div>
+							</div>
+						</h:form>
+						<h:form id="formTableTest">
+							<div class="col-md-8">
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h3 class="panel-title">Lista Test</h3>
+									</div>
+									<!-- start here datatable -->
+
+									<!-- end here datatable -->
+									<div class="panel-body">
+										<h:form>
+											<p:dataTable var="var"
+												value="#{testController.listar}" paginator="true"
+												paginatorposition="bottom" rows="14" lazy="true"
+												dynamic="true" loadingmessage="Realizando operacion. espere..">
+												<p:column>
+													<f:facet name="header">
+														<h:outputText value="Id"></h:outputText>
+													</f:facet>
+													<h:outputText value="#{var.id}"></h:outputText>
+												</p:column>
+
+												<p:column>
+													<f:facet name="header">
+														<h:outputText value="Nombre"></h:outputText>
+													</f:facet>
+													<h:outputText value="#{var.nombre}"></h:outputText>
+												</p:column>
+
+												<p:column>
+													<f:facet name="header">
+														<h:outputText value="Detalle"></h:outputText>
+													</f:facet>
+													<h:outputText value="#{var.detail}"></h:outputText>
+												</p:column>
+												<f:facet name="footer">
+													<h:outputText
+														value="#{testController.tamanhoLista} Registros en Total" />
+												</f:facet>
+											</p:dataTable>
+										</h:form>
+									</div>
+								</div>
+							</div>
+						</h:form>
+					</div>
+				</section>
+			</section>
+		</div>
+		<!--END CONTENT-->
+
+		<!-- START GROWL -->
+		<h:form id="formGrowl">
+			<p:growl id="msgs1" showDetail="true" />
+		</h:form>
+		<!-- END GROWL -->
+
+		<!-- START DIALOG -->
+		<p:dialog header="DIALOG TEST" widgetVar="dlg1" modal="true"
+			height="100%">
+		</p:dialog>
+		<!-- END DIALOG -->
+
+	</ui:define>
+</ui:composition>

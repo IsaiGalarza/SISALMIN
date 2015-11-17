@@ -1,0 +1,1104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/WEB-INF/templates/template_main.xhtml">
+	<ui:define name="head">
+		<title>Comprobante</title>
+	</ui:define>
+
+	<ui:define name="content">
+
+		<!--BEGIN CONTENT-->
+		<div class="content">
+			<section class="content-header">
+				<div class="pull-left" style="padding-top: 8px;">
+					<h:form id="formBotonesHeader" style="padding-left: 10px;">
+						<div class="btn-group-demo">
+							<div class="btn-group">
+								<p:commandLink id="buttonCancelar1" value="&#160; Cancelar"
+									styleClass="btn btn-warning ion-minus-circled"
+									style="height:31px;"
+									onclick="location.href='#{request.contextPath}/pages/formulario/comprobante_index.xhtml'">
+								</p:commandLink>
+
+								<p:commandLink id="buttonGuardar1" value="&#160; Guardar"
+									rendered="#{comprobanteController.registrar}"
+									styleClass="btn btn-success ion-checkmark" style="height:31px;">
+									<p:ajax
+										listener="#{comprobanteController.registrarComprobante(true)}"
+										update=":formGrowl:msgs1,:formDialogInfoComprobante,:formTableComprobante,:formRegisterComprobante,:formTotales" />
+								</p:commandLink>
+								<p:commandLink id="buttonModificar" value="&#160; Modificar"
+									styleClass="btn btn-primary ion-edit" style="height:31px;"
+									rendered="#{comprobanteController.modificar}">
+									<p:ajax
+										listener="#{comprobanteController.modificarComprobante(true)}"
+										update=":formGrowl:msgs1,:formDialogInfoComprobante,:formTableComprobante,:formRegisterComprobante,:formTotales" />
+								</p:commandLink>
+
+								<p:commandLink id="buttonImprimir1"
+									value="&#160; Guardar e Imprimir"
+									rendered="#{comprobanteController.registrar}"
+									styleClass="btn btn-info ion-printer" style="height:31px;">
+									<p:ajax
+										listener="#{comprobanteController.registrarEImprimir()}"
+										update=":formGrowl:msgs1,:formDialogInfoComprobante,:formTableComprobante,:formRegisterComprobante,:formTotales,:formModalVistaPrevia" />
+								</p:commandLink>
+								<p:commandLink id="buttonImprimir2"
+									value="&#160; Modificar e Imprimir"
+									rendered="#{comprobanteController.modificar}"
+									styleClass="btn btn-info ion-printer" style="height:31px;">
+									<p:ajax
+										listener="#{comprobanteController.modificarEImprimir()}"
+										update=":formGrowl:msgs1,:formDialogInfoComprobante,:formTableComprobante,:formRegisterComprobante,:formTotales,:formModalVistaPrevia" />
+								</p:commandLink>
+							</div>
+						</div>
+					</h:form>
+				</div>
+				<div class="pull-right">
+					<ol class="breadcrumb">
+						<li><a href="#{request.contextPath}/pages/dashboard.jsf"
+							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
+						<li><a
+							href="#{request.contextPath}/pages/formulario/comprobante_index.xhtml"
+							style="color: #0090FF; font-size: 12px;">Formulario</a></li>
+						<li class="active" style="font-size: 12px;">Comprobante</li>
+					</ol>
+				</div>
+			</section>
+			<section class="main-content">
+				<section class="main-content">
+
+					<div class="row">
+						<div class="col-md-6">
+							<ui:fragment
+								rendered="#{comprobanteController.sinDosificacionActiva}">
+								<div class="alert alert-warning alert-dismissable fade in"
+									style="height: 28px; padding-top: 5px;">
+									<button type="button" data-dismiss="alert" aria-hidden="true"
+										class="close">x</button>
+									<strong>ADVERTENCIA! </strong>&#160; &#160; &#160; &#160;
+									No tiene Dosificacion Activa para su sucursal.
+								</div>
+							</ui:fragment>
+							<ui:fragment rendered="#{comprobanteController.sinPlanCuenta}">
+								<div class="alert alert-warning alert-dismissable fade in"
+									style="height: 28px; padding-top: 5px;">
+									<button type="button" data-dismiss="alert" aria-hidden="true"
+										class="close">x</button>
+									<strong>ADVERTENCIA! </strong>&#160; &#160; &#160; &#160; No
+									tiene una estructura de plan de cuenta
+								</div>
+							</ui:fragment>
+							<ui:fragment
+								rendered="#{comprobanteController.sinSubCentroCosto and comprobanteController.parametroEmpresa.centroCosto}">
+								<div class="alert alert-warning alert-dismissable fade in"
+									style="height: 28px; padding-top: 5px;">
+									<button type="button" data-dismiss="alert" aria-hidden="true"
+										class="close">x</button>
+									<strong>ADVERTENCIA! </strong>&#160; &#160; &#160; &#160; No
+									tiene un SubCentro de Costo registrado
+								</div>
+							</ui:fragment>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-md-12">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<h3 class="panel-title">Registro de Comprobante</h3>
+								</div>
+								<div class="panel-body">
+									<!-- start here register -->
+									<h:form id="formRegisterComprobante">
+										<div class="row">
+											<!-- start register -->
+											<div class="col-md-2">
+												<div class="form-group ">
+													<div class="col-md-12">Nro. Comprobante:</div>
+													<div class="col-md-12">
+														<h:inputText value="#{newComprobante.correlativo}"
+															style=" color: #555555; background-image: none;"
+															styleClass="input-sm form-control" readonly="true">
+														</h:inputText>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-2">
+												<div class="form-group">
+													<div class="col-md-12">Tipo Comp.</div>
+													<div class="col-md-12">
+														<h:selectOneMenu id="tipoComprobante"
+															style=" color: #555555; background-image: none;"
+															styleClass="input-sm form-control" immediate="true"
+															value="#{comprobanteController.nombreTipoComprobante}">
+															<p:ajax update=":formRegisterComprobante,:formRegAsiento" />
+															<f:selectItems
+																value="#{comprobanteController.listTipoComprobante}" />
+														</h:selectOneMenu>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-2">
+												<div class="form-group">
+													<div class="col-md-12">Fecha:</div>
+													<div class="col-md-12">
+														<p:calendar pattern="dd/MM/yyyy" id="fechaComp"
+															locale="es"
+															value="#{comprobanteController.fechaComprobante}"
+															maxdate="#{comprobanteController.fechaActual}"
+															mindate="#{comprobanteController.fechaMinima}"
+															onkeypress="return permiteKey(event, 'none')"
+															style=" color: #555555; background-image: none;">
+															<p:ajax />
+														</p:calendar>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-2">
+												<div class="form-group">
+													<div class="col-md-12">Tipo Cambio:</div>
+													<div class="col-md-12">
+														<h:inputText id="tipoCambio"
+															value="#{comprobanteController.selectedTipoCambio.unidad}"
+															style=" color: #555555; background-image: none;"
+															styleClass="input-sm form-control" readonly="true">
+														</h:inputText>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-2">
+												<div class="form-group">
+													<div class="col-md-12">Moneda:</div>
+													<div class="col-md-12">
+														<h:selectOneMenu id="r_moneda"
+															styleClass="input-sm form-control" immediate="true"
+															value="#{comprobanteController.nombreMonedaEmpresa}">
+															<p:ajax update=":formTableComprobante,:formTotales"
+																event="change" />
+															<f:selectItems
+																value="#{comprobanteController.listMonedaEmpresa}" />
+														</h:selectOneMenu>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-2">
+												<div class="form-group">
+													<div class="col-md-12">Sucursal:</div>
+													<div class="col-md-12">
+														<h:selectOneMenu id="sucursal"
+															styleClass="input-sm form-control" immediate="true"
+															value="#{comprobanteController.nombreSucursal}">
+															<f:ajax />
+															<f:selectItem itemValue="Seleccione" />
+															<f:selectItems
+																value="#{comprobanteController.listSucursal}" />
+														</h:selectOneMenu>
+													</div>
+												</div>
+											</div>
+
+										</div>
+										<div class="row">
+											<div class="col-md-8">
+												<div class="form-group">
+													<div class="col-md-12">Glosa:</div>
+													<div class="col-md-12">
+														<h:inputTextarea value="#{newComprobante.glosa}"
+															style=" color: #555555; background-image: none; text-transform: uppercase;"
+															styleClass="input-sm form-control">
+															<p:ajax event="change" />
+														</h:inputTextarea>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-group">
+
+													<div class="col-md-12">#{comprobanteController.nombrePersona}</div>
+													<div class="col-md-12">
+														<h:inputText value="#{newComprobante.nombre}"
+															style=" color: #555555; background-image: none; text-transform: uppercase;"
+															styleClass="input-sm form-control">
+															<p:ajax event="change" />
+														</h:inputText>
+													</div>
+												</div>
+											</div>
+											<!-- end register -->
+										</div>
+
+										<ui:fragment
+											rendered="#{comprobanteController.nombreTipoComprobante == 'EGRESO'}">
+											<ui:include
+												src="/WEB-INF/templates/container_comprobante_egreso_2.xhtml" />
+										</ui:fragment>
+
+									</h:form>
+									<br />
+									<div class="row">
+										<h:form id="formRegAsiento">
+											<ui:fragment rendered="true">
+												<ui:include
+													src="/WEB-INF/templates/container_comprobante_ingreso.xhtml" />
+											</ui:fragment>
+
+										</h:form>
+									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<!-- start data table -->
+											<h:form id="formTableComprobante">
+												<p:growl id="msgs" showDetail="true" />
+												<p:dataTable id="dataTableAsiento" var="var" rendered="true"
+													value="#{comprobanteController.listEDAsiento}"
+													reflow="true" emptyMessage="Agregue nuevas Cuentas."
+													selection="#{comprobanteController.selectedEDAsiento}"
+													selectionMode="single"
+													style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+													rowKey="#{var.id}">
+													<f:facet name="header">
+           												Cuentas Agregadas
+       												</f:facet>
+													<p:ajax event="rowSelect" update="formTotales"
+														listener="#{comprobanteController.onRowSelectAsiento}" />
+
+													<p:column headerText="Código">
+
+														<h:outputText value="#{var.cuenta.codigo}" />
+
+													</p:column>
+													<p:column headerText="Cuenta">
+
+														<h:outputText value="#{var.cuenta.descripcion}" />
+
+													</p:column>
+													<p:column headerText="C. Costo">
+
+														<h:outputText value="#{var.centroCosto.nombre}" />
+
+													</p:column>
+													<p:column headerText="Glosa">
+
+														<h:outputText value="#{var.glosa}" />
+
+													</p:column>
+													<p:column headerText="Debe"
+														rendered="#{comprobanteController.verificarTipoMoneda('NACIONAL')}"
+														style="#{!comprobanteController.verificarTipoMoneda('NACIONAL')? 'background-color: #EDEDED;':'background-color:none;'}">
+
+														<h:outputText value="#{var.debeNacional}">
+															<f:convertNumber type="number" groupingUsed="true"
+																minFractionDigits="2" pattern="#0.00" />
+														</h:outputText>
+
+													</p:column>
+													<p:column headerText="Haber"
+														rendered="#{comprobanteController.verificarTipoMoneda('NACIONAL')}"
+														style="#{!comprobanteController.verificarTipoMoneda('NACIONAL')? 'background-color: #EDEDED;':'background-color:none;'}">
+
+														<h:outputText value="#{var.haberNacional}">
+															<f:convertNumber type="number" groupingUsed="true"
+																minFractionDigits="2" pattern="#0.00" />
+														</h:outputText>
+
+													</p:column>
+													<p:column headerText="Debe"
+														rendered="#{ comprobanteController.verificarTipoMoneda('EXTRANJERA')}"
+														style="#{! comprobanteController.verificarTipoMoneda('EXTRANJERA')? 'background-color: #EDEDED;':'background-color:none;'}">
+
+														<h:outputText value="#{var.debeExtranjero}">
+															<f:convertNumber type="number" groupingUsed="true"
+																minFractionDigits="2" pattern="#0.00" />
+														</h:outputText>
+
+													</p:column>
+													<p:column headerText="Haber"
+														rendered="#{ comprobanteController.verificarTipoMoneda('EXTRANJERA')}"
+														style="#{! comprobanteController.verificarTipoMoneda('EXTRANJERA')? 'background-color: #EDEDED;':'background-color:none;'}">
+
+														<h:outputText value="#{var.haberExtranjero}">
+															<f:convertNumber type="number" groupingUsed="true"
+																minFractionDigits="2" pattern="#0.00" />
+														</h:outputText>
+
+													</p:column>
+													<p:column width="10%" headerText="Edición"
+														style="width:50px">
+
+														<p:commandLink id="editLink"
+															styleClass="ui-icon ui-icon-pencil">
+															<p:ajax update="formDialogEditarCuenta"
+																listener="#{comprobanteController.buttonModificarAsiento(var.id)}" />
+														</p:commandLink>
+
+														<p:commandLink id="deleteLink"
+															styleClass="ui-icon ui-icon-trash">
+															<p:ajax update="formTableComprobante,formTotales"
+																listener="#{comprobanteController.eliminarAsiento(var.id)}" />
+														</p:commandLink>
+
+													</p:column>
+												</p:dataTable>
+											</h:form>
+											<!-- end data table -->
+										</div>
+									</div>
+									<br />
+									<div class="row">
+										<h:form id="formTotales">
+											<div class="col-md-5">
+												<div class="form-group">
+													<div class="col-md-10"></div>
+													<div class="col-md-2">
+														<h3 style="padding-top: 25px;">TOTAL</h3>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-6">
+												<div class="form-group ">
+													<ui:fragment
+														rendered="#{ comprobanteController.verificarTipoMoneda('NACIONAL')}">
+														<div class="col-md-6">
+															<div class="form-group">
+																<div class="col-md-12">Debe
+																	#{comprobanteController.simbolo}</div>
+																<div class="col-md-12">
+																	<h:inputText
+																		value="#{comprobanteController.totalDebeNacional}"
+																		style="font-size: 12pt; color: #555555; background-image: none;"
+																		styleClass="input-lg form-control" readonly="true">
+																		<f:convertNumber type="number" groupingUsed="true"
+																			minFractionDigits="2" pattern="#0.00" />
+																	</h:inputText>
+																</div>
+															</div>
+														</div>
+														<div class="col-md-6">
+															<div class="form-group">
+																<div class="col-md-12">Haber
+																	#{comprobanteController.simbolo}</div>
+																<div class="col-md-12">
+																	<h:inputText
+																		value="#{comprobanteController.totalHaberNacional}"
+																		style="font-size: 12pt; color: #555555; background-image: none;"
+																		styleClass="input-lg form-control" readonly="true">
+																		<f:convertNumber type="number" groupingUsed="true"
+																			minFractionDigits="2" pattern="#0.00" />
+																	</h:inputText>
+																</div>
+															</div>
+														</div>
+													</ui:fragment>
+													<ui:fragment
+														rendered="#{ comprobanteController.verificarTipoMoneda('EXTRANJERA')}">
+														<div class="col-md-6">
+															<div class="form-group">
+																<div class="col-md-12">Debe</div>
+																<div class="col-md-12">
+																	<h:inputText
+																		value="#{comprobanteController.totalDebeExtranjero}"
+																		style="font-size: 12pt; color: #555555; background-image: none;"
+																		styleClass="input-lg form-control" readonly="true">
+																		<f:convertNumber type="number" groupingUsed="true"
+																			minFractionDigits="2" pattern="#0.00" />
+																	</h:inputText>
+																</div>
+															</div>
+														</div>
+														<div class="col-md-6">
+															<div class="form-group">
+																<div class="col-md-12">Haber</div>
+																<div class="col-md-12">
+																	<h:inputText
+																		value="#{comprobanteController.totalHaberExtranjero}"
+																		style="font-size: 12pt; color: #555555; background-image: none;"
+																		styleClass="input-lg form-control" readonly="true">
+																		<f:convertNumber type="number" groupingUsed="true"
+																			minFractionDigits="2" pattern="#0.00" />
+																	</h:inputText>
+																</div>
+															</div>
+														</div>
+													</ui:fragment>
+												</div>
+											</div>
+											<div class="col-md-1"></div>
+										</h:form>
+									</div>
+									<!-- end here register -->
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+			</section>
+		</div>
+		<!--END CONTENT-->
+
+		<!-- START GROWL formGrowl:msgs1 -->
+		<h:form id="formGrowl">
+			<p:growl id="msgs1" showDetail="true" />
+		</h:form>
+		<!-- END GROWL -->
+
+		<!-- START DIALOG -->
+		<p:dialog header="EDITAR CUENTA" widgetVar="dlgEditarCuenta"
+			modal="true" width="50%">
+			<h:form id="formDialogEditarCuenta">
+				<div class="row">
+					<div class="form-group ">
+						<div class="col-md-4"
+							style="padding-left: 0px; padding-right: 0px;">
+							<div class="form-group">
+								<div class="col-md-12">Cuenta</div>
+								<div class="col-md-12">
+									<p:autoComplete id="dialogAutoCompleteCuenta" dropdown="true"
+										style="width:100%; height:100%; color: #555555; background-image: none;"
+										value="#{comprobanteController.textoAutoCompleteCuenta}"
+										completeMethod="#{comprobanteController.completeTextCuenta}"
+										maxResults="10" forceSelection="true">
+										<p:ajax event="itemSelect"
+											listener="#{comprobanteController.onItemSelectCuenta}" />
+									</p:autoComplete>
+								</div>
+
+							</div>
+						</div>
+						<div class="col-md-8"
+							style="padding-left: 0px; padding-right: 0px;">
+							<div class="form-group">
+								<div class="col-md-12">Glosa</div>
+								<div class="col-md-12">
+									<h:inputText value="#{comprobanteController.glosa}"
+										style=" color: #555555; background-image: none; text-transform: uppercase;"
+										styleClass="input-sm form-control">
+										<p:ajax event="change" />
+									</h:inputText>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group ">
+						<div class="col-md-4"
+							style="padding-left: 0px; padding-right: 0px;">
+							<div class="form-group">
+								<div class="col-md-12">Centro Costo</div>
+								<div class="col-md-12">
+									<p:autoComplete id="autoCompleteCC" dropdown="true"
+										rendered="#{comprobanteController.parametroEmpresa.centroCosto}"
+										style="width:100%; height:100%; color: #555555; background-image: none;"
+										value="#{comprobanteController.textoAutoCompleteCentroCosto}"
+										completeMethod="#{comprobanteController.completeTextCentroCosto}"
+										maxResults="10">
+										<p:ajax event="itemSelect"
+											listener="#{comprobanteController.onItemSelectCentroCosto}" />
+									</p:autoComplete>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4"
+							style="padding-left: 0px; padding-right: 0px;">
+							<div class="form-group">
+								<ui:fragment
+									rendered="#{comprobanteController.nombreTipoComprobante == 'EGRESO'}">
+									<div class="col-md-12">Factura</div>
+									<div class="col-md-12"
+										style="padding-left: 0px; padding-right: 0px;">
+										<div class="form-group">
+											<div class="col-md-10" style="padding-right: 2px;">
+												<h:inputText value="#{comprobanteController.numeroFactura}"
+													style=" color: #555555; background-image: none;"
+													styleClass="input-sm form-control">
+													<p:ajax event="change" />
+												</h:inputText>
+											</div>
+											<div class="col-md-2"
+												style="padding-left: 0px; padding-right: 0px;">
+												<p:commandLink id="buttonAgregarFactura" value="&#160;"
+													styleClass="btn btn-success ion-plus-round"
+													style="height:25px; width:24px;"
+													onclick="PF('dlgLibroCompra').show()">
+												</p:commandLink>
+											</div>
+										</div>
+									</div>
+								</ui:fragment>
+							</div>
+						</div>
+						<div class="col-md-4"
+							style="padding-left: 0px; padding-right: 0px;">
+							<div class="form-group"></div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group ">
+						<div class="col-md-4"
+							style="padding-left: 0px; padding-right: 0px;">
+							<div class="form-group">
+								<div class="col-md-12">Debe</div>
+								<div class="col-md-12">
+									<p:contextMenu for="functions1" id="functionContextMenu1">
+										<p:menuitem value="100" />
+										<p:menuitem value="200" />
+										<p:menuitem value="300" />
+									</p:contextMenu>
+									<h:inputText id="functions1"
+										value="#{comprobanteController.debe}"
+										readonly="#{ ! comprobanteController.habilitarDebe}"
+										style=" color: #555555; background-image: none;"
+										styleClass="input-sm form-control">
+										<p:ajax event="change" update="formDialogEditarCuenta" />
+									</h:inputText>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4"
+							style="padding-left: 0px; padding-right: 0px;">
+							<div class="form-group">
+								<div class="col-md-12">Haber</div>
+								<div class="col-md-12">
+									<p:contextMenu for="functions2" id="functionContextMenu2">
+										<p:menuitem value="100" />
+										<p:menuitem value="200" />
+										<p:menuitem value="300" />
+									</p:contextMenu>
+									<h:inputText id="functions2"
+										value="#{comprobanteController.haber}"
+										readonly="#{ ! comprobanteController.habilitarHaber}"
+										style=" color: #555555; background-image: none;"
+										styleClass="input-sm form-control">
+										<p:ajax event="change" update="formDialogEditarCuenta" />
+									</h:inputText>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4"
+							style="padding-left: 0px; padding-right: 0px;">
+							<div class="form-group"></div>
+						</div>
+					</div>
+				</div>
+
+				<br />
+
+				<div class="row">
+					<div class="form-group ">
+						<div class="col-md-4">
+							<div class="form-group"></div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<p:commandLink value="Cancelar"
+									styleClass="btn btn-warning btn-block"
+									onclick="PF('dlgEditarCuenta').hide();">
+								</p:commandLink>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<p:commandLink id="buttonAceptarDialog0" value="Aceptar"
+									styleClass="btn btn-success btn-block">
+									<p:ajax update="formTableComprobante,formTotales" listener="#{comprobanteController.modificarAsiento()}"/>
+								</p:commandLink>
+							</div>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+
+		<p:dialog header="TIPO DE CAMBIO" widgetVar="dlg0" modal="true"
+			width="25%">
+			<h:form id="formDialogTipoCambio">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="form-group ">
+							<p:dataTable id="dataTableTipoCambio" var="item"
+								value="#{comprobanteController.listTipoCambio}"
+								selectionMode="single"
+								style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+								selection="#{comprobanteController.selectedTipoCambio}"
+								emptyMessage="No se encontraron Tipo de Cambio"
+								rowKey="#{item.id}">
+								<p:ajax event="rowSelect" oncomplete="PF('dlg0').hide();"
+									listener="#{comprobanteController.onRowSelectTipoCambio}"
+									update=":formDialogTipoCambio,:formRegisterComprobante" />
+								<p:column headerText="Unidad">
+									<h:outputText value="#{item.unidad}" />
+								</p:column>
+								<p:column headerText="Fecha">
+									<h:outputText value="#{item.fecha}">
+										<f:convertDateTime pattern="dd/MM/yyyy" />
+									</h:outputText>
+								</p:column>
+							</p:dataTable>
+						</div>
+					</div>
+				</div>
+				<br />
+				<div class="row">
+					<div class="col-md-12">
+						<div class="form-group ">
+							<div class="col-md-12 ">Agregar Tipo Cambio</div>
+						</div>
+					</div>
+				</div>
+				<hr />
+				<div class="row">
+					<div class="col-md-12">
+						<div class="form-group">
+							<div class="col-md-4">Unidad</div>
+							<div class="col-md-8">
+								<h:inputText
+									value="#{comprobanteController.newTipoCambio.unidad}"
+									style=" color: #555555; background-image: none;"
+									styleClass="input-sm form-control">
+									<f:ajax />
+								</h:inputText>
+							</div>
+						</div>
+						<br />
+						<div class="form-group">
+							<div class="col-md-4">Fecha</div>
+							<div class="col-md-8">
+								<p:calendar id="popup"
+									value="#{comprobanteController.newTipoCambio.fecha}"
+									style=" color: #555555; background-image: none !important;">
+									<p:ajax />
+								</p:calendar>
+							</div>
+						</div>
+					</div>
+				</div>
+				<br />
+				<div class="row">
+					<div class="col-md-12">
+						<div class="form-group">
+							<div class="col-md-6">
+								<p:commandLink value="Cancelar"
+									styleClass="btn btn-warning btn-block"
+									onclick="PF('dlg0').hide();">
+									<p:ajax update=":formDialogTipoCambio"
+										listener="#{comprobanteController.cancelarNuevoTipoCambio()}" />
+								</p:commandLink>
+							</div>
+							<div class="col-md-6">
+								<p:commandLink id="buttonAceptarDialog0" value="Registrar"
+									styleClass="btn btn-success btn-block">
+									<p:ajax update="formDialogTipoCambio" />
+								</p:commandLink>
+							</div>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+
+
+
+		<p:dialog header="COMPROBANTE" widgetVar="dlgInfoComprobante" modal="true"
+			width="30%">
+			<h:form id="formDialogInfoComprobante">
+				<div class="row">
+					<div class="form-group ">
+						<div class="col-md-12">
+							<h:outputText value="#{comprobanteController.infoComprobante}" />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="form-group">
+							<div class="col-sm-4"></div>
+							<div class="col-sm-4"></div>
+							<div class="col-sm-4">
+								<div class="col-md-4">
+									<p:commandLink value="Aceptar"
+										styleClass="btn btn-warning btn-block"
+										onclick="PF('dlgInfoComprobante').hide();" />
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+		<!-- VISTA PREVIA REPORTE -->
+		<p:dialog header="COMPROBANTE" widgetVar="dlgComprobanteVistaPrevia"
+			modal="true" visible="#{not empty facesContext.maximumSeverity}"
+			resizable="false" position="center" width="750px">
+			<h:form id="formModalVistaPrevia">
+				<div class="row">
+					<div class="form-group ">
+						<div class="col-md-12">
+							<p:media player="pdf" rendered="true"
+								value="#{comprobanteController.urlComprobante}" width="750px"
+								height="480px" />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<div class="form-group">
+							<div class="col-md-4"></div>
+							<div class="col-md-4"></div>
+							<div class="col-md-4">
+								<p:commandLink value="Aceptar"
+									styleClass="btn btn-primary btn-block"
+									onclick="PF('dlgComprobanteVistaPrevia').hide();" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+		<!-- LIBRO DE COMPRAS -->
+		<p:dialog header="LIBRO DE COMPRA" widgetVar="dlgLibroCompra"
+			modal="true" visible="#{not empty facesContext.maximumSeverity}"
+			resizable="false" position="center" width="800px">
+			<h:form id="formModalLibroCompra">
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group ">
+							<div class="col-md-12">
+								<div class="form-group ">
+									<div class="col-md-5">
+										<h:outputLabel value="Fecha Factura" />
+									</div>
+									<div class="col-md-7">
+										<p:calendar id="fechaFactura"
+											value="#{comprobanteController.newCompra.fechaFactura}"
+											style=" color: #555555; background-image: none !important;"
+											pattern="dd/MM/yyyy">
+											<p:ajax event="change" />
+										</p:calendar>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group ">
+									<div class="col-md-6">
+										<h:outputLabel value="NIT Proveedor" />
+									</div>
+									<div class="col-md-6">
+										<p:inputText id="nitProveedor" styleClass="form-control"
+											value="#{comprobanteController.newCompra.nitProveedor}"
+											required="true" requiredMessage="Requerido."
+											validatorMessage="Invalido.">
+											<p:ajax event="change" />
+											<f:validateLength maximum="13" />
+											<f:validateRegex pattern="[0-9]+" />
+										</p:inputText>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group ">
+									<div class="col-md-6">
+										<h:outputLabel value="Razon Social" />
+									</div>
+									<div class="col-md-6">
+										<p:inputText id="razonSocial" styleClass="form-control"
+											maxlength="50"
+											value="#{comprobanteController.newCompra.razonSocial}">
+											<p:ajax event="change" />
+										</p:inputText>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group ">
+									<div class="col-md-6">
+										<h:outputLabel value="Nº Factura" />
+									</div>
+									<div class="col-md-6">
+										<p:inputText id="numeroFacturaID"
+											value="#{comprobanteController.newCompra.numeroFactura}"
+											styleClass="form-control">
+											<p:ajax event="change" />
+										</p:inputText>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group ">
+									<div class="col-md-6">
+										<h:outputLabel value="Nº Autorización" />
+									</div>
+									<div class="col-md-6">
+										<p:inputText id="numeroAutorizacionID" maxlength="13"
+											value="#{comprobanteController.newCompra.numeroAutorizacion}"
+											styleClass="form-control">
+											<p:ajax event="change" />
+										</p:inputText>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group ">
+									<div class="col-md-6">
+										<h:outputLabel value="Código Control" />
+									</div>
+									<div class="col-md-6">
+										<p:inputText id="creditoControl"
+											value="#{comprobanteController.newCompra.codigoControl}"
+											styleClass="form-control">
+											<p:ajax event="change" update="formModalLibroCompra" />
+											<f:validateRegex
+												pattern="[0-9][0-9][0-9]-[0-9][0-9][0-9]-[0-9][0-9][0-9]" />
+										</p:inputText>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group ">
+							<div class="col-md-12">
+								<div class="form-group ">
+									<div class="col-md-6">
+										<h:outputLabel value="Importe Total Compra" />
+									</div>
+									<div class="col-md-6">
+										<p:inputText id="importeTotalCompra"
+											value="#{comprobanteController.newCompra.importeTotal}"
+											styleClass="form-control">
+											<f:convertNumber pattern="#,##0.00" locale="en" />
+											<p:ajax event="change" update="formModalLibroCompra"
+												listener="#{comprobanteController.actualizarImportes}" />
+										</p:inputText>
+									</div>
+								</div>
+							</div>
+							<ui:fragment
+								rendered="#{comprobanteController.dosificacion.normaAplicada=='NSF-07'}">
+								<div class="col-md-12">
+									<div class="form-group ">
+										<div class="col-md-6">
+											<h:outputLabel value="Importe I.C.E." />
+										</div>
+										<div class="col-md-6">
+											<p:inputText id="importeICE"
+												value="#{comprobanteController.newCompra.importeICE}"
+												styleClass="form-control">
+												<f:convertNumber pattern="#,##0.00" locale="en" />
+												<p:ajax event="change" update="formModalLibroCompra"
+													listener="#{comprobanteController.actualizarImportes}" />
+											</p:inputText>
+										</div>
+									</div>
+								</div>
+							</ui:fragment>
+							<ui:fragment
+								rendered="#{comprobanteController.dosificacion.normaAplicada=='NSF-07'}">
+								<div class="col-md-12">
+									<div class="form-group ">
+										<div class="col-md-6">
+											<h:outputLabel value="Importe Excentos" />
+										</div>
+										<div class="col-md-6">
+											<p:inputText id="importeExcentos"
+												value="#{comprobanteController.newCompra.importeExcentos}"
+												styleClass="form-control">
+												<f:convertNumber pattern="#,##0.00" locale="en" />
+												<p:ajax event="change" update="formModalLibroCompra"
+													listener="#{comprobanteController.actualizarImportes}" />
+											</p:inputText>
+										</div>
+									</div>
+								</div>
+							</ui:fragment>
+							<ui:fragment
+								rendered="#{comprobanteController.dosificacion.normaAplicada=='SFV-14'}">
+								<div class="col-md-12">
+									<div class="form-group ">
+										<div class="col-md-6">
+											<h:outputLabel value="No Sujeto C.F." />
+										</div>
+										<div class="col-md-6">
+											<p:inputText id="importeNoSujetoCredito"
+												value="#{comprobanteController.newCompra.importeNoSujetoCreditoFiscal}"
+												styleClass="form-control">
+												<f:convertNumber pattern="#,##0.00" locale="en" />
+												<p:ajax event="change"
+													listener="#{comprobanteController.actualizarImportes}" />
+											</p:inputText>
+										</div>
+									</div>
+								</div>
+							</ui:fragment>
+							<div class="col-md-12">
+								<div class="form-group ">
+									<div class="col-md-6">
+										<h:outputLabel value="Sub Total" />
+									</div>
+									<div class="col-md-6">
+										<p:inputText id="subTotal"
+											value="#{comprobanteController.newCompra.importeSubTotal}"
+											disabled="true" styleClass="form-control">
+											<p:ajax event="change" />
+											<f:convertNumber pattern="#,##0.00" locale="en" />
+										</p:inputText>
+									</div>
+								</div>
+							</div>
+							<ui:fragment
+								rendered="#{comprobanteController.dosificacion.normaAplicada=='SFV-14'}">
+								<div class="col-md-12">
+									<div class="form-group ">
+										<div class="col-md-6">
+											<h:outputLabel value="Descuento" />
+										</div>
+										<div class="col-md-6">
+											<p:inputText id="descuento"
+												value="#{comprobanteController.newCompra.descuentosBonosRebajas}"
+												styleClass="form-control">
+												<p:ajax event="change" />
+												<f:convertNumber pattern="#,##0.00" locale="en" />
+											</p:inputText>
+										</div>
+									</div>
+								</div>
+							</ui:fragment>
+							<div class="col-md-12">
+								<div class="form-group ">
+									<div class="col-md-6">
+										<h:outputLabel value="Importe Base" />
+									</div>
+									<div class="col-md-6">
+										<p:inputText id="importeBase"
+											value="#{comprobanteController.newCompra.importeBaseCreditoFiscal}"
+											disabled="true" styleClass="form-control">
+											<p:ajax event="change" />
+											<f:convertNumber pattern="#,##0.00" locale="en" />
+										</p:inputText>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group ">
+									<div class="col-md-6">
+										<h:outputLabel value="Credito Fiscal" />
+									</div>
+									<div class="col-md-6">
+										<p:inputText id="creditoFiscal"
+											value="#{comprobanteController.newCompra.creditoFiscal}"
+											disabled="true" styleClass="form-control">
+											<p:ajax event="change" />
+											<f:convertNumber pattern="#,##0.00" locale="en" />
+										</p:inputText>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group ">
+									<div class="col-md-6">
+										<h:outputLabel value="Nº DUI" />
+									</div>
+									<div class="col-md-6">
+										<p:inputText id="dui"
+											value="#{comprobanteController.newCompra.numeroDUI}"
+											styleClass="form-control">
+											<p:ajax event="change" />
+											<f:convertNumber pattern="#,##0.00" locale="en" />
+										</p:inputText>
+									</div>
+								</div>
+							</div>
+							<ui:fragment
+								rendered="#{comprobanteController.dosificacion.normaAplicada=='SFV-14'}">
+								<div class="col-md-12">
+									<div class="form-group ">
+										<div class="col-md-6">
+											<h:outputLabel value="Tipo Compra" />
+										</div>
+										<div class="col-md-6">
+											<h:selectOneMenu id="tipoCompra1"
+												value="#{comprobanteController.newCompra.tipoCompra}"
+												styleClass="form-control" required="true"
+												requiredMessage="Requerido.">
+												<f:selectItem itemValue="1"
+													itemLabel="Compras para mercado interno con destino a actividades gravadas" />
+												<f:selectItem itemValue="2"
+													itemLabel="Compras para mercado interno con destino a actividades no gravadas" />
+												<f:selectItem itemValue="3"
+													itemLabel="Compras sujetas a proporcionalidad" />
+												<f:selectItem itemValue="4"
+													itemLabel="Compras para exportaciones" />
+												<f:selectItem itemValue="5"
+													itemLabel="Compras tanto para el mercado interno como para exportaciones" />
+												<p:ajax event="change"  />
+											</h:selectOneMenu>
+										</div>
+									</div>
+								</div>
+							</ui:fragment>
+							<ui:fragment
+								rendered="#{comprobanteController.dosificacion.normaAplicada=='NSF-07'}">
+								<div class="col-md-12">
+									<div class="form-group ">
+										<div class="col-md-6">
+											<h:outputLabel value="Tipo Compra" />
+										</div>
+										<div class="col-md-6">
+											<h:selectOneMenu id="tipoCompra2"
+												value="#{comprobanteController.newCompra.tipoCompra}"
+												styleClass="form-control" required="true"
+												requiredMessage="Requerido.">
+												<f:selectItem itemValue="1"
+													itemLabel="Compras para mercado interno" />
+												<f:selectItem itemValue="2"
+													itemLabel="Compras para exportaciones" />
+												<f:selectItem itemValue="3"
+													itemLabel="Compras tanto para mercado interno como para exportaciones" />
+												<p:ajax event="change" />
+											</h:selectOneMenu>
+										</div>
+									</div>
+								</div>
+							</ui:fragment>
+						</div>
+					</div>
+				</div>
+				<br />
+				<div class="row">
+					<div class="col-md-12">
+						<div class="form-group">
+							<div class="col-md-4"></div>
+							<div class="col-md-4">
+								<p:commandLink value="&#160; Cancelar"
+									styleClass="btn btn-warning ion-minus-circled btn-block"
+									onclick="PF('dlgLibroCompra').hide();" />
+							</div>
+							<div class="col-md-4">
+								<p:commandLink value="&#160; Guardar"
+									styleClass="btn btn-success ion-checkmark btn-block"
+									onclick="PF('dlgLibroCompra').hide();">
+									<p:ajax update=":formRegAsiento"
+										listener="#{comprobanteController.registrarCompra()}" />
+								</p:commandLink>
+							</div>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+		<!-- END DIALOG -->
+	</ui:define>
+</ui:composition>

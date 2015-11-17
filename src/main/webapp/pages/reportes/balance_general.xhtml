@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/WEB-INF/templates/template_main.xhtml">
+
+	<ui:define name="head">
+		<title>Balance General</title>
+	</ui:define>
+
+	<ui:define name="content">
+		<!--BEGIN CONTENT-->
+		<div class="content">
+			<section class="content-header">
+				<div class="pull-left" style="padding-top: 8px;">
+					<h:form id="formBotonesHeader" style="padding-left: 10px;">
+						<div class="btn-group-demo">
+							<div class="btn-group">
+								<p:commandLink id="buttonCancelar" value="&#160; Atras"
+									styleClass="btn btn-warning ion-minus-circled"
+									style="height:31px; padding:center"
+									onclick="location.href='javascript:history.go(-1)'">
+								</p:commandLink>
+								<p:commandLink id="buttonCargarReporte" value="&#160; Procesar"
+									styleClass="btn btn-success ion-loop" style="height:31px;">
+									<p:ajax
+										listener="#{reporteBalanceGeneralController.procesarReporte()}"
+										update="formFiltro,formQuery,formBotonesHeader" />
+								</p:commandLink>
+								<p:commandLink id="buttonImprimir" value="&#160; Imprimir"
+									rendered="#{reporteBalanceGeneralController.listEDBalanceGeneral.size() != 0}"
+									styleClass="btn btn-info ion-printer" style="height:31px;">
+									<p:ajax
+										listener="#{reporteBalanceGeneralController.actualizarForm()}"
+										update="formModalVistaPrevia" />
+								</p:commandLink>
+							</div>
+						</div>
+					</h:form>
+				</div>
+				<div class="pull-right">
+					<ol class="breadcrumb">
+						<li><a href="#{request.contextPath}/pages/dashboard.xhtml"
+							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
+						<li><a href="#" style="color: #0090FF; font-size: 12px;">Reporte</a></li>
+						<li class="active" style="font-size: 12px;">Balance General</li>
+					</ol>
+				</div>
+			</section>
+			<section class="main-content">
+				<section class="main-content">
+					<div class="row">
+						<div class="col-md-12">
+							<h:form id="formFiltro">
+								<div id="accordion3" class="panel-group accordion">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h5 class="panel-title">
+												<a data-toggle="collapse" data-parent="#accordion3"
+													href="#collapseThree3" class="accordion-toggle collapsed"><i
+													class="icon-arrow"></i>Filtro de Busqueda</a>
+											</h5>
+										</div>
+										<div id="collapseThree3" style="height: 0px;"
+											class="panel-collapse collapse">
+											<div class="panel-body">
+												<div class="row">
+													<div class="col-md-4">
+														<div class="form-group">
+															<ui:fragment id="fragment1" rendered="true">
+																<div class="col-md-12">
+																	<p:selectOneRadio id="oneMenuTipoConsulta"
+																		value="#{reporteBalanceGeneralController.tipoConsulta}">
+																		<p:ajax update="@form" />
+																		<f:selectItem
+																			itemLabel="&#160; Por Periodo	&#160; &#160; &#160;"
+																			itemValue="periodo" />
+																		<f:selectItem itemLabel="&#160; Por Fecha"
+																			itemValue="fecha" />
+																	</p:selectOneRadio>
+																</div>
+															</ui:fragment>
+															<ui:fragment id="fragment4"
+																rendered="#{reporteBalanceGeneralController.tipoConsulta.equals('periodo')}">
+																<div class="col-md-12">Periodo</div>
+																<div class="col-md-12">
+																	<h:selectOneMenu id="periodo"
+																		style=" color: #555555; background-image: none;"
+																		styleClass="input-sm form-control" immediate="true"
+																		value="#{reporteBalanceGeneralController.nombreMes}">
+																		<p:ajax
+																			update="formQuery:fechaInicial2,formQuery:fechaFinal2" />
+																		<f:selectItems
+																			value="#{reporteBalanceGeneralController.arrayMes}" />
+																	</h:selectOneMenu>
+																</div>
+															</ui:fragment>
+															<ui:fragment id="fragment3"
+																rendered="#{reporteBalanceGeneralController.tipoConsulta.equals('fecha')}">
+																<div class="col-md-12">Fecha Inicial</div>
+																<div class="col-md-12">
+																	<p:calendar pattern="dd/MM/yyyy" id="fechaInicial"
+																		locale="es"
+																		value="#{reporteBalanceGeneralController.fechaInicial}"
+																		maxdate="#{reporteBalanceGeneralController.fechaActual}"
+																		onkeypress="return permiteKey(event, 'none')"
+																		style=" color: #555555; background-image: none;">
+																		<p:ajax event="dateSelect" update="fechaFinal" />
+																	</p:calendar>
+																</div>
+															</ui:fragment>
+															<ui:fragment id="fragment5"
+																rendered="#{reporteBalanceGeneralController.tipoConsulta.equals('fecha')}">
+																<div class="col-md-12">Fecha Final</div>
+																<div class="col-md-12">
+																	<p:calendar pattern="dd/MM/yyyy" id="fechaFinal"
+																		locale="es"
+																		value="#{reporteBalanceGeneralController.fechaFinal}"
+																		maxdate="#{reporteBalanceGeneralController.fechaActual}"
+																		onkeypress="return permiteKey(event, 'none')"
+																		style=" color: #555555; background-image: none;">
+																		<p:ajax event="dateSelect" update="fechaInicial" />
+																	</p:calendar>
+																</div>
+															</ui:fragment>
+														</div>
+													</div>
+													<div class="col-md-4">
+														<div class="form-group">
+															<div class="col-md-12" style="padding-bottom: 10px">
+																<p:outputLabel id="outputLabelEmpty0" value="" />
+															</div>
+															<div class="col-md-12">Moneda</div>
+															<div class="col-md-12">
+																<h:selectOneMenu id="moneda"
+																	style=" color: #555555; background-image: none;"
+																	styleClass="input-sm form-control" immediate="true"
+																	value="#{reporteBalanceGeneralController.nombreMonedaEmpresa}">
+																	<p:ajax />
+																	<f:selectItems
+																		value="#{reporteBalanceGeneralController.listMonedaEmpresa}" />
+																</h:selectOneMenu>
+															</div>
+														</div>
+													</div>
+													<div class="col-md-4">
+														<div class="form-group"></div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</h:form>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<h3 class="panel-title">Reporte Balance General</h3>
+								</div>
+								<div class="panel-body">
+									<div class="row">
+										<h:form id="formQuery">
+											<div class="row">
+												<ui:fragment id="fragmendDetail"
+													rendered="#{reporteBalanceGeneralController.listEDBalanceGeneral.size() != 0}">
+													<div class="col-md-12"
+														style="padding-left: 30px; padding-right: 30px;">
+														<div class="form-group">
+															<div class="note note-primary"
+																style="padding-top: 1px; padding-bottom: 1px;">
+																<div class="row">
+																	<div class="form-group "
+																		style="padding-top: 1px; padding-bottom: 1px;">
+																		<div class="row">
+																			<div class="col-md-4">
+																				<div class="form-group ">
+																					<div class="col-md-12">
+																						<div class="col-md-6"
+																							style="padding-left: 1px; padding-right: 1px;">
+																							<p:outputLabel id="outputLabelFechaInicial1"
+																								value="Fecha Inicial" />
+																							<p:inputText id="fechaInicial2"
+																								value="#{reporteBalanceGeneralController.fechaInicial}"
+																								readonly="true"
+																								style=" color: #555555; background-image: none; "
+																								styleClass="input-sm form-control ">
+																								<f:convertDateTime type="date"
+																									pattern="dd/MM/yyyy" />
+																							</p:inputText>
+																						</div>
+																						<div class="col-md-6" style="padding-right: 1px;">
+																							<p:outputLabel id="outputLabelFechaFinal1"
+																								value="Fecha Final" />
+																							<p:inputText id="fechaFinal2"
+																								value="#{reporteBalanceGeneralController.fechaFinal}"
+																								readonly="true"
+																								style=" color: #555555; background-image: none; "
+																								styleClass="input-sm form-control ">
+																								<f:convertDateTime type="date"
+																									pattern="dd/MM/yyyy" />
+																							</p:inputText>
+																						</div>
+																					</div>
+																				</div>
+																			</div>
+																			<div class="col-md-4">
+																				<div class="form-group ">
+																					<div class="col-md-12"></div>
+																				</div>
+																			</div>
+																			<div class="col-md-4">
+																				<div class="form-group ">
+																					<div class="col-md-12"></div>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</ui:fragment>
+												<div class="col-md-12"
+													style="padding-left: 30px; padding-right: 30px;">
+													<div class="form-group ">
+														<p:dataTable var="var"
+															value="#{reporteBalanceGeneralController.listEDBalanceGeneral}"
+															paginator="true" paginatorposition="bottom" rows="20"
+															emptyMessage="Realize un filtro de busqueda">
+															<p:column width="15%">
+																<f:facet name="header">
+																	<h:outputText value="Codigo"></h:outputText>
+																</f:facet>
+																<h:outputText value="#{var.planCuenta.codigoAuxiliar}"></h:outputText>
+															</p:column>
+															<p:column width="50%">
+																<f:facet name="header">
+																	<h:outputText value="Nombre"></h:outputText>
+																</f:facet>
+																<h:outputText value="#{var.planCuenta.descripcion}" style="center"></h:outputText>
+															</p:column>
+															<p:column width="20%"> 
+																<f:facet name="header">
+																	<h:outputText value="Total"></h:outputText>
+																</f:facet>
+																<h:outputText value="#{var.totalNacional}">
+																	<f:convertNumber type="number" groupingUsed="true"
+																		minFractionDigits="2" pattern="#0.00" />
+																</h:outputText>
+															</p:column>
+															<f:facet name="footer">
+																<h:outputText
+																	value="#{reporteBalanceGeneralController.listEDBalanceGeneral.size() } Registros en Total" />
+															</f:facet>
+														</p:dataTable>
+													</div>
+												</div>
+											</div>
+										</h:form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+			</section>
+		</div>
+		<!--END CONTENT-->
+
+		<!-- START GROWL :formGrowl:msgs1 -->
+		<h:form id="formGrowl">
+			<p:growl id="msgs1" showDetail="true" />
+		</h:form>
+		<!-- END GROWL -->
+
+		<!-- START DIALOG -->
+		<!-- VISTA PREVIA REPORTE -->
+		<p:dialog header="BALANCE GENERAL" widgetVar="dlgVistaPreviaBalanceGeneral"
+			modal="true" visible="#{not empty facesContext.maximumSeverity}"
+			resizable="false" position="center" width="750px">
+			<h:form id="formModalVistaPrevia">
+				<div class="row">
+					<div class="form-group ">
+						<div class="col-md-12">
+							<p:media player="pdf" rendered="true"
+								value="#{reporteBalanceGeneralController.urlBalanceGeneral}"
+								width="100%" height="580px" />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="form-group">
+							<div class="col-md-4"></div>
+							<div class="col-md-4"></div>
+							<div class="col-md-4">
+								<p:commandLink value="Aceptar"
+									styleClass="btn btn-primary btn-block"
+									onclick="PF('dlgVistaPreviaBalanceGeneral').hide();" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+		<!-- END DIALOG -->
+
+	</ui:define>
+
+</ui:composition>

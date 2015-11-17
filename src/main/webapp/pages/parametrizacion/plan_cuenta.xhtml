@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/WEB-INF/templates/template_main.xhtml">
+	<ui:define name="head">
+		<title>Plan de Cuenta</title>
+	</ui:define>
+
+	<ui:define name="content">
+		<!--BEGIN CONTENT-->
+		<div class="content">
+			<section class="content-header">
+				<div class="pull-left" style="padding-top: 8px;">
+					<h:form id="formBotonesHeader" style="padding-left: 10px;">
+						<div class="btn-group-demo">
+							<div class="btn-group">
+								<p:commandLink id="buttonNuevaCuenta1"
+									value="&#160; Nueva Cuenta"
+									onclick="PF('dlgGestionCuenta').show();"
+									styleClass="btn btn-success ion-plus-round"
+									style="height:31px;" rendered="#{planCuentaController.nuevo}">
+									<p:ajax update="formReg,formBotonesHeader" />
+								</p:commandLink>
+								<p:commandLink id="buttonCancelar1" value="&#160; Cancelar"
+									styleClass="btn btn-warning ion-minus-circled"
+									style="height:31px;"
+									rendered="#{ planCuentaController.stateButtonGroupHeaderCancelar}">
+									<p:ajax update=":formReg,:formBotonesHeader"
+										listener="#{planCuentaController.buttonCancelar()}" />
+								</p:commandLink>
+								<p:commandLink id="buttonAgregarCuenta1" value="&#160; Agregar"
+									onclick="PF('dlgGestionCuenta').show();"
+									styleClass="btn btn-success ion-plus-round"
+									style="height:31px;"
+									rendered="#{ planCuentaController.stateButtonGroupHeader}">
+									<p:ajax update=":formReg,:formBotonesHeader"
+										listener="#{planCuentaController.addNode()}" />
+								</p:commandLink>
+								<p:commandLink id="buttonModificar1" value="&#160; Modificar"
+									rendered="#{planCuentaController.stateButtonGroupHeaderModificar}"
+									onclick="PF('dlgGestionCuenta').show();" style="height:31px;"
+									styleClass="btn btn-info ion-edit"
+									update=":formReg,:formBotonesHeader"
+									action="#{planCuentaController.updateNode()}">
+								</p:commandLink>
+								<p:commandLink id="buttonEliminar1" value="&#160; Eliminar"
+									onclick="PF('dlgEliminarCuenta').show();" style="height:31px;"
+									styleClass="btn btn-danger ion-trash-b"
+									rendered="#{planCuentaController.stateButtonGroupHeaderEliminar}">
+								</p:commandLink>
+							</div>
+						</div>
+					</h:form>
+				</div>
+				<div class="pull-right">
+					<ol class="breadcrumb">
+						<li><a href="#{request.contextPath}/pages/dashboard.jsf"
+							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
+						<li><a
+							href="#{request.contextPath}/pages/parametrizacion/plan-cuenta.xhtml"
+							style="color: #0090FF; font-size: 12px;">Parametrización</a></li>
+						<li class="active" style="font-size: 12px;">Plan de Cuenta</li>
+					</ol>
+				</div>
+			</section>
+			<section class="main-content">
+				<section class="main-content">
+					<div class="row">
+						<div class="col-md-8">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<h3 class="panel-title">Plan de Cuenta</h3>
+									<div class="actions">
+										<label class="switch switch-success switch-sm"> <h:form
+												id="formSwitch">
+												<h:selectBooleanCheckbox
+													value="#{planCuentaController.stateExpandingPlanCuenta}"
+													styleClass="switch">
+													<p:ajax update=":formSwitch,:form"
+														listener="#{planCuentaController.expanding()}" />
+												</h:selectBooleanCheckbox>
+												<span class="switch"></span>
+											</h:form>
+										</label>
+									</div>
+								</div>
+								<h:form id="formBuscar">
+									<div class="row" style="padding-bottom: 5px;">
+										<div class="col-md-6"></div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<div class="col-md-4"></div>
+												<div class="col-md-6">
+													<h:inputText value="#{planCuentaController.filterByCuenta}"
+														style=" color: #555555; background-image: none;"
+														styleClass="input-sm form-control">
+														<f:ajax />
+													</h:inputText>
+												</div>
+												<div class="col-md-2">
+													<p:commandLink id="buttonBuscarCuenta"
+														style="height:25px; width:30px; padding-top: 3px;"
+														styleClass="btn btn-primary btn-block">
+														<span class="btn-label"><i class="icon-magnifier"></i></span>
+														<p:ajax
+															listener="#{planCuentaController.buscarCuentasByFilter()}" />
+													</p:commandLink>
+												</div>
+											</div>
+										</div>
+									</div>
+								</h:form>
+								<!-- start here datatable -->
+								<h:form id="form">
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group ">
+												<p:treeTable id="docs" scrollable="true"
+													value="#{planCuentaController.root}" var="node"
+													selectionMode="single"
+													emptyMessage="No se encontraron Cuentas."
+													style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+													selection="#{planCuentaController.selectedNode}">
+													<p:ajax event="select" update=":formReg,:formBotonesHeader"
+														listener="#{planCuentaController.onNodeSelect}" />
+													<p:column headerText="Código">
+														<ui:fragment rendered="#{node.clase == 'CONTROL'}">
+															<h:outputText value="#{node.codigo}" />
+														</ui:fragment>
+														<ui:fragment rendered="#{node.clase != 'CONTROL'}">
+															<h:outputText value="#{node.codigo}"
+																style="color:#5B9BE1;" />
+														</ui:fragment>
+													</p:column>
+													<p:column headerText="Cuenta">
+														<ui:fragment rendered="#{node.clase == 'CONTROL'}">
+															<h:outputText value="#{node.cuenta}" />
+														</ui:fragment>
+														<ui:fragment rendered="#{node.clase != 'CONTROL'}">
+															<h:outputText value="#{node.cuenta}"
+																style="color:#5B9BE1; " />
+														</ui:fragment>
+													</p:column>
+													<p:column headerText="Moneda">
+														<ui:fragment rendered="#{node.clase == 'CONTROL'}">
+															<h:outputText value="#{node.moneda}" />
+														</ui:fragment>
+														<ui:fragment rendered="#{node.clase != 'CONTROL'}">
+															<h:outputText value="#{node.moneda}"
+																style="color:#5B9BE1; " />
+														</ui:fragment>
+													</p:column>
+												</p:treeTable>
+											</div>
+										</div>
+									</div>
+								</h:form>
+								<!-- end here datatable -->
+								<div class="panel-body"></div>
+							</div>
+						</div>
+					</div>
+				</section>
+			</section>
+		</div>
+		<!--END CONTENT-->
+
+		<!-- START GROWL  formGrowl:msgs1 -->
+		<h:form id="formGrowl">
+			<p:growl id="msgs1" showDetail="true" />
+		</h:form>
+		<!-- END GROWL -->
+
+		<!-- START DIALOG -->
+		<p:dialog header="ELIMINAR CUENTA" widgetVar="dlgEliminarCuenta"
+			modal="true" height="40%">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group">
+						<div class="col-md-12">¿Desea eliminar esta cuenta?</div>
+					</div>
+					<br />
+					<div class="form-group">
+						<div class="col-sm-6">
+							<p:commandLink value="NO" styleClass="btn btn-warning btn-block"
+								onclick="PF('dlgEliminarCuenta').hide();" />
+						</div>
+						<div class="col-sm-6">
+							<p:commandLink id="buttonAceptarDialog1" value="SI"
+								styleClass="btn btn-success btn-block"
+								onclick="PF('dlgEliminarCuenta').hide();">
+								<p:ajax
+									update="form,:formReg,:formBotonesHeader,formGrowl:msgs1"
+									listener="#{planCuentaController.deleteNode()}" />
+							</p:commandLink>
+						</div>
+					</div>
+				</div>
+			</div>
+		</p:dialog>
+		<p:dialog header="NUEVA CUENTA " widgetVar="dlgGestionCuenta"
+			modal="true" height="50%" width="40%">
+			<h:form id="formReg">
+				<div class="row">
+					<div class="form-group">
+						<div class="col-md-12">
+							<p:outputLabel 
+								value="- Registro de cuenta de nivel #{planCuentaController.nivelSeleccionado} + 1" />
+						</div>
+					</div>
+				</div>
+				<br />
+				<div class="row">
+					<div class="col-md-12">
+						<div class="form-group">
+							<div class="row">
+								<div class="col-md-12 box-content form-horizontal">
+									<div class="form-group">
+										<div class="col-md-6">
+											<p:outputLabel for="inputTextDlgCodigo"
+												value="Codigo de: #{planCuentaController.tamanioDigito} Digitos" />
+										</div>
+										<div class="col-md-6">
+											<h:inputText id="inputTextDlgCodigo" autocomplete="off"
+												required="true" requiredMessage="Codigo es requerido"
+												style=" color: #555555; background-image: none;"
+												value="#{planCuentaController.newPlanCuenta.codigo}"
+												maxlength="#{planCuentaController.tamanioDigito}"
+												styleClass="input-sm form-control">
+												<f:ajax />
+											</h:inputText>
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="col-md-6">
+											<p:outputLabel for="inputTextDlgNombreCuenta"
+												value="Nobre de Cuenta" />
+										</div>
+										<div class="col-md-6">
+											<h:inputText id="inputTextDlgNombreCuenta"
+												disabled="#{ ! planCuentaController.stateInputTextCuenta}"
+												required="true" autocomplete="off"
+												requiredMessage="Nobre de Cuenta es requerido"
+												style=" color: #555555; background-image: none;"
+												value="#{planCuentaController.newPlanCuenta.descripcion}"
+												styleClass="input-sm form-control">
+												<f:ajax />
+											</h:inputText>
+										</div>
+									</div>
+									<ui:fragment
+										rendered="#{planCuentaController.stateOneMenuClase }">
+										<div class="form-group">
+											<div class="col-md-6">Clase o tipo</div>
+											<div class="col-md-6">
+												<h:selectOneMenu id="clase"
+													style=" color: #555555; height:25px; font-size:11px;"
+													
+													styleClass="input-sm form-control" immediate="true"
+													value="#{planCuentaController.nombreClase}">
+													<f:ajax render="formReg" />
+													<f:selectItems value="#{planCuentaController.arrayClase}" />
+												</h:selectOneMenu>
+											</div>
+										</div>
+									</ui:fragment>
+									<ui:fragment
+										rendered="#{planCuentaController.stateOnMenuMoneda}">
+										<div class="form-group ">
+											<div class="col-md-4">Moneda</div>
+											<div class="col-md-8">
+												<h:selectOneMenu id="moneda2"
+													styleClass="input-sm form-control"
+													style=" color: #555555; height:25px; font-size:11px;"
+													immediate="true"
+													value="#{planCuentaController.nombreMoneda}">
+													<f:ajax />
+													<f:selectItems
+														value="#{planCuentaController.listMonedaEmpresa}" />
+												</h:selectOneMenu>
+											</div>
+										</div>
+										<div class="form-group ">
+											<div class="col-md-4">Ufv</div>
+											<div class="col-md-8">
+												<label class="switch switch-success switch-sm"> <h:selectBooleanCheckbox
+														value="#{planCuentaController.permitirUfv}"
+														styleClass="switch">
+													</h:selectBooleanCheckbox><span class="switch"></span>
+												</label>
+											</div>
+										</div>
+									</ui:fragment>
+								</div>
+							</div>
+							<br />
+							<div class="row">
+								<div class="col-md-12">
+									<div class="form-group ">
+										<div class="col-md-6">
+											<ui:fragment
+												rendered="true">
+												<p:commandLink id="buttonCancelar2" value="Cancelar"
+													styleClass="btn btn-warning btn-block"
+													onclick="PF('dlgGestionCuenta').hide();"
+													update=":formReg,:formBotonesHeader"
+													action="#{planCuentaController.actualizarFormReg()}">
+												</p:commandLink>
+											</ui:fragment>
+										</div>
+										<div class="col-md-6">
+											<ui:fragment
+												rendered="#{ planCuentaController.stateButtonRegistrar}">
+												<p:commandLink id="buttonRegistrarCuenta2"
+													value="Registrar"
+													styleClass="btn btn-success btn-block">
+													<p:ajax
+														update=":formReg,:formBotonesHeader,:form,:formGrowl:msgs1"
+														listener="#{planCuentaController.registrarCuenta()}" />
+												</p:commandLink>
+											</ui:fragment>
+											<ui:fragment
+												rendered="#{ planCuentaController.stateButtonAgregar}">
+												<p:commandLink id="buttonAgregarCuenta2" value="Agregar"
+													
+													styleClass="btn btn-success btn-block">
+													<p:ajax
+														update=":formReg,:formBotonesHeader,:form,:formGrowl:msgs1"
+														listener="#{planCuentaController.agregarSubCuenta()}" />
+												</p:commandLink>
+											</ui:fragment>
+											<ui:fragment
+												rendered="#{planCuentaController.stateButtonModificar}">
+												<p:commandLink id="buttonModificar2" value="Modificar"
+													styleClass="btn btn-info btn-block" 
+													onclick="PF('dlgGestionCuenta').hide();"
+													update="formReg,formBotonesHeader,form,:formGrowl:msgs1"
+													action="#{planCuentaController.modificarCuenta()}">
+												</p:commandLink>
+											</ui:fragment>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="CUENTA DE CONTROL"
+			widgetVar="dlgEliminarCuentaControl" modal="true" height="40%">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group">
+						<div class="col-md-6">Esta cuenta tiene niveles asociados de
+							cuentas</div>
+						<div class="col-md-6">¿ Desea eliminar definitivamente esta
+							cuenta?</div>
+					</div>
+					<br />
+					<div class="form-group">
+						<div class="col-sm-6">
+							<p:commandLink value="NO" styleClass="btn btn-warning btn-block"
+								onclick="PF('dlgEliminarCuentaControl').hide();" />
+						</div>
+						<div class="col-sm-6">
+							<p:commandLink id="buttondlgEliminarCuentaControl" value="SI"
+								styleClass="btn btn-success btn-block"
+								onclick="PF('dlgEliminarCuentaControl').hide();">
+							</p:commandLink>
+						</div>
+					</div>
+				</div>
+			</div>
+		</p:dialog>
+		<!-- END DIALOG -->
+
+	</ui:define>
+</ui:composition>

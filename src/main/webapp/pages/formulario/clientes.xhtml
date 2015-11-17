@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/WEB-INF/templates/template_main.xhtml">
+	<ui:define name="head">
+		<title>Cliente</title>
+	</ui:define>
+	<ui:define name="content">
+
+		<!--BEGIN CONTENT-->
+		<div class="content">
+			<section class="content-header">
+				<div class="pull-left" style="padding-top: 8px;">
+					<h:form id="formBotonesHeader" style="padding-left: 10px;">
+						<div class="btn-group-demo">
+							<div class="btn-group">
+								<p:commandLink id="buttonCancelar" value="&#160; Cancelar"
+									styleClass="btn btn-warning ion-minus-circled"
+									rendered="#{clientesController.modificar or clientesController.registrar}"
+									update=":formReg,:formBotonesHeader,:formTableClientes"
+									style="height:31px; padding:center"
+									action="#{clientesController.actualizarFormReg()}">
+								</p:commandLink>
+								<p:commandLink id="buttonCrear1" value="&#160; Nuevo Cliente"
+									styleClass="btn btn-success ion-plus-round"
+									rendered="#{clientesController.crear}"
+									update=":formTableClientes,:formReg,:formBotonesHeader"
+									action="#{clientesController.cambiarAspecto()}"
+									style="height:31px;">
+								</p:commandLink>
+								<p:commandLink id="buttonRegistrar" value="&#160; Registrar"
+									styleClass="btn btn-success ion-checkmark"
+									style="height:31px; padding:center"
+									rendered="#{clientesController.registrar}"
+									update=":formTableClientes,:formBotonesHeader,:formReg,formGrowl:msgs1"
+									action="#{clientesController.registrar()}">
+								</p:commandLink>
+								<p:commandLink id="buttonModificar" value="&#160; Modificar"
+									styleClass="btn btn-primary ion-edit"
+									rendered="#{clientesController.modificar}"
+									style="height:31px; padding:center"
+									update=":formTableClientes,:formBotonesHeader,:formReg,formGrowl:msgs1"
+									action="#{clientesController.modificar()}">
+								</p:commandLink>
+								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
+									styleClass="btn btn-danger ion-close"
+									style="height:31px; padding:center"
+									rendered="#{clientesController.modificar}"
+									update=":formTableClientes,:formBotonesHeader,:formReg,formGrowl:msgs1"
+									action="#{clientesController.eliminar()}">
+								</p:commandLink>
+							</div>
+						</div>
+					</h:form>
+				</div>
+				<div class="pull-right">
+					<ol class="breadcrumb">
+						<li><a href="#{request.contextPath}/pages/dashboard.jsf"
+							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
+						<li><a
+							href="#{request.contextPath}/pages/formulario/clientes.xhtml"
+							style="color: #0090FF; font-size: 12px;">Seguridad</a></li>
+						<li class="active" style="font-size: 12px;">Cliente</li>
+					</ol>
+				</div>
+			</section>
+			<section class="main-content">
+				<section class="main-content">
+					<div class="row">
+						<h:form id="formReg">
+							<ui:fragment
+								rendered="#{clientesController.modificar or clientesController.registrar}">
+								<div class="col-md-4">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Registro Clientes</h3>
+										</div>
+										<div class="panel-body">
+											<!-- start here register -->
+											<div class="row">
+												<div class="col-md-12 box-content form-horizontal">
+													<div class="form-group ">
+														<div class="col-md-4">C.I.</div>
+														<div class="col-md-8">
+															<h:inputText value="#{newClientes.ci}"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control ">
+																<p:ajax event="change" />
+															</h:inputText>
+														</div>
+													</div>
+													<div class="form-group ">
+														<div class="col-md-4">Nombre</div>
+														<div class="col-md-8">
+															<h:inputText value="#{newClientes.nombre}"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control">
+																<p:ajax event="change" />
+															</h:inputText>
+														</div>
+													</div>
+													<div class="form-group ">
+														<div class="col-md-4">Dirección</div>
+														<div class="col-md-8">
+															<h:inputText value="#{newClientes.direccion}"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control">
+																<p:ajax event="change" />
+															</h:inputText>
+														</div>
+													</div>
+													<div class="form-group ">
+														<div class="col-md-4">Correo</div>
+														<div class="col-md-8">
+															<h:inputText value="#{newClientes.correo}"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control">
+																<p:ajax event="change" />
+															</h:inputText>
+														</div>
+													</div>
+													<div class="form-group ">
+														<div class="col-md-4">Telefono</div>
+														<div class="col-md-8">
+															<h:inputText value="#{newClientes.telefono}"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control">
+																<p:ajax event="change" />
+															</h:inputText>
+														</div>
+													</div>
+													<div class="form-group ">
+														<div class="col-md-4">
+															<h:outputLabel value="Tipo Persona" for="tipoPersona" />
+														</div>
+														<div class="col-md-8">
+															<h:selectOneMenu id="tipoPersona"
+																value="#{newClientes.tipo}" styleClass="form-control">
+																<p:ajax event="change" update="formReg" immediate="true"></p:ajax>
+																<f:selectItem itemValue="NATURAL" itemLabel="NATURAL" />
+																<f:selectItem itemValue="JURIDICO" itemLabel="JURIDICO" />
+															</h:selectOneMenu>
+														</div>
+													</div>
+													<ui:fragment
+														rendered="#{newClientes.tipo.equals('JURIDICO')}">
+														<div class="form-group ">
+															<div class="col-md-4">NIT</div>
+															<div class="col-md-8">
+																<h:inputText value="#{newClientes.nit}"
+																	style=" color: #555555; background-image: none;"
+																	styleClass="input-sm form-control ">
+																	<p:ajax event="change" />
+																</h:inputText>
+															</div>
+														</div>
+														<div class="form-group ">
+															<div class="col-md-4">Razon Social</div>
+															<div class="col-md-8">
+																<h:inputText value="#{newClientes.razonSocial}"
+																	style=" color: #555555; background-image: none;"
+																	styleClass="input-sm form-control ">
+																	<p:ajax event="change" />
+																</h:inputText>
+															</div>
+														</div>
+													</ui:fragment>
+													<div class="form-group ">
+														<div class="col-md-4">Permitir Credito</div>
+														<div class="col-md-2">
+															<label class="switch switch-success switch-sm"> <h:selectBooleanCheckbox
+																	value="#{clientesController.permitirCredito}"
+																	styleClass="switch">
+																	<p:ajax update="formReg" />
+																</h:selectBooleanCheckbox><span class="switch"></span>
+															</label>
+														</div>
+														<div class="col-md-6">
+															<ui:fragment
+																rendered="#{clientesController.permitirCredito}">
+																<div class="form-group ">
+																	<div class="col-md-8">
+																		<h:inputText
+																			value="#{newClientes.diasPermitidosCredito}"
+																			style=" color: #555555; background-image: none;"
+																			onkeypress="return validateOnlyNumber(event)"
+																			styleClass="input-sm form-control">
+																			<p:ajax event="change" />
+																		</h:inputText>
+																	</div>
+																	<div class="col-md-4">Dias</div>
+																</div>
+															</ui:fragment>
+														</div>
+													</div>
+													<div class="form-group ">
+														<div class="col-md-4">Estado</div>
+														<div class="col-md-8">
+															<h:selectOneMenu id="roles"
+																styleClass="input-sm form-control"
+																style=" color: #555555; height:25px; font-size:11px;"
+																disabled="#{newClientes.estado =='SUPER'}"
+																immediate="true"
+																value="#{clientesController.nombreEstado}">
+																<f:ajax />
+																<f:selectItems value="#{clientesController.listEstado}" />
+															</h:selectOneMenu>
+														</div>
+													</div>
+												</div>
+											</div>
+											<!-- end here register -->
+										</div>
+									</div>
+								</div>
+							</ui:fragment>
+						</h:form>
+						<h:form id="formTableClientes">
+							<div class="#{clientesController.tipoColumnTable}">
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h3 class="panel-title">Lista Clientes</h3>
+									</div>
+									<!-- start here datatable -->
+									<p:dataTable id="dataTableCliente" var="item"
+										widgetVar="clientesTable" value="#{listClientes}"
+										selectionMode="single"
+										style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+										emptyMessage="No se encontraron clientes"
+										selection="#{clientesController.selectedClientes}"
+										rowKey="#{item.id}" reflow="true"
+										filteredValue="#{clientesController.listFilterClientes}">
+										<p:ajax event="rowSelect"
+											listener="#{clientesController.onRowSelect}"
+											update=":formReg,:formBotonesHeader,:formTableClientes" />
+										<p:column width="8%" headerText="Código"
+											filterStyle="width: 100%; height:25px;"
+											style="text-align:center;" filterBy="#{item.id}">
+											<h:outputText value="#{item.id}" />
+										</p:column>
+										<p:column headerText="Nombre"
+											filterStyle="width: 100%; height:25px;"
+											filterBy="#{item.nombre}">
+											<h:outputText value="#{item.nombre}" />
+										</p:column>
+										<p:column headerText="CI"
+											filterStyle="width: 100%; height:25px;"
+											filterBy="#{item.nit}">
+											<h:outputText value="#{item.ci}" />
+										</p:column>
+										<p:column headerText="Telefono" width="10%"
+											filterStyle="width: 100%; height:25px;"
+											filterBy="#{item.telefono}">
+											<h:outputText value="#{item.telefono}" />
+										</p:column>
+										<p:column width="10%" filterStyle="width: 100%; height:25px;"
+											headerText="Estado" style="text-align:center;"
+											filterBy="#{item.estado}">
+											<span class="label label-success"><h:outputText
+													rendered="#{item.estado=='AC'}" value="Activo" /></span>
+											<span class="label label-danger"><h:outputText
+													rendered="#{item.estado=='IN'}" value="Inactivo" /></span>
+										</p:column>
+										<p:column width="10%" filterStyle="width: 100%; height:25px;"
+											style="text-align:center;" headerText="Usuario Reg."
+											filterBy="#{item.usuarioRegistro}">
+											<h:outputText value="#{item.usuarioRegistro}" />
+										</p:column>
+										<p:column width="10%" headerText="Fecha Reg."
+											style="text-align:center;"
+											filterStyle="width: 100%; height:25px;"
+											filterBy="#{item.fechaRegistro}">
+											<h:outputText value="#{item.fechaRegistro}">
+												<f:convertDateTime pattern="dd/MM/yyyy" />
+											</h:outputText>
+										</p:column>
+										<f:facet name="footer">
+											<h:outputText
+												value="#{listClientes.size()} Registros en Total" />
+										</f:facet>
+									</p:dataTable>
+									<!-- end here datatable -->
+									<div class="panel-body"></div>
+								</div>
+							</div>
+						</h:form>
+					</div>
+				</section>
+			</section>
+		</div>
+		<!--END CONTENT-->
+
+		<!-- START GROWL -->
+		<h:form id="formGrowl">
+			<p:growl id="msgs1" showDetail="true" />
+		</h:form>
+		<!-- END GROWL -->
+
+		<!-- START DIALOG -->
+		<p:dialog header="DIALOG TEST" widgetVar="dlg1" modal="true"
+			height="100%">
+		</p:dialog>
+		<!-- END DIALOG -->
+
+	</ui:define>
+</ui:composition>

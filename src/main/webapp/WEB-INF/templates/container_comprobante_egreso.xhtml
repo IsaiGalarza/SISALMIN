@@ -1,0 +1,149 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<!-- START CONTENT -->
+	<div class="col-md-12">
+		<div class="note note-primary">
+			<div class="row">
+				<div class="form-group ">
+					<div class="col-md-2"
+						style="padding-left: 0px; padding-right: 0px;">
+						<div class="form-group">
+							<div class="col-md-12">Cuenta</div>
+							<div class="col-md-12">
+								<p:autoComplete id="autoCompleteCuenta2"
+									inputStyleClass="input-sm form-control"
+									style="width:100%; height:100%; color: #555555; background-image: none;"
+									value="#{comprobanteController.textoAutoCompleteCuenta}"
+									completeMethod="#{comprobanteController.completeTextCuenta}"
+									maxResults="10">
+									<p:ajax event="itemSelect"
+										listener="#{comprobanteController.onItemSelectCuenta}" />
+								</p:autoComplete>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-md-12">Cuenta Bancaria</div>
+							<div class="col-md-12">
+								<p:autoComplete id="autoCompleteCuentaBancaria1"
+									inputStyleClass="input-sm form-control"
+									style="width:100%; height:100%; color: #555555; background-image: none;"
+									value="#{comprobanteController.textoAutoCompleteCuentaBancaria}"
+									completeMethod="#{comprobanteController.completeTextCuentaBancaria}"
+									maxResults="10">
+									<p:ajax event="itemSelect"
+										listener="#{comprobanteController.onItemSelectCuentaBancaria}" />
+								</p:autoComplete>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-2"
+						style="padding-left: 0px; padding-right: 0px;">
+						<div class="form-group">
+							<div class="col-md-12">Centro Costo</div>
+							<div class="col-md-12">
+								<p:autoComplete id="autoCompleteCC2"
+									inputStyleClass="input-sm form-control"
+									style="width:100%; height:100%; color: #555555; background-image: none;"
+									value="#{comprobanteController.textoAutoCompleteCentroCosto}"
+									completeMethod="#{comprobanteController.completeTextCentroCosto}"
+									maxResults="10">
+									<p:ajax event="itemSelect"
+										listener="#{comprobanteController.onItemSelectCentroCosto}" />
+								</p:autoComplete>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-md-12">Nro. Doc.</div>
+							<div class="col-md-12">
+								<h:inputText value="#{comprobanteController.egreso.nroDocumento}"
+									style=" color: #555555; background-image: none;"
+									styleClass="input-sm form-control">
+									<p:ajax event="change" />
+								</h:inputText>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-2"
+						style="padding-left: 0px; padding-right: 0px;">
+						<div class="form-group">
+							<div class="col-md-12">Glosa</div>
+							<div class="col-md-12">
+								<h:inputText value="#{comprobanteController.glosa}"
+									style=" color: #555555; background-image: none;"
+									styleClass="input-sm form-control">
+									<p:ajax event="change" />
+								</h:inputText>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-md-12">Grupo Imp.</div>
+							<div class="col-md-12">
+								<h:inputText value=""
+									style=" color: #555555; background-image: none;"
+									styleClass="input-sm form-control">
+									<p:ajax event="change" />
+								</h:inputText>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-2"
+						style="padding-left: 0px; padding-right: 0px;">
+						<div class="form-group">
+							<div class="col-md-12">Debe</div>
+							<div class="col-md-12">
+								<h:inputText value="#{comprobanteController.debe}"
+									style=" color: #555555; background-image: none;"
+									styleClass="input-sm form-control">
+									<p:ajax event="change" />
+								</h:inputText>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-md-12">Factura</div>
+							<div class="col-md-12">
+								<h:inputText value=""
+									style=" color: #555555; background-image: none;"
+									styleClass="input-sm form-control">
+									<p:ajax event="change" />
+								</h:inputText>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-2">
+						<div class="form-group">
+							<div class="col-md-12">Haber</div>
+							<div class="col-md-12">
+								<h:inputText value="#{comprobanteController.haber}"
+									style=" color: #555555; background-image: none;"
+									styleClass="input-sm form-control">
+									<p:ajax event="change" />
+								</h:inputText>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-2"
+						style="padding-left: 0px; padding-right: 0px; padding-top: 14px;">
+						<div class="col-md-12">
+							<div class="btn-group-demo">
+								<div class="btn-group">
+									<p:commandLink id="buttonAgregar2" value="&#160; Agregar"
+										styleClass="btn btn-success icon-plus" style="height:31px;">
+										<p:ajax
+											update=":formGrowl:msgs1,:formTableComprobante,:formTotales,:formRegAsiento"
+											listener="#{comprobanteController.agregarNuevaFila()}" />
+									</p:commandLink>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<!-- END CONTEN -->
+</ui:composition>

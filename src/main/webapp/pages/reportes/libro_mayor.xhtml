@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/WEB-INF/templates/template_main.xhtml">
+
+	<ui:define name="head">
+		<title>Libro Mayor</title>
+	</ui:define>
+
+	<ui:define name="content">
+		<!--BEGIN CONTENT-->
+		<div class="content">
+			<section class="content-header">
+				<div class="pull-left" style="padding-top: 8px;">
+					<h:form id="formBotonesHeader" style="padding-left: 10px;">
+						<div class="btn-group-demo">
+							<div class="btn-group">
+								<p:commandLink id="buttonCancelar" value="&#160; Atras"
+									styleClass="btn btn-warning ion-minus-circled"
+									style="height:31px; padding:center"
+									onclick="location.href='javascript:history.go(-1)'">
+								</p:commandLink>
+								<p:commandLink id="buttonProcesarReporte"
+									value="&#160; Procesar" styleClass="btn btn-success ion-loop"
+									style="height:31px;">
+									<p:ajax
+										listener="#{reporteLibroMayorController.procesarReporte(true)}"
+										update="formFiltro,formQuery,formBotonesHeader" />
+								</p:commandLink>
+								
+								<p:commandLink id="buttonImprimir" value="&#160; Imprimir"
+									rendered="#{reporteLibroMayorController.lengthList != 0}"
+									styleClass="btn btn-info ion-printer" style="height:31px;">
+									<p:ajax
+										listener="#{reporteLibroMayorController.actualizarForm()}"
+										update="formModalVistaPrevia" />
+								</p:commandLink>
+							</div>
+						</div>
+					</h:form>
+				</div>
+				<div class="pull-right">
+					<ol class="breadcrumb">
+						<li><a href="#" style="color: #0090FF; font-size: 12px;">Inicio</a></li>
+						<li><a href="#" style="color: #0090FF; font-size: 12px;">Reporte</a></li>
+						<li class="active" style="font-size: 12px;">Libro Mayor</li>
+					</ol>
+				</div>
+			</section>
+			<section class="main-content">
+				<section class="main-content">
+					<div class="row">
+						<div class="col-md-12">
+							<h:form id="formFiltro">
+								<div id="accordion3" class="panel-group accordion">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h5 class="panel-title">
+												<a data-toggle="collapse" data-parent="#accordion3"
+													href="#collapseThree3" class="accordion-toggle collapsed"><i
+													class="icon-arrow"></i>Filtro de Busqueda</a>
+											</h5>
+										</div>
+										<div id="collapseThree3" style="height: 0px;"
+											class="panel-collapse collapse">
+											<div class="panel-body">
+												<div class="row">
+													<div class="col-md-4">
+														<div class="form-group">
+															<ui:fragment id="fragment0" rendered="true">
+																<div class="col-md-12">
+																	<p:selectOneRadio id="oneMenuTipoCuenta"
+																		value="#{reporteLibroMayorController.seleccionTipoCuenta}">
+																		<p:ajax update="@form" />
+																		<f:selectItem
+																			itemLabel="&#160; Seleccionar Cuenta	&#160; &#160; &#160;"
+																			itemValue="cuenta" />
+																		<f:selectItem itemLabel="&#160; Todas las Cuentas"
+																			itemValue="todas" />
+																	</p:selectOneRadio>
+																</div>
+															</ui:fragment>
+															<ui:fragment id="fragment01"
+																rendered="#{reporteLibroMayorController.seleccionTipoCuenta.equals('cuenta')}">
+																<div class="col-md-12">Cuenta Inicial</div>
+																<div class="col-md-12">
+																	<div class="form-group ">
+																		<p:autoComplete id="autoCompleteCuentaInicial"
+																			inputStyleClass="input-sm form-control"
+																			style="width:100%; height:100%; color: #555555; background-image: none;"
+																			value="#{reporteLibroMayorController.textoAutoCompleteCuentaInicial}"
+																			completeMethod="#{reporteLibroMayorController.completeTextCuenta}"
+																			maxResults="10">
+																			<p:ajax event="itemSelect"
+																				listener="#{reporteLibroMayorController.onItemSelectCuentaInicial}" />
+																		</p:autoComplete>
+																	</div>
+																</div>
+															</ui:fragment>
+															<ui:fragment id="fragment02"
+																rendered="#{reporteLibroMayorController.seleccionTipoCuenta.equals('cuenta')}">
+																<div class="col-md-12">Cuenta Final</div>
+																<div class="col-md-12">
+																	<p:autoComplete id="autoCompleteCuentaFinal"
+																		inputStyleClass="input-sm form-control"
+																		style="width:100%; height:100%; color: #555555; background-image: none;"
+																		value="#{reporteLibroMayorController.textoAutoCompleteCuentaFinal}"
+																		completeMethod="#{reporteLibroMayorController.completeTextCuenta}"
+																		maxResults="10">
+																		<p:ajax event="itemSelect"
+																			listener="#{reporteLibroMayorController.onItemSelectCuentaFinal}" />
+																	</p:autoComplete>
+																</div>
+															</ui:fragment>
+														</div>
+													</div>
+													<div class="col-md-4">
+														<div class="form-group">
+															<ui:fragment id="fragment1" rendered="true">
+																<div class="col-md-12">
+																	<p:selectOneRadio id="oneMenuTipoConsulta"
+																		value="#{reporteLibroMayorController.tipoConsulta}">
+																		<p:ajax update="@form" />
+																		<f:selectItem
+																			itemLabel="&#160; Por Periodo	&#160; &#160; &#160;"
+																			itemValue="periodo" />
+																		<f:selectItem itemLabel="&#160; Por Fecha"
+																			itemValue="fecha" />
+																	</p:selectOneRadio>
+																</div>
+															</ui:fragment>
+															<ui:fragment id="fragment4"
+																rendered="#{reporteLibroMayorController.tipoConsulta.equals('periodo')}">
+																<div class="col-md-12">Periodo</div>
+																<div class="col-md-12">
+																	<h:selectOneMenu id="periodo"
+																		style=" color: #555555; background-image: none;"
+																		styleClass="input-sm form-control" immediate="true"
+																		value="#{reporteLibroMayorController.nombreMes}">
+																		<p:ajax />
+																		<f:selectItems
+																			value="#{reporteLibroMayorController.arrayMes}" />
+																	</h:selectOneMenu>
+																</div>
+															</ui:fragment>
+															<ui:fragment id="fragment3"
+																rendered="#{reporteLibroMayorController.tipoConsulta.equals('fecha')}">
+																<div class="col-md-12">Fecha Inicial</div>
+																<div class="col-md-12">
+																	<p:calendar pattern="dd/MM/yyyy" id="fechaInicial"
+																		locale="es"
+																		value="#{reporteLibroMayorController.fechaInicial}"
+																		maxdate="#{reporteLibroMayorController.fechaActual}"
+																		onkeypress="return permiteKey(event, 'none')"
+																		style=" color: #555555; background-image: none;">
+																		<p:ajax />
+																	</p:calendar>
+																</div>
+															</ui:fragment>
+															<ui:fragment id="fragment5"
+																rendered="#{reporteLibroMayorController.tipoConsulta.equals('fecha')}">
+																<div class="col-md-12">Fecha Final</div>
+																<div class="col-md-12">
+																	<p:calendar pattern="dd/MM/yyyy" id="fechaFinal"
+																		locale="es"
+																		value="#{reporteLibroMayorController.fechaFinal}"
+																		maxdate="#{reporteLibroMayorController.fechaActual}"
+																		onkeypress="return permiteKey(event, 'none')"
+																		style=" color: #555555; background-image: none;">
+																		<p:ajax update="fechaInicial" />
+																	</p:calendar>
+																</div>
+															</ui:fragment>
+														</div>
+													</div>
+													<div class="col-md-4">
+														<div class="form-group">
+															<div class="col-md-12">Moneda</div>
+															<div class="col-md-12">
+																<h:selectOneMenu id="moneda"
+																	style=" color: #555555; background-image: none;"
+																	styleClass="input-sm form-control" immediate="true"
+																	value="#{reporteLibroMayorController.nombreMonedaEmpresa}">
+																	<p:ajax />
+																	<f:selectItems
+																		value="#{reporteLibroMayorController.listMonedaEmpresa}" />
+																</h:selectOneMenu>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</h:form>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<h3 class="panel-title">Reporte Mayores Analiticos</h3>
+								</div>
+								<div class="panel-body">
+									<div class="row">
+										<h:form id="formQuery">
+											<div class="row">
+												<ui:fragment id="fragmendDetail"
+													rendered="#{reporteLibroMayorController.lengthList != 0}">
+													<div class="col-md-12"
+														style="padding-left: 30px; padding-right: 30px; padding-bottom: 1px">
+														<div class="form-group">
+															<div class="note note-primary"
+																style="padding-top: 1px; padding-bottom: 1px;">
+																<div class="row">
+																	<div class="form-group ">
+																		<div class="row">
+																			<div class="col-md-4">
+																				<div class="form-group ">
+																					<div class="col-md-12">
+																						<p:outputLabel id="outputLabelTituloMayor"
+																							value="Titulo Cuenta Padre" />
+																					</div>
+																					<div class="col-md-12">
+																						<p:inputText value="ACTIVO" readonly="true"
+																							style=" color: #555555; background-image: none; "
+																							styleClass="input-sm form-control ">
+																							<p:ajax event="change" />
+																						</p:inputText>
+																					</div>
+																					<div class="col-md-12">
+																						<div class="col-md-6"
+																							style="padding-left: 1px; padding-right: 1px;">
+																							<p:outputLabel id="outputLabelFechaInicial1"
+																								value="Fecha Inicial" />
+																							<p:inputText
+																								value="#{reporteLibroMayorController.fechaInicial}"
+																								readonly="true"
+																								style=" color: #555555; background-image: none; "
+																								styleClass="input-sm form-control ">
+																								<f:convertDateTime type="date"
+																									pattern="dd/MM/yyyy" />
+																							</p:inputText>
+																						</div>
+																						<div class="col-md-6" style="padding-right: 1px;">
+																							<p:outputLabel id="outputLabelFechaFinal1"
+																								value="Fecha Final" />
+																							<p:inputText
+																								value="#{reporteLibroMayorController.fechaFinal}"
+																								readonly="true"
+																								style=" color: #555555; background-image: none; "
+																								styleClass="input-sm form-control ">
+																								<f:convertDateTime type="date"
+																									pattern="dd/MM/yyyy" />
+																							</p:inputText>
+																						</div>
+																					</div>
+																				</div>
+																			</div>
+																			<div class="col-md-4">
+																				<div class="form-group ">
+																					<div class="col-md-12">
+																						<p:outputLabel id="outputLabelCodigoCuenta"
+																							value="Codigo Cuenta" />
+																					</div>
+																					<div class="col-md-12">
+																						<p:inputText value="10001001" readonly="true"
+																							style=" color: #555555; background-image: none; "
+																							styleClass="input-sm form-control ">
+																							<p:ajax event="change" />
+																						</p:inputText>
+																					</div>
+																					<div class="col-md-12">
+																						<p:outputLabel id="outputLabelNombreCuenta"
+																							value="Nombre Cuenta" />
+																					</div>
+																					<div class="col-md-12">
+																						<h:selectOneMenu id="textProveedor"
+																							styleClass="input-sm form-control"
+																							style=" color: #555555; height:25px; font-size:11px;"
+																							value="#{reporteLibroMayorController.nombreCuenta}">
+																							<p:ajax update="formQuery" />
+																							<f:selectItems
+																								value="#{reporteLibroMayorController.listPlanCuenta}" />
+																						</h:selectOneMenu>
+																						<h:message for="textProveedor" />
+																					</div>
+																				</div>
+																			</div>
+																			<div class="col-md-4">
+																				<div class="form-group ">
+																					<div class="col-md-12">
+																						<p:outputLabel
+																							id="outputLabelSaldoAnteriorNacional"
+																							value="Saldo Anterior Bolivianos" />
+																					</div>
+																					<div class="col-md-12">
+																						<p:inputText value="0.00" readonly="true"
+																							style=" color: #555555; background-image: none; "
+																							styleClass="input-sm form-control ">
+																							<p:ajax event="change" />
+																						</p:inputText>
+																					</div>
+																				</div>
+																				<div class="form-group ">
+																					<div class="col-md-12">
+																						<p:outputLabel
+																							id="outputLabelSaldoAnteriorExtranjero"
+																							value="Saldo Anterior Dolar" />
+																					</div>
+																					<div class="col-md-12">
+																						<p:inputText value="0.00" readonly="true"
+																							style=" color: #555555; background-image: none; "
+																							styleClass="input-sm form-control ">
+																							<p:ajax event="change" />
+																						</p:inputText>
+																					</div>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</ui:fragment>
+												<div class="col-md-12"
+													style="padding-left: 30px; padding-right: 30px; padding-top: 1px;">
+													<div class="form-group ">
+														<p:dataTable var="var"
+															value="#{reporteLibroMayorController.listReport}"
+															paginator="true" paginatorposition="bottom" rows="10"
+															lazy="true" dynamic="true"
+															emptyMessage="Realize un filtro de busqueda"
+															loadingmessage="Realizando operacion. espere..">
+
+															<p:ajax event="page"
+																listener="#{reporteLibroMayorController.test}" />
+
+															<p:column>
+																<f:facet name="header">
+																	<h:outputText value="Fecha"></h:outputText>
+																</f:facet>
+																<h:outputText value="#{var.fecha}"></h:outputText>
+															</p:column>
+															<p:column>
+																<f:facet name="header">
+																	<h:outputText value="Comp."></h:outputText>
+																</f:facet>
+																<h:outputText
+																	value="#{var.asientoContable.comprobante.tipoComprobante.sigla}"></h:outputText>
+															</p:column>
+															<p:column>
+																<f:facet name="header">
+																	<h:outputText value="Detalle"></h:outputText>
+																</f:facet>
+																<h:outputText value="#{var.planCuenta.descripcion}"></h:outputText>
+															</p:column>
+															<p:column>
+																<f:facet name="header">
+																	<h:outputText value="Debe"></h:outputText>
+																</f:facet>
+																<h:outputText value="#{var.debitoNacional}"></h:outputText>
+															</p:column>
+															<p:column>
+																<f:facet name="header">
+																	<h:outputText value="Haber"></h:outputText>
+																</f:facet>
+																<h:outputText value="#{var.creditoNacional}"></h:outputText>
+															</p:column>
+															<p:column>
+																<f:facet name="header">
+																	<h:outputText value="Saldo"></h:outputText>
+																</f:facet>
+																<h:outputText value="#{var.saldoNacional}"></h:outputText>
+															</p:column>
+															<p:columnGroup type="footer">
+																<p:row>
+																	<p:column colspan="3" style="text-align:right"
+																		footerText="Total:" />
+																	<p:column footerText="0.00" style="text-align:right" />
+																	<p:column footerText="0.00" style="text-align:right" />
+																	<p:column footerText="" style="text-align:right" />
+																</p:row>
+															</p:columnGroup>
+															<f:facet name="footer">
+																<h:outputText
+																	value="#{reporteLibroMayorController.lengthList} Registros en Total" />
+															</f:facet>
+														</p:dataTable>
+													</div>
+												</div>
+											</div>
+										</h:form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+			</section>
+		</div>
+		<!--END CONTENT-->
+
+		<!-- START GROWL :formGrowl:msgs1 -->
+		<h:form id="formGrowl">
+			<p:growl id="msgs1" showDetail="true" />
+		</h:form>
+		<!-- END GROWL -->
+
+		<!-- START DIALOG -->
+		<!-- VISTA PREVIA REPORTE -->
+		<p:dialog header="LIBRO MAYOR" widgetVar="dlgVistaPreviaLibroMayor"
+			modal="true" visible="#{not empty facesContext.maximumSeverity}"
+			resizable="false" position="center" width="750px">
+			<h:form id="formModalVistaPrevia">
+				<div class="row">
+					<div class="form-group ">
+						<div class="col-md-12">
+							<p:media player="pdf" rendered="true"
+								value="#{reporteLibroMayorController.urlLibroMayor}"
+								width="100%" height="580px" />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="form-group">
+							<div class="col-md-4"></div>
+							<div class="col-md-4"></div>
+							<div class="col-md-4">
+								<p:commandLink value="Aceptar"
+									styleClass="btn btn-primary btn-block"
+									onclick="PF('dlgVistaPreviaLibroMayor').hide();" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+		<!-- END DIALOG -->
+
+	</ui:define>
+
+</ui:composition>

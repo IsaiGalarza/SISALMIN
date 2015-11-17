@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/WEB-INF/templates/template_main.xhtml">
+	<ui:define name="head">
+		<title>Servicio</title>
+	</ui:define>
+
+	<ui:define name="content">
+
+		<!--BEGIN CONTENT-->
+		<div class="content">
+			<section class="content-header">
+				<div class="pull-left" style="padding-top: 8px;">
+					<h:form id="formBotonesHeader" style="padding-left: 10px;">
+						<div class="btn-group-demo">
+							<div class="btn-group">
+								<p:commandLink id="buttonCancelar" value="&#160; Cancelar"
+									styleClass="btn btn-warning ion-minus-circled"
+									update=":formReg,:formBotonesHeader,:formTableServicio"
+									rendered="#{servicioController.modificar or servicioController.registrar}"
+									style="height:31px; padding:center"
+									action="#{servicioController.actualizarFormReg()}">
+								</p:commandLink>
+								<p:commandLink id="buttonCrear1" value="&#160; Nuevo Servicio"
+									styleClass="btn btn-success ion-plus-round"
+									rendered="#{servicioController.crear}"
+									update=":formTableServicio,:formReg,:formGrowl:msgs1,:formBotonesHeader"
+									action="#{servicioController.cambiarAspecto()}"
+									style="height:31px;">
+								</p:commandLink>
+								<p:commandLink id="buttonRegistrar" value="&#160; Registrar"
+									styleClass="btn btn-success ion-checkmark"
+									rendered="#{servicioController.registrar}"
+									update=":formTableServicio,:formReg,formGrowl:msgs1,:formBotonesHeader"
+									style="height:31px; padding:center"
+									action="#{servicioController.registrar()}">
+								</p:commandLink>
+								<p:commandLink id="buttonModificar" value="&#160; Modificar"
+									styleClass="btn btn-primary ion-edit"
+									rendered="#{servicioController.modificar}"
+									style="height:31px; padding:center"
+									update=":formTableServicio,:formReg,formGrowl:msgs1,:formBotonesHeader"
+									action="#{servicioController.modificar()}">
+								</p:commandLink>
+								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
+									styleClass="btn btn-danger ion-trash-b"
+									rendered="#{servicioController.modificar}"
+									update=":formTableServicio,:formReg,formGrowl:msgs1,:formBotonesHeader"
+									style="height:31px; padding:center"
+									action="#{servicioController.eliminar()}">
+								</p:commandLink>
+							</div>
+						</div>
+					</h:form>
+				</div>
+				<div class="pull-right">
+					<ol class="breadcrumb">
+						<li><a href="#{request.contextPath}/pages/dashboard.jsf"
+							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
+						<li><a
+							href="#{request.contextPath}/pages/parametrizacion/servicio.xhtml"
+							style="color: #0090FF; font-size: 12px;">Parametrización</a></li>
+						<li class="active" style="font-size: 12px;">Servicios</li>
+					</ol>
+				</div>
+			</section>
+			<section class="main-content">
+				<section class="main-content">
+					<div class="row">
+						<h:form id="formReg">
+							<ui:fragment
+								rendered="#{servicioController.modificar or servicioController.registrar}">
+								<div class="col-md-4">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Registro Servicios</h3>
+										</div>
+										<div class="panel-body">
+											<!-- start here register -->
+											<div class="row">
+												<div class="col-md-12 box-content form-horizontal">
+													<div class="form-group ">
+														<div class="col-md-4">Nombre</div>
+														<div class="col-md-8">
+															<h:inputText id="email" value="#{newServicio.nombre}"
+																style=" color: #555555; background-image: none; "
+																styleClass="input-sm form-control ">
+																<p:ajax event="change" />
+															</h:inputText>
+
+														</div>
+														<h:message for="email" style="color:red" />
+													</div>
+													<div class="form-group ">
+														<div class="col-md-4">Precio</div>
+														<div class="col-md-8">
+															<h:inputText value="#{newServicio.precioReferencial}"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control">
+																<p:ajax event="change" />
+															</h:inputText>
+														</div>
+													</div>
+													<div class="form-group ">
+														<ui:fragment rendered="false">
+															<p:dataList
+																value="#{servicioController.listPrecioServicio}"
+																var="item">
+																<h:outputText value="Precio #{item.nombre}" />
+																#{' '}
+																<h:inputText value="#{item.precio}" />
+															</p:dataList>
+														</ui:fragment>
+													</div>
+													<div class="form-group ">
+														<div class="col-md-4">Cuenta</div>
+														<div class="col-md-8">
+															<p:autoComplete id="autoCompleteCuenta"
+																inputStyleClass="input-sm form-control"
+																style="width:100%; height:100%; color: #555555; background-image: none;"
+																value="#{servicioController.textoAutoCompleteCuenta}"
+																completeMethod="#{servicioController.completeTextCuenta}"
+																maxResults="10">
+																<p:ajax event="itemSelect"
+																	listener="#{servicioController.onItemSelectCuenta}" />
+															</p:autoComplete>
+														</div>
+													</div>
+													<div class="form-group ">
+														<div class="col-md-4">Centro Costo</div>
+														<div class="col-md-8">
+															<p:autoComplete id="autoCompleteCC"
+																inputStyleClass="input-sm form-control"
+																style="width:100%; height:100%; color: #555555; background-image: none;"
+																value="#{servicioController.textoAutoCompleteCentroCosto}"
+																completeMethod="#{servicioController.completeTextCentroCosto}"
+																maxResults="10">
+																<p:ajax event="itemSelect"
+																	listener="#{servicioController.onItemSelectCentroCosto}" />
+															</p:autoComplete>
+														</div>
+													</div>
+													<div class="form-group ">
+														<div class="col-md-4">Estado</div>
+														<div class="col-md-8">
+															<h:selectOneMenu id="roles"
+																styleClass="input-sm form-control"
+																style=" color: #555555; height:25px; font-size:11px;"
+																disabled="#{newServicio.estado =='SUPER'}"
+																immediate="true"
+																value="#{servicioController.nombreEstado}">
+																<f:ajax />
+																<f:selectItems value="#{servicioController.listEstados}" />
+															</h:selectOneMenu>
+														</div>
+													</div>
+												</div>
+											</div>
+											<!-- end here register -->
+										</div>
+									</div>
+								</div>
+							</ui:fragment>
+						</h:form>
+						<h:form id="formTableServicio">
+							<div class="#{servicioController.tipoColumnTable}">
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h3 class="panel-title">Lista de Servicios</h3>
+									</div>
+									<!-- start here datatable -->
+									<div class="box-content no-padding">
+										<p:dataTable id="dataTableServicio" var="item"
+											value="#{listServicio}" selectionMode="single"
+											style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+											selection="#{servicioController.selectedServicio}"
+											emptyMessage="No se encontraron Servicios"
+											rowKey="#{item.id}" reflow="true"
+											filteredValue="#{servicioController.listFilterServicio}">
+											<p:ajax event="rowSelect"
+												listener="#{servicioController.onRowSelect}"
+												update=":formReg,:formBotonesHeader,:formTableServicio" />
+											<p:column width="8%" filterStyle="width: 100%; height:25px;"
+												style="text-align:center;" headerText="Código"
+												filterBy="#{item.id}">
+												<h:outputText value="#{item.id}" />
+											</p:column>
+											<p:column width="18%" filterStyle="width: 100%; height:25px;"
+												headerText="Nombre" filterBy="#{item.nombre}">
+												<h:outputText value="#{item.nombre}" />
+											</p:column>
+											<p:column width="12%" filterStyle="width: 100%; height:25px;"
+												headerText="Precio" filterBy="#{item.precioReferencial}">
+												<h:outputText value="#{item.precioReferencial}" />
+											</p:column>
+											<p:column width="8%" filterStyle="width: 100%; height:25px;"
+												style="text-align:center;" headerText="Estado"
+												filterBy="#{item.estado}">
+												<span class="label label-success"><h:outputText
+														rendered="#{item.estado=='AC'}" value="Activo" /></span>
+												<span class="label label-danger"><h:outputText
+														rendered="#{item.estado=='IN'}" value="Inactivo" /></span>
+											</p:column>
+											<p:column width="15%" filterStyle="width: 100%; height:25px;"
+												headerText="Cuenta" filterBy="#{item.cuenta}">
+												<h:outputText value="#{item.cuenta}" />
+											</p:column>
+											<p:column width="15%" filterStyle="width: 100%; height:25px;"
+												headerText="SubCentro Costo" filterBy="#{item.centroCosto}">
+												<h:outputText value="#{item.centroCosto}" />
+											</p:column>
+											<p:column width="9%" headerText="Usuario Reg."
+												filterStyle="width: 100%; height:25px;"
+												style="text-align:center;"
+												filterBy="#{item.usuarioRegistro}">
+												<h:outputText value="#{item.usuarioRegistro}">
+												</h:outputText>
+											</p:column>
+											<p:column width="8%" headerText="Fecha Reg."
+												filterStyle="width: 100%; height:25px;"
+												style="text-align:center;" filterBy="#{item.fechaRegistro}">
+												<h:outputText value="#{item.fechaRegistro}">
+													<f:convertDateTime pattern="dd/MM/yyyy" />
+												</h:outputText>
+											</p:column>
+											<f:facet name="footer">
+												<h:outputText
+													value="#{listServicio.size()} Registros en Total" />
+											</f:facet>
+										</p:dataTable>
+									</div>
+									<!-- end here datatable -->
+									<div class="panel-body"></div>
+								</div>
+							</div>
+						</h:form>
+					</div>
+				</section>
+			</section>
+		</div>
+
+		<!--END CONTENT-->
+
+		<!-- START GROWL -->
+		<h:form id="formGrowl">
+			<p:growl id="msgs1" showDetail="true" />
+		</h:form>
+		<!-- END GROWL -->
+
+		<!-- START DIALOG -->
+		<p:dialog header="DIALOG TEST" widgetVar="dlg1" modal="true"
+			height="100%">
+		</p:dialog>
+		<!-- END DIALOG -->
+
+	</ui:define>
+
+	<ui:insert name="scripts">
+
+	</ui:insert>
+</ui:composition>

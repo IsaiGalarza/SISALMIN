@@ -1,0 +1,631 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/WEB-INF/templates/template_main.xhtml">
+	<ui:define name="head">
+		<title>Sucursal</title>
+	</ui:define>
+
+	<ui:define name="content">
+
+		<!--BEGIN CONTENT-->
+		<div class="content">
+			<section class="content-header">
+				<div class="pull-left" style="padding-top: 8px;">
+					<h:form id="formBotonesHeader" style="padding-left: 10px;">
+						<div class="btn-group-demo">
+							<div class="btn-group">
+								<div class="form-group">
+									<p:commandLink id="buttonCancelar" value="&#160; Cancelar"
+										styleClass="btn btn-warning ion-minus-circled"
+										rendered="#{sucursal2Controller.modificar or sucursal2Controller.registrar}"
+										style="height:31px; padding:center"
+										update="formReg,formTableSucursal,formBotonesHeader,formTableDosificacion"
+										action="#{sucursal2Controller.loadDefault()}">
+									</p:commandLink>
+									<p:commandLink id="buttonCrear1" value="&#160; Nueva Sucursal"
+										styleClass="btn btn-success ion-plus-round"
+										rendered="#{sucursal2Controller.crear}" style="height:31px;">
+										<p:ajax
+											update="formTableSucursal,formReg,formBotonesHeader,formTableDosificacion"
+											listener="#{sucursal2Controller.cambiarAspecto()}" />
+									</p:commandLink>
+									<p:commandLink id="ajax" value="&#160; Registrar"
+										styleClass="btn btn-success ion-checkmark"
+										rendered="#{ sucursal2Controller.registrar}"
+										style="height:31px; padding:center"
+										update="formTableSucursal,formGrowl:msgs1,:formBotonesHeader,formReg,formTableDosificacion"
+										action="#{sucursal2Controller.registrarSucursal()}">
+									</p:commandLink>
+									<p:commandLink id="buttonModificar" value="&#160; Modificar"
+										update="formTableSucursal,formGrowl:msgs1,formBotonesHeader,formReg,formTableDosificacion"
+										rendered="#{sucursal2Controller.modificar}"
+										styleClass="btn btn-primary ion-edit"
+										style="height:31px; padding:center"
+										action="#{sucursal2Controller.modificarSucursal()}">
+									</p:commandLink>
+									<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
+										styleClass="btn btn-danger ion-trash-b"
+										rendered="#{sucursal2Controller.modificar}"
+										style="height:31px; padding:center"
+										update="formTableSucursal,formGrowl:msgs1,formBotonesHeader,formReg,formTableDosificacion"
+										action="#{sucursal2Controller.eliminarSucursal()}">
+									</p:commandLink>
+								</div>
+							</div>
+						</div>
+
+					</h:form>
+				</div>
+				<div class="pull-right">
+					<ol class="breadcrumb">
+						<li><a href="#{request.contextPath}/pages/dashboard.jsf"
+							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
+						<li><a
+							href="#{request.contextPath}/pages/parametrizacion/sucursal.xhtml"
+							style="color: #0090FF; font-size: 12px;">Parametrización</a></li>
+						<li class="active">Sucursal</li>
+					</ol>
+				</div>
+			</section>
+			<section class="main-content">
+				<section class="main-content">
+					<div class="row">
+						<h:form id="formReg">
+							<ui:fragment
+								rendered="#{sucursal2Controller.registrar or sucursal2Controller.modificar}">
+								<div class="col-md-4">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Registro de Sucursal</h3>
+										</div>
+										<div class="panel-body">
+											<div class="row">
+												<div class="col-md-12 box-content form-horizontal">
+													<div class="form-group ">
+														<div class="col-md-4">Nombre</div>
+														<div class="col-md-8">
+															<h:inputText value="#{sucursal2Controller.newSucursal.nombre}"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control">
+																<f:ajax />
+															</h:inputText>
+														</div>
+													</div>
+													<div class="form-group ">
+														<div class="col-md-4">Descripción</div>
+														<div class="col-md-8">
+															<h:inputText value="#{sucursal2Controller.newSucursal.descripcion}"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control">
+																<f:ajax />
+															</h:inputText>
+														</div>
+													</div>
+													<div class="form-group ">
+														<div class="col-md-4">Telefono</div>
+														<div class="col-md-8">
+															<h:inputText value="#{sucursal2Controller.newSucursal.telefono}"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control">
+																<f:ajax />
+															</h:inputText>
+														</div>
+													</div>
+													<div class="form-group ">
+														<div class="col-md-4">Dirección</div>
+														<div class="col-md-8">
+															<h:inputText value="#{sucursal2Controller.newSucursal.direccion}"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control">
+																<f:ajax />
+															</h:inputText>
+														</div>
+													</div>
+													
+													<div class="form-group ">
+														<div class="col-md-4">Estado</div>
+														<div class="col-md-8">
+															<h:selectOneMenu id="roles"
+																styleClass="input-sm form-control"
+																style=" color: #555555; height:25px; font-size:11px;"
+																disabled="#{sucursal2Controller.newSucursal.estado =='SUPER'}"
+																immediate="true"
+																value="#{sucursal2Controller.nombreEstado}">
+																<f:ajax />
+																<f:selectItems value="#{sucursal2Controller.listEstado}" />
+															</h:selectOneMenu>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</ui:fragment>
+						</h:form>
+
+						<h:form id="formTableSucursal">
+							<ui:fragment rendered="#{sucursal2Controller.crear}">
+								<div class="col-md-12">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Lista de Sucursal</h3>
+										</div>
+										<!-- start here datatable -->
+										<div class="box-content no-padding">
+											<p:dataTable id="dataTableSucursal"
+												value="#{sucursal2Controller.listSucursal}" var="item"
+												selectionMode="single"
+												emptyMessage="No se encotraron sucursales."
+												style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+												selection="#{sucursal2Controller.selectedSucursal}"
+												filteredValue="#{sucursal2Controller.listFilterSucursal}"
+												rowKey="#{item.id}" reflow="true">
+
+												<p:ajax event="rowSelect"
+													listener="#{sucursal2Controller.onRowSelectSucursal}"
+													update="formReg,formBotonesHeader,formTableSucursal,formTableDosificacion" />
+
+												<p:column headerText="Código" width="10%"
+													filterStyle="width: 100%; height:25px;"
+													style="text-align:center;" filterBy="#{item.id}">
+													<h:outputText value="#{item.id}" />
+												</p:column>
+												<p:column width="20%"
+													filterStyle="width: 100%; height:25px;"
+													filterBy="#{item.nombre}">
+													<f:facet name="header">Nombre</f:facet>
+													<h:outputText value="#{item.nombre}" />
+												</p:column>
+												<p:column width="10%" headerText="Telefono"
+													filterStyle="width: 100%; height:25px;"
+													filterBy="#{item.telefono}">
+													<h:outputText value="#{item.telefono}" />
+												</p:column>
+												<p:column width="18%"
+													filterStyle="width: 100%; height:25px;"
+													filterBy="#{item.direccion}">
+													<f:facet name="header">Dirección</f:facet>
+													<h:outputText value="#{item.direccion}" />
+												</p:column>
+												<p:column width="8%" filterStyle="width: 100%; height:25px;"
+													style="text-align:center;" headerText="Estado"
+													filterBy="#{item.estado}">
+													<span class="label label-success"><h:outputText
+															rendered="#{item.estado=='AC'}" value="Activo" /></span>
+													<span class="label label-danger"><h:outputText
+															rendered="#{item.estado=='IN'}" value="Inactivo" /></span>
+												</p:column>
+												<p:column width="8%" headerText="Usuario Reg."
+													filterStyle="width: 100%; height:25px;"
+													style="text-align:center;"
+													filterBy="#{item.usuarioRegistro}">
+													<h:outputText value="#{item.usuarioRegistro}">
+													</h:outputText>
+												</p:column>
+												<p:column width="8%" headerText="Fecha Reg."
+													filterStyle="width: 100%; height:25px;"
+													style="text-align:center;" filterBy="#{item.fechaRegistro}">
+													<h:outputText value="#{item.fechaRegistro}">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</h:outputText>
+												</p:column>
+												<f:facet name="footer">
+													<h:outputText
+														value="#{sucursal2Controller.listSucursal.size()} Registros en Total" />
+												</f:facet>
+											</p:dataTable>
+										</div>
+										<div class="panel-body"></div>
+									</div>
+								</div>
+							</ui:fragment>
+						</h:form>
+
+						<h:form id="formTableDosificacion">
+							<ui:fragment
+								rendered="#{sucursal2Controller.modificar or sucursal2Controller.registrar}">
+								<div class="col-md-8">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Lista de Dosificacion</h3>
+										</div>
+										<!-- start here datatable -->
+										<div class="box-content no-padding">
+											<p:dataTable id="dataTableDosificacion"
+												value="#{sucursal2Controller.listDosificacion}" var="item"
+												selectionMode="single"
+												emptyMessage="No se encotraron dosificaciones"
+												style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+												selection="#{sucursal2Controller.selectedDosificacion}"
+												rowKey="#{item.llaveControl}" reflow="true">
+												<p:ajax event="rowSelect"
+													listener="#{sucursal2Controller.onRowSelectDosificacion}"
+													update="formTableDosificacion" />
+												<p:column width="11%" headerText="Nro. Autorizacion"
+													style="text-align:center;">
+													<h:outputText value="#{item.numeroAutorizacion}" />
+												</p:column>
+												<p:column width="8%" headerText="Nro. Tramite">
+													<h:outputText value="#{item.numeroTramite}" />
+												</p:column>
+												<p:column width="9%" headerText="Cantidad/Tiempo">
+													<h:outputText value="#{item.cantidadDosificacion}" />
+												</p:column>
+												<p:column width="7%" headerText="Nro. Inicial">
+													<h:outputText value="#{item.numeroInicial}" />
+												</p:column>
+												<p:column width="7%" headerText="Nro. Actual">
+													<h:outputText value="#{item.numeroSecuencia}" />
+												</p:column>
+												<p:column width="11%" headerText="Fecha Limite Em."
+													style="text-align:center;">
+													<h:outputText value="#{item.fechaLimiteEmision}">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</h:outputText>
+												</p:column>
+												<p:column width="7%" style="text-align:center;"
+													headerText="Estado">
+													<span class="label label-success"><h:outputText
+															rendered="#{item.activo==true}" value="Activo" /></span>
+													<span class="label label-danger"><h:outputText
+															rendered="#{item.activo==false}" value="Inactivo" /></span>
+												</p:column>
+											</p:dataTable>
+										</div>
+										<div class="panel-body">
+											<div class="row">
+												<div class="col-md-12">
+													<div class="form-group">
+														<div class="col-md-3">
+															<p:commandLink id="cancelarDosificacion"
+																value="&#160; Cancelar"
+																styleClass="btn btn-warning ion-minus-circled btn-block"
+																rendered="#{sucursal2Controller.seleccionadaDosificacion}">
+																<p:ajax update="formTableDosificacion"
+																	listener="#{sucursal2Controller.buttonCancelarDosificacion()}" />
+															</p:commandLink>
+														</div>
+														<div class="col-md-3">
+															<p:commandLink id="activarDosificacion"
+																value="&#160; Activar"
+																styleClass="btn btn-success ion-plus-round btn-block"
+																rendered="#{sucursal2Controller.seleccionadaDosificacion}">
+																<p:ajax update="formTableDosificacion,formGrowl:msgs1"
+																	listener="#{sucursal2Controller.buttonActivarDosificacion()}" />
+															</p:commandLink>
+														</div>
+														<div class="col-md-3">
+															<p:commandLink id="modificarDosificacion"
+																value="&#160; Modificar"
+																styleClass="btn btn-primary ion-edit btn-block"
+																rendered="#{sucursal2Controller.seleccionadaDosificacion}"
+																update="formModalDosificacion">
+																<p:ajax listener="#{sucursal2Controller.buttonModificarDosificacion()}"/>
+															</p:commandLink>
+														</div>
+														<div class="col-md-3">
+															<p:commandLink id="agregarDosificacion"
+																value="&#160; Agregar Dosif."
+																styleClass="btn btn-success ion-plus-round btn-block"
+																rendered="#{ ! sucursal2Controller.seleccionadaDosificacion}"
+																update="formModalDosificacion">
+																<p:ajax listener="#{sucursal2Controller.buttonAgregarDosificacion()}"/>
+															</p:commandLink>
+															<p:commandLink id="eliminarDosificacion"
+																value="&#160; Eliminar"
+																styleClass="btn btn-danger ion-close btn-block"
+																rendered="#{sucursal2Controller.seleccionadaDosificacion}"
+																update="formTableDosificacion,formGrowl:msgs1">
+															</p:commandLink>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</ui:fragment>
+						</h:form>
+					</div>
+				</section>
+			</section>
+		</div>
+		<!--END CONTENT-->
+
+		<!-- START GROWL -->
+		<h:form id="formGrowl">
+			<p:growl id="msgs1" showDetail="true" />
+		</h:form>
+		<!-- END GROWL -->
+
+		<!-- START DIALOG -->
+		<p:dialog header="DATOS DOSIFICACION" widgetVar="dlgDosificacion"
+			modal="true" resizable="false" position="center" width="800px">
+			<h:form id="formModalDosificacion">
+
+				<div class="row">
+					<div class="col-md-3"></div>
+					<div class="col-md-6" align="center">
+						<strong> DATOS DE DOSIFICACION - FACTURACION </strong>
+					</div>
+					<div class="col-md-3"></div>
+				</div>
+				<br />
+
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group ">
+							<div class="col-md-12">
+								<div class="form-group ">
+									<div class="col-md-6">
+										<h:outputLabel value="Tipo de Dosificacion" />
+									</div>
+									<div class="col-md-6">
+										<h:selectOneMenu id="tipoDialog"
+											value="#{sucursal2Controller.newDosificacion.tipoDosificacion}"
+											styleClass="form-control">
+											<p:ajax event="change" />
+											<f:selectItem itemValue="CANTIDAD" itemLabel="CANTIDAD" />
+											<f:selectItem itemValue="TIEMPO" itemLabel="TIEMPO" />
+										</h:selectOneMenu>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group ">
+									<div class="col-md-6">
+										<h:outputLabel id="outputLabelNTramite" value="N° Tramite" />
+									</div>
+									<div class="col-md-6">
+										<p:inputText id="numeroTramiteDialog"
+											styleClass="form-control" autocomplete="off"
+											value="#{sucursal2Controller.newDosificacion.numeroTramite}"
+											required="true" requiredMessage="N° Tramite Requerido.">
+											<p:ajax event="change" />
+										</p:inputText>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group ">
+									<div class="col-md-6">
+										<h:outputLabel value="N° Inicial" />
+									</div>
+									<div class="col-md-6">
+										<p:inputText id="numeroInicialDialog"
+											styleClass="form-control" autocomplete="off"
+											value="#{sucursal2Controller.newDosificacion.numeroInicial}"
+											required="true" requiredMessage="N° Inicial Requerido.">
+											<p:ajax event="change" />
+										</p:inputText>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group ">
+									<div class="col-md-6">
+										<h:outputLabel value="Res. Normativa" />
+									</div>
+									<div class="col-md-6">
+										<h:selectOneMenu id="resolucionNormativaDialog"
+											value="#{sucursal2Controller.newDosificacion.normaAplicada}"
+											styleClass="form-control">
+											<p:ajax event="change" immediate="true" />
+											<f:selectItem itemValue="NSF-07" itemLabel="NSF-07" />
+											<f:selectItem itemValue="SFV-14" itemLabel="SFV-14" />
+										</h:selectOneMenu>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group ">
+									<div class="col-md-6">
+										<h:outputLabel value="Llave Dosificacion" />
+									</div>
+									<div class="col-md-6">
+										<p:inputText id="llaveControl" styleClass="form-control"
+											autocomplete="off"
+											value="#{sucursal2Controller.newDosificacion.llaveControl}"
+											required="true"
+											requiredMessage="Llave de Control es requerido">
+											<p:ajax event="change" />
+										</p:inputText>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group ">
+							<div class="col-md-12">
+								<div class="form-group ">
+									<div class="col-md-6">
+										<h:outputLabel value="Cantidad" />
+									</div>
+									<div class="col-md-6">
+										<p:inputText id="cantidadDialog" styleClass="form-control"
+											autocomplete="off"
+											value="#{sucursal2Controller.newDosificacion.cantidadDosificacion}"
+											required="true" requiredMessage="Cantidad Requerido.">
+											<p:ajax event="change" />
+										</p:inputText>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group ">
+									<div class="col-md-6">
+										<h:outputLabel value="Nro. Autorizacion" />
+									</div>
+									<div class="col-md-6">
+										<p:inputText id="numeroAutorizacionDialog"
+											styleClass="form-control" autocomplete="off"
+											value="#{sucursal2Controller.newDosificacion.numeroAutorizacion}"
+											required="true"
+											requiredMessage="Nro. Autorizacion Requerido.">
+											<p:ajax event="change" />
+										</p:inputText>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group ">
+									<div class="col-md-6">
+										<h:outputLabel value="Nro. Secuencial" />
+									</div>
+									<div class="col-md-6">
+										<p:inputText id="numeroSecuencialDialog"
+											styleClass="form-control" autocomplete="off"
+											value="#{sucursal2Controller.newDosificacion.numeroSecuencia}"
+											required="true" requiredMessage="Nro. Secuencial Requerido.">
+											<p:ajax event="change" />
+										</p:inputText>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group ">
+									<div class="col-md-6">
+										<h:outputLabel value="Fecha Limite Emision" />
+									</div>
+									<div class="col-md-6">
+										<p:calendar id="fechaLimiteEmisionnDialog" immediate="true"
+											autocomplete="off"
+											value="#{sucursal2Controller.newDosificacion.fechaLimiteEmision}"
+											mindate="#{sucursalController.fechaMinima}"
+											datePattern="dd/MM/yyyy">
+											<p:ajax event="dateSelect" />
+										</p:calendar>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<br />
+
+				<div class="row">
+					<div class="col-md-8"></div>
+				</div>
+
+				<br />
+
+				<div class="row">
+					<div class="col-md-3"></div>
+					<div class="col-md-6" align="center">
+						<strong> LEYENDA PARA FACTURA </strong>
+					</div>
+					<div class="col-md-3"></div>
+				</div>
+
+				<br />
+
+				<div class="row">
+					<div class="col-md-8">
+						<div class="form-group ">
+							<div class="col-md-12">
+								<div class="form-group ">
+									<div class="col-md-6">
+										<h:outputLabel value="Actividad Economica" />
+									</div>
+									<div class="col-md-6">
+										<p:inputText id="actividadEconomicaDialog"
+											styleClass="form-control" autocomplete="off"
+											value="#{sucursal2Controller.newDosificacion.actividadEconomica}"
+											required="true"
+											requiredMessage="Actividad Economica Requerido.">
+											<p:ajax event="change" />
+										</p:inputText>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group ">
+									<div class="col-md-6">
+										<h:outputLabel value="Leyenda Generica" />
+									</div>
+									<div class="col-md-6">
+										<p:inputText id="leyendaGenericaDialog"
+											styleClass="form-control" autocomplete="off"
+											value="#{sucursal2Controller.newDosificacion.leyendaInferior1}"
+											required="true" requiredMessage="Leyenda Generica Requerido.">
+											<p:ajax event="change" />
+										</p:inputText>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group ">
+									<div class="col-md-6">
+										<h:outputLabel value="Leyenda Ley N° 453" />
+									</div>
+									<div class="col-md-6">
+										<p:inputText id="leyendaLey453Dialog"
+											styleClass="form-control" autocomplete="off"
+											value="#{sucursal2Controller.newDosificacion.leyendaInferior2}"
+											required="true"
+											requiredMessage="Leyenda Ley N° 453 Requerido.">
+											<p:ajax event="change" />
+										</p:inputText>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="form-group "></div>
+					</div>
+				</div>
+
+				<br />
+
+				<div class="row">
+					<div class="col-md-12">
+						<div class="form-group">
+							<div class="col-md-3"></div>
+							<div class="col-md-3"></div>
+							<div class="col-md-3">
+								<p:commandLink id="cancelarDosificacionDialog"
+									value="&#160; Cancelar"
+									styleClass="btn btn-warning ion-minus-circled btn-block">
+									<p:ajax update="formTableDosificacion,formModalDosificacion"
+										listener="#{sucursal2Controller.dialogCancelarDosificacion()}" />
+								</p:commandLink>
+							</div>
+							<div class="col-md-3">
+								<p:commandLink id="registrarDosificacionDialog"
+									value="&#160; Registrar"
+									styleClass="btn btn-success ion-checkmark btn-block"
+									rendered="#{sucursal2Controller.estadoButtonDialog}">
+									<p:ajax
+										update="formModalDosificacion,formTableDosificacion,formGrowl:msgs1"
+										listener="#{sucursal2Controller.agregarDosificacion()}" />
+								</p:commandLink>
+								<p:commandLink id="modificarDosificacionDialog"
+									value="&#160; Modificar"
+									styleClass="btn btn-primary ion-edit btn-block"
+									rendered="#{ ! sucursal2Controller.estadoButtonDialog}">
+									<p:ajax
+										update="formModalDosificacion,formTableDosificacion,formGrowl:msgs1"
+										listener="#{sucursal2Controller.modificarDosificacion()}" />
+								</p:commandLink>
+							</div>
+
+						</div>
+					</div>
+				</div>
+
+			</h:form>
+		</p:dialog>
+		<!-- END DIALOG -->
+
+	</ui:define>
+</ui:composition>

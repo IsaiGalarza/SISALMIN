@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/WEB-INF/templates/template_main.xhtml">
+	<ui:define name="head">
+		<title>Tipo de Cambio</title>
+	</ui:define>
+	<ui:define name="content">
+		<!--BEGIN CONTENT-->
+		<div class="content">
+			<section class="content-header">
+				<div class="pull-left">
+					<ol class="breadcrumb">
+						<li><a href="#{request.contextPath}/pages/dashboard.jsf" style="color: #0090FF; font-size: 12px;">Inicio</a></li>
+						<li><a href="#{request.contextPath}/pages/parametrizacion/tipo-cambio.xhtml" style="color: #0090FF; font-size: 12px;">Parametrización</a></li>
+						<li class="active" style="font-size: 12px;">Tipo de Cambio</li>
+					</ol>
+				</div>
+			</section>
+			<section class="main-content">
+				<section class="main-content">
+					<div class="row">
+						<div class="col-md-4">
+							<div class="panel panel-primary">
+								<div class="panel-heading">
+									<h3 class="panel-title">Registro Tipo de Cambio</h3>
+								</div>
+								<div class="panel-body">
+									<!-- start here datatable -->
+									<h:form id="formTableTipoCambio">
+									</h:form>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-8">
+							<div class="panel panel-primary">
+								<div class="panel-heading">
+									<h3 class="panel-title">Tipo de Cambio</h3>
+								</div>
+								<div class="panel-body">
+									<!-- start here datatable -->
+									<h:form>
+										<h:panelGrid columnClasses="value">
+											<p:schedule id="schedule"
+												value="#{tipoCambioController.eventModel}" locale="tr"
+												widgetVar="myschedule" timeZone="GMT-4">
+											</p:schedule>
+										</h:panelGrid>
+									</h:form>
+									<!-- end here datatable -->
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+			</section>
+		</div>
+		<!--END CONTENT-->
+
+		<!-- START GROWL :formGrowl:msgs1 -->
+		<h:form id="formGrowl">
+			<p:growl id="msgs1" showDetail="true" />
+		</h:form>
+		<!-- END GROWL -->
+
+		<!-- START DIALOG -->
+		<h:form id="formEventDialog">
+			<p:dialog widgetVar="eventDialog" header="Nuevo Tipo de Cambio"
+				showEffect="clip" hideEffect="clip">
+				<h:panelGrid id="eventDetails" columns="2">
+					<h:outputLabel for="title" value="TC:" />
+					<p:inputText id="title" value="#{tipoCambioController.event.title}"
+						required="true" />
+
+					<h:outputLabel value="" />
+					<h:outputLabel value="" />
+
+					<p:commandButton type="reset" value="Cancelar" />
+					<p:commandButton id="addButton" value="Guardar"
+						actionListener="#{tipoCambioController.addEvent}"
+						oncomplete="PF('myschedule').update();PF('eventDialog').hide();" />
+				</h:panelGrid>
+			</p:dialog>
+		</h:form>
+		<!-- END DIALOG -->
+
+		<script type="text/javascript">
+    PrimeFaces.locales['tr'] = {
+        closeText: 'Cerrar',
+        prevText: 'Anterior',
+        nextText: 'Siguiente',
+        currentText: 'Hoy',
+        monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+            'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+        monthNamesShort: ['Ene','Feb','Mar','Abr','May','Jun',
+            'Jul','Ago','Sep','Oct','Nov','Dic'],
+        dayNames: ['Lunes','Martes','Miércoles','Jueves','Viernes','Sabado','Domingo'],
+        dayNamesShort: ['Lu','Ma','Mi','Ju','Vi','Sa','Do'],
+        dayNamesMin: ['Lu','Ma','Mi','Ju','Vi','Sa','Do'],
+        weekHeader: 'Semana',
+        firstDay: 1,
+        isRTL: false,
+        showMonthAfterYear: false,
+        yearSuffix: '',
+        month: 'Mes',
+        week: 'Semana',
+        day: 'Día',
+        allDayText : 'Todos el día'
+    };
+</script>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/WEB-INF/templates/template_main.xhtml">
+	<ui:define name="head">
+		<title>Grupo Impuesto</title>
+	</ui:define>
+
+	<ui:define name="content">
+		<!--BEGIN CONTENT-->
+		<div class="content">
+			<section class="content-header">
+				<div class="pull-left" style="padding-top: 8px;">
+					<h:form id="formBotonesHeader" style="padding-left: 10px;">
+						<div class="btn-group-demo">
+							<div class="btn-group">
+								<div class="form-group">
+									<p:commandLink id="ajax" value="&#160; Nuevo Grupo Impuesto"
+										styleClass="btn btn-success ion-plus-round"
+										style="height:31px; padding:center"
+										rendered="#{grupoImpuestoController.crear}"
+										update=":form,:formReg,:formGrowl:msgs1,:formBotonesHeader"
+										action="#{grupoImpuestoController.cambiarAspecto()}">
+									</p:commandLink>
+									<p:commandLink id="buttonCancelar" value="&#160; Cancelar"
+										styleClass="btn btn-warning ion-minus-circled"
+										update=":formReg,:form,:formBotonesHeader"
+										rendered="#{grupoImpuestoController.modificar or grupoImpuestoController.registrar}"
+										style="height:31px; padding:center"
+										action="#{grupoImpuestoController.actualizarFormReg()}">
+									</p:commandLink>
+									<p:commandLink id="buttonRegistrar" value="&#160; Registrar"
+										styleClass="btn btn-success ion-checkmark"
+										rendered="#{grupoImpuestoController.registrar}"
+										update=":formReg,:form,formGrowl:msgs1,:formBotonesHeader"
+										style="height:31px; padding:center"
+										action="#{grupoImpuestoController.registrar()}">
+									</p:commandLink>
+									<p:commandLink id="buttonModificar" value="&#160; Modificar"
+										styleClass="btn btn-primary ion-edit"
+										rendered="#{grupoImpuestoController.modificar}"
+										style="height:31px; padding:center"
+										update=":formReg,:form,:formGrowl:msgs1,:formBotonesHeader"
+										action="#{grupoImpuestoController.modificar()}">
+									</p:commandLink>
+									<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
+										styleClass="btn btn-danger ion-close"
+										rendered="#{grupoImpuestoController.modificar}"
+										update=":formReg,:form,formGrowl:msgs1,:formBotonesHeader"
+										style="height:31px; padding:center"
+										action="#{grupoImpuestoController.eliminar()}">
+									</p:commandLink>
+								</div>
+							</div>
+						</div>
+					</h:form>
+				</div>
+				<div class="pull-right">
+					<ol class="breadcrumb">
+						<li><a href="#" style="color: #0090FF; font-size: 13px;">Inicio</a></li>
+						<li><a href="#" style="color: #0090FF; font-size: 13px;">Parametrización</a></li>
+						<li class="active">Grupo Impuesto</li>
+					</ol>
+				</div>
+			</section>
+			<section class="main-content">
+				<section class="main-content">
+					<div class="row">
+						<h:form id="formReg">
+							<ui:fragment
+								rendered="#{grupoImpuestoController.modificar or grupoImpuestoController.registrar}">
+								<div class="col-md-4">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Nuevo Grupo de Impuesto</h3>
+										</div>
+										<div class="panel-body">
+											<div class="row">
+												<div class="col-md-12">
+													<div class="form-group ">
+														<div class="col-md-4">Nombre</div>
+														<div class="col-md-8">
+															<h:inputText
+																value="#{grupoImpuestoController.newGrupoImpuesto.nombre}"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control">
+																<f:ajax />
+															</h:inputText>
+														</div>
+													</div>
+													<br />
+													<div class="form-group ">
+														<div class="col-md-4">Estado</div>
+														<div class="col-md-8">
+															<h:selectOneMenu id="roles"
+																styleClass="input-sm form-control"
+																style=" color: #555555; height:25px; font-size:11px;"
+																value="#{grupoImpuestoController.nombreEstado}">
+																<f:ajax />
+																<f:selectItems
+																	value="#{grupoImpuestoController.listEstado}" />
+															</h:selectOneMenu>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</ui:fragment>
+						</h:form>
+						<h:form id="form">
+							<div class="#{grupoImpuestoController.tipoColumnTable}">
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h3 class="panel-title">Grupo de Impuesto</h3>
+										
+									</div>
+									<!-- start here datatable -->
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group ">
+												<p:treeTable id="docs"
+													value="#{grupoImpuestoController.root}" var="node"
+													selectionMode="single"
+													emptyMessage="No se encontraron Grupo de Impuesto"
+													style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+													selection="#{grupoImpuestoController.selectedNode}">
+													<p:ajax event="select"
+														update=":form,:formReg,:formGrowl:msgs1,:formBotonesHeader"
+														listener="#{grupoImpuestoController.onNodeSelect}" />
+													<p:column headerText="Id">
+														<h:outputText value="#{node.id}" />
+													</p:column>
+													<p:column headerText="Nombre">
+														<h:outputText value="#{node.nombre}" />
+													</p:column>
+													<p:column headerText="Tipo">
+														<h:outputText value="#{node.tipo}" />
+													</p:column>
+													<p:column headerText="porcentaje">
+														<h:outputText value="#{node.porcentaje}" />
+													</p:column>
+												</p:treeTable>
+											</div>
+										</div>
+									</div>
+									<!-- end here datatable -->
+									<div class="panel-body"></div>
+								</div>
+							</div>
+						</h:form>
+					</div>
+				</section>
+			</section>
+		</div>
+		<!--END CONTENT-->
+
+		<!-- START GROWL -->
+		<h:form id="formGrowl">
+			<p:growl id="msgs1" showDetail="true" />
+		</h:form>
+		<!-- END GROWL -->
+
+		<!-- START DIALOG -->
+		<p:dialog header="AGREGAR IMPUESTO" widgetVar="dlgGrupoImpuesto"
+			modal="true" height="140px" width="350px">
+			<h:form id="formDlgGrupoImpuesto">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="form-group ">
+							<div class="col-md-4">Porcentaje</div>
+							<div class="col-md-8">
+								<h:selectOneMenu id="Cuentas" styleClass="input-sm form-control"
+									immediate="true"
+									value="#{grupoImpuestoController.nombrePlanCuenta}">
+									<p:ajax event="change" />
+									<f:selectItems
+										value="#{grupoImpuestoController.listPlanCuenta}" />
+								</h:selectOneMenu>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-12">
+						<div class="form-group ">
+							<div class="col-md-4">Porcentaje</div>
+							<div class="col-md-8">
+								<h:inputText
+									value="#{grupoImpuestoController.detalleGrupoImpuesto.porcentaje}"
+									style=" color: #555555; background-image: none;"
+									styleClass="input-sm form-control">
+									<p:ajax event="change" />
+								</h:inputText>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-12">
+						<div class="form-group ">
+							<div class="col-md-4">Tipo</div>
+							<div class="col-md-8">
+								<h:selectOneMenu id="roles" styleClass="input-sm form-control"
+									style=" color: #555555; height:25px; font-size:11px;"
+									immediate="true"
+									value="#{grupoImpuestoController.nombreTipoGrupoImpuesto}">
+									<f:ajax />
+									<f:selectItems value="#{grupoImpuestoController.listTipoGrupoImpuesto}"	 />
+								</h:selectOneMenu>
+							</div>
+						</div>
+					</div>
+				</div>
+				<br />
+				<div class="row">
+					<div class="col-md-12">
+						<p:commandLink id="buttonAgregar" value="&#160; Agregar"
+							styleClass="btn btn-success icon-plus" style="height:31px;"
+							oncomplete="PF('dlgGrupoImpuesto').hide();">
+							<p:ajax update=":formReg,:form,formGrowl:msgs1"
+								listener="#{grupoImpuestoController.agregarCuentaAGrupoImpuesto()}" />
+						</p:commandLink>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+		<!-- END DIALOG -->
+
+	</ui:define>
+</ui:composition>

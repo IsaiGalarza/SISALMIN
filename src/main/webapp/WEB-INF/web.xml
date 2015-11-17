@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
+  <display-name>Java EE Security</display-name>
+  <servlet>
+    <servlet-name>Faces Servlet</servlet-name>
+    <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <context-param>
+    <param-name>javax.faces.PROJECT_STAGE</param-name>
+    <param-value>Production</param-value>
+  </context-param>
+
+  <servlet-mapping>
+    <servlet-name>Faces Servlet</servlet-name>
+    <url-pattern>/faces/*</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>Faces Servlet</servlet-name>
+    <url-pattern>*.xhtml</url-pattern>
+  </servlet-mapping>
+  
+  <mime-mapping>
+       <extension>png</extension>
+       <mime-type>image/png</mime-type>
+  </mime-mapping>
+  
+  <!-- 
+  <filter>
+  <filter-name>Authentication</filter-name>
+  <filter-class>bo.com.qbit.webapp.filter.LoginPageFilter</filter-class>
+</filter>
+<filter-mapping>
+  <filter-name>Authentication</filter-name>
+  <url-pattern>/pages/*</url-pattern>
+</filter-mapping>
+   -->
+   
+   
+  <filter>
+  <filter-name>PrimeFaces FileUpload Filter</filter-name>
+  <filter-class>
+             org.primefaces.webapp.filter.FileUploadFilter
+  </filter-class>
+  <init-param>
+        <param-name>thresholdSize</param-name>
+        <param-value>51200</param-value>
+  </init-param>
+ 
+  </filter>
+  <filter-mapping>
+  <filter-name>PrimeFaces FileUpload Filter</filter-name>
+  <servlet-name>Faces Servlet</servlet-name>
+  </filter-mapping>
+  
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
+  
+  <!-- Richfaces -->
+ <context-param>
+    <param-name>org.richfaces.push.jms.disable</param-name>
+    <param-value>true</param-value>
+</context-param>
+ 
+  
+  <!-- JasperReports Servlet -->
+   <servlet>
+     <servlet-name>PdfServlet</servlet-name>
+     <servlet-class>net.sf.jasperreports.j2ee.servlets.PdfServlet</servlet-class>
+   </servlet>
+   <servlet>
+     <servlet-name>JExcelApiServlet</servlet-name>
+     <servlet-class>net.sf.jasperreports.j2ee.servlets.JExcelApiServlet</servlet-class>
+   </servlet>
+   <servlet>
+     <servlet-name>RtfServlet</servlet-name>
+     <servlet-class>net.sf.jasperreports.j2ee.servlets.RtfServlet</servlet-class>
+   </servlet>
+   <servlet>
+     <servlet-name>ImageServlet</servlet-name>
+     <servlet-class>net.sf.jasperreports.j2ee.servlets.ImageServlet</servlet-class>
+   </servlet>
+        <!-- JasperReports Servlet Mapping -->   
+    <servlet-mapping>
+        <servlet-name>PdfServlet</servlet-name>
+        <url-pattern>/servlets/report/PDF</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>JExcelApiServlet</servlet-name>
+        <url-pattern>/servlets/report/EXCEL</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RtfServlet</servlet-name>
+        <url-pattern>/servlets/report/RTF</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ImageServlet</servlet-name>
+        <url-pattern>/servlets/image</url-pattern>
+    </servlet-mapping>
+    
+    <session-config>
+		<session-timeout>30</session-timeout>
+   </session-config>
+   
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>pages</web-resource-name>
+      <url-pattern>/pages/*</url-pattern>
+      <http-method>PUT</http-method>
+      <http-method>DELETE</http-method>
+      <http-method>GET</http-method>
+      <http-method>POST</http-method>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>*</role-name>
+    </auth-constraint>
+  </security-constraint>
+  
+  <login-config>
+    <auth-method>FORM</auth-method>
+    <realm-name>webapp</realm-name>
+    <form-login-config>
+      <form-login-page>/login.xhtml</form-login-page>
+      <form-error-page>/error.xhtml</form-error-page>
+    </form-login-config>
+  </login-config>
+
+     <security-role>
+        <role-name>*</role-name>
+     </security-role>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/error404.xhtml</location>
+  </error-page>
+  
+  <error-page>
+    <error-code>403</error-code>
+    <location>/error403.xhtml</location>
+  </error-page>
+  	
+  <context-param>
+	<param-name>primefaces.THEME</param-name>
+	<param-value>bootstrap</param-value>
+  </context-param>
+
+</web-app>

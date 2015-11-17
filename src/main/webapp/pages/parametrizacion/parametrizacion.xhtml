@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/WEB-INF/templates/template_main.xhtml">
+	<ui:define name="head">
+		<title>Parametrización</title>
+	</ui:define>
+
+	<ui:define name="content">
+		<!--BEGIN CONTENT-->
+		<div class="content">
+			<section class="content-header">
+				<div class="pull-right">
+					<ol class="breadcrumb">
+						<li><a href="#" style="color: #0090FF; font-size: 13px;">Inicio</a></li>
+						<li><a href="#" style="color: #0090FF; font-size: 13px;">Parametrización</a></li>
+						<li class="active">Paramtrización</li>
+					</ol>
+				</div>
+			</section>
+			<section class="main-content">
+				<section class="main-content">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="panel panel-primary">
+								<div class="panel-heading">
+									<h3 class="panel-title">Parametrizacion Empresa</h3>
+								</div>
+								<div class="panel-body">
+									<div class="col-md-12 box-content form-horizontal">
+										<!-- start here  -->
+										<h:form id="formParametrizacion">
+											<div class="form-group">
+												<label class="control-label col-md-2">Nacional</label>
+												<div class="col-md-4">
+													<h:selectOneMenu id="monedaNacional"
+														styleClass="input-sm form-control"
+														style=" color: #555555; height:25px; font-size:11px;"
+														immediate="true"
+														value="#{parametroEmpresaController.selectedMonedaNacional}">
+														<p:ajax event="change" />
+														<f:selectItems
+															value="#{parametroEmpresaController.listMonedaEmpresa}"
+															var="var" itemLabel="#{var.moneda.nombre}"
+															itemValue="#{var.moneda.id}" />
+													</h:selectOneMenu>
+												</div>
+												<div class="col-md-2">Simbolo</div>
+												<div class="col-md-4">
+													<h:inputText
+														value="#{parametroEmpresaController.selectedMonedaNacional.simboloReferencial}"
+														style=" color: #555555; background-image: none;"
+														styleClass="input-sm form-control">
+														<f:ajax />
+													</h:inputText>
+												</div>
+											</div>
+
+											<div class="form-group">
+												<label class="col-md-2">Extranjera</label>
+												<div class="col-md-4">
+													<h:selectOneMenu id="monedaExtranjera"
+														styleClass="input-sm form-control"
+														style=" color: #555555; height:25px; font-size:11px;"
+														immediate="true"
+														value="#{parametroEmpresaController.selectedMonedaExtranjera}">
+														<p:ajax event="change" />
+														<f:selectItems
+															value="#{parametroEmpresaController.listMonedaEmpresa}"
+															var="var" itemLabel="#{var.moneda.nombre}"
+															itemValue="#{var.moneda.id}" />
+													</h:selectOneMenu>
+												</div>
+												<div class="col-md-2">Simbolo</div>
+												<div class="col-md-4">
+													<h:inputText
+														value="#{parametroEmpresaController.selectedMonedaExtranjera.simboloReferencial}"
+														style=" color: #555555; background-image: none;"
+														styleClass="input-sm form-control">
+														<f:ajax />
+													</h:inputText>
+												</div>
+											</div>
+
+											<div class="form-group">
+												<label class="col-md-3">Centro Costo</label>
+												<div class="col-md-4">
+													<label class="switch switch-success switch-sm"> <h:selectBooleanCheckbox
+															value="#{parametroEmpresaController.selectedParametroEmpresa.centroCosto}"
+															styleClass="switch">
+															<f:ajax />
+														</h:selectBooleanCheckbox><span class="switch"></span>
+													</label>
+												</div>
+											</div>
+
+											<div class="form-group">
+												<label class="col-md-3">Facturación:
+													Computarizada</label>
+												<div class="col-md-4">
+													<label class="switch switch-success switch-sm"> <h:selectBooleanCheckbox
+															value="#{parametroEmpresaController.selectedParametroEmpresa.facturacionComputarizada}"
+															styleClass="switch">
+															<f:ajax />
+														</h:selectBooleanCheckbox><span class="switch"></span>
+													</label>
+												</div>
+											</div>
+										</h:form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+			</section>
+		</div>
+		<!--END CONTENT-->
+
+		<!-- START GROWL -->
+		<h:form id="formGrowl">
+			<p:growl id="msgs1" showDetail="true" />
+		</h:form>
+		<!-- END GROWL -->
+
+		<!-- START DIALOG -->
+		<p:dialog header="DIALOG TEST" widgetVar="dlg1" modal="true"
+			height="100%">
+		</p:dialog>
+		<!-- END DIALOG -->
+
+
+	</ui:define>
+</ui:composition>

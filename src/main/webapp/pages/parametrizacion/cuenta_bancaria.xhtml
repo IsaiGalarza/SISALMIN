@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/WEB-INF/templates/template_main.xhtml">
+	<ui:define name="head">
+		<title>Plan Cuenta Bancaria</title>
+	</ui:define>
+
+	<ui:define name="content">
+		<!--BEGIN CONTENT-->
+		<div class="content">
+			<section class="content-header">
+				<div class="pull-left" style="padding-top: 8px;">
+					<h:form id="formBotonesHeader" style="padding-left: 10px;">
+						<div class="btn-group-demo">
+							<div class="btn-group">
+								<div class="form-group">
+									<p:commandLink id="buttonCancelar" value="&#160; Cancelar"
+										styleClass="btn btn-warning ion-minus-circled"
+										rendered="#{planCuentaBancariaController.modificar or planCuentaBancariaController.registrar}"
+										style="height:31px; padding:center"
+										update=":formReg,:formTablePlanCuentaBancaria,:formBotonesHeader"
+										action="#{planCuentaBancariaController.actualizarForm()}">
+									</p:commandLink>
+									<p:commandLink id="buttonCrear1"
+										value="&#160; Nueva Cuenta Banco"
+										styleClass="btn btn-success ion-plus-round"
+										rendered="#{planCuentaBancariaController.crear}"
+										style="height:31px;">
+										<p:ajax
+											update=":formTablePlanCuentaBancaria,formReg,:formBotonesHeader"
+											listener="#{planCuentaBancariaController.cambiarAspecto()}" />
+									</p:commandLink>
+									<p:commandLink id="ajax" value="&#160; Registrar"
+										styleClass="btn btn-success ion-checkmark"
+										rendered="#{ planCuentaBancariaController.registrar}"
+										style="height:31px; padding:center"
+										update=":formTablePlanCuentaBancaria,formGrowl:msgs1,:formBotonesHeader,:formReg"
+										action="#{planCuentaBancariaController.registrar()}">
+									</p:commandLink>
+									<p:commandLink id="buttonModificar" value="&#160; Modificar"
+										update=":formTablePlanCuentaBancaria,formGrowl:msgs1,:formBotonesHeader,:formReg"
+										rendered="#{planCuentaBancariaController.modificar}"
+										styleClass="btn btn-primary ion-edit"
+										style="height:31px; padding:center"
+										action="#{planCuentaBancariaController.modificar()}">
+									</p:commandLink>
+									<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
+										styleClass="btn btn-danger ion-close"
+										rendered="#{planCuentaBancariaController.modificar}"
+										style="height:31px; padding:center"
+										update=":formTablePlanCuentaBancaria,formGrowl:msgs1,:formBotonesHeader,:formReg"
+										action="#{planCuentaBancariaController.eliminar()}">
+									</p:commandLink>
+								</div>
+							</div>
+						</div>
+					</h:form>
+				</div>
+				<div class="pull-right">
+					<ol class="breadcrumb">
+						<li><a href="#{request.contextPath}/pages/dashboard.jsf" style="color: #0090FF; font-size: 13px;">Inicio</a></li>
+						<li><a href="#{request.contextPath}/pages/parametrizacion/plan_cuenta_bancaria.xhtml" style="color: #0090FF; font-size: 13px;">Parametrización</a></li>
+						<li class="active">Plan Cuenta Bancaria</li>
+					</ol>
+				</div>
+			</section>
+			<section class="main-content">
+				<section class="main-content">
+					<div class="row">
+						<h:form id="formReg">
+							<ui:fragment
+								rendered="#{planCuentaBancariaController.registrar or planCuentaBancariaController.modificar}">
+								<div class="col-md-4">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Registro de Cuenta Bancaria</h3>
+										</div>
+										<div class="panel-body">
+											<!-- start here register -->
+											<div class="row">
+												<div class="col-md-12 box-content form-horizontal">
+													<div class="form-group ">
+														<div class="col-md-4">Nro. Cuenta</div>
+														<div class="col-md-8">
+															<h:inputText
+																value="#{planCuentaBancariaController.newPlanCuentaBancaria.codigo}"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control">
+																<f:ajax />
+															</h:inputText>
+														</div>
+													</div>
+													<div class="form-group ">
+														<div class="col-md-4">Descripción</div>
+														<div class="col-md-8">
+															<h:inputText
+																value="#{planCuentaBancariaController.newPlanCuentaBancaria.descripcion}"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control">
+																<f:ajax />
+															</h:inputText>
+														</div>
+													</div>
+													<div class="form-group">
+														<div class="col-md-4">Moneda</div>
+														<div class="col-md-8">
+															<h:selectOneMenu id="r_moneda"
+																styleClass="input-sm form-control"
+																style=" color: #555555; height:25px; font-size:11px;"
+																immediate="true"
+																value="#{planCuentaBancariaController.nombreMonedaEmpresa}">
+																<f:ajax />
+																<f:selectItems
+																	value="#{planCuentaBancariaController.listMonedaEmpresa}" />
+															</h:selectOneMenu>
+														</div>
+													</div>
+													<div class="form-group ">
+														<div class="col-md-4">Estado</div>
+														<div class="col-md-8">
+															<h:selectOneMenu id="roles"
+																styleClass="input-sm form-control"
+																style=" color: #555555; height:25px; font-size:11px;"
+																immediate="true"
+																value="#{planCuentaBancariaController.nombreEstado}">
+																<f:ajax />
+																<f:selectItems
+																	value="#{planCuentaBancariaController.listEstado}" />
+															</h:selectOneMenu>
+														</div>
+													</div>
+												</div>
+											</div>
+											<!-- end here register -->
+										</div>
+									</div>
+								</div>
+							</ui:fragment>
+						</h:form>
+						<h:form id="formTablePlanCuentaBancaria">
+							<ui:fragment rendered="true">
+								<div class="#{planCuentaBancariaController.tipoColumnTable}">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Lista de Cuenta Bancaria</h3>
+										</div>
+										<!-- start here datatable -->
+										<div class="box-content no-padding">
+											<p:dataTable id="dataTablePlanCuentaBancaria"
+												value="#{listPlanCuentaBancaria}" var="item"
+												selectionMode="single"
+												emptyMessage="No se encotraron planCuentaBancaria"
+												style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+												selection="#{planCuentaBancariaController.selectedPlanCuentaBancaria}"
+												filteredValue="#{planCuentaBancariaController.listFilterPlanCuentaBancaria}"
+												rowKey="#{item.id}" reflow="true">
+
+												<p:ajax event="rowSelect"
+													listener="#{planCuentaBancariaController.onRowSelect}"
+													update=":formReg,:formBotonesHeader,:formTablePlanCuentaBancaria" />
+												<p:column headerText="Código" width="10%"
+													filterStyle="width: 100%; height:25px;"
+													style="text-align:center;" filterBy="#{item.id}">
+													<h:outputText value="#{item.id}" />
+												</p:column>
+												<p:column width="30%"
+													filterStyle="width: 100%; height:25px;"
+													filterBy="#{item.codigo}">
+													<f:facet name="header">Nro. Cuenta</f:facet>
+													<h:outputText value="#{item.codigo}" />
+												</p:column>
+												<p:column width="18%"
+													filterStyle="width: 100%; height:25px;"
+													filterBy="#{item.descripcion}">
+													<f:facet name="header">Descripción</f:facet>
+													<h:outputText value="#{item.descripcion}" />
+												</p:column>
+												<p:column width="18%"
+													filterStyle="width: 100%; height:25px;"
+													filterBy="#{item.descripcion}">
+													<f:facet name="header">Moneda</f:facet>
+													<h:outputText value="#{item.monedaEmpresa.moneda.nombre}" />
+												</p:column>
+												<p:column width="8%" filterStyle="width: 100%; height:25px;"
+													style="text-align:center;" headerText="Estado"
+													filterBy="#{item.estado}">
+													<span class="label label-success"><h:outputText
+															rendered="#{item.estado=='AC'}" value="Activo" /></span>
+													<span class="label label-danger"><h:outputText
+															rendered="#{item.estado=='IN'}" value="Inactivo" /></span>
+												</p:column>
+												<p:column width="8%" headerText="Usuario Reg."
+													filterStyle="width: 100%; height:25px;"
+													style="text-align:center;"
+													filterBy="#{item.usuarioRegistro}">
+													<h:outputText value="#{item.usuarioRegistro}">
+													</h:outputText>
+												</p:column>
+												<p:column width="8%" headerText="Fecha Reg."
+													filterStyle="width: 100%; height:25px;"
+													style="text-align:center;" filterBy="#{item.fechaRegistro}">
+													<h:outputText value="#{item.fechaRegistro}">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</h:outputText>
+												</p:column>
+											</p:dataTable>
+										</div>
+										<!-- end here datatable -->
+										<div class="panel-body"></div>
+									</div>
+								</div>
+							</ui:fragment>
+						</h:form>
+					</div>
+				</section>
+			</section>
+		</div>
+		<!--END CONTENT-->
+
+		<!-- START GROWL -->
+		<h:form id="formGrowl">
+			<p:growl id="msgs1" showDetail="true" />
+		</h:form>
+		<!-- END GROWL -->
+
+		<!-- START DIALOG -->
+		<p:dialog header="DIALOG TEST" widgetVar="dlg1" modal="true"
+			height="100%">
+		</p:dialog>
+		<!-- END DIALOG -->
+
+
+	</ui:define>
+</ui:composition>
