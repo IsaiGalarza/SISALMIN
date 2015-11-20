@@ -3,6 +3,7 @@ package bo.com.qbit.webapp.model;
 import java.io.Serializable;
 
 import javax.persistence.*;
+
 import java.util.Date;
 
 
@@ -52,6 +53,11 @@ public class Producto implements Serializable {
 
 	public Producto() {
 		
+	}
+	
+	@Override
+	public String toString() {
+		return nombre ;
 	}
 
 	public Integer getId() {

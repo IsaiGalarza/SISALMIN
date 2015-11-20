@@ -8,6 +8,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+
+import bo.com.qbit.webapp.model.Partida;
 import bo.com.qbit.webapp.model.Producto;
 
 @ApplicationScoped
@@ -29,12 +31,32 @@ public class ProductoRepository {
 		return em.createQuery(criteria).getResultList();
 	}
 
+	public List<Producto> findAllProductoActivosByID() {
+		String query = "select ser from Producto ser where ser.estado='AC' order by ser.id desc";
+		System.out.println("Query Producto: " + query);
+		return em.createQuery(query).getResultList();
+	}
+	
+	public List<Producto> findAllProductoForQueryNombre(String criterio) {
+		try {
+			String query = "select ser from Producto ser where ser.nombre like '%"
+					+ criterio + "%' and ser.estado='AC' order by ser.nombre asc";
+			System.out.println("Consulta: " + query);
+			List<Producto> listaProducto = em.createQuery(query).getResultList();
+			return listaProducto;
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("Error en findAllPartidaForDescription: "
+					+ e.getMessage());
+			return null;
+		}
+	}
+	
 	public List<Producto> findAllProductoByID() {
 		String query = "select ser from Producto ser where ser.estado='AC' or ser.estado='IN' order by ser.id desc";
 		System.out.println("Query Producto: " + query);
 		return em.createQuery(query).getResultList();
 	}
-	
 	
 	public List<Producto> findAllProductoForPartidaID(int partidaID) {
 		try {
