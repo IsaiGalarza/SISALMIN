@@ -29,7 +29,7 @@ public class DetalleOrdenIngreso implements Serializable{
 
 	private String estado;
 	
-	private String obervacion;
+	private String observacion;
 	
 	private double total;
 
@@ -53,6 +53,7 @@ public class DetalleOrdenIngreso implements Serializable{
 	private double precioUnitario;
 	
 	public DetalleOrdenIngreso() {
+		this.id = 0 ;
 		this.cantidad = 1;
 		this.setEstado("AC");
 	}
@@ -137,12 +138,12 @@ public class DetalleOrdenIngreso implements Serializable{
 		this.ordenIngreso = ordenIngreso;
 	}
 
-	public String getObervacion() {
-		return obervacion;
+	public String getObservacion() {
+		return observacion;
 	}
 
-	public void setObervacion(String obervacion) {
-		this.obervacion = obervacion;
+	public void setObservacion(String observacion) {
+		this.observacion = observacion;
 	}
 
 }

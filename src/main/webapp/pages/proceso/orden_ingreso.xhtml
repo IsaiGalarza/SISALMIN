@@ -47,7 +47,7 @@
 
 								<p:commandLink id="buttonVerModificar" value="&#160; Modificar"
 									styleClass="btn btn-primary ion-edit"
-									rendered="#{ordenIngresoController.selectedOrdenIngreso != null and ordenIngresoController.crear}"
+									rendered="#{ordenIngresoController.selectedOrdenIngreso != null and ordenIngresoController.crear  }"
 									style="height:31px; padding:center"
 									update="formTableOrdenIngreso, :formBotonesHeader"
 									action="#{ordenIngresoController.cambiarAspectoModificar()}">
@@ -67,6 +67,22 @@
 									update="formTableOrdenIngreso, :formBotonesHeader"
 									onclick="dlgEliminar.show()"
 									style="height:31px; padding:center">
+								</p:commandLink>
+
+								<p:commandLink id="buttonProcesar" value="&#160; Procesar"
+									styleClass="btn btn-info ion-ios7-loop-strong"
+									rendered="#{ordenIngresoController.selectedOrdenIngreso != null and ordenIngresoController.crear and ordenIngresoController.verProcesar}"
+									style="height:31px; padding:center"
+									update="formTableOrdenIngreso, :formBotonesHeader"
+									action="#{ordenIngresoController.procesarOrdenIngreso()}">
+								</p:commandLink>
+
+								<p:commandLink id="buttonVerReporte" value="&#160; Ver Reporte"
+									styleClass="btn btn-info ion-printer"
+									rendered="#{ordenIngresoController.selectedOrdenIngreso != null and ordenIngresoController.crear}"
+									style="height:31px; padding:center"
+									update="formTableOrdenIngreso, :formBotonesHeader,formModalVistaPrevia"
+									action="#{ordenIngresoController.cargarReporte()}">
 								</p:commandLink>
 
 								<p:dialog header="Desea Eliminar la Orden de ingreso"
@@ -148,7 +164,7 @@
 															<p:autoComplete id="proveedorID"
 																value="#{ordenIngresoController.selectedProveedor.nombre}"
 																completeMethod="#{ordenIngresoController.completeProveedor}"
-																minQueryLength="3" size="40" dropdown="true"
+																minQueryLength="3" size="33" dropdown="true"
 																required="true" requiredMessage="Proveedor Requerido."
 																forceSelection="true" var="_var" itemLabel="#{_var}"
 																itemValue="#{_var.nombre}"
@@ -173,7 +189,7 @@
 															<p:autoComplete id="almacenID"
 																value="#{ordenIngresoController.selectedAlmacen.nombre}"
 																completeMethod="#{ordenIngresoController.completeAlmacen}"
-																minQueryLength="3" size="40" dropdown="true"
+																minQueryLength="3" size="33" dropdown="true"
 																required="true" requiredMessage="Almacen Requerido."
 																forceSelection="true" var="_var" itemLabel="#{_var}"
 																itemValue="#{_var.nombre}"
@@ -281,10 +297,6 @@
 													<p:ajax event="rowSelect" update="formTableOrdenIngreso"
 														listener="#{ordenIngresoController.onRowSelectDetalleOrdenIngresoClick}" />
 
-													<p:column width="5%" headerText="Codigo">
-														<h:outputText value="#{_var.id}" />
-													</p:column>
-
 													<p:column headerText="Nombre ITEM">
 														<h:outputText value="#{_var.producto.nombre}" />
 													</p:column>
@@ -299,7 +311,7 @@
 													</p:column>
 
 													<p:column headerText="Obervacion">
-														<h:outputText value="#{_var.obervacion}" />
+														<h:outputText value="#{_var.observacion}" />
 													</p:column>
 
 													<p:column headerText="Tipo" width="12%">
@@ -330,18 +342,18 @@
 
 													</div>
 													<div class="col-md-1">
-														<p:commandLink id="editarDetalleOrdenIngreso" value="&#160;"
-															styleClass="btn btn-primary ion-edit"
+														<p:commandLink id="editarDetalleOrdenIngreso"
+															value="&#160;" styleClass="btn btn-primary ion-edit"
 															update="formDialogProducto"
 															oncomplete="PF('dlgProducto').show();"
 															disabled="#{ordenIngresoController.verButtonDetalle}"
 															action="#{ordenIngresoController.modificarDetalleOrdenIngreso()}"
 															immediate="true">
 														</p:commandLink>
-													</div> 
+													</div>
 													<div class="col-md-1">
-														<p:commandLink id="eliminarDetalleOrdenIngreso" value="&#160;"
-															styleClass="btn btn-danger ion-close"
+														<p:commandLink id="eliminarDetalleOrdenIngreso"
+															value="&#160;" styleClass="btn btn-danger ion-close"
 															disabled="#{ordenIngresoController.verButtonDetalle}"
 															update="formTableOrdenIngreso:itemsTable1"
 															immediate="true"
@@ -412,13 +424,15 @@
 														<h:outputText value="Bs.-" />
 												</p:column>
 
-												<p:column headerText="Estado" width="12%"
+												<p:column headerText="Estado" width="8%"
 													filterBy="#{_var.estado}" filterStyle="width: 100%;"
 													filterMatchMode="contains">
-													<span class="label label-success"><h:outputText
+													<span class="label label-primary"><h:outputText
 															rendered="#{_var.estado=='AC'}" value="Activo" /></span>
 													<span class="label label-danger"><h:outputText
 															rendered="#{_var.estado=='IN'}" value="Inactivo" /></span>
+													<span class="label label-success"><h:outputText
+															rendered="#{_var.estado=='PR'}" value="Procesado" /></span>
 												</p:column>
 
 												<p:column width="10%" headerText="Fecha"
@@ -434,21 +448,16 @@
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.usuarioRegistro}" />
 												</p:column>
-
+												
 											</p:dataTable>
-
 										</div>
-
 										<!-- end here datatable -->
 										<div class="panel-body"></div>
 
 									</div>
 								</div>
 							</ui:fragment>
-
-
 						</h:form>
-
 					</div>
 				</section>
 			</section>
@@ -478,7 +487,7 @@
 								<p:autoComplete id="productoID"
 									value="#{ordenIngresoController.selectedProducto.nombre}"
 									completeMethod="#{ordenIngresoController.completeProducto}"
-									minQueryLength="3" size="40" dropdown="true" required="true"
+									minQueryLength="3" size="35" dropdown="true" required="true"
 									requiredMessage="Almacen Requerido." forceSelection="true"
 									var="_var" itemLabel="#{_var}" itemValue="#{_var.nombre}"
 									placeholder="[Escriba Producto]" maxResults="10">
@@ -502,8 +511,8 @@
 							<div class="col-sm-9">
 								<p:inputTextarea id="descripcionID" required="true"
 									requiredMessage="Observacion Requerido."
-									value="#{ordenIngresoController.selectedDetalleOrdenIngreso.obervacion}"
-									size="20" rows="2" cols="40">
+									value="#{ordenIngresoController.selectedDetalleOrdenIngreso.observacion}"
+									size="20" rows="2" cols="39">
 									<p:ajax event="change" update="precioID,totalID" />
 								</p:inputTextarea>
 							</div>
@@ -569,7 +578,8 @@
 									<p:commandLink value="&#160; Cerrar"
 										styleClass="btn btn-warning ion-minus-circled btn-block"
 										onclick="PF('dlgProducto').hide();">
-										<p:ajax update="formTableOrdenIngreso:itemsTable1,formTableOrdenIngreso:editarDetalleOrdenIngreso,formTableOrdenIngreso:eliminarDetalleOrdenIngreso"
+										<p:ajax
+											update="formTableOrdenIngreso:itemsTable1,formTableOrdenIngreso:editarDetalleOrdenIngreso,formTableOrdenIngreso:eliminarDetalleOrdenIngreso"
 											listener="#{ordenIngresoController.limpiarDatosProducto()}" />
 									</p:commandLink>
 								</div>
@@ -577,18 +587,48 @@
 									<p:commandLink value="&#160; Aceptar"
 										styleClass="btn btn-success ion-checkmark btn-block"
 										onclick="PF('dlgProducto').hide();">
-										<p:ajax update="formTableOrdenIngreso:itemsTable1,formTableOrdenIngreso:editarDetalleOrdenIngreso,formTableOrdenIngreso:eliminarDetalleOrdenIngreso"
+										<p:ajax
+											update="formTableOrdenIngreso:itemsTable1,formTableOrdenIngreso:editarDetalleOrdenIngreso,formTableOrdenIngreso:eliminarDetalleOrdenIngreso"
 											listener="#{ordenIngresoController.agregarDetalleOrdenIngreso()}" />
 									</p:commandLink>
-
 								</div>
 							</div>
 						</div>
 					</div>
-
 				</div>
 			</p:dialog>
 		</h:form>
+		
+				<!-- VISTA PREVIA REPORTE -->
+		<p:dialog header="ORDEN INGRESO" widgetVar="dlgVistaPreviaOrdenIngreso"
+			modal="true" visible="#{not empty facesContext.maximumSeverity}"
+			resizable="false" position="center" width="750px">
+			<h:form id="formModalVistaPrevia">
+				<div class="row">
+					<div class="form-group ">
+						<div class="col-md-12">
+							<p:media player="pdf" rendered="true"
+								value="#{ordenIngresoController.urlOrdenIngreso}"
+								width="100%" height="580px" />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="form-group">
+							<div class="col-md-4"></div>
+							<div class="col-md-4"></div>
+							<div class="col-md-4">
+								<p:commandLink value="Aceptar"
+									styleClass="btn btn-primary btn-block"
+									onclick="PF('dlgVistaPreviaOrdenIngreso').hide();" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+		<!-- END DIALOG -->
 
 	</ui:define>
 
