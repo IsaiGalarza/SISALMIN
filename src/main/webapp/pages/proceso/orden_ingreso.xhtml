@@ -47,7 +47,7 @@
 
 								<p:commandLink id="buttonVerModificar" value="&#160; Modificar"
 									styleClass="btn btn-primary ion-edit"
-									rendered="#{ordenIngresoController.selectedOrdenIngreso != null and ordenIngresoController.crear  }"
+									rendered="#{ordenIngresoController.selectedOrdenIngreso != null and ordenIngresoController.crear and ordenIngresoController.verProcesar }"
 									style="height:31px; padding:center"
 									update="formTableOrdenIngreso, :formBotonesHeader"
 									action="#{ordenIngresoController.cambiarAspectoModificar()}">
@@ -55,7 +55,7 @@
 
 								<p:commandLink id="buttonModificar" value="&#160; Modificar"
 									styleClass="btn btn-primary ion-edit"
-									rendered="#{ordenIngresoController.modificar}"
+									rendered="#{ordenIngresoController.modificar and ordenIngresoController.verProcesar}"
 									style="height:31px; padding:center"
 									update="formTableOrdenIngreso, formBotonesHeader"
 									action="#{ordenIngresoController.modificarOrdenIngreso()}">
@@ -210,23 +210,25 @@
 													<div class="form-group ">
 														<div class="col-md-4">Tipo Documento Proveedor</div>
 														<div class="col-md-8">
-															<p:inputText id="tipoDocProvID"
-																style=" color: #555555; background-image: none;"
-																styleClass="input-sm form-control" size="40"
-																value="#{ordenIngresoController.newOrdenIngreso.numeroDocumento}"
-																required="true" requiredMessage="Requerido.">
-																<p:ajax event="change" />
-															</p:inputText>
+															<h:selectOneMenu id="tipoDocProvID"
+																value="#{ordenIngresoController.newOrdenIngreso.tipoDocumento}"
+																styleClass="form-control" required="false"
+																requiredMessage="Tipo Requerido.">
+																<f:selectItem itemValue="RECIBO" itemLabel="RECIBO" />
+																<f:selectItem itemValue="FACTURA" itemLabel="FACTURA" />
+																<f:selectItem itemValue="DEVOLUCION" itemLabel="DEVOLUCION" />
+																<p:ajax event="change" update="formTableOrdenIngreso" />
+															</h:selectOneMenu>
 														</div>
 													</div>
 
 													<div class="form-group ">
-														<div class="col-md-4">Tipo Documento Adjudicacion</div>
+														<div class="col-md-4">Nro Documento Adjudicacion</div>
 														<div class="col-md-8">
 															<p:inputText id="tipoDocumentoAdjID"
 																style=" color: #555555; background-image: none;"
 																styleClass="input-sm form-control" size="40"
-																value="#{ordenIngresoController.newOrdenIngreso.tipoDocumento}"
+																value="#{ordenIngresoController.newOrdenIngreso.numeroDocumento}"
 																required="true" requiredMessage="Requerido.">
 																<p:ajax event="change" />
 															</p:inputText>
@@ -301,28 +303,29 @@
 														<h:outputText value="#{_var.producto.nombre}" />
 													</p:column>
 
+													<p:column headerText="Tipo" width="12%">
+														<h:outputText value="#{_var.producto.tipoProducto}" />
+													</p:column>
+													
 													<p:column headerText="Precio U." width="12%">
 														<h:outputText value="#{_var.producto.precioUnitario}">
 															<f:convertNumber pattern="#,##0.00" />
-														</h:outputText>
-													#{' '}
-													<h:outputText value="Bs.-" />
+														</h:outputText>#{' '}
+														<h:outputText value="Bs.-" />
+													</p:column>
 
+													<p:column headerText="Cantidad" width="12%">
+														<h:outputText value="#{_var.cantidad}" />
+													</p:column>
+
+													<p:column headerText="Total" width="12%">
+														<h:outputText value="#{_var.total}">
+															<f:convertNumber pattern="#,##0.00" />
+														</h:outputText>
 													</p:column>
 
 													<p:column headerText="Obervacion">
 														<h:outputText value="#{_var.observacion}" />
-													</p:column>
-
-													<p:column headerText="Tipo" width="12%">
-														<h:outputText value="#{_var.producto.tipoProducto}" />
-													</p:column>
-
-													<p:column headerText="Estado" width="12%">
-														<span class="label label-success"><h:outputText
-																rendered="#{_var.estado=='AC'}" value="Activo" /></span>
-														<span class="label label-danger"><h:outputText
-																rendered="#{_var.estado=='IN'}" value="Inactivo" /></span>
 													</p:column>
 
 												</p:dataTable>
@@ -448,7 +451,7 @@
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.usuarioRegistro}" />
 												</p:column>
-												
+
 											</p:dataTable>
 										</div>
 										<!-- end here datatable -->
@@ -492,7 +495,7 @@
 									var="_var" itemLabel="#{_var}" itemValue="#{_var.nombre}"
 									placeholder="[Escriba Producto]" maxResults="10">
 
-									<p:ajax event="itemSelect" update="precioID,totalID"
+									<p:ajax event="itemSelect" update="totalID,precioID"
 										listener="#{ordenIngresoController.onRowSelectProductoClick}" />
 
 									<p:column>
@@ -526,7 +529,7 @@
 								Unitario</label>
 							<div class="col-sm-9">
 								<p:inputText id="precioID" required="true"
-									requiredMessage="Precio Requerido."
+									requiredMessage="Precio Requerido." disabled="true"
 									value="#{ordenIngresoController.selectedProducto.precioUnitario}"
 									size="40">
 									<p:ajax event="change" update="totalID"
@@ -540,7 +543,7 @@
 					<br />
 					<div class="row">
 						<div class="form-group">
-							<label for="precioID" class="col-sm-3 control-label">Cantidad</label>
+							<label for="cantidadID" class="col-sm-3 control-label">Cantidad</label>
 							<div class="col-sm-9">
 								<p:inputText id="cantidadID" required="true"
 									requiredMessage="Cantidad Requerido."
@@ -556,7 +559,7 @@
 					<br />
 					<div class="row">
 						<div class="form-group">
-							<label for="precioID" class="col-sm-3 control-label">Total</label>
+							<label for="totalID" class="col-sm-3 control-label">Total</label>
 							<div class="col-sm-9">
 								<p:inputText id="totalID" required="true"
 									requiredMessage="Total Requerido."
@@ -598,18 +601,19 @@
 				</div>
 			</p:dialog>
 		</h:form>
-		
-				<!-- VISTA PREVIA REPORTE -->
-		<p:dialog header="ORDEN INGRESO" widgetVar="dlgVistaPreviaOrdenIngreso"
-			modal="true" visible="#{not empty facesContext.maximumSeverity}"
-			resizable="false" position="center" width="750px">
+
+		<!-- VISTA PREVIA REPORTE -->
+		<p:dialog header="ORDEN INGRESO"
+			widgetVar="dlgVistaPreviaOrdenIngreso" modal="true"
+			visible="#{not empty facesContext.maximumSeverity}" resizable="false"
+			position="center" width="750px">
 			<h:form id="formModalVistaPrevia">
 				<div class="row">
 					<div class="form-group ">
 						<div class="col-md-12">
 							<p:media player="pdf" rendered="true"
-								value="#{ordenIngresoController.urlOrdenIngreso}"
-								width="100%" height="580px" />
+								value="#{ordenIngresoController.urlOrdenIngreso}" width="100%"
+								height="580px" />
 						</div>
 					</div>
 				</div>

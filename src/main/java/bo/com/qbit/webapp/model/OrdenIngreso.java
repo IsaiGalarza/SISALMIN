@@ -69,6 +69,7 @@ public class OrdenIngreso implements Serializable{
 
 	public OrdenIngreso() {
 		this.id = 0 ;
+		this.motivoIngreso = "COMPRA";
 		this.almacen = new Almacen();		
 		this.proveedor=new Proveedor();
 	}

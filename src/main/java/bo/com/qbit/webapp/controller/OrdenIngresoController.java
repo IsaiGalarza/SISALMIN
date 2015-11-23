@@ -433,10 +433,11 @@ public class OrdenIngresoController implements Serializable {
 		for(Producto i : listProducto){
 			if(i.getNombre().equals(nombre)){
 				selectedProducto = i;
+				calcular();
 				return;
 			}
 		}
-		calcular();
+		
 	}
 
 	public void updateDataTable(String id) {
