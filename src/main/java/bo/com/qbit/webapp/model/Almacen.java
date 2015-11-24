@@ -56,8 +56,6 @@ public class Almacen implements Serializable {
 	@JoinColumn(name="id_encargado",nullable= true)
 	private Usuario encargado;
 
-	
-
 	public Almacen() {
 		encargado= new Usuario();
 		atencionCliente= false;

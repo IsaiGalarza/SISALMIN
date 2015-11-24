@@ -13,9 +13,11 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 import bo.com.qbit.webapp.data.EmpresaRepository;
+import bo.com.qbit.webapp.data.GestionRepository;
 import bo.com.qbit.webapp.data.PermisoRepository;
 import bo.com.qbit.webapp.data.UsuarioRepository;
 import bo.com.qbit.webapp.model.Empresa;
+import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.Usuario;
 import bo.com.qbit.webapp.model.security.PermisoV1;
 import bo.com.qbit.webapp.model.security.Rol;
@@ -46,10 +48,12 @@ public class SessionMain implements Serializable {
 	private @Inject PermisoRepository permmisoRepository;
 	private @Inject UsuarioRepository usuarioRepository;
 	private @Inject EmpresaRepository empresaRepository;
+	private @Inject GestionRepository gestionRepository;
 
 	//Object
 	private Usuario usuarioLoggin;
 	private Empresa empresaLoggin;
+	private Gestion gestionLogin;
 
 	private StreamedContent fotoPerfil;
 
@@ -63,6 +67,7 @@ public class SessionMain implements Serializable {
 		listPermiso = new ArrayList<PermisoV1>();
 		usuarioLoggin = null;
 		empresaLoggin = null;
+		gestionLogin = null;
 		fotoPerfil = null;
 	}
 
@@ -228,6 +233,13 @@ public class SessionMain implements Serializable {
 
 	public void setFotoPerfil(StreamedContent fotoPerfil) {
 		this.fotoPerfil = fotoPerfil;
+	}
+
+	public Gestion getGestionLogin() {
+		if(gestionLogin == null){
+			this.gestionLogin = gestionRepository.findByGestionCierreActivo();
+		}
+		return gestionLogin;
 	}
 
 }

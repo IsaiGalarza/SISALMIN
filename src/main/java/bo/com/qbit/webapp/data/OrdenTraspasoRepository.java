@@ -9,21 +9,21 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import bo.com.qbit.webapp.model.Gestion;
-import bo.com.qbit.webapp.model.OrdenIngreso;
+import bo.com.qbit.webapp.model.OrdenTraspaso;
 
 @ApplicationScoped
-public class OrdenIngresoRepository {
+public class OrdenTraspasoRepository {
 
 	@Inject
 	private EntityManager em;
 
-	public OrdenIngreso findById(int id) {
-		return em.find(OrdenIngreso.class, id);
+	public OrdenTraspaso findById(int id) {
+		return em.find(OrdenTraspaso.class, id);
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<OrdenIngreso> findAllOrderedByID() {
-		String query = "select ser from OrdenIngreso ser where ser.estado='AC' or ser.estado='IN' or ser.estado='PR' order by ser.id desc";
+	public List<OrdenTraspaso> findAllOrderedByID() {
+		String query = "select ser from OrdenTraspaso ser where ser.estado='AC' or ser.estado='IN' or ser.estado='PR' order by ser.id desc";
 		System.out.println("Query OrdenIngreso: " + query);
 		return em.createQuery(query).getResultList();
 	}
@@ -31,9 +31,9 @@ public class OrdenIngresoRepository {
 	@SuppressWarnings("unchecked")
 	public int obtenerNumeroOrdenIngreso(Date date, Gestion gestion){
 		Integer year = Integer.parseInt( new SimpleDateFormat("yyyy").format(date));
-		String query = "select em from OrdenIngreso em where (em.estado='AC' or em.estado='IN' or em.estado='PR') and em.gestion.id="+gestion.getId()+" and date_part('year', em.fechaDocumento) ="+year;
+		String query = "select em from OrdenTraspaso em where (em.estado='AC' or em.estado='IN' or em.estado='PR') and em.gestion.id="+gestion.getId()+" and date_part('year', em.fechaDocumento) ="+year;
 		System.out.println("Query Comprobante: "+query);
-		return (( List<OrdenIngreso>)em.createQuery(query).getResultList()).size() + 1;
+		return (( List<OrdenTraspaso>)em.createQuery(query).getResultList()).size() + 1;
 	}
 
 }

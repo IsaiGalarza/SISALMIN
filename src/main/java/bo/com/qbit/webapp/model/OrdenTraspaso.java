@@ -16,46 +16,48 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "orden_ingreso", schema = "public")
-public class OrdenIngreso implements Serializable{
+@Table(name = "orden_traspaso", schema = "public")
+public class OrdenTraspaso implements Serializable{
 
 	private static final long serialVersionUID = -5245389763015492273L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	
+
 	private String correlativo;
-	
+
 	private String observacion;
-	
-	private String motivoIngreso;
-	
+
+	private String cargo;
+
 	@Column(name = "fecha_documento", nullable = true)
 	private Date fechaDocumento;
 
-	@Column(name = "tipo_documento")
-	private String tipoDocumento;
-
-	@Column(name = "numero_documento")
-	private String numeroDocumento;
+	@Column(name = "detalle_proyecto")
+	private String detalleProyecto;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "id_funcionario", nullable = true)
+	private Funcionario funcionario;
+	
 
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	@JoinColumn(name = "id_proveedor", nullable = true)
-	private Proveedor proveedor;
-	
+	@JoinColumn(name = "id_proyecto", nullable = true)
+	private Proyecto proyecto;
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_gestion", nullable = true)
 	private Gestion gestion;
 
 	private String estado;
-	
+
 	@Column(name = "fecha_registro")
 	private Date fechaRegistro;
-	
+
 	@Column(name = "total_importe")
 	private double totalImporte;
-	
+
 	@Column(name = "usuario_registro")
 	private String usuarioRegistro;
 
@@ -63,24 +65,27 @@ public class OrdenIngreso implements Serializable{
 	private Date fechaAprobacion;
 
 	// bi-directional many-to-one association to DetallePedidoMov
-	@OneToMany(mappedBy = "ordenIngreso")
-	private List<DetalleOrdenIngreso> detalleOrdenIngreso;
+	@OneToMany(mappedBy = "ordenTraspaso")
+	private List<DetalleOrdenTraspaso> detalleOrdenTraspaso;
 
 	@ManyToOne
 	@JoinColumn(name = "id_usuario_aprobacion")
 	private Usuario usuarioAprobacion;	
 
 	@ManyToOne
-	@JoinColumn(name = "id_almacen")
-	private Almacen almacen;
+	@JoinColumn(name = "id_almacen_origen")
+	private Almacen almacenOrigen;
 
-	public OrdenIngreso() {
+	@ManyToOne
+	@JoinColumn(name = "id_almacen_destino")
+	private Almacen almacenDestino;
+
+	public OrdenTraspaso() {
 		this.id = 0 ;
-		this.tipoDocumento = "FACTURA";
-		this.motivoIngreso = "COMPRA";
-		this.almacen = new Almacen();		
-		this.proveedor=new Proveedor();
-		this.gestion = new Gestion();
+		this.almacenOrigen = new Almacen();		
+		this.almacenDestino = new Almacen();	
+		this.proyecto =new Proyecto();
+		this.setGestion(new Gestion());
 	}
 
 	public Integer getId() {
@@ -98,7 +103,7 @@ public class OrdenIngreso implements Serializable{
 	public void setCorrelativo(String correlativo) {
 		this.correlativo = correlativo;
 	}
-	
+
 	public String getEstado() {
 		return this.estado;
 	}
@@ -146,31 +151,15 @@ public class OrdenIngreso implements Serializable{
 	public void setFechaAprobacion(Date fechaAprobacion) {
 		this.fechaAprobacion = fechaAprobacion;
 	}
-	
-	public Proveedor getProveedor() {
-		return proveedor;
+
+	public Proyecto getProyecto() {
+		return proyecto;
 	}
 
-	public void setProveedor(Proveedor idProveedor) {
-		this.proveedor = idProveedor;
-	}
-
-	public String getTipoDocumento() {
-		return tipoDocumento;
-	}
-
-	public void setTipoDocumento(String tipoDocumento) {
-		this.tipoDocumento = tipoDocumento;
+	public void setProyecto(Proyecto proyecto) {
+		this.proyecto = proyecto;
 	}
 	
-	public String getNumeroDocumento() {
-		return numeroDocumento;
-	}
-
-	public void setNumeroDocumento(String numeroDocumento) {
-		this.numeroDocumento = numeroDocumento;
-	}
-
 	public double getTotalImporte() {
 		return totalImporte;
 	}
@@ -179,28 +168,12 @@ public class OrdenIngreso implements Serializable{
 		this.totalImporte = totalImporte;
 	}
 
-	public Almacen getAlmacen() {
-		return almacen;
+	public List<DetalleOrdenTraspaso> getDetalleOrdenTraspaso() {
+		return detalleOrdenTraspaso;
 	}
 
-	public void setAlmacen(Almacen almacen) {
-		this.almacen = almacen;
-	}
-
-	public List<DetalleOrdenIngreso> getDetalleOrdenIngreso() {
-		return detalleOrdenIngreso;
-	}
-
-	public void setDetalleOrdenIngreso(List<DetalleOrdenIngreso> detalleOrdenIngreso) {
-		this.detalleOrdenIngreso = detalleOrdenIngreso;
-	}
-
-	public String getMotivoIngreso() {
-		return motivoIngreso;
-	}
-
-	public void setMotivoIngreso(String motivoIngreso) {
-		this.motivoIngreso = motivoIngreso;
+	public void setDetalleOrdenTraspaso(List<DetalleOrdenTraspaso> detalleOrdenTraspaso) {
+		this.detalleOrdenTraspaso = detalleOrdenTraspaso;
 	}
 
 	public Date getFechaDocumento() {
@@ -217,6 +190,46 @@ public class OrdenIngreso implements Serializable{
 
 	public void setGestion(Gestion gestion) {
 		this.gestion = gestion;
+	}
+
+	public String getCargo() {
+		return cargo;
+	}
+
+	public void setCargo(String cargo) {
+		this.cargo = cargo;
+	}
+
+	public Almacen getAlmacenOrigen() {
+		return almacenOrigen;
+	}
+
+	public void setAlmacenOrigen(Almacen almacenOrigen) {
+		this.almacenOrigen = almacenOrigen;
+	}
+
+	public Almacen getAlmacenDestino() {
+		return almacenDestino;
+	}
+
+	public void setAlmacenDestino(Almacen almacenDestino) {
+		this.almacenDestino = almacenDestino;
+	}
+
+	public Funcionario getFuncionario() {
+		return funcionario;
+	}
+
+	public void setFuncionario(Funcionario funcionario) {
+		this.funcionario = funcionario;
+	}
+
+	public String getDetalleProyecto() {
+		return detalleProyecto;
+	}
+
+	public void setDetalleProyecto(String detalleProyecto) {
+		this.detalleProyecto = detalleProyecto;
 	}
 
 }
