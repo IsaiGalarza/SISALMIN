@@ -3,7 +3,9 @@ package bo.com.qbit.webapp.model;
 import java.io.Serializable;
 
 import javax.persistence.*;
+
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -26,6 +28,10 @@ public class DetalleUnidad implements Serializable {
 	private String nombre;
 	
 	private String descripcion;
+	
+	// bi-directional many-to-one association to DetallePedidoMov
+	@OneToMany(mappedBy = "detalleUnidad")
+	private List<Funcionario> funcionario;
 
 	private String estado;
 	
@@ -38,7 +44,36 @@ public class DetalleUnidad implements Serializable {
 
 
 	public DetalleUnidad() {
-		
+		this.id = 0;
+	}
+	
+	@Override
+	public String toString() {
+		return nombre;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 0;
+		hash += (id != null ? id.hashCode() : 0);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(obj==null){
+			return false;
+		}else{
+			if(!(obj instanceof DetalleUnidad)){
+				return false;
+			}else{
+				if(((DetalleUnidad)obj).id==this.id){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		}
 	}
 
 	public Integer getId() {
@@ -95,6 +130,14 @@ public class DetalleUnidad implements Serializable {
 
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
+	}
+
+	public List<Funcionario> getFuncionario() {
+		return funcionario;
+	}
+
+	public void setFuncionario(List<Funcionario> funcionario) {
+		this.funcionario = funcionario;
 	}
 
 }

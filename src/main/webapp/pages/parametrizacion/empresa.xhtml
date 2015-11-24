@@ -20,40 +20,26 @@
 					<h:form id="formBotonesHeader" style="padding-left: 10px;">
 						<div class="btn-group-demo">
 							<div class="btn-group">
-								<p:commandLink id="buttonCrear" value="&#160; Nueva Empresa"
-									styleClass="btn btn-success ion-plus-round"
-									style="height:31px; padding:center"
-									rendered="#{empresaController.crear}"
-									update=":formRegEmpresa,:formTableEmpresa,formGrowl:msgs1,:formBotonesHeader"
-									action="#{empresaController.crearEmpresa()}">
-								</p:commandLink>
 								<p:commandLink id="buttonCancelar" value="&#160; Cancelar"
 									styleClass="btn btn-warning ion-minus-circled"
-									rendered="#{empresaController.modificar or empresaController.registrar}"
+									rendered="#{empresaController.modificar}"
 									style="height:31px; padding:center"
-									update=":formRegEmpresa,:formBotonesHeader,:formTableEmpresa"
+									update=":formRegEmpresa,formBotonesHeader"
 									action="#{empresaController.actualizarForm()}">
-								</p:commandLink>
-								<p:commandLink id="buttonRegistrar" value="&#160; Registrar"
-									styleClass="btn btn-success ion-checkmark"
-									style="height:31px; padding:center"
-									rendered="#{empresaController.registrar}"
-									update=":formRegEmpresa,:formTableEmpresa,formGrowl:msgs1,:formBotonesHeader"
-									action="#{empresaController.registrarEmpresa()}">
 								</p:commandLink>
 								<p:commandLink id="buttonModificar" value="&#160; Modificar"
 									styleClass="btn btn-primary ion-edit"
-									rendered="#{empresaController.modificar}"
+									rendered="#{! empresaController.modificar}"
 									style="height:31px; padding:center"
-									update=":formRegEmpresa,:formTableEmpresa,formGrowl:msgs1,:formBotonesHeader"
-									action="#{empresaController.modificarEmpresa()}">
+									update="formRegEmpresa,formBotonesHeader"
+									action="#{empresaController.modificarForm()}">
 								</p:commandLink>
-								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
-									styleClass="btn btn-danger ion-trash-b"
+								<p:commandLink id="buttonGuardar" value="&#160; Guardar"
+									styleClass="btn btn-success ion-checkmark"
 									rendered="#{empresaController.modificar}"
 									style="height:31px; padding:center"
-									update=":formRegEmpresa,:formTableEmpresa,,formGrowl:msgs1,:formBotonesHeader"
-									action="#{empresaController.eliminarEmpresa()}">
+									update="formRegEmpresa,formGrowl:msgs1,formBotonesHeader"
+									action="#{empresaController.modificarEmpresa()}">
 								</p:commandLink>
 							</div>
 						</div>
@@ -74,339 +60,144 @@
 				<section class="main-content">
 					<div class="row">
 						<h:form id="formRegEmpresa">
-							<ui:fragment
-								rendered="#{empresaController.modificar or empresaController.registrar}">
-								<div class="col-md-5">
-									<div class="panel panel-default">
-										<div class="panel-heading">
-											<h3 class="panel-title">Registro de Empresa</h3>
-										</div>
-										<div class="panel-body">
-											<!-- start here register -->
-											<div class="row">
-												<div class="col-md-12 box-content form-horizontal">
-													<div class="tabbable-custom">
-														<ul class="nav nav-tabs">
-															<li class="active"><a href="#tab_5_1"
-																data-toggle="tab">EMPRESA</a></li>
-															<li><a href="#tab_5_2" data-toggle="tab">MONEDA</a></li>
-															<li><a href="#tab_5_3" data-toggle="tab">GESTIÓN</a></li>
-														</ul>
-														<div class="tab-content">
-															<div id="tab_5_1" class="tab-pane active">
-																<div class="row">
-																	<div class="col-md-12 box-content form-horizontal">
-																		<div class="form-group">
-																			<div class="col-md-4">Nombre</div>
-																			<div class="col-md-8">
-																				<h:inputText value="#{newEmpresa.razonSocial}"
-																					style=" color: #555555; background-image: none; text-transform: uppercase;"
-																					styleClass="input-sm form-control">
-																					<p:ajax event="change" />
-																				</h:inputText>
-																			</div>
-																		</div>
-																		<div class="form-group">
-																			<div class="col-md-4">Dirección</div>
-																			<div class="col-md-8">
-																				<h:inputText value="#{newEmpresa.direccion}"
-																					style=" color: #555555; background-image: none;"
-																					styleClass="input-sm form-control">
-																					<p:ajax event="change" />
-																				</h:inputText>
-																			</div>
-																		</div>
-																		<div class="form-group">
-																			<div class="col-md-4">Telefono</div>
-																			<div class="col-md-8">
-																				<h:inputText value="#{newEmpresa.telefono}"
-																					style=" color: #555555; background-image: none;"
-																					styleClass="input-sm form-control">
-																					<p:ajax event="change" />
-																				</h:inputText>
-																			</div>
-																		</div>
-																		<div class="form-group">
-																			<div class="col-md-4">NIT</div>
-																			<div class="col-md-8">
-																				<h:inputText value="#{newEmpresa.NIT}"
-																					style=" color: #555555; background-image: none;"
-																					styleClass="input-sm form-control">
-																					<p:ajax event="change" />
-																				</h:inputText>
-																			</div>
-																		</div>
-																		<div class="form-group">
-																			<div class="col-md-4">Ciudad</div>
-																			<div class="col-md-8">
-																				<h:inputText value="#{newEmpresa.ciudad}"
-																					style=" color: #555555; background-image: none;"
-																					styleClass="input-sm form-control">
-																					<p:ajax event="change" />
-																				</h:inputText>
-																			</div>
-																		</div>
-																		<div class="form-group ">
-																			<div class="col-md-4">Estado</div>
-																			<div class="col-md-8">
-																				<h:selectOneMenu id="roles"
-																					styleClass="input-sm form-control"
-																					style=" color: #555555; height:25px; font-size:11px;"
-																					disabled="#{newEmpresa.estado =='SUPER'}"
-																					immediate="true"
-																					value="#{empresaController.nombreEstado}">
-																					<f:ajax />
-																					<f:selectItems
-																						value="#{empresaController.listEstado}" />
-																				</h:selectOneMenu>
-																			</div>
-																		</div>
-
-																	</div>
-																</div>
-															</div>
-															<div id="tab_5_2" class="tab-pane">
-																<div class="row">
-																	<div class="col-md-12 box-content form-horizontal">
-																		<div class="form-group">
-																			<div class="col-md-4">Nacional</div>
-																			<div class="col-md-4">
-																				<h:selectOneMenu id="monedaNacional"
-																					styleClass="input-sm form-control"
-																					style=" color: #555555; height:25px; font-size:11px;"
-																					immediate="true"
-																					value="#{empresaController.nombreMonedaNacional}">
-																					<p:ajax update=":formRegEmpresa" event="change" />
-																					<f:selectItems
-																						value="#{empresaController.listaMoneda}" />
-																				</h:selectOneMenu>
-																			</div>
-																			<div class="col-md-2">Simbolo</div>
-																			<div class="col-md-2">
-																				<h:inputText
-																					value="#{empresaController.simboloMonedaNacional}"
-																					style=" color: #555555; background-image: none;"
-																					styleClass="input-sm form-control">
-																					<f:ajax />
-																				</h:inputText>
-																			</div>
-																		</div>
-																		<div class="form-group">
-																			<div class="col-md-4">Extranjera</div>
-																			<div class="col-md-4">
-																				<h:selectOneMenu id="monedaExtranjera"
-																					styleClass="input-sm form-control"
-																					style=" color: #555555; height:25px; font-size:11px;"
-																					immediate="true"
-																					value="#{empresaController.nombreMonedaExtranjera}">
-																					<p:ajax update=":formRegEmpresa" event="change" />
-																					<f:selectItems
-																						value="#{empresaController.listaMoneda}" />
-																				</h:selectOneMenu>
-																			</div>
-																			<div class="col-md-2">Simbolo</div>
-																			<div class="col-md-2">
-																				<h:inputText
-																					value="#{empresaController.simboloMonedaExtranjera}"
-																					style=" color: #555555; background-image: none;"
-																					styleClass="input-sm form-control">
-																					<f:ajax />
-																				</h:inputText>
-																			</div>
+							<div class="col-md-5">
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h3 class="panel-title">Parametros de Empresa</h3>
+									</div>
+									<div class="panel-body">
+										<!-- start here register -->
+										<div class="row">
+											<div class="col-md-12 box-content form-horizontal">
+												<div class="tabbable-custom">
+													<ul class="nav nav-tabs">
+														<li class="active"><a href="#tab_5_1"
+															data-toggle="tab">EMPRESA</a></li>
+														<li><a href="#tab_5_2" data-toggle="tab">GESTIÓN</a></li>
+													</ul>
+													<div class="tab-content">
+														<div id="tab_5_1" class="tab-pane active">
+															<div class="row">
+																<div class="col-md-12 box-content form-horizontal">
+																	<div class="form-group">
+																		<div class="col-md-4">Nombre</div>
+																		<div class="col-md-8">
+																			<h:inputText value="#{newEmpresa.razonSocial}"
+																				rendered="#{ empresaController.modificar}"
+																				style=" color: #555555; background-image: none; text-transform: uppercase;"
+																				styleClass="input-sm form-control">
+																				<p:ajax event="change" />
+																			</h:inputText>
+																			<h:outputLabel
+																				rendered="#{! empresaController.modificar}"
+																				value="#{newEmpresa.razonSocial}" />
 																		</div>
 																	</div>
-																</div>
-															</div>
-															<div id="tab_5_3" class="tab-pane">
-																<div class="row">
-																	<div class="col-md-12 box-content form-horizontal">
-																		<p:dataTable id="dataTableGestion" var="item"
-																			rendered="#{empresaController.modificar}"
-																			value="#{empresaController.listaGestion}"
-																			selectionMode="single"
-																			style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
-																			selection="#{empresaController.selectedGestion}"
-																			emptyMessage="Agregue una nueva gestión"
-																			rowKey="#{item.id}">
-																			<f:facet name="header">
-           																		#{label['label.gestion']}
-        																	</f:facet>
-																			<p:column headerText="Detalle"
-																				style="color: #555555;">
-																				<h:outputText value="#{item.gestion}" />
-																			</p:column>
-																		</p:dataTable>
+																	<div class="form-group">
+																		<div class="col-md-4">Dirección</div>
+																		<div class="col-md-8">
+																			<h:inputText value="#{newEmpresa.direccion}"
+																				rendered="#{ empresaController.modificar}"
+																				style=" color: #555555; background-image: none;"
+																				styleClass="input-sm form-control">
+																				<p:ajax event="change" />
+																			</h:inputText>
+																			<h:outputLabel
+																				rendered="#{! empresaController.modificar}"
+																				value="#{newEmpresa.direccion}" />
+																		</div>
 																	</div>
-																	<div class="col-md-12">&#160;</div>
-																	<div class="col-md-12 box-content form-horizontal">
-																		<div class="form-group">
-																			<div class="col-md-3">Gestión</div>
-																			<div class="col-md-3 no-padding"
-																				style="padding-right: 0px;">
-																				<h:inputText
-																					disabled="#{empresaController.modificar}"
-																					value="#{empresaController.newGestion.gestion}"
-																					style=" color: #555555; background-image: none;"
-																					onkeypress="return validateOnlyNumber(event)"
-																					styleClass="input-sm form-control">
-																					<f:ajax />
-																				</h:inputText>
-																			</div>
-																			<div class="col-md-6 no-padding"
-																				style="padding-left: 5px; padding-right: 5px;">
-																				<h:selectOneMenu id="periodo"
-																					disabled="#{empresaController.modificar}"
-																					styleClass="input-sm form-control"
-																					style=" color: #555555; height:25px; font-size:11px;"
-																					immediate="true"
-																					value="#{empresaController.periodo}">
-																					<f:ajax />
-																					<f:selectItems
-																						value="#{empresaController.arrayPeriodo}" />
-																				</h:selectOneMenu>
-																			</div>
+																	<div class="form-group">
+																		<div class="col-md-4">Telefono</div>
+																		<div class="col-md-8">
+																			<h:inputText value="#{newEmpresa.telefono}"
+																				rendered="#{ empresaController.modificar}"
+																				style=" color: #555555; background-image: none;"
+																				styleClass="input-sm form-control">
+																				<p:ajax event="change" />
+																			</h:inputText>
+																			<h:outputLabel
+																				rendered="#{! empresaController.modificar}"
+																				value="#{newEmpresa.telefono}" />
+																		</div>
+																	</div>
+																	<div class="form-group">
+																		<div class="col-md-4">NIT</div>
+																		<div class="col-md-8">
+																			<h:inputText value="#{newEmpresa.NIT}"
+																				rendered="#{ empresaController.modificar}"
+																				style=" color: #555555; background-image: none;"
+																				styleClass="input-sm form-control">
+																				<p:ajax event="change" />
+																			</h:inputText>
+																			<h:outputLabel
+																				rendered="#{! empresaController.modificar}"
+																				value="#{newEmpresa.NIT}" />
+																		</div>
+																	</div>
+																	<div class="form-group">
+																		<div class="col-md-4">Ciudad</div>
+																		<div class="col-md-8">
+																			<h:inputText value="#{newEmpresa.ciudad}"
+																				rendered="#{ empresaController.modificar}"
+																				style=" color: #555555; background-image: none;"
+																				styleClass="input-sm form-control">
+																				<p:ajax event="change" />
+																			</h:inputText>
+																			<h:outputLabel
+																				rendered="#{! empresaController.modificar}"
+																				value="#{newEmpresa.ciudad}" />
 																		</div>
 																	</div>
 																</div>
 															</div>
 														</div>
+														<div id="tab_5_2" class="tab-pane">
+															<div class="row">
+																<div class="col-md-12 box-content form-horizontal">
+																	<div class="form-group">
+																		<div class="col-md-4">Gestion Activa</div>
+																		<div class="col-md-8">
+																			<h:selectOneMenu id="gestionID"
+																				rendered="#{ empresaController.modificar}"
+																				styleClass="input-sm form-control"
+																				style=" color: #555555; height:25px; font-size:11px;"
+																				value="#{empresaController.nuevaGestion}">
+																				<f:ajax />
+																				<f:selectItems
+																					value="#{empresaController.listGestion}" />
+																			</h:selectOneMenu>
+																			<h:outputLabel
+																				rendered="#{! empresaController.modificar}"
+																				value="#{empresaController.nuevaGestion}" />
+																		</div>
+																	</div>
+																	<div class="form-group">
+																		<div class="col-md-4">Nueva Gestion</div>
+																		<div class="col-md-8">
+																			<p:commandLink id="buttonNueva"
+																				disabled="#{ ! empresaController.modificar}"
+																				value="&#160; Nueva Gestion"
+																				styleClass="btn btn-primary ion-plus-round"
+																				style="height:31px; padding:center"
+																				update="formDlgNuevaGestion,formGrowl:msgs1,:formBotonesHeader"
+																				oncomplete="PF('dlgNuevaGestion').show();"
+																				immediate="true">
+																			</p:commandLink>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+
 													</div>
 												</div>
 											</div>
-											<!-- end here register -->
 										</div>
+										<!-- end here register -->
 									</div>
 								</div>
-								<div class="col-md-7">
-									<div class="panel panel-default">
-										<div class="panel-heading">
-											<h3 class="panel-title">Empresa</h3>
-										</div>
-										<div class="panel-body">
-											<!-- start here register -->
-											<div class="box-content no-padding">
-												<p:dataTable id="dataTableEmpresa" var="item"
-													value="#{listaEmpresa}" selectionMode="single"
-													style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
-													selection="#{empresaController.selectedEmpresa}"
-													reflow="true"
-													filteredValue="#{empresaController.listFilterEmpresa}"
-													emptyMessage="No se encontraron Empresas"
-													rowKey="#{item.id}">
-													<p:ajax event="rowSelect"
-														listener="#{empresaController.onRowSelectEmpresa}"
-														update=":formRegEmpresa,:formBotonesHeader" />
-													<p:column headerText="Id" width="12%"
-														filterStyle="width: 100%; height:25px;"
-														filterBy="#{item.id}">
-														<h:outputText value="#{item.id}" />
-													</p:column>
-													<p:column headerText="Razon Social" width="30%"
-														filterStyle="width: 100%; height:25px;"
-														filterBy="#{item.razonSocial}">
-														<h:outputText value="#{item.razonSocial}" />
-													</p:column>
-													<p:column width="15%"
-														filterStyle="width: 100%; height:25px;" headerText="Nit"
-														filterBy="#{item.NIT}">
-														<h:outputText value="#{item.NIT}" />
-													</p:column>
-													<p:column width="15%"
-														filterStyle="width: 100%; height:25px;"
-														headerText="Telefono" filterBy="#{item.telefono}">
-														<h:outputText value="#{item.telefono}" />
-													</p:column>
-													<p:column width="10%"
-														filterStyle="width: 100%; height:25px;"
-														headerText="Estado" filterBy="#{item.estado}">
-														<span class="label label-success"><h:outputText
-																rendered="#{item.estado=='AC'}" value="Activo" /></span>
-														<span class="label label-danger"><h:outputText
-																rendered="#{item.estado=='IN'}" value="Inactivo" /></span>
-													</p:column>
-													<f:facet name="footer">
-														<h:outputText
-															value="#{listaEmpresa.size()} Registros en Total" />
-													</f:facet>
-												</p:dataTable>
-											</div>
-											<!-- end here register -->
-										</div>
-									</div>
-								</div>
-							</ui:fragment>
-						</h:form>
-						<h:form id="formTableEmpresa">
-							<ui:fragment rendered="#{empresaController.crear}">
-								<div class="col-md-12">
-									<div class="panel panel-default">
-										<div class="panel-heading">
-											<h3 class="panel-title">Empresa</h3>
-										</div>
-										<!-- start here datatable -->
-										<div class="box-content no-padding">
-											<p:dataTable id="dataTableEmpresa" var="item"
-												value="#{listaEmpresa}" selectionMode="single"
-												style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
-												selection="#{empresaController.selectedEmpresa}"
-												reflow="true"
-												filteredValue="#{empresaController.listFilterEmpresa}"
-												emptyMessage="No se encontraron Empresas"
-												rowKey="#{item.id}">
-												<p:ajax event="rowSelect"
-													listener="#{empresaController.onRowSelectEmpresa}"
-													update=":formRegEmpresa,:formBotonesHeader,:formTableEmpresa" />
-												<p:column headerText="Id" width="12%"
-													filterStyle="width: 100%; height:25px;"
-													filterBy="#{item.id}">
-													<h:outputText value="#{item.id}" />
-												</p:column>
-												<p:column headerText="Razon Social" width="30%"
-													filterStyle="width: 100%; height:25px;"
-													filterBy="#{item.razonSocial}">
-													<h:outputText value="#{item.razonSocial}" />
-												</p:column>
-												<p:column width="15%"
-													filterStyle="width: 100%; height:25px;" headerText="Nit"
-													filterBy="#{item.NIT}">
-													<h:outputText value="#{item.NIT}" />
-												</p:column>
-												<p:column width="15%"
-													filterStyle="width: 100%; height:25px;"
-													headerText="Telefono" filterBy="#{item.telefono}">
-													<h:outputText value="#{item.telefono}" />
-												</p:column>
-												<p:column width="10%"
-													filterStyle="width: 100%; height:25px;" headerText="Estado"
-													filterBy="#{item.estado}">
-													<span class="label label-success"><h:outputText
-															rendered="#{item.estado=='AC'}" value="Activo" /></span>
-													<span class="label label-danger"><h:outputText
-															rendered="#{item.estado=='IN'}" value="Inactivo" /></span>
-												</p:column>
-												<p:column width="12%"
-													filterStyle="width: 100%; height:25px;"
-													headerText="Registro" filterBy="#{item.usuarioRegistro}">
-													<h:outputText value="#{item.usuarioRegistro}" />
-												</p:column>
-												<p:column width="12%"
-													filterStyle="width: 100%; height:25px;" headerText="Fecha"
-													filterBy="#{item.fecha_registro}">
-													<h:outputText value="#{item.fecha_registro}">
-														<f:convertDateTime pattern="dd/MM/yyyy" />
-													</h:outputText>
-												</p:column>
-												<f:facet name="footer">
-													<h:outputText
-														value="#{listaEmpresa.size()} Registros en Total" />
-												</f:facet>
-											</p:dataTable>
-										</div>
-										<!-- end here datatable -->
-										<div class="panel-body"></div>
-									</div>
-								</div>
-							</ui:fragment>
+							</div>
 						</h:form>
 					</div>
 				</section>
@@ -421,8 +212,44 @@
 		<!-- END GROWL -->
 
 		<!-- START DIALOG -->
-		<p:dialog header="DIALOG TEST" widgetVar="dlg1" modal="true"
+		<p:dialog header="NUEVA GESTION" widgetVar="dlgNuevaGestion"
 			height="100%">
+			<h:form id="formDlgNuevaGestion">
+				<div class="row">
+					<div class="col-md-12 box-content form-horizontal">
+						<div class="form-group">
+							<div class="col-md-4">Gestion</div>
+							<div class="col-md-8">
+								<h:inputText value="#{empresaController.newGestion.gestion}"
+									style=" color: #555555; background-image: none;"
+									styleClass="input-sm form-control">
+									<p:ajax event="change" />
+								</h:inputText>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-md-4"></div>
+							<div class="col-md-4">
+								<p:commandLink id="buttonDlgCancelar" value="&#160; Cancelar"
+									styleClass="btn btn-warning ion-minus-circled"
+									style="height:31px; padding:center"
+									update="formRegEmpresa,formBotonesHeader"
+									oncomplete="PF('dlgNuevaGestion').hide();" immediate="true">
+								</p:commandLink>
+							</div>
+							<div class="col-md-4">
+								<p:commandLink id="buttonDlgRegistrar" value="&#160; Registrar"
+									styleClass="btn btn-success ion-plus-round"
+									style="height:31px; padding:center"
+									update="formRegEmpresa,formGrowl:msgs1,:formBotonesHeader"
+									oncomplete="PF('dlgNuevaGestion').hide();">
+									<p:ajax listener="#{empresaController.registrarGestion()}" />
+								</p:commandLink>
+							</div>
+						</div>
+					</div>
+				</div>
+			</h:form>
 		</p:dialog>
 		<!-- END DIALOG -->
 

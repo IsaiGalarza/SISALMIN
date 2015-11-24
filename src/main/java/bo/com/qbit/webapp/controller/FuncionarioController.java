@@ -15,17 +15,18 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
-import javax.servlet.http.HttpServletRequest;
 
 import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
 
+import bo.com.qbit.webapp.data.DetalleUnidadRepository;
 import bo.com.qbit.webapp.data.FuncionarioRepository;
 import bo.com.qbit.webapp.data.UsuarioRepository;
+import bo.com.qbit.webapp.model.DetalleUnidad;
 import bo.com.qbit.webapp.model.Funcionario;
 import bo.com.qbit.webapp.model.Usuario;
 import bo.com.qbit.webapp.service.FuncionarioRegistration;
-import bo.com.qbit.webapp.service.EstadoUsuarioLogin;
+import bo.com.qbit.webapp.util.SessionMain;
 
 @Named(value = "funcionarioController")
 @ConversationScoped
@@ -49,6 +50,9 @@ public class FuncionarioController implements Serializable {
 
 	@Inject
 	private FuncionarioRepository FuncionarioRepository;
+	
+	@Inject
+	private DetalleUnidadRepository detalleUnidadRepository;
 
 	private @Inject UsuarioRepository usuarioRepository;
 //	private Usuario usuarioSession;
@@ -62,13 +66,19 @@ public class FuncionarioController implements Serializable {
 	private boolean crear = true;
 	
 	private String tituloPanel = "Registrar Funcionario";
+	
 	private Funcionario selectedFuncionario;
 	private Funcionario newFuncionario= new Funcionario();
+	private DetalleUnidad selectedDetalleUnidad = new DetalleUnidad();
+	
+	private List<DetalleUnidad> listDetalleUnidad = new ArrayList<DetalleUnidad>();
 	private List<Usuario> listUsuario = new ArrayList<Usuario>();
-
 	private List<Funcionario> listaFuncionario;
-	private EstadoUsuarioLogin estadoUsuarioLogin;
 
+	
+	//SESSION
+	private @Inject SessionMain sessionMain; //variable del login
+	private String usuarioSession;
 	
 	private boolean atencionCliente=false;
 
@@ -81,30 +91,15 @@ public class FuncionarioController implements Serializable {
 		return listaFuncionario;
 	}
 	
-	private String usuarioSession;
-	
 	@PostConstruct
 	public void initNewFuncionario() {
 
-		// initConversation();
 		beginConversation();
 
-		HttpServletRequest request = (HttpServletRequest) facesContext
-				.getExternalContext().getRequest();
-		System.out
-				.println("init Tipo Producto*********************************");
-		System.out.println("request.getClass().getName():"
-				+ request.getClass().getName());
-		System.out.println("isVentas:" + request.isUserInRole("ventas"));
-		System.out.println("remoteUser:" + request.getRemoteUser());
-		System.out.println("userPrincipalName:"
-				+ (request.getUserPrincipal() == null ? "null" : request
-						.getUserPrincipal().getName()));
-		
-		estadoUsuarioLogin = new EstadoUsuarioLogin(facesContext);
-		usuarioSession =  estadoUsuarioLogin.getNombreUsuarioSession();
+		usuarioSession = sessionMain.getUsuarioLoggin().getLogin();
 		listUsuario = usuarioRepository.findAllOrderedByID();
 
+		selectedFuncionario = null;
 		newFuncionario = new Funcionario();
 		newFuncionario.setEstado("AC");
 		newFuncionario.setFechaRegistro(new Date());
@@ -116,6 +111,7 @@ public class FuncionarioController implements Serializable {
 
 		// traer todos las Funcionarioes ordenados por ID Desc
 		listaFuncionario = FuncionarioRepository.traerFuncionarioActivas();
+		listDetalleUnidad = detalleUnidadRepository.traerDetalleUnidadActivas();
 		
 		modificar = false;
 		registrar = false;
@@ -127,18 +123,15 @@ public class FuncionarioController implements Serializable {
 		modificar = false;
 		registrar = true;
 		crear = false;
-		
 	}
 	
 	public void cambiarAspectoModificar(){
 		modificar = true;
 		registrar = false;
 		crear = false;
-		
 	}
 	
 	public void beginConversation() {
-
 		if (conversation.isTransient()) {
 			System.out.println("beginning conversation : " + this.conversation);
 			conversation.begin();
@@ -167,12 +160,12 @@ public class FuncionarioController implements Serializable {
 			newFuncionario = em.find(Funcionario.class, Funcionario.getId());
 			newFuncionario.setFechaRegistro(new Date());
 			newFuncionario.setUsuarioRegistro(usuarioSession);
+			selectedDetalleUnidad = newFuncionario.getDetalleUnidad();
 
 			tituloPanel = "Modificar Funcionario";
 			modificar = false;
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 			System.out.println("Error in onRowSelectFuncionarioClick: "
 					+ e.getMessage());
@@ -182,6 +175,7 @@ public class FuncionarioController implements Serializable {
 	public void registrarFuncionario() {
 		try {
 			System.out.println("Ingreso a registrarFuncionario: ");
+			newFuncionario.setDetalleUnidad(selectedDetalleUnidad);
 			FuncionarioRegistration.register(newFuncionario);
 			
 			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
@@ -201,6 +195,7 @@ public class FuncionarioController implements Serializable {
 		try {
 			System.out.println("Ingreso a modificarFuncionario: "
 					+ newFuncionario.getId());
+			newFuncionario.setDetalleUnidad(selectedDetalleUnidad);
 			FuncionarioRegistration.updated(newFuncionario);
 			
 			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
@@ -255,6 +250,29 @@ public class FuncionarioController implements Serializable {
 		}
 		// This is the root cause message
 		return errorMessage;
+	}
+	
+	//Detalle Unidad
+	
+	public List<DetalleUnidad> completeDetalleUnidad(String query) {
+		String upperQuery = query.toUpperCase();
+		List<DetalleUnidad> results = new ArrayList<DetalleUnidad>();
+		for(DetalleUnidad i : listDetalleUnidad) {
+			if(i.getNombre().toUpperCase().startsWith(upperQuery)){
+				results.add(i);
+			}
+		}         
+		return results;
+	}
+	
+	public void onRowSelectDetalleUnidadClick(SelectEvent event) {
+		String nombre =  event.getObject().toString();
+		for(DetalleUnidad i : listDetalleUnidad){
+			if(i.getNombre().equals(nombre)){
+				selectedDetalleUnidad = i;
+				return;
+			}
+		}
 	}
 
 	// get and set
@@ -320,6 +338,22 @@ public class FuncionarioController implements Serializable {
 
 	public void setRegistrar(boolean registrar) {
 		this.registrar = registrar;
+	}
+
+	public List<DetalleUnidad> getListDetalleUnidad() {
+		return listDetalleUnidad;
+	}
+
+	public void setListDetalleUnidad(List<DetalleUnidad> listDetalleUnidad) {
+		this.listDetalleUnidad = listDetalleUnidad;
+	}
+
+	public DetalleUnidad getSelectedDetalleUnidad() {
+		return selectedDetalleUnidad;
+	}
+
+	public void setSelectedDetalleUnidad(DetalleUnidad selecteDetalleUnidad) {
+		this.selectedDetalleUnidad = selecteDetalleUnidad;
 	}
 
 }

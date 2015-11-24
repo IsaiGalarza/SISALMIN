@@ -180,10 +180,15 @@
 						</ul></li>
 					<ui:insert name="page_active_paremetrizacion">
 						<li
-							class="#{(view.viewId.equals('/pages/parametrizacion/proveedor.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/almacen.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/partida.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/proyecto.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/empresa.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/unidad.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/funcionario.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/tipo_ufv.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/proveedor.xhtml')) ? 'active' : 'inactive'}"><a
+							class="#{(view.viewId.equals('/pages/parametrizacion/proveedor.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/almacen.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/partida.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/proyecto.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/empresa.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/unidad.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/funcionario.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/tipo_ufv.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/proveedor.xhtml')) ? 'active' : (view.viewId.equals('/pages/parametrizacion/empresa.xhtml')) ? 'active' : 'inactive'}"><a
 							href="#"><i class="icon-equalizer"></i><span
 								class="sidebar-text">Parametrización</span></a>
 							<ul class="nav nav-second-level">
+							
+							<li class="#{(view.viewId.equals('/pages/parametrizacion/empresa.xhtml')) ? 'active' :'inactive'}"><a
+									href="#{request.contextPath}/pages/parametrizacion/empresa.xhtml">
+										<i class="icon-globe"></i><span class="sidebar-text">Empresa</span>
+								</a></li>
 								
 								<li class="#{(view.viewId.equals('/pages/parametrizacion/proveedor.xhtml')) ? 'active' :'inactive'}"><a
 									href="#{request.contextPath}/pages/parametrizacion/proveedor.xhtml">
@@ -237,7 +242,7 @@
 					</ui:insert>
 					
 					<ui:insert name="page_active_proceso">
-						<li class="#{(view.viewId.equals('/pages/proceso/orden_ingreso.xhtml')) ? 'active' :'inactive'}">
+						<li class="#{(view.viewId.equals('/pages/proceso/orden_ingreso.xhtml')) ? 'active' :(view.viewId.equals('/pages/proceso/orden_traspaso.xhtml')) ? 'active' :'inactive'}">
 						<a href="#"><i class="icon-layers"></i><span
 								class="sidebar-text">Proceso</span></a>
 							<ul class="nav nav-second-level">
@@ -247,10 +252,14 @@
 										<i class="icon-social-dropbox"></i><span class="sidebar-text">Orden de Ingreso
 									</span>
 								</a></li>
+								
+								<li class="#{(view.viewId.equals('/pages/proceso/orden_traspaso.xhtml')) ? 'active' :'inactive'}"><a
+									href="#{request.contextPath}/pages/proceso/orden_traspaso.xhtml">
+										<i class="icon-social-dropbox"></i><span class="sidebar-text">Orden de Traspaso
+									</span>
+								</a></li>
 							</ul></li>
-					</ui:insert>
-					
-					
+					</ui:insert>					
 
 					<ui:insert name="page_active_reporte">
 						<li
@@ -278,15 +287,6 @@
 				</ul>
 				</section> </aside>
 				<!--END SIDERBAR-->
-				
-				
-				
-				
-				
-				
-				
-				
-				
 				
 				
 				

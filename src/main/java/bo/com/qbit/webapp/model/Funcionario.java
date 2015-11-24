@@ -3,6 +3,7 @@ package bo.com.qbit.webapp.model;
 import java.io.Serializable;
 
 import javax.persistence.*;
+
 import java.util.Date;
 
 
@@ -28,6 +29,10 @@ public class Funcionario implements Serializable {
 	private String direccion;
 	
 	private String telefono;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "id_detalle_unidad", nullable = true)
+	private DetalleUnidad detalleUnidad;
 
 	private String estado;
 	
@@ -40,7 +45,8 @@ public class Funcionario implements Serializable {
 
 
 	public Funcionario() {
-		
+		this.id  = 0 ;
+		this.detalleUnidad = new DetalleUnidad();
 	}
 
 	public Integer getId() {
@@ -105,6 +111,14 @@ public class Funcionario implements Serializable {
 
 	public void setTelefono(String telefono) {
 		this.telefono = telefono;
+	}
+
+	public DetalleUnidad getDetalleUnidad() {
+		return detalleUnidad;
+	}
+
+	public void setDetalleUnidad(DetalleUnidad detalleUnidad) {
+		this.detalleUnidad = detalleUnidad;
 	}
 
 }
