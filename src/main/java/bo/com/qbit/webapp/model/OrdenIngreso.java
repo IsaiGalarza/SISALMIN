@@ -56,8 +56,8 @@ public class OrdenIngreso implements Serializable{
 	private Date fechaAprobacion;
 
 	// bi-directional many-to-one association to DetallePedidoMov
-	@OneToMany(mappedBy = "ordenCompra")
-	private List<DetalleOrdenCompra> detalleOrdenCompra;
+	@OneToMany(mappedBy = "ordenIngreso")
+	private List<DetalleOrdenIngreso> detalleOrdenIngreso;
 
 	@ManyToOne
 	@JoinColumn(name = "id_usuario_aprobacion")
@@ -67,9 +67,9 @@ public class OrdenIngreso implements Serializable{
 	@JoinColumn(name = "id_almacen")
 	private Almacen almacen;
 
-
 	public OrdenIngreso() {
 		this.id = 0 ;
+		this.motivoIngreso = "COMPRA";
 		this.almacen = new Almacen();		
 		this.proveedor=new Proveedor();
 	}
@@ -113,7 +113,6 @@ public class OrdenIngreso implements Serializable{
 	public void setObservacion(String observacion) {
 		this.observacion = observacion;
 	}
-	
 
 	public String getUsuarioRegistro() {
 		return this.usuarioRegistro;
@@ -179,12 +178,12 @@ public class OrdenIngreso implements Serializable{
 		this.almacen = almacen;
 	}
 
-	public List<DetalleOrdenCompra> getDetalleOrdenCompra() {
-		return detalleOrdenCompra;
+	public List<DetalleOrdenIngreso> getDetalleOrdenCompra() {
+		return detalleOrdenIngreso;
 	}
 
-	public void setDetalleOrdenCompra(List<DetalleOrdenCompra> detalleOrdenCompra) {
-		this.detalleOrdenCompra = detalleOrdenCompra;
+	public void setDetalleOrdenIngreso(List<DetalleOrdenIngreso> detalleOrdenIngreso) {
+		this.detalleOrdenIngreso = detalleOrdenIngreso;
 	}
 
 	public String getMotivoIngreso() {

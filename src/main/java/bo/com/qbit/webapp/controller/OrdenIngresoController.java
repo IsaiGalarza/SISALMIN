@@ -12,11 +12,14 @@ import javax.enterprise.event.Event;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
 
+import bo.com.qbit.webapp.data.AlmacenProductoRepository;
 import bo.com.qbit.webapp.data.AlmacenRepository;
 import bo.com.qbit.webapp.data.DetalleOrdenIngresoRepository;
 import bo.com.qbit.webapp.data.OrdenIngresoRepository;
@@ -24,11 +27,13 @@ import bo.com.qbit.webapp.data.ProductoRepository;
 import bo.com.qbit.webapp.data.ProveedorRepository;
 import bo.com.qbit.webapp.data.UsuarioRepository;
 import bo.com.qbit.webapp.model.Almacen;
+import bo.com.qbit.webapp.model.AlmacenProducto;
 import bo.com.qbit.webapp.model.DetalleOrdenIngreso;
 import bo.com.qbit.webapp.model.OrdenIngreso;
 import bo.com.qbit.webapp.model.Producto;
 import bo.com.qbit.webapp.model.Proveedor;
 import bo.com.qbit.webapp.model.Usuario;
+import bo.com.qbit.webapp.service.AlmacenProductoRegistration;
 import bo.com.qbit.webapp.service.DetalleOrdenIngresoRegistration;
 import bo.com.qbit.webapp.service.OrdenIngresoRegistration;
 import bo.com.qbit.webapp.util.FacesUtil;
@@ -51,22 +56,29 @@ public class OrdenIngresoController implements Serializable {
 	private @Inject ProveedorRepository proveedorRepository;
 	private @Inject ProductoRepository productoRepository;
 	private @Inject DetalleOrdenIngresoRepository detalleOrdenIngresoRepository;
+	private @Inject AlmacenProductoRepository almacenProductoRepository;
 
 	private @Inject OrdenIngresoRegistration ordenIngresoRegistration;
 	private @Inject DetalleOrdenIngresoRegistration detalleOrdenIngresoRegistration;
+	private @Inject AlmacenProductoRegistration almacenProductoRegistration;
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
 	Event<String> pushEventSucursal;
+	
+	@Inject
+	private FacesContext facesContext;
 
 	//ESTADOS
 	private boolean modificar = false;
 	private boolean registrar = false;
 	private boolean crear = true;
 	private boolean verButtonDetalle = true;
+	private boolean verProcesar = true;
 
 	private String tituloProducto = "Agregar Producto";
 	private String tituloPanel = "Registrar Almacen";
+	private String urlOrdenIngreso = "";
 
 	//OBJECT
 	private Proveedor selectedProveedor;
@@ -82,11 +94,11 @@ public class OrdenIngresoController implements Serializable {
 	private List<OrdenIngreso> listaOrdenIngreso = new ArrayList<OrdenIngreso>();
 	private List<Almacen> listaAlmacen = new ArrayList<Almacen>();
 	private List<Proveedor> listaProveedor = new ArrayList<Proveedor>();
+	private List<DetalleOrdenIngreso> listDetalleOrdenIngresoEliminados = new ArrayList<DetalleOrdenIngreso>();
 
 	//SESSION
 	private @Inject SessionMain sessionMain; //variable del login
 	private String usuarioSession;
-
 
 	private boolean atencionCliente=false;
 
@@ -117,6 +129,7 @@ public class OrdenIngresoController implements Serializable {
 		registrar = false;
 		crear = true;
 		atencionCliente=false;
+		verProcesar = true;
 
 		listaDetalleOrdenIngreso = new ArrayList<DetalleOrdenIngreso>();
 		listaOrdenIngreso = ordenIngresoRepository.findAllOrderedByID();
@@ -157,7 +170,11 @@ public class OrdenIngresoController implements Serializable {
 	// SELECT ORDEN INGRESO CLICK
 	public void onRowSelectOrdenIngresoClick(SelectEvent event) {
 		try {
-			//listaDetalleOrdenIngreso = detalleOrdenIngresoRepository.findAllByOrdenIngreso(selectedOrdenIngreso);
+			if(selectedOrdenIngreso.getEstado().equals("PR")){
+				verProcesar = false;
+			}else{
+				verProcesar = true;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Error in onRowSelectOrdenIngresoClick: "
@@ -194,7 +211,7 @@ public class OrdenIngresoController implements Serializable {
 			FacesUtil.infoMessage("Orden de Ingreso Registrada!", ""+newOrdenIngreso.getId());
 			initNewOrdenIngreso();
 		} catch (Exception e) {
-			FacesUtil.errorMessage("Registro Incorrecto.");
+			FacesUtil.errorMessage("Error al Registrar.");
 		}
 	}
 
@@ -209,13 +226,15 @@ public class OrdenIngresoController implements Serializable {
 			}
 			//borrado logico 
 			for(DetalleOrdenIngreso d: listDetalleOrdenIngresoEliminados){
-				d.setEstado("RM");
-				detalleOrdenIngresoRegistration.updated(d);
+				if(d.getId() != 0){
+					d.setEstado("RM");
+					detalleOrdenIngresoRegistration.updated(d);
+				}
 			}
 			FacesUtil.infoMessage("Orden de Ingreso Modificada!", ""+newOrdenIngreso.getId());
 			initNewOrdenIngreso();
 		} catch (Exception e) {
-			FacesUtil.errorMessage("Modificacion Incorrecto.");
+			FacesUtil.errorMessage("Error al Modificar.");
 		}
 	}
 
@@ -226,9 +245,83 @@ public class OrdenIngresoController implements Serializable {
 			for(DetalleOrdenIngreso d: listaDetalleOrdenIngreso){
 				detalleOrdenIngresoRegistration.remover(d);
 			}
+			FacesUtil.infoMessage("Orden de Ingreso Eliminada!", ""+newOrdenIngreso.getId());
 			initNewOrdenIngreso();
 		} catch (Exception e) {
-			FacesUtil.errorMessage("Registro Incorrecto.");
+			FacesUtil.errorMessage("Error al Eliminar.");
+		}
+	}
+
+	public void procesarOrdenIngreso(){
+		try {
+			Date date = new Date();
+			//actualizar estado de orden ingreso
+			selectedOrdenIngreso.setEstado("PR");
+			selectedOrdenIngreso.setFechaAprobacion(date);
+			ordenIngresoRegistration.updated(selectedOrdenIngreso);
+
+			//actuaizar stock de AlmacenProducto
+			listaDetalleOrdenIngreso = detalleOrdenIngresoRepository.findAllByOrdenIngreso(selectedOrdenIngreso);
+			Almacen alm = selectedOrdenIngreso.getAlmacen();
+			Proveedor prov = selectedOrdenIngreso.getProveedor();
+			for(DetalleOrdenIngreso d: listaDetalleOrdenIngreso){
+				Producto prod = d.getProducto();
+				actualizarStock(prod, alm, prov, d.getCantidad(),date);
+			}
+			FacesUtil.infoMessage("Orden de Ingreso Procesada!", "");
+			initNewOrdenIngreso();
+		} catch (Exception e) {
+			FacesUtil.errorMessage("Proceso Incorrecto.");
+		}
+	}
+
+	private void actualizarStock(Producto prod ,Almacen alm,Proveedor prov, int newStock,Date date) throws Exception {
+		//0 . verificar si existe el producto en el almacen
+		System.out.println("actualizarStock()");
+		AlmacenProducto almProd =  almacenProductoRepository.findByProducto(prod);
+		System.out.println("almProd = "+almProd);
+		if(almProd != null){
+			// 1 .  si existe el producto
+			double oldStock = almProd.getStock();
+			almProd.setStock(oldStock + newStock);
+			almacenProductoRegistration.updated(almProd);
+			return ;
+		}
+		// 2 . no existe el producto
+		almProd = new AlmacenProducto();
+		almProd.setAlmacen(alm);
+		almProd.setProducto(prod);
+		almProd.setProveedor(prov);
+		almProd.setStock(newStock);
+
+		almProd.setEstado("AC");
+		almProd.setFechaRegistro(date);
+		almProd.setUsuarioRegistro(usuarioSession);
+
+		almacenProductoRegistration.register(almProd);
+	}
+
+	public void cargarReporte(){
+		try {
+			urlOrdenIngreso = loadURL();
+			RequestContext context = RequestContext.getCurrentInstance();
+			context.execute("PF('dlgVistaPreviaOrdenIngreso').show();");
+
+			initNewOrdenIngreso();
+		} catch (Exception e) {
+			FacesUtil.errorMessage("Proceso Incorrecto.");
+		}
+	}
+	
+	public String loadURL(){
+		try{
+			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
+			String urlPath = request.getRequestURL().toString();
+			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
+			String urlPDFreporte = urlPath+"ReporteOrdenIngreso?pIdOrdenIngreso="+selectedOrdenIngreso.getId()+"&pIdEmpresa=1&pUsuario="+usuarioSession;
+			return urlPDFreporte;
+		}catch(Exception e){
+			return "error";
 		}
 	}
 
@@ -239,8 +332,6 @@ public class OrdenIngresoController implements Serializable {
 		selectedProducto = selectedDetalleOrdenIngreso.getProducto();
 		verButtonDetalle = true;
 	}
-
-	private List<DetalleOrdenIngreso> listDetalleOrdenIngresoEliminados = new ArrayList<DetalleOrdenIngreso>();
 
 	public void borrarDetalleOrdenIngreso(){
 		listaDetalleOrdenIngreso.remove(selectedDetalleOrdenIngreso);
@@ -342,10 +433,11 @@ public class OrdenIngresoController implements Serializable {
 		for(Producto i : listProducto){
 			if(i.getNombre().equals(nombre)){
 				selectedProducto = i;
+				calcular();
 				return;
 			}
 		}
-		calcular();
+		
 	}
 
 	public void updateDataTable(String id) {
@@ -498,6 +590,22 @@ public class OrdenIngresoController implements Serializable {
 
 	public void setVerButtonDetalle(boolean verButtonDetalle) {
 		this.verButtonDetalle = verButtonDetalle;
+	}
+
+	public boolean isVerProcesar() {
+		return verProcesar;
+	}
+
+	public void setVerProcesar(boolean verProcesar) {
+		this.verProcesar = verProcesar;
+	}
+
+	public String getUrlOrdenIngreso() {
+		return urlOrdenIngreso;
+	}
+
+	public void setUrlOrdenIngreso(String urlOrdenIngreso) {
+		this.urlOrdenIngreso = urlOrdenIngreso;
 	}
 
 }
