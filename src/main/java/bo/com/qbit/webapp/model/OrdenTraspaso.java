@@ -28,14 +28,9 @@ public class OrdenTraspaso implements Serializable{
 	private String correlativo;
 
 	private String observacion;
-
-	private String cargo;
-
+	
 	@Column(name = "fecha_documento", nullable = true)
 	private Date fechaDocumento;
-
-	@Column(name = "detalle_proyecto")
-	private String detalleProyecto;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_funcionario", nullable = true)
@@ -192,14 +187,6 @@ public class OrdenTraspaso implements Serializable{
 		this.gestion = gestion;
 	}
 
-	public String getCargo() {
-		return cargo;
-	}
-
-	public void setCargo(String cargo) {
-		this.cargo = cargo;
-	}
-
 	public Almacen getAlmacenOrigen() {
 		return almacenOrigen;
 	}
@@ -222,14 +209,6 @@ public class OrdenTraspaso implements Serializable{
 
 	public void setFuncionario(Funcionario funcionario) {
 		this.funcionario = funcionario;
-	}
-
-	public String getDetalleProyecto() {
-		return detalleProyecto;
-	}
-
-	public void setDetalleProyecto(String detalleProyecto) {
-		this.detalleProyecto = detalleProyecto;
 	}
 
 }

@@ -158,6 +158,19 @@
 															</p:inputText>
 														</div>
 													</div>
+													
+													<div class="form-group ">
+														<div class="col-md-4">Cargo</div>
+														<div class="col-md-8">
+															<p:inputText id="cargoID"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control" size="40"
+																value="#{funcionarioController.newFuncionario.cargo}"
+																required="true" requiredMessage="Requerido.">
+																<p:ajax event="change" />
+															</p:inputText>
+														</div>
+													</div>
 
 													<div class="form-group ">
 														<div class="col-md-4">Dirección</div>

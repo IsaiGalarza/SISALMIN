@@ -24,6 +24,8 @@ public class Funcionario implements Serializable {
 	
 	private String nombre;
 	
+	private String cargo;
+	
 	private String apellidos;
 	
 	private String direccion;
@@ -119,6 +121,14 @@ public class Funcionario implements Serializable {
 
 	public void setDetalleUnidad(DetalleUnidad detalleUnidad) {
 		this.detalleUnidad = detalleUnidad;
+	}
+
+	public String getCargo() {
+		return cargo;
+	}
+
+	public void setCargo(String cargo) {
+		this.cargo = cargo;
 	}
 
 }

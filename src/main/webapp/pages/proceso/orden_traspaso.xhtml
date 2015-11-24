@@ -43,7 +43,7 @@
 								<p:commandLink id="buttonRegistrar" value="&#160; Registrar"
 									styleClass="btn btn-success ion-checkmark"
 									rendered="#{ordenTraspasoController.registrar}"
-									update="formTableOrdenTraspaso, :formBotonesHeader"
+									update="formTableOrdenTraspaso, formBotonesHeader,formModalValidacionStock"
 									style="height:31px; padding:center"
 									action="#{ordenTraspasoController.registrarOrdenTraspaso()}">
 								</p:commandLink>
@@ -157,7 +157,7 @@
 															</p:inputText>
 														</div>
 													</div>
-													
+
 													<div class="form-group ">
 														<div class="col-md-4">Almacen</div>
 														<div class="col-md-8">
@@ -196,7 +196,7 @@
 																placeholder="[Escriba Funcionario]" maxResults="10">
 
 																<p:ajax event="itemSelect"
-																	update="formTableOrdenTraspaso:servidorPublicoID"
+																	update="formTableOrdenTraspaso:servidorPublicoID,formTableOrdenTraspaso:cargoID"
 																	listener="#{ordenTraspasoController.onRowSelectFuncionarioClick}" />
 
 																<p:column>
@@ -206,14 +206,15 @@
 															</p:autoComplete>
 														</div>
 													</div>
-													
+
 													<div class="form-group ">
 														<div class="col-md-4">Cargo</div>
 														<div class="col-md-8">
-															<p:inputText id="cajaID"
+															<p:inputText id="cargoID"
 																style=" color: #555555; background-image: none;"
 																styleClass="input-sm form-control" size="40"
-																value="#{ordenTraspasoController.newOrdenTraspaso.cargo}">
+																disabled="true"
+																value="#{ordenTraspasoController.selectedFuncionario.cargo}">
 																<p:ajax event="change" />
 															</p:inputText>
 														</div>
@@ -233,7 +234,7 @@
 																placeholder="[Escriba Proyecto]" maxResults="10">
 
 																<p:ajax event="itemSelect"
-																	update="formTableOrdenTraspaso:proyectoID"
+																	update="formTableOrdenTraspaso:proyectoID,formTableOrdenTraspaso:tipoDocumentoAdjID"
 																	listener="#{ordenTraspasoController.onRowSelectProyectoClick}" />
 
 																<p:column>
@@ -249,8 +250,9 @@
 														<div class="col-md-8">
 															<p:inputText id="tipoDocumentoAdjID"
 																style=" color: #555555; background-image: none;"
+																disabled="true"
 																styleClass="input-sm form-control" size="40"
-																value="#{ordenTraspasoController.newOrdenTraspaso.detalleProyecto}"
+																value="#{ordenTraspasoController.selectedProyecto.descripcion}"
 																required="true" requiredMessage="Requerido.">
 																<p:ajax event="change" />
 															</p:inputText>
@@ -645,7 +647,7 @@
 		</h:form>
 
 		<!-- VISTA PREVIA REPORTE -->
-		<p:dialog header="ORDEN Traspaso"
+		<p:dialog header="ORDEN TRASPASO"
 			widgetVar="dlgVistaPreviaOrdenTraspaso" modal="true"
 			visible="#{not empty facesContext.maximumSeverity}" resizable="false"
 			position="center" width="750px">
@@ -668,6 +670,51 @@
 								<p:commandLink value="Aceptar"
 									styleClass="btn btn-primary btn-block"
 									onclick="PF('dlgVistaPreviaOrdenTraspaso').hide();" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+		<!-- VALIDACION DE STOCK -->
+		<p:dialog header="VALIDACION DE STOCK" widgetVar="dlgValidacionStock"
+			modal="true" visible="#{not empty facesContext.maximumSeverity}"
+			resizable="false" position="center" width="750px">
+			<h:form id="formModalValidacionStock">
+				<div class="row">
+					<div class="form-group ">
+						<div class="col-md-12">Productos sin existencias</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<p:dataTable id="itemsTableSinStock"
+						styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+						selectionMode="single" rowKey="#{_var}" var="_var"
+						value="#{ordenTraspasoController.listDetalleOrdenTraspasoSinStock}"
+						emptyMessage="No se encontraron Registros de ITEMS.">
+
+						<p:column headerText="Nombre ITEM">
+							<h:outputText value="#{_var.producto.nombre}" />
+						</p:column>
+
+						<p:column headerText="Cantidad" width="20%">
+							<h:outputText value="#{_var.cantidad}" />
+						</p:column>
+
+					</p:dataTable>
+				</div>
+
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="form-group">
+							<div class="col-md-4"></div>
+							<div class="col-md-4"></div>
+							<div class="col-md-4">
+								<p:commandLink value="Aceptar"
+									styleClass="btn btn-primary btn-block"
+									onclick="PF('dlgValidacionStock').hide();" />
 							</div>
 						</div>
 					</div>

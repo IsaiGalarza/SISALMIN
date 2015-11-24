@@ -99,6 +99,7 @@ public class OrdenTraspasoController implements Serializable {
 	private List<Proyecto> listaProyecto = new ArrayList<Proyecto>();
 	private List<DetalleOrdenTraspaso> listDetalleOrdenTraspasoEliminados = new ArrayList<DetalleOrdenTraspaso>();
 	private List<Funcionario> listFuncionario = new ArrayList<Funcionario>();
+	private List<DetalleOrdenTraspaso> listDetalleOrdenTraspasoSinStock = new ArrayList<DetalleOrdenTraspaso>();
 
 	//SESSION
 	private @Inject SessionMain sessionMain; //variable del login
@@ -142,6 +143,7 @@ public class OrdenTraspasoController implements Serializable {
 		newOrdenTraspaso.setCorrelativo(cargarCorrelativo(listaOrdenTraspaso.size()+1));
 		newOrdenTraspaso.setEstado("AC");
 		newOrdenTraspaso.setGestion(gestionSesion);
+		newOrdenTraspaso.setFechaDocumento(new Date());
 		newOrdenTraspaso.setFechaRegistro(new Date());
 		newOrdenTraspaso.setUsuarioRegistro(usuarioSession);
 	}
@@ -151,7 +153,7 @@ public class OrdenTraspasoController implements Serializable {
 		selectedAlmacenOrigen = almacenRepository.findAlmacenForUser(sessionMain.getUsuarioLoggin());
 		if(selectedAlmacenOrigen.getId() == -1){
 			FacesUtil.infoMessage("Usuario "+usuarioSession, "No tiene asignado un almacen");
-				return;
+			return;
 		}
 		modificar = false;
 		registrar = true;
@@ -220,6 +222,10 @@ public class OrdenTraspasoController implements Serializable {
 
 	public void registrarOrdenTraspaso() {
 		try {
+			if(validarStock()){//valida el stock de los productos
+				FacesUtil.showDialog("dlgValidacionStock");
+				return ;
+			}
 			Date date = new Date();
 			calcularTotal();
 			System.out.println("Traspaso a registrarOrdenTraspaso: ");
@@ -240,6 +246,24 @@ public class OrdenTraspasoController implements Serializable {
 		} catch (Exception e) {
 			FacesUtil.errorMessage("Error al Registrar.");
 		}
+	}
+
+	/**
+	 * Validar el stock actual de los productos del detalle de Orden de Traspaso
+	 * @return
+	 */
+	private boolean validarStock(){
+		System.out.println("validarStock() ");
+		listDetalleOrdenTraspasoSinStock = new ArrayList<DetalleOrdenTraspaso>();
+		for(DetalleOrdenTraspaso d: listaDetalleOrdenTraspaso){
+			double stockAPedir = d.getCantidad();
+			Producto prod = d.getProducto();
+			AlmacenProducto almProd =  almacenProductoRepository.findByProducto(prod);
+			if(stockAPedir > almProd.getStock()){
+				listDetalleOrdenTraspasoSinStock.add(d);
+			}
+		}
+		return listDetalleOrdenTraspasoSinStock.size()>0?true:false;
 	}
 
 	public void modificarOrdenTraspaso() {
@@ -286,18 +310,20 @@ public class OrdenTraspasoController implements Serializable {
 		try {
 			Date date = new Date();
 			//actualizar estado de orden Traspaso
-			//selectedOrdenTraspaso.setEstado("PR");
-			//selectedOrdenTraspaso.setFechaAprobacion(date);
+			selectedOrdenTraspaso.setEstado("PR");
+			selectedOrdenTraspaso.setFechaAprobacion(date);
 			//ordenTraspasoRegistration.updated(selectedOrdenTraspaso);
 
-			//actuaizar stock de AlmacenProducto
-			//listaDetalleOrdenTraspaso = detalleOrdenTraspasoRepository.findAllByOrdenTraspaso(selectedOrdenTraspaso);
-			//Almacen alm = selectedOrdenTraspaso.getAlmacen();
-			//Proyecto prov = selectedOrdenTraspaso.getProyecto();
-			//for(DetalleOrdenTraspaso d: listaDetalleOrdenTraspaso){
-			//	Producto prod = d.getProducto();
-			//	actualizarStock(prod, alm, prov, d.getCantidad(),date);
-			//}
+			//actualizar stock de AlmacenProducto
+			listaDetalleOrdenTraspaso = detalleOrdenTraspasoRepository.findAllByOrdenTraspaso(selectedOrdenTraspaso);
+			Almacen almOrig = selectedOrdenTraspaso.getAlmacenOrigen();
+			Almacen almDest = selectedOrdenTraspaso.getAlmacenDestino();
+			Proyecto prov = selectedOrdenTraspaso.getProyecto();
+			for(DetalleOrdenTraspaso d: listaDetalleOrdenTraspaso){
+				Producto prod = d.getProducto();
+				actualizarStockAlmacenOrigen(prod,almOrig, d.getCantidad(),date);
+				actualizarStockAlmacenDestino(prod,almDest, prov, d.getCantidad(),date);
+			}
 			FacesUtil.infoMessage("Orden de Traspaso Procesada!", "");
 			initNewOrdenTraspaso();
 		} catch (Exception e) {
@@ -305,7 +331,7 @@ public class OrdenTraspasoController implements Serializable {
 		}
 	}
 
-	private void actualizarStock(Producto prod ,Almacen alm,Proyecto prov, int newStock,Date date) throws Exception {
+	private void actualizarStockAlmacenDestino(Producto prod ,Almacen almOrig,Proyecto prov, int newStock,Date date) throws Exception {
 		//0 . verificar si existe el producto en el almacen
 		System.out.println("actualizarStock()");
 		AlmacenProducto almProd =  almacenProductoRepository.findByProducto(prod);
@@ -314,12 +340,12 @@ public class OrdenTraspasoController implements Serializable {
 			// 1 .  si existe el producto
 			double oldStock = almProd.getStock();
 			almProd.setStock(oldStock + newStock);
-			almacenProductoRegistration.updated(almProd);
+			//almacenProductoRegistration.updated(almProd);
 			return ;
 		}
 		// 2 . no existe el producto
 		almProd = new AlmacenProducto();
-		almProd.setAlmacen(alm);
+		almProd.setAlmacen(almOrig);
 		almProd.setProducto(prod);
 		//almProd.setProveedor(prov);
 		almProd.setStock(newStock);
@@ -328,7 +354,18 @@ public class OrdenTraspasoController implements Serializable {
 		almProd.setFechaRegistro(date);
 		almProd.setUsuarioRegistro(usuarioSession);
 
-		almacenProductoRegistration.register(almProd);
+		//almacenProductoRegistration.register(almProd);
+	}
+
+	private void actualizarStockAlmacenOrigen(Producto prod ,Almacen almOrig,int newStock,Date date) throws Exception {
+		//0 . verificar si existe el producto en el almacen
+		System.out.println("actualizarStockAlmacenOrigen()");
+		AlmacenProducto almProd =  almacenProductoRepository.findByProducto(prod);
+		System.out.println("almProd = "+almProd);
+		// 1 .  si existe el producto
+		double oldStock = almProd.getStock();
+		almProd.setStock(oldStock - newStock);
+		//almacenProductoRegistration.updated(almProd);
 	}
 
 	public void cargarReporte(){
@@ -701,6 +738,15 @@ public class OrdenTraspasoController implements Serializable {
 
 	public void setSelectedAlmacenOrigen(Almacen selectedAlmacenOrigen) {
 		this.selectedAlmacenOrigen = selectedAlmacenOrigen;
+	}
+
+	public List<DetalleOrdenTraspaso> getListDetalleOrdenTraspasoSinStock() {
+		return listDetalleOrdenTraspasoSinStock;
+	}
+
+	public void setListDetalleOrdenTraspasoSinStock(
+			List<DetalleOrdenTraspaso> listDetalleOrdenTraspasoSinStock) {
+		this.listDetalleOrdenTraspasoSinStock = listDetalleOrdenTraspasoSinStock;
 	}
 
 }

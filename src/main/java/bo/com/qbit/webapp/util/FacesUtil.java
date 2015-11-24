@@ -10,6 +10,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.primefaces.component.datatable.DataTable;
 import org.primefaces.context.RequestContext;
 
 public class FacesUtil {
@@ -99,6 +100,11 @@ public class FacesUtil {
 		return servletContext.getRealPath(path);
 	}
 	
+	public static void resetDataTable(String id) {
+		DataTable table = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(id);
+		table.setSelection(null);
+		table.reset();
+	}
 	/**
 	 * Redirecciona a una pagina contenida en la misma carpeta donde se encuentra actualmente
 	 * @param url de la misma carpeta donde se encuentra actualmente
