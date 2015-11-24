@@ -65,7 +65,7 @@ public class OrdenSalida implements Serializable{
 	private Almacen almacen;
 	
 	@ManyToOne
-	@JoinColumn(name = "id_unidad")
+	@JoinColumn(name = "id_unidad", insertable = false, updatable = false ) //insert="false" update="false"
 	private DetalleUnidad unidadSolicitante;
 	
 	@ManyToOne
