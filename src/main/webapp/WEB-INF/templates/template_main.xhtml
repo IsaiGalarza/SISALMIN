@@ -228,7 +228,7 @@
 					
 					<ui:insert name="page_active_inventario">
 						<li
-							class="#{(view.viewId.equals('/pages/inventario/gestion-producto.xhtml')) ? 'active' :'inactive'}">
+							class="#{(view.viewId.equals('/pages/inventario/gestion-producto.xhtml')) ? 'active' :(view.viewId.equals('/pages/inventario/stock_producto.xhtml')) ? 'active' :(view.viewId.equals('/pages/inventario/catalogo_producto.xhtml')) ? 'active' :'inactive'}">
 							<a href="#"><i class="icon-social-dropbox"></i><span
 								class="sidebar-text">Inventario</span></a>
 							<ul class="nav nav-second-level">
@@ -236,6 +236,16 @@
 								<li class="#{(view.viewId.equals('/pages/inventario/gestion-producto.xhtml')) ? 'active' :'inactive'}"><a
 									href="#{request.contextPath}/pages/inventario/gestion-producto.xhtml">
 										<i class="icon-globe"></i><span class="sidebar-text">Gestión de Productos</span>
+								</a></li>
+								
+								<li class="#{(view.viewId.equals('/pages/inventario/stock_producto.xhtml')) ? 'active' :'inactive'}"><a
+									href="#{request.contextPath}/pages/inventario/stock_producto.xhtml">
+										<i class="icon-globe"></i><span class="sidebar-text">Stock de Productos</span>
+								</a></li>
+								
+								<li class="#{(view.viewId.equals('/pages/inventario/catalogo_producto.xhtml')) ? 'active' :'inactive'}"><a
+									href="#{request.contextPath}/pages/inventario/catalogo_producto.xhtml">
+										<i class="icon-globe"></i><span class="sidebar-text">Catalogo de Productos</span>
 								</a></li>
 					
 							</ul></li>

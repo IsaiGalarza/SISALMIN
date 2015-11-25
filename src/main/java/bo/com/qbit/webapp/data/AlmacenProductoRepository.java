@@ -38,5 +38,12 @@ public class AlmacenProductoRepository {
 			return null;
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<AlmacenProducto> findProductoConStockOrderedByID() {
+		String query = "select ser from AlmacenProducto ser where ser.estado='AC' and ser.stock > 0 order by ser.id desc";
+		System.out.println("Query AlmacenProducto: " + query);
+		return em.createQuery(query).getResultList();
+	}
 
 }

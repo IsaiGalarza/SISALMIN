@@ -21,7 +21,7 @@
 		jndi-name="java:jboss/datasources/WebAppInventarioDS" pool-name="WebAppInventarioDS"
 		enabled="true" use-ccm="false">
 
-		<connection-url>jdbc:edb://localhost:5432/inventarioDB2</connection-url>
+		<connection-url>jdbc:edb://localhost:5432/inventarioDB</connection-url>
 		<driver-class>com.edb.Driver</driver-class>
         <driver>edb-jdbc14.jar</driver>
 		

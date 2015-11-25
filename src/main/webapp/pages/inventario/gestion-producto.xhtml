@@ -8,7 +8,7 @@
 	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
 	template="/WEB-INF/templates/template_main.xhtml">
 	<ui:define name="head">
-		<title>Gestión de Productos</title>
+		<title>Stock de Productos</title>
 	</ui:define>
 
 	<ui:define name="content">
@@ -27,78 +27,6 @@
 									style="height:31px; padding:center"
 									action="#{productoController.initNewProducto()}">
 								</p:commandLink>
-								<p:commandLink id="buttonCrear1" value="&#160; Nuevo Producto"
-									styleClass="btn btn-success ion-plus-round"
-									rendered="#{productoController.crear}"
-									update=":formTableProducto, :formBotonesHeader"
-									action="#{productoController.cambiarAspecto()}"
-									style="height:31px;">
-								</p:commandLink>
-								
-								<p:commandLink id="buttonRegistrar" value="&#160; Registrar"
-									styleClass="btn btn-success ion-checkmark"
-									rendered="#{productoController.registrar}"
-									update=":formTableProducto, :formBotonesHeader"
-									style="height:31px; padding:center"
-									action="#{productoController.registrarProducto()}">
-								</p:commandLink>
-								
-								<p:commandLink id="buttonVerModificar" value="&#160; Modificar"
-									styleClass="btn btn-primary ion-edit"
-									rendered="#{productoController.selectedProducto!=null and productoController.crear=='true'}"
-									style="height:31px; padding:center"
-									update=":formTableProducto, :formBotonesHeader"
-									action="#{productoController.cambiarAspectoModificar()}">
-								</p:commandLink>
-								
-								<p:commandLink id="buttonModificar" value="&#160; Modificar"
-									styleClass="btn btn-primary ion-edit"
-									rendered="#{productoController.modificar=='true'}"
-									style="height:31px; padding:center"
-									update=":formTableProducto, :formBotonesHeader"
-									action="#{productoController.modificarProducto()}">
-								</p:commandLink>
-								
-								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
-									styleClass="btn btn-danger ion-close"
-									rendered="#{productoController.modificar=='true'}"
-									update=":formTableProducto, :formBotonesHeader"
-									onclick="dlgEliminar.show()"
-									style="height:31px; padding:center">
-								</p:commandLink>
-								
-								
-								<p:dialog header="Desea Eliminar el Producto?"
-												widgetVar="dlgEliminar" minHeight="40" modal="true">
-												<h:panelGrid columns="2" cellpadding="5">
-
-													<p:outputLabel value="ID" />
-													<p:outputLabel value="#{productoController.newProducto.id}"
-														style="text-transform: uppercase" required="true"
-														size="20">
-													</p:outputLabel>
-
-													<p:outputLabel value="Nombre" />
-													<p:outputLabel style="text-transform: uppercase" size="20"
-														value="#{productoController.newProducto.nombre}"
-														required="true" requiredMessage="Requerido.">
-													</p:outputLabel>
-
-												</h:panelGrid>
-												<p:commandButton value="Si"
-													actionListener="#{productoController.eliminarProducto()}"
-													icon="ui-icon-trash"
-													style="width: 90px; text-color: white;"
-													update=":formTableProducto"
-													oncomplete="dlgEliminar.hide()"
-													styleClass="btn btn-default" immediate="true" />
-												<p:commandButton value="No"
-													style="width: 90px; text-color: white;"
-													update=":formTableProducto"
-													oncomplete="dlgEliminar.hide()"
-													styleClass="btn btn-default" immediate="true" />
-								</p:dialog>
-								
 								
 							</div>
 						</div>
@@ -109,9 +37,9 @@
 						<li><a href="#{request.contextPath}/pages/dashboard.jsf"
 							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
 						<li><a
-							href="#{request.contextPath}/pages/inventario/gestion-producto.xhtml"
+							href="#{request.contextPath}/pages/inventario/stock_producto.xhtml"
 							style="color: #0090FF; font-size: 12px;">Parametrización</a></li>
-						<li class="active" style="font-size: 12px;">Gestión de Productos</li>
+						<li class="active" style="font-size: 12px;">Stock de Productos</li>
 					</ol>
 				</div>
 			</section>
