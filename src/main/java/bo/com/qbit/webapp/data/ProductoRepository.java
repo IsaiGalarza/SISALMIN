@@ -14,7 +14,7 @@ import bo.com.qbit.webapp.model.Producto;
 
 @ApplicationScoped
 public class ProductoRepository {
-
+//test
 	@Inject
 	private EntityManager em;
 
