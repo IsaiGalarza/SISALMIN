@@ -8,28 +8,23 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.event.Event;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
 
-import org.primefaces.component.datatable.DataTable;
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
 
-import bo.com.qbit.webapp.data.AlmacenProductoRepository;
 import bo.com.qbit.webapp.data.GestionRepository;
+import bo.com.qbit.webapp.data.KardexProductoRepository;
 import bo.com.qbit.webapp.data.ProductoRepository;
-import bo.com.qbit.webapp.model.AlmacenProducto;
 import bo.com.qbit.webapp.model.Gestion;
+import bo.com.qbit.webapp.model.KardexProducto;
 import bo.com.qbit.webapp.model.Producto;
-import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.SessionMain;
 
-@Named(value = "stockProductoController")
+@Named(value = "kardexProductoController")
 @ConversationScoped
-public class StockProductoController implements Serializable {
+public class KardexProductoController implements Serializable {
 
 	private static final long serialVersionUID = 749163787421586877L;
 
@@ -38,18 +33,14 @@ public class StockProductoController implements Serializable {
 	@Inject
 	Conversation conversation;
 
-	private @Inject ProductoRepository productoRepository;
-	private @Inject AlmacenProductoRepository almacenProductoRepository;
+	private @Inject KardexProductoRepository kardexProductoRepository;
 	private @Inject GestionRepository gesionRepository;
+	private @Inject ProductoRepository productoRepository;
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
 	Event<String> pushEventSucursal;
 
-	@Inject
-	private FacesContext facesContext;
-
-	private String tipoConsulta;
 	private String nuevaGestion;
 
 	//OBJECT
@@ -57,13 +48,17 @@ public class StockProductoController implements Serializable {
 	private Gestion selectedGestion;
 
 	//LIST
+	private List<KardexProducto> listaKardexProducto = new ArrayList<KardexProducto>();
 	private List<Producto> listaProducto = new ArrayList<Producto>();
 	private List<Gestion> listGestion = new ArrayList<Gestion>();
-	private List<AlmacenProducto> listaAlmacenProducto = new ArrayList<AlmacenProducto>();
 
+	//FILTER
+
+	//SESSION
 	//SESSION
 	private @Inject SessionMain sessionMain; //variable del login
 	private String usuarioSession;
+	private Gestion gestionLogin;
 
 	@PostConstruct
 	public void initNewOrdenIngreso() {
@@ -71,11 +66,10 @@ public class StockProductoController implements Serializable {
 		beginConversation();
 
 		usuarioSession = sessionMain.getUsuarioLoggin().getLogin();
+		gestionLogin = sessionMain.getGestionLogin();
 
-		listaProducto = productoRepository.traerProductoActivas();
-		listaAlmacenProducto = almacenProductoRepository.findProductoConStockOrderedByID();
+		//listaKardexProducto  = kardexProductoRepository.findAllOrderedByID();
 		listGestion = gesionRepository.findAll();
-		tipoConsulta = "PROVEEDOR";
 
 	}
 
@@ -118,14 +112,21 @@ public class StockProductoController implements Serializable {
 		return null;
 	}
 
-	// -------- get and set -------
-
-	public List<Producto> getListaProducto() {
-		return listaProducto;
+	public void procesarConsulta(){
+		System.out.println("procesarConsulta ");
+		if(selectedProducto!= null){
+			listaKardexProducto  = kardexProductoRepository.findByProductoAndGestion(selectedProducto,gestionLogin);
+			System.out.println("listaKardexProducto "+listaKardexProducto.size());
+		}
 	}
 
-	public void setListaProducto(List<Producto> listaProducto) {
-		this.listaProducto = listaProducto;
+	// -------- get and set -------
+	public List<KardexProducto> getListaKardexProducto() {
+		return listaKardexProducto;
+	}
+
+	public void setListaKardexProducto(List<KardexProducto> listaKardexProducto) {
+		this.listaKardexProducto = listaKardexProducto;
 	}
 
 	public Producto getSelectedProducto() {
@@ -136,21 +137,12 @@ public class StockProductoController implements Serializable {
 		this.selectedProducto = selectedProducto;
 	}
 
-	public String getTipoConsulta() {
-		return tipoConsulta;
+	public List<Producto> getListaProducto() {
+		return listaProducto;
 	}
 
-	public void setTipoConsulta(String tipoConsulta) {
-		this.tipoConsulta = tipoConsulta;
-	}
-
-	public String getNuevaGestion() {
-		return nuevaGestion;
-	}
-
-	public void setNuevaGestion(String nuevaGestion) {
-		this.nuevaGestion = nuevaGestion;
-		setSelectedGestion(findGestionByLocal(nuevaGestion));
+	public void setListaProducto(List<Producto> listaProducto) {
+		this.listaProducto = listaProducto;
 	}
 
 	public List<Gestion> getListGestion() {
@@ -169,12 +161,13 @@ public class StockProductoController implements Serializable {
 		this.selectedGestion = selectedGestion;
 	}
 
-	public List<AlmacenProducto> getListaAlmacenProducto() {
-		return listaAlmacenProducto;
+	public String getNuevaGestion() {
+		return nuevaGestion;
 	}
 
-	public void setListaAlmacenProducto(List<AlmacenProducto> listaAlmacenProducto) {
-		this.listaAlmacenProducto = listaAlmacenProducto;
+	public void setNuevaGestion(String nuevaGestion) {
+		this.nuevaGestion = nuevaGestion;
+		selectedGestion = findGestionByLocal(nuevaGestion);
 	}
 
 }

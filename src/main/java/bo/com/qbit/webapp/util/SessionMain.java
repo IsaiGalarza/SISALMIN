@@ -16,6 +16,7 @@ import bo.com.qbit.webapp.data.EmpresaRepository;
 import bo.com.qbit.webapp.data.GestionRepository;
 import bo.com.qbit.webapp.data.PermisoRepository;
 import bo.com.qbit.webapp.data.UsuarioRepository;
+import bo.com.qbit.webapp.model.Almacen;
 import bo.com.qbit.webapp.model.Empresa;
 import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.Usuario;
@@ -54,6 +55,7 @@ public class SessionMain implements Serializable {
 	private Usuario usuarioLoggin;
 	private Empresa empresaLoggin;
 	private Gestion gestionLogin;
+	private Almacen almacenLogin;
 
 	private StreamedContent fotoPerfil;
 
@@ -69,6 +71,7 @@ public class SessionMain implements Serializable {
 		empresaLoggin = null;
 		gestionLogin = null;
 		fotoPerfil = null;
+		almacenLogin = null;
 	}
 
 	public Usuario validarUsuario(String username,String password){
@@ -240,6 +243,17 @@ public class SessionMain implements Serializable {
 			this.gestionLogin = gestionRepository.findByGestionCierreActivo();
 		}
 		return gestionLogin;
+	}
+
+	public Almacen getAlmacenLogin() {
+		if(almacenLogin == null){
+			
+		}
+		return almacenLogin;
+	}
+
+	public void setAlmacenLogin(Almacen almacenLogin) {
+		this.almacenLogin = almacenLogin;
 	}
 
 }

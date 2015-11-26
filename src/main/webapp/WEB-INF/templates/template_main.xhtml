@@ -13,7 +13,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta content="" name="description" />
 	<meta content="" name="author" />
-	
+
 	<link type="text/css" rel="stylesheet"
 		href="#{request.contextPath}/resources/rock/global/plugins/font-awesome/css/font-awesome.min.css" />
 	<link type="text/css" rel="stylesheet"
@@ -66,29 +66,31 @@
 	<ui:insert name="head">
 		[Main Title of Web Page]
 	</ui:insert>
-	
+
 	<style type="text/css">
-			        .ui-growl {
-			            /*position:absolute;*/
-			            position: absolute; top: 100px; z-index: 2;
-			            top:55px;
-			            /*left:20px;*/
-						/*width:301px; */
-			            z-index:9999;
-			        }
-			  
-			    </style>
+.ui-growl {
+	/*position:absolute;*/
+	position: absolute;
+	top: 100px;
+	z-index: 2;
+	top: 55px;
+	/*left:20px;*/
+	/*width:301px; */
+	z-index: 9999;
+}
+</style>
 
 
 </h:head>
 <!-- page-header-fixed page-sidebar-fixed page-layout-full-width page-quick-sidebar-push page-sidebar-left-closed -->
 <!-- page-header-fixed page-sidebar-fixed page-quick-sidebar-push page-sidebar-left-closed -->
-<h:body class="page-header-fixed page-sidebar-fixed  page-quick-sidebar-push page-sidebar-left-closed">
-	
-	<p:growl id="growl" showDetail="true" autoUpdate="true"/>
+<h:body
+	class="page-header-fixed page-sidebar-fixed  page-quick-sidebar-push page-sidebar-left-closed">
+
+	<p:growl id="growl" showDetail="true" autoUpdate="true" />
 
 	<ui:insert name="security">
-	
+
 	</ui:insert>
 
 	<div>
@@ -96,53 +98,46 @@
 			<!--BEGIN HEADER-->
 			<header class="header">
 			<div class="logo">
-				<a href="#{request.contextPath}/pages/dashboard.xhtml" class="logo-text" style="font-size: 18px;"><i
-					class="ion-cube"></i>#{'  '}S.I.G.A. #{'  '}
-					<i class="ion-cube"></i>
-					</a><a href="#{request.contextPath}/pages/dashboard.xhtml"
+				<a href="#{request.contextPath}/pages/dashboard.xhtml"
+					class="logo-text" style="font-size: 18px;"><i class="ion-cube"></i>#{'
+					'}S.I.G.A. #{' '} <i class="ion-cube"></i> </a><a
+					href="#{request.contextPath}/pages/dashboard.xhtml"
 					data-toggle="offcanvas" class="sidebar-toggle pull-right"><i
 					class="fa fa-bars"></i></a>
 			</div>
 			<nav role="navigation" class="navbar navbar-static-top">
 			<form action="#" class="search-form navbar-left hidden-xs">
-				<div class="input-icon left" style="text-align: center;">
-				</div>
+				<div class="input-icon left" style="text-align: center;"></div>
 			</form>
 			<div class="navbar-right">
 				<ul class="nav navbar-nav">
-				
+
 					<!-- NOTIFICACIONES -->
-					<li class="dropdown dropdown-extra dropdown-messages"><a href="#" data-toggle="dropdown" class="dropdown-toggle">
-						<i class="icon-folder-alt">
-						</i><span class="badge badge-primary">4</span></a>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <p>Tiene 4 Ordenes de Ingreso</p>
-                                    </li>
-                                    <li>
-                                  	</li>
-                                </ul>
-                    </li>
-                    
+					<li class="dropdown dropdown-extra dropdown-messages"><a
+						href="#" data-toggle="dropdown" class="dropdown-toggle"> <i
+							class="icon-folder-alt"> </i><span class="badge badge-primary">4</span></a>
+						<ul class="dropdown-menu">
+							<li>
+								<p>Tiene 4 Ordenes de Ingreso</p>
+							</li>
+							<li></li>
+						</ul></li>
+
 					<!-- PERFIL Y FOTOGRAFIA -->
 					<li class="dropdown dropdown-user menu-user"><a href="#"
-						data-toggle="dropdown" class="dropdown-toggle"> 
-						<h:graphicImage library="gfx" name="person.jpg" width="27" styleClass="img-circle"/>
-						<!-- 
+						data-toggle="dropdown" class="dropdown-toggle"> <h:graphicImage
+								library="gfx" name="person.jpg" width="27"
+								styleClass="img-circle" /> <!-- 
 													<p:graphicImage
 								width="27" value="#{sessionMain.fotoPerfil}"
 								alt="User Image" styleClass="img-circle" /> 
-						 -->
-						<span
-							>#{sessionMain.usuarioLoggin.nombre}
-						</span>&nbsp;<b
+						 --> <span>#{sessionMain.usuarioLoggin.nombre} </span>&nbsp;<b
 							class="caret"></b></a>
 						<ul class="dropdown-menu">
 							<li><a href="#{request.contextPath}/logoutServlet"><i
 									class="icon-logout"></i>Salir</a></li>
-						</ul>
-					</li>
-					
+						</ul></li>
+
 				</ul>
 			</div>
 			</nav> </header>
@@ -150,15 +145,17 @@
 
 			<!--BEGIN WRAPPER-->
 			<div class="wrapper row-offcanvas row-offcanvas-left">
-			
-				
+
+
 				<!--BEGIN SIDEBAR-->
 				<aside class="page-sidebar sidebar-offcanvas"> <section
 					class="sidebar">
 				<ul class="sidebar-menu">
 					<ui:insert name="page_active_inicio">
-						<li class="#{(view.viewId.equals('/pages/dashboard.xhtml')) ? 'active' : 'inactive'}" style="background-color: #503099;">
-							<a href="#{request.contextPath}/pages/dashboard.xhtml"><i
+						<li
+							class="#{(view.viewId.equals('/pages/dashboard.xhtml')) ? 'active' : 'inactive'}"
+							style="background-color: #503099;"><a
+							href="#{request.contextPath}/pages/dashboard.xhtml"><i
 								class="icon-home"></i><span class="sidebar-text">Inicio</span></a></li>
 					</ui:insert>
 					<li
@@ -184,127 +181,148 @@
 							href="#"><i class="icon-equalizer"></i><span
 								class="sidebar-text">Parametrización</span></a>
 							<ul class="nav nav-second-level">
-							
-							<li class="#{(view.viewId.equals('/pages/parametrizacion/empresa.xhtml')) ? 'active' :'inactive'}"><a
+
+								<li
+									class="#{(view.viewId.equals('/pages/parametrizacion/empresa.xhtml')) ? 'active' :'inactive'}"><a
 									href="#{request.contextPath}/pages/parametrizacion/empresa.xhtml">
 										<i class="icon-globe"></i><span class="sidebar-text">Empresa</span>
 								</a></li>
-								
-								<li class="#{(view.viewId.equals('/pages/parametrizacion/proveedor.xhtml')) ? 'active' :'inactive'}"><a
+
+								<li
+									class="#{(view.viewId.equals('/pages/parametrizacion/proveedor.xhtml')) ? 'active' :'inactive'}"><a
 									href="#{request.contextPath}/pages/parametrizacion/proveedor.xhtml">
 										<i class="icon-globe"></i><span class="sidebar-text">Proveedores</span>
 								</a></li>
-								
-								<li class="#{(view.viewId.equals('/pages/parametrizacion/almacen.xhtml')) ? 'active' :'inactive'}"><a
+
+								<li
+									class="#{(view.viewId.equals('/pages/parametrizacion/almacen.xhtml')) ? 'active' :'inactive'}"><a
 									href="#{request.contextPath}/pages/parametrizacion/almacen.xhtml">
 										<i class="icon-globe"></i><span class="sidebar-text">Almacen</span>
 								</a></li>
-								
-								<li class="#{(view.viewId.equals('/pages/parametrizacion/partida.xhtml')) ? 'active' :'inactive'}"><a
+
+								<li
+									class="#{(view.viewId.equals('/pages/parametrizacion/partida.xhtml')) ? 'active' :'inactive'}"><a
 									href="#{request.contextPath}/pages/parametrizacion/partida.xhtml">
-										<i class="icon-globe"></i><span class="sidebar-text">Gestión Partida</span>
+										<i class="icon-globe"></i><span class="sidebar-text">Gestión
+											Partida</span>
 								</a></li>
-								
-								
-								<li class="#{(view.viewId.equals('/pages/parametrizacion/proyecto.xhtml')) ? 'active' :'inactive'}"><a
+
+
+								<li
+									class="#{(view.viewId.equals('/pages/parametrizacion/proyecto.xhtml')) ? 'active' :'inactive'}"><a
 									href="#{request.contextPath}/pages/parametrizacion/proyecto.xhtml">
-										<i class="icon-globe"></i><span class="sidebar-text">Gestión Proyecto</span>
+										<i class="icon-globe"></i><span class="sidebar-text">Gestión
+											Proyecto</span>
 								</a></li>
-								
-								
-								<li class="#{(view.viewId.equals('/pages/parametrizacion/unidad.xhtml')) ? 'active' :'inactive'}"><a
+
+
+								<li
+									class="#{(view.viewId.equals('/pages/parametrizacion/unidad.xhtml')) ? 'active' :'inactive'}"><a
 									href="#{request.contextPath}/pages/parametrizacion/unidad.xhtml">
-										<i class="icon-globe"></i><span class="sidebar-text">Detalle Unidad</span>
+										<i class="icon-globe"></i><span class="sidebar-text">Detalle
+											Unidad</span>
 								</a></li>
-								
-								<li class="#{(view.viewId.equals('/pages/parametrizacion/funcionario.xhtml')) ? 'active' :'inactive'}"><a
+
+								<li
+									class="#{(view.viewId.equals('/pages/parametrizacion/funcionario.xhtml')) ? 'active' :'inactive'}"><a
 									href="#{request.contextPath}/pages/parametrizacion/funcionario.xhtml">
 										<i class="icon-globe"></i><span class="sidebar-text">Funcionario</span>
 								</a></li>
-								
+
 
 							</ul></li>
 					</ui:insert>
-					
+
 					<ui:insert name="page_active_inventario">
 						<li
-							class="#{(view.viewId.equals('/pages/inventario/gestion-producto.xhtml')) ? 'active' :(view.viewId.equals('/pages/inventario/stock_producto.xhtml')) ? 'active' :(view.viewId.equals('/pages/inventario/catalogo_producto.xhtml')) ? 'active' :'inactive'}">
+							class="#{(view.viewId.equals('/pages/inventario/gestion-producto.xhtml')) ? 'active' :(view.viewId.equals('/pages/inventario/stock_producto.xhtml')) ? 'active' :(view.viewId.equals('/pages/inventario/catalogo_producto.xhtml')) ? 'active' :(view.viewId.equals('/pages/inventario/kardex_producto.xhtml')) ? 'active' :'inactive'}">
 							<a href="#"><i class="icon-social-dropbox"></i><span
 								class="sidebar-text">Inventario</span></a>
 							<ul class="nav nav-second-level">
-								
-								<li class="#{(view.viewId.equals('/pages/inventario/gestion-producto.xhtml')) ? 'active' :'inactive'}"><a
-									href="#{request.contextPath}/pages/inventario/gestion-producto.xhtml">
-										<i class="icon-globe"></i><span class="sidebar-text">Gestión de Productos</span>
-								</a></li>
-								
-								<li class="#{(view.viewId.equals('/pages/inventario/stock_producto.xhtml')) ? 'active' :'inactive'}"><a
-									href="#{request.contextPath}/pages/inventario/stock_producto.xhtml">
-										<i class="icon-globe"></i><span class="sidebar-text">Stock de Productos</span>
-								</a></li>
-								
-								<li class="#{(view.viewId.equals('/pages/inventario/catalogo_producto.xhtml')) ? 'active' :'inactive'}"><a
+
+								<li
+									class="#{(view.viewId.equals('/pages/inventario/catalogo_producto.xhtml')) ? 'active' :'inactive'}"><a
 									href="#{request.contextPath}/pages/inventario/catalogo_producto.xhtml">
-										<i class="icon-globe"></i><span class="sidebar-text">Catalogo de Productos</span>
+										<i class="icon-globe"></i><span class="sidebar-text">Catalogo
+											de Productos</span>
 								</a></li>
-					
-							</ul></li>
+
+								<li
+									class="#{(view.viewId.equals('/pages/inventario/kardex_producto.xhtml')) ? 'active' :'inactive'}"><a
+									href="#{request.contextPath}/pages/inventario/kardex_producto.xhtml">
+										<i class="icon-globe"></i><span class="sidebar-text">Kardex
+											de Productos</span>
+								</a></li>
+
+								<li
+									class="#{(view.viewId.equals('/pages/inventario/gestion-producto.xhtml')) ? 'active' :'inactive'}"><a
+									href="#{request.contextPath}/pages/inventario/gestion-producto.xhtml">
+										<i class="icon-globe"></i><span class="sidebar-text">Gestión
+											de Productos</span>
+								</a></li>
+
+								<li
+									class="#{(view.viewId.equals('/pages/inventario/stock_producto.xhtml')) ? 'active' :'inactive'}"><a
+									href="#{request.contextPath}/pages/inventario/stock_producto.xhtml">
+										<i class="icon-globe"></i><span class="sidebar-text">Stock
+											de Productos</span>
+								</a></li>
+
+							</ul>
+						</li>
 					</ui:insert>
-					
+
 					<ui:insert name="page_active_proceso">
-						<li class="#{(view.viewId.equals('/pages/proceso/orden_ingreso.xhtml')) ? 'active' :(view.viewId.equals('/pages/proceso/orden_traspaso.xhtml')) ? 'active' :'inactive'}">
-						<a href="#"><i class="icon-layers"></i><span
+						<li
+							class="#{(view.viewId.equals('/pages/proceso/orden_ingreso.xhtml')) ? 'active' :(view.viewId.equals('/pages/proceso/orden_traspaso.xhtml')) ? 'active' :'inactive'}">
+							<a href="#"><i class="icon-layers"></i><span
 								class="sidebar-text">Proceso</span></a>
 							<ul class="nav nav-second-level">
-								
-								<li class="#{(view.viewId.equals('/pages/proceso/orden_ingreso.xhtml')) ? 'active' :'inactive'}"><a
+
+								<li
+									class="#{(view.viewId.equals('/pages/proceso/orden_ingreso.xhtml')) ? 'active' :'inactive'}"><a
 									href="#{request.contextPath}/pages/proceso/orden_ingreso.xhtml">
-										<i class="icon-social-dropbox"></i><span class="sidebar-text">Orden de Ingreso
-									</span>
+										<i class="icon-social-dropbox"></i><span class="sidebar-text">Orden
+											de Ingreso </span>
 								</a></li>
-								
-								<li class="#{(view.viewId.equals('/pages/proceso/orden_traspaso.xhtml')) ? 'active' :'inactive'}"><a
+
+								<li
+									class="#{(view.viewId.equals('/pages/proceso/orden_traspaso.xhtml')) ? 'active' :'inactive'}"><a
 									href="#{request.contextPath}/pages/proceso/orden_traspaso.xhtml">
-										<i class="icon-social-dropbox"></i><span class="sidebar-text">Orden de Traspaso
-									</span>
+										<i class="icon-social-dropbox"></i><span class="sidebar-text">Orden
+											de Traspaso </span>
 								</a></li>
-							</ul></li>
-					</ui:insert>					
+							</ul>
+						</li>
+					</ui:insert>
 
 					<ui:insert name="page_active_reporte">
 						<li
 							class="#{(view.viewId.equals('/pages/reportes/libro_diario.xhtml')) ? 'active' : (view.viewId.equals('/pages/reportes/libro_mayor.xhtml')) ? 'active':(view.viewId.equals('/pages/reportes/sumas_saldos.xhtml')) ? 'active': (view.viewId.equals('/pages/reportes/balance_general.xhtml')) ? 'active': (view.viewId.equals('/pages/reportes/estado_resultado.xhtml')) ? 'active': 'inactive'}">
-							<a  href="#"><i class="icon-bar-chart"></i><span
+							<a href="#"><i class="icon-bar-chart"></i><span
 								class="sidebar-text">Reporte</span></a>
 							<ul class="nav nav-second-level">
-								<li class="inactive">
-									<a	href="#">
-										<i class="icon-notebook"></i>
-										<span class="sidebar-text">Ingresos</span>
-									</a>
-									<a	href="#">
-										<i class="icon-notebook"></i>
-										<span class="sidebar-text">Salidas</span>
-									</a>
-									<a	href="#">
-										<i class="icon-notebook"></i>
-										<span class="sidebar-text">Transpasos</span>
-									</a>
-								</li>
+								<li class="inactive"><a href="#"> <i
+										class="icon-notebook"></i> <span class="sidebar-text">Ingresos</span>
+								</a> <a href="#"> <i class="icon-notebook"></i> <span
+										class="sidebar-text">Salidas</span>
+								</a> <a href="#"> <i class="icon-notebook"></i> <span
+										class="sidebar-text">Transpasos</span>
+								</a></li>
 							</ul>
 						</li>
 					</ui:insert>
 				</ul>
 				</section> </aside>
 				<!--END SIDERBAR-->
-				
-				
-				
+
+
+
 				<!--BEGIN CONTENT-->
 				<ui:insert name="content">
-					
-					
-					
+
+
+
 				</ui:insert>
 				<!--END CONTENT-->
 			</div>
@@ -344,8 +362,8 @@
 	<!-- start notificacion -->
 	<!-- validacion de input -->
 	<script src="#{request.contextPath}/resources/js/validator.js"></script>
-<!-- 	<script src="#{request.contextPath}/resources/rock/assets/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js"></script> -->
-<!-- 	<script src="#{request.contextPath}/resources/rock/assets/js/form-wizard.js"></script> -->
+	<!-- 	<script src="#{request.contextPath}/resources/rock/assets/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js"></script> -->
+	<!-- 	<script src="#{request.contextPath}/resources/rock/assets/js/form-wizard.js"></script> -->
 	<!-- end scrip -->
 
 	<ui:insert name="scripts">

@@ -18,9 +18,7 @@ import org.primefaces.context.RequestContext;
 import org.richfaces.cdi.push.Push;
 
 import bo.com.qbit.webapp.data.AlmacenProductoRepository;
-import bo.com.qbit.webapp.data.ProductoRepository;
 import bo.com.qbit.webapp.model.AlmacenProducto;
-import bo.com.qbit.webapp.model.Producto;
 import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.SessionMain;
 
@@ -35,7 +33,6 @@ public class CatalogoProductoController implements Serializable {
 	@Inject
 	Conversation conversation;
 	
-	private @Inject ProductoRepository productoRepository;
 	private @Inject AlmacenProductoRepository almacenProductoRepository;
 	
 	@Inject
@@ -46,7 +43,6 @@ public class CatalogoProductoController implements Serializable {
 	private FacesContext facesContext;
 
 	//LIST
-	private List<Producto> listaProducto = new ArrayList<Producto>();
 	private List<AlmacenProducto> listaAlmacenProducto = new ArrayList<AlmacenProducto>();
 
 	//SESSION
@@ -60,7 +56,6 @@ public class CatalogoProductoController implements Serializable {
 
 		usuarioSession = sessionMain.getUsuarioLoggin().getLogin();
 		
-		listaProducto = productoRepository.traerProductoActivas();
 		listaAlmacenProducto = almacenProductoRepository.findProductoConStockOrderedByID();
 
 	}
@@ -110,14 +105,6 @@ public class CatalogoProductoController implements Serializable {
 	}
 
 	// -------- get and set -------
-
-	public List<Producto> getListaProducto() {
-		return listaProducto;
-	}
-
-	public void setListaProducto(List<Producto> listaProducto) {
-		this.listaProducto = listaProducto;
-	}
 
 	public List<AlmacenProducto> getListaAlmacenProducto() {
 		return listaAlmacenProducto;

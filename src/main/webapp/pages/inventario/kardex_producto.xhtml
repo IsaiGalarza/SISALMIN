@@ -8,7 +8,8 @@
 	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
 	template="/WEB-INF/templates/template_main.xhtml">
 	<ui:define name="head">
-		<title>Catalogo de Productos</title>
+		<title>Kardex Producto</title>
+
 	</ui:define>
 
 	<ui:define name="content">
@@ -19,20 +20,24 @@
 					<h:form id="formBotonesHeader" style="padding-left: 10px;">
 						<div class="btn-group-demo">
 							<div class="btn-group">
-
+								<p:commandLink id="buttonProcesar" value="&#160; Procesar"
+									styleClass="btn btn-info ion-ios7-loop-strong"
+									style="height:31px; padding:center"
+									update="formTableProducto :formBotonesHeader"
+									action="#{kardexProductoController.procesarConsulta()}">
+								</p:commandLink>
 							</div>
 						</div>
 					</h:form>
 				</div>
 				<div class="pull-right">
 					<ol class="breadcrumb">
-						<li><a href="#{request.contextPath}/pages/dashboard.jsf"
+						<li><a href="#{request.contextPath}/pages/dashboard.xhtml"
 							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
 						<li><a
-							href="#{request.contextPath}/pages/inventario/catalogo_producto.xhtml"
-							style="color: #0090FF; font-size: 12px;">Parametrización</a></li>
-						<li class="active" style="font-size: 12px;">Catalogo de
-							Productos</li>
+							href="#{request.contextPath}/pages/proceso/kardex_producto.xhtml"
+							style="color: #0090FF; font-size: 12px;">Proceso</a></li>
+						<li class="active" style="font-size: 12px;">Kardex Producto</li>
 					</ol>
 				</div>
 			</section>
@@ -41,11 +46,69 @@
 					<div class="row">
 
 						<h:form id="formTableProducto" styleClass="form-horizontal">
-						
-							<div class="col-md-12" align="left">
+
+
+							<div class="col-md-4">
 								<div class="panel panel-default">
 									<div class="panel-heading">
-										<h3 class="panel-title">Catalogo de Productos</h3>
+										<h3 class="panel-title">Filtro Kardex</h3>
+									</div>
+									<div class="panel-body">
+										<!-- start here register -->
+										<div class="row">
+											<div class="col-md-12 box-content form-horizontal">
+
+												<div class="form-group">
+													<div class="col-md-4">Gestion</div>
+													<div class="col-md-8">
+
+														<h:selectOneMenu id="gestionID"
+															styleClass="input-sm form-control"
+															style=" color: #555555; height:25px; font-size:11px;"
+															value="#{kardexProductoController.nuevaGestion}">
+															<f:ajax />
+															<f:selectItems
+																value="#{kardexProductoController.listGestion}" />
+														</h:selectOneMenu>
+
+													</div>
+												</div>
+
+												<div class="form-group ">
+													<div class="col-md-4">Producto</div>
+													<div class="col-md-8">
+														<p:autoComplete id="productoID"
+															value="#{kardexProductoController.selectedProducto }"
+															completeMethod="#{kardexProductoController.completeProducto}"
+															minQueryLength="3" dropdown="true" required="true"
+															requiredMessage="Producto Requerido."
+															forceSelection="true" var="_var" itemLabel="#{_var}"
+															itemValue="#{_var.nombre}"
+															placeholder="[Escriba Producto]" maxResults="10">
+
+															<p:ajax event="itemSelect"
+																listener="#{kardexProductoController.onRowSelectProductoClick}" />
+
+															<p:column>
+																<h:outputText value="#{_var.nombre}" />
+															</p:column>
+
+														</p:autoComplete>
+													</div>
+												</div>
+
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+
+							<div class="col-md-8" align="left">
+
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h3 class="panel-title">Kardex de Producto</h3>
 									</div>
 									<!-- start here datatable -->
 									<div class="box-content no-padding">
@@ -53,7 +116,7 @@
 										<p:dataTable
 											styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
 											rowKey="#{_var.id}" id="productoTable"
-											var="_var" value="#{catalogoProductoController.listaAlmacenProducto}"
+											var="_var" value="#{stockProductoController.listaAlmacenProducto}"
 											rendered="#{not empty listaProducto}"
 											emptyMessage="No se encontraron Registros.">
 
@@ -84,12 +147,6 @@
 												filterStyle="width: 100%;" filterMatchMode="contains">
 												<h:outputText value="#{_var.producto.tipoProducto}" />
 											</p:column>
-
-											<p:column headerText="Unidad Medida"
-												filterBy="#{_var.producto.unidadMedida}" filterStyle="width: 100%;"
-												filterMatchMode="contains">
-												<h:outputText value="#{_var.producto.unidadMedida}" />
-											</p:column>
 											
 											<p:column headerText="Stock" width="8%" 
 												filterBy="#{_var.stock}" filterStyle="width: 100%; "
@@ -104,17 +161,13 @@
 											</p:column>
 
 										</p:dataTable>
-
 									</div>
-
 									<!-- end here datatable -->
 									<div class="panel-body"></div>
 
 								</div>
 							</div>
-
 						</h:form>
-
 					</div>
 				</section>
 			</section>
@@ -127,7 +180,6 @@
 			<p:growl id="msgs1" showDetail="true" />
 		</h:form>
 		<!-- END GROWL -->
-
 
 
 	</ui:define>

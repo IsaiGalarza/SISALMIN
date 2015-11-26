@@ -51,7 +51,6 @@ public class AlmacenProducto implements Serializable {
 	@ManyToOne(fetch=FetchType.EAGER, optional=false)
 	@JoinColumn(name="id_proveedor", nullable=false)
 	private Proveedor proveedor;
-	
 
 	public AlmacenProducto() {
 		producto = new Producto();
