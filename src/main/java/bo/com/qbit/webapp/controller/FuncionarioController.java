@@ -31,7 +31,7 @@ import bo.com.qbit.webapp.util.SessionMain;
 @Named(value = "funcionarioController")
 @ConversationScoped
 public class FuncionarioController implements Serializable {
-
+//test
 	private static final long serialVersionUID = 1L;
 
 	public static final String PUSH_CDI_TOPIC = "pushCdi";
