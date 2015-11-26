@@ -73,7 +73,7 @@ public class RolController implements Serializable {
 	@PostConstruct
 	public void initNewRoles() {
 		
-		log.info(" init new initNewRoles");
+		System.out.println(" init new initNewRoles");
 		estadoUsuarioLogin = new EstadoUsuarioLogin(facesContext);
 		nombreUsuario =  estadoUsuarioLogin.getNombreUsuarioSession();
 		

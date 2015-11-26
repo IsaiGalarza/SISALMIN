@@ -52,7 +52,9 @@ public class Producto implements Serializable {
 	private Partida partida;
 
 	public Producto() {
-		
+		super();
+		this.id = 0;
+		this.nombre = "";
 	}
 	
 	@Override

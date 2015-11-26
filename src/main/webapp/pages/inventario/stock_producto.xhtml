@@ -9,6 +9,10 @@
 	template="/WEB-INF/templates/template_main.xhtml">
 	<ui:define name="head">
 		<title>Stock de Productos</title>
+		
+		<f:event listener="#{stockProductoController.initConversation}"
+			type="preRenderView"></f:event>
+			
 	</ui:define>
 
 	<ui:define name="content">
@@ -18,7 +22,14 @@
 				<div class="pull-left" style="padding-top: 8px;">
 					<h:form id="formBotonesHeader" style="padding-left: 10px;">
 						<div class="btn-group-demo">
-							<div class="btn-group"></div>
+							<div class="btn-group">
+							<p:commandLink id="buttonProcesar" value="&#160; Procesar"
+									styleClass="btn btn-info ion-ios7-loop-strong"
+									style="height:31px; padding:center"
+									update="formTableProducto ,formBotonesHeader"
+									action="#{stockProductoController.procesarConsulta()}">
+								</p:commandLink>
+							</div>
 						</div>
 					</h:form>
 				</div>
@@ -56,7 +67,7 @@
 
 														<p:selectOneRadio id="oneMenuTipoConsulta"
 															value="#{stockProductoController.tipoConsulta}">
-															<p:ajax update="formTableProducto,formTableProducto" />
+															<p:ajax update="formTableProducto,formFilterProducto" />
 															<f:selectItem
 																itemLabel="&#160; PROVEEDOR	&#160; &#160; &#160;"
 																itemValue="PROVEEDOR" />
@@ -71,7 +82,7 @@
 													<div class="col-md-4">Producto</div>
 													<div class="col-md-8">
 														<p:autoComplete id="productoID"
-															value="#{stockProductoController.selectedProducto }"
+															value="#{stockProductoController.selectedProducto.nombre }"
 															completeMethod="#{stockProductoController.completeProducto}"
 															minQueryLength="3" dropdown="true" required="true"
 															requiredMessage="Producto Requerido."
@@ -126,42 +137,39 @@
 											<p:dataTable
 												styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
 												rowKey="#{_var.id}" id="productoTable" var="_var"
-												value="#{stockProductoController.listaProducto}"
+												value="#{stockProductoController.listaAlmacenProducto}"
 												rendered="#{not empty listaProducto}"
 												emptyMessage="No se encontraron Registros.">
 
-												<p:column width="6%" headerText="ID" filterBy="#{_var.id}"
+												<p:column headerText="Proveedor" filterBy="#{_var.proveedor.nombre}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
-													<span class="badge alert-success">#{_var.id}</span>
+													<h:outputText value="#{_var.proveedor.nombre}" />
 												</p:column>
 
 												<p:column width="8%" headerText="Partida"
-													filterBy="#{_var.partida.codigo}"
+													filterBy="#{_var.producto.partida.codigo}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.partida.codigo}" />
+													<h:outputText value="#{_var.producto.partida.codigo}" />
 												</p:column>
 
 												<p:column width="30%" headerText="Nombre"
-													filterBy="#{_var.nombre}" filterStyle="width: 100%;"
+													filterBy="#{_var.producto.nombre}" filterStyle="width: 100%;"
 													filterMatchMode="contains">
-													<h:outputText value="#{_var.nombre}" />
+													<h:outputText value="#{_var.producto.nombre}" />
 												</p:column>
+												
 												<p:column headerText="Precio U."
-													filterBy="#{_var.precioUnitario}"
+													filterBy="#{_var.producto.precioUnitario}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.precioUnitario}">
+													<h:outputText value="#{_var.producto.precioUnitario}">
 														<f:convertNumber pattern="#,##0.00" />
 													</h:outputText>
 												</p:column>
-												<p:column headerText="Tipo" filterBy="#{_var.tipoProducto}"
-													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.tipoProducto}" />
-												</p:column>
 
-												<p:column headerText="Unidad Medida"
-													filterBy="#{_var.unidadMedida}" filterStyle="width: 100%;"
+												<p:column headerText="Stock"
+													filterBy="#{_var.stock}" filterStyle="width: 100%;"
 													filterMatchMode="contains">
-													<h:outputText value="#{_var.unidadMedida}" />
+													<h:outputText value="#{_var.stock}" />
 												</p:column>
 
 											</p:dataTable>
@@ -191,6 +199,15 @@
 														<div class="col-md-6">
 															<p:outputLabel
 																value="#{stockProductoController.selectedProducto.nombre}">
+															</p:outputLabel>
+														</div>
+														<div class="col-md-4"></div>
+													</div>
+													<div class="form-group ">
+														<div class="col-md-2">Precio</div>
+														<div class="col-md-6">
+															<p:outputLabel
+																value="#{stockProductoController.selectedProducto.precioUnitario}">
 															</p:outputLabel>
 														</div>
 														<div class="col-md-4"></div>

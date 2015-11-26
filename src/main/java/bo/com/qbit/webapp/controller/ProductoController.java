@@ -31,7 +31,7 @@ import bo.com.qbit.webapp.service.ProductoRegistration;
 @ConversationScoped
 public class ProductoController implements Serializable {
 
-	private static final long serialVersionUID = -4296662022834297942L;
+	private static final long serialVersionUID = 4656764987882579263L;
 
 	public static final String PUSH_CDI_TOPIC = "pushCdi";
 
@@ -196,7 +196,6 @@ public class ProductoController implements Serializable {
 			modificar = false;
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 			System.out.println("Error in onRowSelectProductoClick: "
 					+ e.getMessage());

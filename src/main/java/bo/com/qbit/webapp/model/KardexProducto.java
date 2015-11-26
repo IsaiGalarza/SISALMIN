@@ -32,9 +32,6 @@ public class KardexProducto implements Serializable {
 	
 	private Date fecha;
 
-	@Column(name = "fecha_registro")
-	private Date fechaRegistro;
-
 	private double cantidad;
 
 	@Column(name = "precio_compra")
@@ -43,23 +40,29 @@ public class KardexProducto implements Serializable {
 	@Column(name = "precio_venta")
 	private double precioVenta;
 	
-	@Column(name = "stock")
+	@Column(name = "stock")//cantidad entrante
 	private double stock;
 
-	@Column(name = "stock_anterior")
+	@Column(name = "stock_anterior")//
 	private double stockAnterior;
 
-	@Column(name = "stock_actual")
+	@Column(name = "stock_actual")//Saldo
 	private double stockActual;
 
 	@Column(name = "tipo_movimiento")
 	private String tipoMovimiento;
+	
+	@Column(name = "unidad_solicitante")
+	private String unidadSolicitante;
 
 	@Column(name = "numero_transaccion")
 	private String numeroTransaccion;
 
 	@Column(name = "usuario_registro")
 	private String usuarioRegistro;
+	
+	@Column(name = "fecha_registro")
+	private Date fechaRegistro;
 
 	// bi-directional many-to-one association to Usuario
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
@@ -70,11 +73,6 @@ public class KardexProducto implements Serializable {
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "id_almacen", nullable = true)
 	private Almacen almacen;
-
-	// bi-directional many-to-one association to Usuario
-	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	@JoinColumn(name = "id_proveedor", nullable = true)
-	private Proveedor proveedor;
 	
 	// bi-directional many-to-one association to Usuario
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
@@ -197,14 +195,6 @@ public class KardexProducto implements Serializable {
 		this.cantidad = cantidad;
 	}
 
-	public Proveedor getProveedor() {
-		return proveedor;
-	}
-
-	public void setProveedor(Proveedor proveedor) {
-		this.proveedor = proveedor;
-	}
-
 	public Gestion getGestion() {
 		return gestion;
 	}
@@ -227,6 +217,14 @@ public class KardexProducto implements Serializable {
 
 	public void setFecha(Date fecha) {
 		this.fecha = fecha;
+	}
+
+	public String getUnidadSolicitante() {
+		return unidadSolicitante;
+	}
+
+	public void setUnidadSolicitante(String unidadSolicitante) {
+		this.unidadSolicitante = unidadSolicitante;
 	}
 
 }

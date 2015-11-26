@@ -20,14 +20,16 @@ import bo.com.qbit.webapp.data.GestionRepository;
 import bo.com.qbit.webapp.data.ProductoRepository;
 import bo.com.qbit.webapp.model.AlmacenProducto;
 import bo.com.qbit.webapp.model.Gestion;
+import bo.com.qbit.webapp.model.KardexProducto;
 import bo.com.qbit.webapp.model.Producto;
+import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.SessionMain;
 
 @Named(value = "stockProductoController")
 @ConversationScoped
 public class StockProductoController implements Serializable {
 
-	private static final long serialVersionUID = 749163787421586877L;
+	private static final long serialVersionUID = -14432996097479924L;
 
 	public static final String PUSH_CDI_TOPIC = "pushCdi";
 
@@ -60,20 +62,18 @@ public class StockProductoController implements Serializable {
 
 	//SESSION
 	private @Inject SessionMain sessionMain; //variable del login
-	private String usuarioSession;
+	private Gestion gestionLogin;
 
 	@PostConstruct
 	public void initNewStockProducto() {
-		
+
 		System.out.println("initNewStockProducto()");
 
-		beginConversation();
+		gestionLogin = sessionMain.getGestionLogin();
 
-		usuarioSession = sessionMain.getUsuarioLoggin().getLogin();
-
-		listaProducto = productoRepository.traerProductoActivas();
-		listaAlmacenProducto = almacenProductoRepository.findProductoConStockOrderedByID();
 		listGestion = gesionRepository.findAll();
+		selectedGestion = listGestion.get(0);
+		nuevaGestion = String.valueOf(selectedGestion.getGestion());
 
 		selectedProducto = new Producto();
 		totalStockUnificado = 0;
@@ -81,18 +81,19 @@ public class StockProductoController implements Serializable {
 
 	}
 
-	public void beginConversation() {
-		if (conversation.isTransient()) {
-			System.out.println("beginning conversation : " + this.conversation);
+	public void initConversation() {
+		if (!FacesContext.getCurrentInstance().isPostback() && conversation.isTransient()) {
 			conversation.begin();
-			System.out.println("---> Init Conversation");
+			System.out.println(">>>>>>>>>> CONVERSACION INICIADA...");
 		}
 	}
 
-	public void endConversation() {
+	public String endConversation() {
 		if (!conversation.isTransient()) {
 			conversation.end();
+			System.out.println(">>>>>>>>>> CONVERSACION TERMINADA...");
 		}
+		return "stock_producto.xhtml?faces-redirect=true";
 	}
 
 	public List<Producto> completeProducto(String query) {
@@ -114,23 +115,32 @@ public class StockProductoController implements Serializable {
 	}
 
 	private Gestion findGestionByLocal(String gestion){
-		Integer gestionAux = Integer.valueOf(gestion);
 		for(Gestion g: listGestion){
-			if(g.getGestion() == gestionAux){
+			if(g.getGestion() == Integer.valueOf(gestion)){
 				return g;
 			}
 		}
 		return null;
 	}
 
-	private double calcularStockUnificado(Producto prod){
+	private void calcularStockUnificado(Producto prod){
 		System.out.println("calcularStockUnificado("+prod+")");
 		totalStockUnificado = 0;
 		List<AlmacenProducto> list = almacenProductoRepository.findAllByProducto(prod);
 		for(AlmacenProducto alm : list){
 			totalStockUnificado = totalStockUnificado + alm.getStock();
 		}
-		return 0;
+	}
+
+	public void procesarConsulta(){
+		listaAlmacenProducto = new ArrayList<AlmacenProducto>();
+		if(selectedProducto != null){
+			if(tipoConsulta.equals("PRODUCTO")){
+				calcularStockUnificado(selectedProducto);
+			}else if(tipoConsulta.equals("PROVEEDOR")){
+				listaAlmacenProducto  = almacenProductoRepository.findAllByProducto(selectedProducto);
+			}
+		}
 	}
 
 	// -------- get and set -------

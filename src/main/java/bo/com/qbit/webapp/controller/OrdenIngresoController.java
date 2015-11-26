@@ -113,9 +113,9 @@ public class OrdenIngresoController implements Serializable {
 
 	@PostConstruct
 	public void initNewOrdenIngreso() {
-
-		beginConversation();
-
+		
+		System.out.println(" ... initNewOrdenIngreso ...");
+		
 		usuarioSession = sessionMain.getUsuarioLoggin().getLogin();
 		gestionSesion = sessionMain.getGestionLogin();
 		listUsuario = usuarioRepository.findAllOrderedByID();
@@ -172,18 +172,19 @@ public class OrdenIngresoController implements Serializable {
 		listaDetalleOrdenIngreso = detalleOrdenIngresoRepository.findAllByOrdenIngreso(selectedOrdenIngreso);
 	}
 
-	public void beginConversation() {
-		if (conversation.isTransient()) {
-			System.out.println("beginning conversation : " + this.conversation);
+	public void initConversation() {
+		if (!FacesContext.getCurrentInstance().isPostback() && conversation.isTransient()) {
 			conversation.begin();
-			System.out.println("---> Init Conversation");
+			System.out.println(">>>>>>>>>> CONVERSACION INICIADA...");
 		}
 	}
 
-	public void endConversation() {
+	public String endConversation() {
 		if (!conversation.isTransient()) {
 			conversation.end();
+			System.out.println(">>>>>>>>>> CONVERSACION TERMINADA...");
 		}
+		return "orden_ingreso.xhtml?faces-redirect=true";
 	}
 
 	//correlativo incremental por gestion
@@ -312,9 +313,11 @@ public class OrdenIngresoController implements Serializable {
 		KardexProducto kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProducto(prod);
 		double stockAnterior = 0;
 		if(kardexProductoAnt != null){
+			//se obtiene el saldo anterior del producto
 			stockAnterior = kardexProductoAnt.getStockActual();
 		}
 		KardexProducto kardexProducto = new KardexProducto();
+		kardexProducto.setUnidadSolicitante("ORDEN INGRESO");
 		kardexProducto.setFecha(fechaActual);
 		kardexProducto.setAlmacen(selectedOrdenIngreso.getAlmacen());
 		kardexProducto.setCantidad(cantidad);
@@ -325,7 +328,6 @@ public class OrdenIngresoController implements Serializable {
 		kardexProducto.setPrecioCompra(0);
 		kardexProducto.setPrecioVenta(0);
 		kardexProducto.setProducto(prod);
-		kardexProducto.setProveedor(selectedOrdenIngreso.getProveedor());
 		kardexProducto.setStock(cantidad);//estock que esta ingresando
 		kardexProducto.setStockActual(stockAnterior+cantidad);//anterior + cantidad
 		kardexProducto.setStockAnterior(stockAnterior);
@@ -334,11 +336,11 @@ public class OrdenIngresoController implements Serializable {
 		kardexProductoRegistration.register(kardexProducto);
 	}
 	
+	//registro en la tabla almacen_producto
 	private void actualizarStock(Producto prod ,int newStock,Date date) throws Exception {
 		//0 . verificar si existe el producto en el almacen
 		System.out.println("actualizarStock()");
 		AlmacenProducto almProd =  almacenProductoRepository.findByProducto(prod);
-		System.out.println("almProd = "+almProd);
 		if(almProd != null){
 			// 1 .  si existe el producto
 			double oldStock = almProd.getStock();

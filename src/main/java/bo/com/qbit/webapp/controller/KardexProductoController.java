@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.event.Event;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -20,13 +21,14 @@ import bo.com.qbit.webapp.data.ProductoRepository;
 import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.KardexProducto;
 import bo.com.qbit.webapp.model.Producto;
+import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.SessionMain;
 
 @Named(value = "kardexProductoController")
 @ConversationScoped
 public class KardexProductoController implements Serializable {
 
-	private static final long serialVersionUID = 749163787421586877L;
+	private static final long serialVersionUID = 2039368857381714460L;
 
 	public static final String PUSH_CDI_TOPIC = "pushCdi";
 
@@ -52,39 +54,37 @@ public class KardexProductoController implements Serializable {
 	private List<Producto> listaProducto = new ArrayList<Producto>();
 	private List<Gestion> listGestion = new ArrayList<Gestion>();
 
-	//FILTER
-
-	//SESSION
 	//SESSION
 	private @Inject SessionMain sessionMain; //variable del login
-	private String usuarioSession;
 	private Gestion gestionLogin;
 
 	@PostConstruct
-	public void initNewOrdenIngreso() {
+	public void initNewKardexProducto() {
 
-		beginConversation();
-
-		usuarioSession = sessionMain.getUsuarioLoggin().getLogin();
+		System.out.println("... initNewKardexProducto ...");
 		gestionLogin = sessionMain.getGestionLogin();
 
-		//listaKardexProducto  = kardexProductoRepository.findAllOrderedByID();
+		selectedProducto = new Producto();
 		listGestion = gesionRepository.findAll();
+		selectedGestion = listGestion.get(0);
+		nuevaGestion =String.valueOf(selectedGestion.getGestion());
+
 
 	}
 
-	public void beginConversation() {
-		if (conversation.isTransient()) {
-			System.out.println("beginning conversation : " + this.conversation);
+	public void initConversation() {
+		if (!FacesContext.getCurrentInstance().isPostback() && conversation.isTransient()) {
 			conversation.begin();
-			System.out.println("---> Init Conversation");
+			System.out.println(">>>>>>>>>> CONVERSACION INICIADA...");
 		}
 	}
 
-	public void endConversation() {
+	public String endConversation() {
 		if (!conversation.isTransient()) {
 			conversation.end();
+			System.out.println(">>>>>>>>>> CONVERSACION TERMINADA...");
 		}
+		return "kardex_producto.xhtml?faces-redirect=true";
 	}
 
 	public List<Producto> completeProducto(String query) {
@@ -96,16 +96,15 @@ public class KardexProductoController implements Serializable {
 		String nombre =  event.getObject().toString();
 		for(Producto i : listaProducto){
 			if(i.getNombre().equals(nombre)){
-				setSelectedProducto(i);
+				this.selectedProducto = i;
 				return;
 			}
 		}
 	}
 
-	private Gestion findGestionByLocal(String gestion){
-		Integer gestionAux = Integer.valueOf(gestion);
+	private Gestion findGestionByLocal(String nuevaGestion){
 		for(Gestion g: listGestion){
-			if(g.getGestion() == gestionAux){
+			if(g.getGestion() == Integer.parseInt(nuevaGestion)){
 				return g;
 			}
 		}
@@ -113,10 +112,10 @@ public class KardexProductoController implements Serializable {
 	}
 
 	public void procesarConsulta(){
-		System.out.println("procesarConsulta ");
-		if(selectedProducto!= null){
-			listaKardexProducto  = kardexProductoRepository.findByProductoAndGestion(selectedProducto,gestionLogin);
-			System.out.println("listaKardexProducto "+listaKardexProducto.size());
+		listaKardexProducto = new ArrayList<KardexProducto>();
+		if(selectedProducto!= null ){
+			listaKardexProducto  = kardexProductoRepository.findByProductoAndGestion(selectedProducto,selectedGestion);
+			FacesUtil.resetDataTable("formTableProducto:productoTable");
 		}
 	}
 
@@ -167,7 +166,6 @@ public class KardexProductoController implements Serializable {
 
 	public void setNuevaGestion(String nuevaGestion) {
 		this.nuevaGestion = nuevaGestion;
-		selectedGestion = findGestionByLocal(nuevaGestion);
+		setSelectedGestion( findGestionByLocal(nuevaGestion));
 	}
-
 }

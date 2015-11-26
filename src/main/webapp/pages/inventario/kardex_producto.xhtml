@@ -10,6 +10,9 @@
 	<ui:define name="head">
 		<title>Kardex Producto</title>
 
+		<f:event listener="#{kardexProductoController.initConversation}"
+			type="preRenderView"></f:event>
+
 	</ui:define>
 
 	<ui:define name="content">
@@ -23,7 +26,7 @@
 								<p:commandLink id="buttonProcesar" value="&#160; Procesar"
 									styleClass="btn btn-info ion-ios7-loop-strong"
 									style="height:31px; padding:center"
-									update="formTableProducto :formBotonesHeader"
+									update="formTableProducto ,formBotonesHeader"
 									action="#{kardexProductoController.procesarConsulta()}">
 								</p:commandLink>
 							</div>
@@ -78,7 +81,7 @@
 													<div class="col-md-4">Producto</div>
 													<div class="col-md-8">
 														<p:autoComplete id="productoID"
-															value="#{kardexProductoController.selectedProducto }"
+															value="#{kardexProductoController.selectedProducto.nombre}"
 															completeMethod="#{kardexProductoController.completeProducto}"
 															minQueryLength="3" dropdown="true" required="true"
 															requiredMessage="Producto Requerido."
@@ -87,6 +90,7 @@
 															placeholder="[Escriba Producto]" maxResults="10">
 
 															<p:ajax event="itemSelect"
+																update="formTableProducto:productoID"
 																listener="#{kardexProductoController.onRowSelectProductoClick}" />
 
 															<p:column>
@@ -115,49 +119,61 @@
 
 										<p:dataTable
 											styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
-											rowKey="#{_var.id}" id="productoTable"
-											var="_var" value="#{stockProductoController.listaAlmacenProducto}"
+											rowKey="#{_var.id}" id="productoTable" var="_var"
+											value="#{kardexProductoController.listaKardexProducto}"
 											rendered="#{not empty listaProducto}"
 											emptyMessage="No se encontraron Registros.">
 
-											<p:column width="5%" headerText="ID" filterBy="#{_var.id}"
+											<p:column width="9%" headerText="Fecha"
+												filterBy="#{_var.fecha}" filterStyle="width: 100%;"
+												filterMatchMode="contains">
+												<h:outputText value="#{_var.fecha}">
+													<f:convertDateTime pattern="dd/MM/yyyy" />
+												</h:outputText>
+											</p:column>
+											
+											<p:column width="15%" headerText="Nro. Solicitud"
+												filterBy="#{_var.numeroTransaccion}" filterStyle="width: 100%;"
+												filterMatchMode="contains">
+												<h:outputText value="#{_var.numeroTransaccion}" />
+											</p:column>
+
+											<p:column width="16%" headerText="Unidad Solicitante"
+												filterBy="#{_var.unidadSolicitante}" filterStyle="width: 100%;"
+												filterMatchMode="contains">
+												<h:outputText value="#{_var.unidadSolicitante}" />
+											</p:column>
+											
+											<p:column width="20%" headerText="Nombre"
+												filterBy="#{_var.producto.nombre}"
 												filterStyle="width: 100%;" filterMatchMode="contains">
-												<span class="badge alert-success">#{_var.id}</span>
-											</p:column>
-
-											<p:column width="5%" headerText="Partida"
-												filterBy="#{_var.producto.partida.codigo}" filterStyle="width: 100%;"
-												filterMatchMode="contains">
-												<h:outputText value="#{_var.producto.partida.codigo}" />
-											</p:column>
-
-											<p:column width="30%" headerText="Nombre"
-												filterBy="#{_var.producto.nombre}" filterStyle="width: 100%;"
-												filterMatchMode="contains">
 												<h:outputText value="#{_var.producto.nombre}" />
 											</p:column>
-											<p:column headerText="Precio U."
-												filterBy="#{_var.producto.precioUnitario}" filterStyle="width: 100%;"
-												filterMatchMode="contains">
+											
+											<p:column width="8%" headerText="Precio"
+												filterBy="#{_var.producto.precioUnitario}"
+												filterStyle="width: 100%;" filterMatchMode="contains">
 												<h:outputText value="#{_var.producto.precioUnitario}">
 													<f:convertNumber pattern="#,##0.00" />
 												</h:outputText>
 											</p:column>
-											<p:column headerText="Tipo" filterBy="#{_var.producto.tipoProducto}"
+
+											<p:column width="8%" headerText="Entrada"
+												filterBy="#{_var.producto.nombre}"
 												filterStyle="width: 100%;" filterMatchMode="contains">
-												<h:outputText value="#{_var.producto.tipoProducto}" />
-											</p:column>
-											
-											<p:column headerText="Stock" width="8%" 
-												filterBy="#{_var.stock}" filterStyle="width: 100%; "
-												filterMatchMode="contains">
 												<h:outputText value="#{_var.stock}" />
 											</p:column>
 											
-											<p:column headerText="Proveedor"
-												filterBy="#{_var.proveedor.nombre}" filterStyle="width: 100%;"
+											<p:column headerText="Salida" width="8%"
+												filterBy="#{_var.stock}" filterStyle="width: 100%; "
 												filterMatchMode="contains">
-												<h:outputText value="#{_var.proveedor.nombre}" />
+												<h:outputText value="#{_var.stockAnterior}" />
+											</p:column>
+											
+											<p:column headerText="Saldo" width="8%"
+												filterBy="#{_var.stock}" filterStyle="width: 100%; "
+												filterMatchMode="contains">
+												<h:outputText value="#{_var.stockActual}" />
 											</p:column>
 
 										</p:dataTable>

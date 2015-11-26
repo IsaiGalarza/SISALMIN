@@ -92,7 +92,7 @@ public class AlmacenController implements Serializable {
 		HttpServletRequest request = (HttpServletRequest) facesContext
 				.getExternalContext().getRequest();
 		System.out
-				.println("init Tipo Producto*********************************");
+				.println("init New Almacen*********************************");
 		System.out.println("request.getClass().getName():"
 				+ request.getClass().getName());
 		System.out.println("isVentas:" + request.isUserInRole("ventas"));

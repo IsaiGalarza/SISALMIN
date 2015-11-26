@@ -103,7 +103,7 @@ public class UsuarioController implements Serializable {
 	@PostConstruct
 	public void initNewUsuario() {
 
-		log.info(" init new initNewUsuario");
+		System.out.println(" init new initNewUsuario");
 		beginConversation();
 		nombreUsuario = sessionMain.getUsuarioLoggin().getLogin();
 		empresaLogin = sessionMain.getEmpresaLoggin();

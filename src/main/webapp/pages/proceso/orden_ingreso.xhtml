@@ -10,8 +10,9 @@
 	<ui:define name="head">
 		<title>Orden Ingreso</title>
 
-		<!-- 		<link type="text/css" rel="stylesheet" -->
-		<!-- 			href="#{request.contextPath}/resources/rock/assets/plugins/selectize/css/selectize-custom.css" /> -->
+		<f:event listener="#{ordenIngresoController.initConversation}"
+			type="preRenderView"></f:event>
+			
 	</ui:define>
 
 	<ui:define name="content">
