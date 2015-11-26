@@ -11,10 +11,7 @@ import javax.enterprise.event.Event;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
 
-import org.primefaces.component.datatable.DataTable;
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
 
@@ -24,7 +21,6 @@ import bo.com.qbit.webapp.data.ProductoRepository;
 import bo.com.qbit.webapp.model.AlmacenProducto;
 import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.Producto;
-import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.SessionMain;
 
 @Named(value = "stockProductoController")
@@ -51,6 +47,7 @@ public class StockProductoController implements Serializable {
 
 	private String tipoConsulta;
 	private String nuevaGestion;
+	private double totalStockUnificado;
 
 	//OBJECT
 	private Producto selectedProducto;
@@ -66,7 +63,9 @@ public class StockProductoController implements Serializable {
 	private String usuarioSession;
 
 	@PostConstruct
-	public void initNewOrdenIngreso() {
+	public void initNewStockProducto() {
+		
+		System.out.println("initNewStockProducto()");
 
 		beginConversation();
 
@@ -75,6 +74,9 @@ public class StockProductoController implements Serializable {
 		listaProducto = productoRepository.traerProductoActivas();
 		listaAlmacenProducto = almacenProductoRepository.findProductoConStockOrderedByID();
 		listGestion = gesionRepository.findAll();
+
+		selectedProducto = new Producto();
+		totalStockUnificado = 0;
 		tipoConsulta = "PROVEEDOR";
 
 	}
@@ -103,6 +105,9 @@ public class StockProductoController implements Serializable {
 		for(Producto i : listaProducto){
 			if(i.getNombre().equals(nombre)){
 				setSelectedProducto(i);
+				if(tipoConsulta.equals("PRODUCTO")){
+					calcularStockUnificado(i);
+				}
 				return;
 			}
 		}
@@ -116,6 +121,16 @@ public class StockProductoController implements Serializable {
 			}
 		}
 		return null;
+	}
+
+	private double calcularStockUnificado(Producto prod){
+		System.out.println("calcularStockUnificado("+prod+")");
+		totalStockUnificado = 0;
+		List<AlmacenProducto> list = almacenProductoRepository.findAllByProducto(prod);
+		for(AlmacenProducto alm : list){
+			totalStockUnificado = totalStockUnificado + alm.getStock();
+		}
+		return 0;
 	}
 
 	// -------- get and set -------
@@ -142,6 +157,7 @@ public class StockProductoController implements Serializable {
 
 	public void setTipoConsulta(String tipoConsulta) {
 		this.tipoConsulta = tipoConsulta;
+		System.out.println("tipoConsulta = "+tipoConsulta);
 	}
 
 	public String getNuevaGestion() {
@@ -175,6 +191,14 @@ public class StockProductoController implements Serializable {
 
 	public void setListaAlmacenProducto(List<AlmacenProducto> listaAlmacenProducto) {
 		this.listaAlmacenProducto = listaAlmacenProducto;
+	}
+
+	public double getTotalStockUnificado() {
+		return totalStockUnificado;
+	}
+
+	public void setTotalStockUnificado(double totalStockUnificado) {
+		this.totalStockUnificado = totalStockUnificado;
 	}
 
 }

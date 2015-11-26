@@ -24,7 +24,7 @@
 				</div>
 				<div class="pull-right">
 					<ol class="breadcrumb">
-						<li><a href="#{request.contextPath}/pages/dashboard.jsf"
+						<li><a href="#{request.contextPath}/pages/dashboard.xhtml"
 							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
 						<li><a
 							href="#{request.contextPath}/pages/inventario/stock_producto.xhtml"
@@ -38,7 +38,7 @@
 				<section class="main-content">
 					<div class="row">
 
-						<h:form id="formTableProducto" styleClass="form-horizontal">
+						<h:form id="formFilterProducto" styleClass="form-horizontal">
 
 
 							<div class="col-md-4" align="left">
@@ -56,7 +56,7 @@
 
 														<p:selectOneRadio id="oneMenuTipoConsulta"
 															value="#{stockProductoController.tipoConsulta}">
-															<p:ajax update="@form" />
+															<p:ajax update="formTableProducto,formTableProducto" />
 															<f:selectItem
 																itemLabel="&#160; PROVEEDOR	&#160; &#160; &#160;"
 																itemValue="PROVEEDOR" />
@@ -79,7 +79,7 @@
 															itemValue="#{_var.nombre}"
 															placeholder="[Escriba Producto]" maxResults="10">
 
-															<p:ajax event="itemSelect"
+															<p:ajax event="itemSelect" update="formTableProducto"
 																listener="#{stockProductoController.onRowSelectProductoClick}" />
 
 															<p:column>
@@ -98,7 +98,7 @@
 															styleClass="input-sm form-control"
 															style=" color: #555555; height:25px; font-size:11px;"
 															value="#{stockProductoController.nuevaGestion}">
-															<f:ajax />
+															<p:ajax update="formTableProducto" />
 															<f:selectItems
 																value="#{stockProductoController.listGestion}" />
 														</h:selectOneMenu>
@@ -111,9 +111,10 @@
 									</div>
 								</div>
 							</div>
-
-
-							<ui:fragment rendered="#{stockProductoController.tipoConsulta == 'PROVEEDOR'}">
+						</h:form>
+						<h:form id="formTableProducto" styleClass="form-horizontal">
+							<ui:fragment
+								rendered="#{stockProductoController.tipoConsulta == 'PROVEEDOR'}">
 								<div class="col-md-8" align="left">
 									<div class="panel panel-default">
 										<div class="panel-heading">
@@ -174,7 +175,8 @@
 								</div>
 							</ui:fragment>
 
-							<ui:fragment rendered="#{stockProductoController.tipoConsulta == 'PRODUCTO'}">
+							<ui:fragment
+								rendered="#{stockProductoController.tipoConsulta == 'PRODUCTO'}">
 								<div class="col-md-8" align="left">
 									<div class="panel panel-default">
 										<div class="panel-heading">
@@ -185,8 +187,23 @@
 												<div class="col-md-12 box-content form-horizontal">
 
 													<div class="form-group ">
-														<div class="col-md-4">PROVEEDOR</div>
-														<div class="col-md-8"></div>
+														<div class="col-md-2">Nombre</div>
+														<div class="col-md-6">
+															<p:outputLabel
+																value="#{stockProductoController.selectedProducto.nombre}">
+															</p:outputLabel>
+														</div>
+														<div class="col-md-4"></div>
+													</div>
+
+													<div class="form-group ">
+														<div class="col-md-2">Stock</div>
+														<div class="col-md-6">
+															<p:outputLabel
+																value="#{stockProductoController.totalStockUnificado}">
+															</p:outputLabel>
+														</div>
+														<div class="col-md-4"></div>
 													</div>
 
 												</div>

@@ -188,7 +188,7 @@ public class OrdenIngresoController implements Serializable {
 
 	//correlativo incremental por gestion
 	private String cargarCorrelativo(int nroOrdenIngreso){
-		// pather = "000001";
+		//pather = "000001";
 		//Date fecha = new Date(); 
 		//String year = new SimpleDateFormat("yy").format(fecha);
 		//String mes = new SimpleDateFormat("MM").format(fecha);
