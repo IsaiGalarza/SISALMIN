@@ -22,8 +22,8 @@ import bo.com.qbit.webapp.model.Usuario;
 // The @Stateless annotation eliminates the need for manual transaction demarcation
 
 @Stateless
-public class UserRegistration extends DataAccessService<Usuario>{
-	public UserRegistration(){
+public class UsuarioRegistration extends DataAccessService<Usuario>{
+	public UsuarioRegistration(){
 		super(Usuario.class);
 	}
 

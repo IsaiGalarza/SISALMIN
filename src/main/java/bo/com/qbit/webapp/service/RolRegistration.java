@@ -2,11 +2,11 @@ package bo.com.qbit.webapp.service;
 
 import javax.ejb.Stateless;
 
-import bo.com.qbit.webapp.model.security.Rol;
+import bo.com.qbit.webapp.model.security.Roles;
 
 @Stateless
-public class RolRegistration extends DataAccessService<Rol>{
+public class RolRegistration extends DataAccessService<Roles>{
 	public RolRegistration(){
-		super(Rol.class);
+		super(Roles.class);
 	}
 }
