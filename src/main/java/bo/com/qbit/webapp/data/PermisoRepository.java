@@ -6,9 +6,8 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
-import bo.com.qbit.webapp.model.Permiso;
-import bo.com.qbit.webapp.model.security.PermisoV1;
-import bo.com.qbit.webapp.model.security.Rol;
+import bo.com.qbit.webapp.model.security.Permiso;
+import bo.com.qbit.webapp.model.security.Roles;
 
 @Stateless
 public class PermisoRepository {
@@ -34,8 +33,8 @@ public class PermisoRepository {
     }
     
     @SuppressWarnings("unchecked")
-	public List<PermisoV1> findByRol(Rol rol){
-    	String query = "select em from PermisoV1 em where em.rol.id="+rol.getId();
+	public List<Permiso> findByRol(Roles roles){
+    	String query = "select em from Permiso em where em.estado = 'AC' and em.roles.id="+roles.getId();
     	System.out.println("Query Permiso: "+query);
     	return em.createQuery(query).getResultList();
     }

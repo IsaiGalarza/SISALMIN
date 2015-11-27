@@ -18,19 +18,20 @@ import org.primefaces.component.datatable.DataTable;
 import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
 
-import bo.com.qbit.webapp.data.EmpresaRepository;
 import bo.com.qbit.webapp.data.RolesRepository;
 import bo.com.qbit.webapp.model.Empresa;
+import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.Usuario;
-import bo.com.qbit.webapp.model.security.Rol;
-import bo.com.qbit.webapp.service.EstadoUsuarioLogin;
+import bo.com.qbit.webapp.model.security.Roles;
 import bo.com.qbit.webapp.service.RolRegistration;
 import bo.com.qbit.webapp.util.FacesUtil;
+import bo.com.qbit.webapp.util.SessionMain;
 
 @Named(value = "rolController")
-@SuppressWarnings("serial")
 @ConversationScoped
 public class RolController implements Serializable {
+
+	private static final long serialVersionUID = 1730442750062837853L;
 
 	public static final String PUSH_CDI_TOPIC = "pushCdi";
 
@@ -45,8 +46,13 @@ public class RolController implements Serializable {
 
 	@Inject
 	private RolesRepository rolesRepository;
-	
-	private EstadoUsuarioLogin estadoUsuarioLogin;
+
+	private Logger log = Logger.getLogger(this.getClass());
+
+	private @Inject SessionMain sessionMain; //variable del login
+	private String nombreUsuario;	
+	private Empresa empresaLogin;
+	private Gestion gestionLogin;
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
@@ -55,58 +61,53 @@ public class RolController implements Serializable {
 	private boolean crear = true;
 	private boolean registrar = false;
 	private boolean modificar = false;
-	
+
 	private String tituloPanel = "Registrar Roles";
-	private String nombreUsuario; 
 	private String tipoColumnTable; //8
 	private String nombreEstado="ACTIVO";
-	
-	private Rol newRol;
-	private Rol selectedRol;
-	private List<Rol> listRol = new ArrayList<Rol>();
-	private List<Rol> listFilterRol = new ArrayList<Rol>();
-	private Logger log = Logger.getLogger(this.getClass());
+
+	private Roles newRol;
+	private Roles selectedRol;
+	private List<Roles> listRol = new ArrayList<Roles>();
+	private List<Roles> listFilterRol = new ArrayList<Roles>();
 
 	private List<Usuario> listUsuario = new ArrayList<Usuario>();
 	private String[] listEstado = {"ACTIVO","INACTIVO"};
 
 	@PostConstruct
 	public void initNewRoles() {
-		
-		System.out.println(" init new initNewRoles");
-		estadoUsuarioLogin = new EstadoUsuarioLogin(facesContext);
-		nombreUsuario =  estadoUsuarioLogin.getNombreUsuarioSession();
-		
+
+		log.info(" init new initNewRoles");
+		beginConversation();
+		nombreUsuario = sessionMain.getUsuarioLogin().getLogin();
+		empresaLogin = sessionMain.getEmpresaLogin();
+		gestionLogin = sessionMain.getGestionLogin();
+
 		loadDefault();
 	}
-	
+
 	private void loadDefault(){
 		tipoColumnTable = "col-md-12";
-		newRol = new Rol();
-		listRol = rolesRepository.findAllOrderByDesc();
+		newRol = new Roles();
+		listRol = rolesRepository.findAllOrderByAsc();
 		modificar = false;
-		registrar = false;
 		crear = true;
+		registrar = false;
 	}
-	
-	public void initConversation() {
-		if (!FacesContext.getCurrentInstance().isPostback()
-				&& conversation.isTransient()) {
 
+	public void beginConversation() {
+		if (conversation.isTransient()) {
+			log.info("beginning conversation : " + this.conversation);
 			conversation.begin();
-			System.out.println(">>>>>>>>>> CONVERSACION INICIADA...");
+			log.info("---> Init Conversation");
 		}
 	}
 
-	public String endConversation() {
+	public void endConversation() {
 		if (!conversation.isTransient()) {
 			conversation.end();
-			System.out.println(">>>>>>>>>> CONVERSACION TERMINADA...");
 		}
-		return "rol.xhtml?faces-redirect=true";
 	}
-	
-
 	public void resetearFitrosTabla(String id) {
 		DataTable table = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(id);
 		table.setSelection(null);
@@ -118,28 +119,20 @@ public class RolController implements Serializable {
 			newRol.setEstado(nombreEstado.equals("ACTIVO")?"AC":"IN");
 			newRol.setFechaRegistro(new Date());
 			newRol.setUsuarioRegistro(nombreUsuario);
-			
+			if(!newRol.validate(facesContext, empresaLogin, gestionLogin)){
+				resetearFitrosTabla("formTableRoles:dataTableRoles");
+				return;
+			}
 			rolRegistration.create(newRol);
 			FacesUtil.showDialog("Rol registrado "+newRol.getNombre());
-			System.out.println("Rol Registrado " + newRol.getNombre());
-			loadDefault();
 			resetearFitrosTabla("formTableRoles:dataTableRoles");
-			
-//			endConversation();
-			
+			loadDefault();
 		} catch (Exception e) {
-			e.printStackTrace();
 			log.error("registrarRoles error: "+e.getMessage());
 			FacesUtil.errorMessage("Error al registrar Rol");
 		}
 	}
-	
-	public void verModificar(){
-		modificar = true;
-		registrar = false;
-		crear = false;
-	}
-	
+
 	public void modificarRol() {
 		try {
 			newRol.setEstado(nombreEstado.equals("ACTIVO")?"AC":"IN");
@@ -147,9 +140,6 @@ public class RolController implements Serializable {
 			FacesUtil.showDialog("Rol modificado "+newRol.getNombre());
 			resetearFitrosTabla("formTableRoles:dataTableRoles");
 			loadDefault();
-			
-//			endConversation();
-			
 		} catch (Exception e) {
 			log.error("modificarRoles error: "+e.getMessage());
 			FacesUtil.errorMessage("Error al modificar Rol"); 
@@ -163,9 +153,6 @@ public class RolController implements Serializable {
 			FacesUtil.showDialog("Rol Eliminado"+newRol.getNombre());
 			resetearFitrosTabla("formTableRoles:dataTableRoles");
 			loadDefault();
-			
-//			endConversation();
-			
 		} catch (Exception e) {
 			log.error("eliminarRoles error: "+e.getMessage());
 			FacesUtil.errorMessage("Error al eliminar Rol");
@@ -177,8 +164,8 @@ public class RolController implements Serializable {
 		registrar = false;
 		modificar = false;
 		tipoColumnTable = "col-md-12";
-		selectedRol= new Rol();
-		newRol = new Rol();
+		selectedRol= new Roles();
+		newRol = new Roles();
 		resetearFitrosTabla("formTableRoles:dataTableRoles");
 	}
 
@@ -191,14 +178,14 @@ public class RolController implements Serializable {
 		nombreEstado = newRol.getEstado().equals("AC")?"ACTIVO":"INACTIVO";
 		resetearFitrosTabla("formTableRoles:dataTableRoles");
 	}
-	
+
 	public void cambiarAspecto(){
 		crear = false;
 		registrar = true;
 		modificar = false;
 		tipoColumnTable = "col-md-8";
-		selectedRol= new Rol();
-		newRol = new Rol();
+		selectedRol= new Roles();
+		newRol = new Roles();
 	}
 
 	// -------------------- get and set -------------------
@@ -230,35 +217,35 @@ public class RolController implements Serializable {
 		return "test";
 	}
 
-	public Rol getNewRol() {
+	public Roles getNewRol() {
 		return newRol;
 	}
 
-	public void setNewRol(Rol newRol) {
+	public void setNewRol(Roles newRol) {
 		this.newRol = newRol;
 	}
 
-	public Rol getSelectedRol() {
+	public Roles getSelectedRol() {
 		return selectedRol;
 	}
 
-	public void setSelectedRol(Rol selectedRol) {
+	public void setSelectedRol(Roles selectedRol) {
 		this.selectedRol = selectedRol;
 	}
 
-	public List<Rol> getListRol() {
+	public List<Roles> getListRol() {
 		return listRol;
 	}
 
-	public void setListRol(List<Rol> listRol) {
+	public void setListRol(List<Roles> listRol) {
 		this.listRol = listRol;
 	}
 
-	public List<Rol> getListFilterRol() {
+	public List<Roles> getListFilterRol() {
 		return listFilterRol;
 	}
 
-	public void setListFilterRol(List<Rol> listFilterRol) {
+	public void setListFilterRol(List<Roles> listFilterRol) {
 		this.listFilterRol = listFilterRol;
 	}
 

@@ -27,7 +27,7 @@
        <mime-type>image/png</mime-type>
   </mime-mapping>
   
-  <!-- 
+  
   <filter>
   <filter-name>Authentication</filter-name>
   <filter-class>bo.com.qbit.webapp.filter.LoginPageFilter</filter-class>
@@ -36,7 +36,7 @@
   <filter-name>Authentication</filter-name>
   <url-pattern>/pages/*</url-pattern>
 </filter-mapping>
-   -->
+
    
    
   <filter>

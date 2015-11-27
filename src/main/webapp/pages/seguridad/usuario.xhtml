@@ -61,7 +61,7 @@
 				</div>
 				<div class="pull-right">
 					<ol class="breadcrumb">
-						<li><a href="#{request.contextPath}/pages/dashboard.jsf" style="color: #0090FF; font-size: 12px;">Inicio</a></li>
+						<li><a href="#{request.contextPath}/pages/dashboard.xhtml" style="color: #0090FF; font-size: 12px;">Inicio</a></li>
 						<li><a href="#{request.contextPath}/pages/seguridad/usuario.xhtml" style="color: #0090FF; font-size: 12px;">Seguridad</a></li>
 						<li class="active" style="font-size: 12px;">Usuario</li>
 					</ol>
@@ -135,7 +135,7 @@
 															disabled="#{newUsuario.state =='SU'}" immediate="true"
 															value="#{usuarioController.nombreRol}">
 															<p:ajax event="change" />
-															<f:selectItems value="#{usuarioController.listaRoles}" />
+															<f:selectItems value="#{usuarioController.listRol}" />
 														</h:selectOneMenu>
 													</div>
 												</div>

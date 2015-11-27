@@ -19,7 +19,7 @@ import org.primefaces.context.RequestContext;
 
 import bo.com.qbit.webapp.data.UsuarioRolRepository;
 import bo.com.qbit.webapp.model.Usuario;
-import bo.com.qbit.webapp.model.security.UsuarioRolV1;
+import bo.com.qbit.webapp.model.security.UsuarioRol;
 import bo.com.qbit.webapp.util.DateUtility;
 import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.SessionMain;
@@ -35,7 +35,7 @@ public class LoginController implements Serializable {
 	private String username;
 	private String password;
 
-	Logger log = Logger.getLogger(this.getClass());
+	//Logger log = Logger.getLogger(this.getClass());
 
 	@PostConstruct
 	public void initNewLogin() {
@@ -45,16 +45,16 @@ public class LoginController implements Serializable {
 	}
 
 	public void login() {
-		log.info(" ------- login() ----user="+username+"  |  pass="+password);
+		System.out.println(" ------- login() ----user="+username+"  |  pass="+password);
 		if(username.isEmpty() || password.isEmpty()){
-			log.info("login() -> Usuario o Password sin datos.");
+			System.out.println("login() -> Usuario o Password sin datos.");
 			FacesUtil.errorMessage("Ingrear Usuario y Contraseña.");
 			return; 
 		}
 		
 		FacesContext context = FacesContext.getCurrentInstance();
 		HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-		Usuario usuarioSession = sessionMain.validarUsuarioV2(username, password);
+		Usuario usuarioSession = sessionMain.validarUsuario_(username, password);
 		if(usuarioSession!=null){
 			try {
 				if (request.getUserPrincipal() != null) {
@@ -68,18 +68,18 @@ public class LoginController implements Serializable {
 					context.addMessage(null, new FacesMessage("Error!", "Ocurrio un Error!"));
 				}
 			} catch (ServletException e) {
-				log.error("login() -> "+ e.toString());
+				System.out.println("login() -> "+ e.toString());
 				context.addMessage(null, new FacesMessage("Error!", "Usuario o contraseña incorrecta"));
 			}
 		} else{
-			log.info("login() -> No existe Usuario");
+			System.out.println("login() -> No existe Usuario");
 			FacesUtil.errorMessage("Revisar Usuario o Contraseña."); 
 		}
 	}
 
 	private void load(Usuario usuario){
-		UsuarioRolV1 usuarioRolV1 = usuarioRolRepository.findByUsuarioV1(usuario);
-		sessionMain.setUsuarioLoggin(usuario);
+		UsuarioRol usuarioRolV1 = usuarioRolRepository.findByUsuario(usuario);
+		sessionMain.setUsuarioLogin(usuario);
 		sessionMain.cargarPermisos(usuarioRolV1.getRol());
 		sessionMain.setImageUserSession();
 	}
@@ -88,19 +88,19 @@ public class LoginController implements Serializable {
 		FacesContext context = FacesContext.getCurrentInstance();
 		HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
 		HttpSession session = request.getSession(false);
-		log.info( "User ({0}) Cerrando sesion #" + DateUtility.getCurrentDateTime()+" user"+ request.getUserPrincipal().getName());
+		System.out.println( "User ({0}) Cerrando sesion #" + DateUtility.getCurrentDateTime()+" user"+ request.getUserPrincipal().getName());
 		if (session != null) {
 			session.invalidate();
 			try {
 				context.getExternalContext().redirect(request.getContextPath() + "/login.xhtml");
 			} catch (IOException e) {
-				log.error("logout() -> "+e.toString());
+				System.out.println("logout() -> "+e.toString());
 			}
 		}
 	}
 
 	public void verificarTipoCambio(){
-		log.info("verificarTipoCambio()");
+		System.out.println("verificarTipoCambio()");
 		RequestContext.getCurrentInstance().execute("stickyTipoCambio()");
 		int test = 0;
 		if( 0 == test){
@@ -116,7 +116,7 @@ public class LoginController implements Serializable {
 
 	public void setUsername(String username) {
 		this.username = username;
-		log.info("username = "+username);
+		System.out.println("username = "+username);
 	}
 
 	public String getPassword() {
@@ -125,6 +125,6 @@ public class LoginController implements Serializable {
 
 	public void setPassword(String password) {
 		this.password = password;
-		log.info("password = "+password);
+		System.out.println("password = "+password);
 	}
 }

@@ -96,7 +96,7 @@ public class FuncionarioController implements Serializable {
 
 		beginConversation();
 
-		usuarioSession = sessionMain.getUsuarioLoggin().getLogin();
+		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
 		listUsuario = usuarioRepository.findAllOrderedByID();
 
 		selectedFuncionario = null;

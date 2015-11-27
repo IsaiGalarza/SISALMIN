@@ -116,7 +116,7 @@ public class OrdenIngresoController implements Serializable {
 		
 		System.out.println(" ... initNewOrdenIngreso ...");
 		
-		usuarioSession = sessionMain.getUsuarioLoggin().getLogin();
+		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
 		gestionSesion = sessionMain.getGestionLogin();
 		listUsuario = usuarioRepository.findAllOrderedByID();
 
@@ -152,7 +152,7 @@ public class OrdenIngresoController implements Serializable {
 
 	public void cambiarAspecto(){
 		//verificar si el usuario logeado tiene almacen registrado
-		selectedAlmacenOrigen = almacenRepository.findAlmacenForUser(sessionMain.getUsuarioLoggin());
+		selectedAlmacenOrigen = almacenRepository.findAlmacenForUser(sessionMain.getUsuarioLogin());
 		if(selectedAlmacenOrigen.getId() == -1){
 			FacesUtil.infoMessage("Usuario "+usuarioSession, "No tiene asignado un almacen");
 			return;

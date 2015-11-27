@@ -9,10 +9,6 @@
 	template="/WEB-INF/templates/template_main.xhtml">
 	<ui:define name="head">
 		<title>Rol</title>
-		
-		<f:event listener="#{rolController.initConversation}"
-			type="preRenderView"></f:event>
-		
 	</ui:define>
 
 	<ui:define name="content">
@@ -35,7 +31,7 @@
 									rendered="#{rolController.crear}" style="height:31px;">
 									<p:ajax update="formTableRoles,formReg,:formBotonesHeader"
 										listener="#{rolController.cambiarAspecto()}" />
-										<p:ajax
+									<p:ajax
 										listener="#{rolController.resetearFitrosTabla('formTableRoles:dataTableRoles')}" />
 								</p:commandLink>
 								<p:commandLink id="buttonRegistrar"
@@ -46,17 +42,14 @@
 									update=":formReg,:formTableRoles,:formBotonesHeader,:formGrowl:msgs1"
 									action="#{rolController.registrarRol()}">
 								</p:commandLink>
-								
-								
 								<p:commandLink id="buttonModificar"
 									value="&#160; #{label['button.modify']}"
 									update=":formReg,:formTableRoles,:formBotonesHeader,:formGrowl:msgs1"
 									styleClass="btn btn-primary ion-edit"
-									rendered="#{rolController.crear=='false'}"
+									rendered="#{rolController.modificar}"
 									style="height:31px; padding:center"
 									action="#{rolController.modificarRol()}">
 								</p:commandLink>
-								
 								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
 									styleClass="btn btn-danger ion-close"
 									style="height:31px; padding:center"
@@ -85,7 +78,7 @@
 					<div class="row">
 						<h:form id="formReg">
 							<ui:fragment
-								rendered="#{rolController.registrar=='true'}">
+								rendered="#{rolController.modificar or rolController.registrar}">
 								<div class="col-md-4">
 									<div class="panel panel-default">
 										<div class="panel-heading">
@@ -111,26 +104,26 @@
 													<div class="form-group ">
 														<label class="col-md-4 control-label">Descripcion</label>
 														<div class="col-md-8">
-															<h:inputTextarea  value="#{rolController.newRol.descripcion}"
-																required="true"
+															<h:inputText value="#{rolController.newRol.descripcion}"
+																required="true" maxlength="255"
 																style=" color: #555555; background-image: none;"
-																styleClass="input-sm form-control" rows="4">
+																styleClass="input-sm form-control">
 																<p:ajax event="change" />
-															</h:inputTextarea>
+															</h:inputText>
 														</div>
 													</div>
 													<div class="form-group">
-															<label class="col-md-4 control-label">Estado</label>
-															<div class="col-md-8">
-																<h:selectOneMenu id="estado"
-																	styleClass="input-sm form-control"
-																	style=" color: #555555; height:25px; font-size:11px;"
-																	disabled="#{rolController.newRol.estado =='SU'}" immediate="true"
-																	value="#{rolController.nombreEstado}">
-																	<f:ajax />
-																	<f:selectItems value="#{rolController.listEstado}" />
-																</h:selectOneMenu>
-															</div>
+														<label class="col-md-4 control-label">Estado</label>
+														<div class="col-md-8">
+															<h:selectOneMenu id="estado"
+																styleClass="input-sm form-control"
+																style=" color: #555555; height:25px; font-size:11px;"
+																disabled="#{rolController.newRol.estado =='SU'}"
+																immediate="true" value="#{rolController.nombreEstado}">
+																<f:ajax />
+																<f:selectItems value="#{rolController.listEstado}" />
+															</h:selectOneMenu>
+														</div>
 													</div>
 												</div>
 											</div>
@@ -142,11 +135,7 @@
 							</ui:fragment>
 						</h:form>
 						<h:form id="formTableRoles">
-							
-							<ui:fragment
-								rendered="#{rolController.registrar=='false'}">
-							
-							<div class="col-md-12">
+							<div class="#{rolController.tipoColumnTable}">
 								<div class="panel panel-default">
 									<div class="panel-heading">
 										<h3 class="panel-title">Lista Roles</h3>
@@ -160,7 +149,6 @@
 											selection="#{rolController.selectedRol}"
 											emptyMessage="No se encontraron roles" reflow="true"
 											rowKey="#{item.id}">
-											
 											<p:ajax event="rowSelect"
 												listener="#{rolController.onRowSelect}"
 												update=":formReg,:formBotonesHeader,:formTableRoles" />
@@ -178,12 +166,17 @@
 											</p:column>
 											<p:column filterStyle="width: 100%; height:25px;"
 												headerText="Estado" filterBy="#{item.estado}">
-												<h:outputText value="#{item.estado}" />
+												<span class="label label-success"><h:outputText
+														rendered="#{item.estado=='AC'}" value="ACTIVO" /></span>
+												<span class="label label-danger"><h:outputText
+														rendered="#{item.estado=='IN'}" value="INACTIVO" /></span>
+												<span class="label label-success"><h:outputText
+														rendered="#{item.estado=='SU'}" value="SUPER" /></span>
 											</p:column>
 											<p:column filterStyle="width: 100%; height:25px;"
 												headerText="Fecha Reg." filterBy="#{item.fechaRegistro}">
-												<h:outputText value="#{item.fechaRegistro}" >
-													<f:convertDateTime pattern="dd/MM/yyyy H:mm"/>
+												<h:outputText value="#{item.fechaRegistro}">
+													<f:convertDateTime pattern="dd/MM/yyyy" />
 												</h:outputText>
 											</p:column>
 										</p:dataTable>
@@ -192,9 +185,6 @@
 									<div class="panel-body"></div>
 								</div>
 							</div>
-							
-							</ui:fragment>
-							
 						</h:form>
 					</div>
 				</section>

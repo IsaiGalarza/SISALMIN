@@ -1,6 +1,5 @@
 package bo.com.qbit.webapp.model.security;
 
-
 import java.io.Serializable;
 import java.util.Date;
 
@@ -15,32 +14,30 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
-
+import bo.com.qbit.webapp.model.Usuario;
 /**
- * Class PermisoV1
+ * Class UsuarioRol
  * @author Mauricio.Bejarano.Rivera
  * @version v1.0
  * 
  */
 @Entity
 @SuppressWarnings("serial")
-@Table(name="permiso_v1", catalog="public")
-public class PermisoV1 implements Serializable {
-	
-	//private FieldHandler fieldHandlerRol;
+@Table(name="usuario_rol", catalog="public")
+public class UsuarioRol implements Serializable {
 
 	@Id 
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="id", unique=true, nullable=false)
 	private Integer id;
 	
-	@ManyToOne(fetch=FetchType.EAGER,optional=true)
-    @JoinColumn(name="id_rol", nullable=false)
-	private Rol rol;
+	@ManyToOne(fetch=FetchType.EAGER, optional=true)
+    @JoinColumn(name="id_usuario", nullable=false)
+	private Usuario usuario;
 	
 	@ManyToOne(fetch=FetchType.EAGER, optional=true)
-    @JoinColumn(name="id_detalle_pagina", nullable=false)
-	private DetallePagina detallePagina;
+    @JoinColumn(name="id_roles", nullable=false)
+	private Roles rol;
 	
 	@Size(max = 2) //AC , IN
 	private String estado;
@@ -54,7 +51,7 @@ public class PermisoV1 implements Serializable {
 	@Column(name="usuario_registro",nullable=false )
 	private String usuarioRegistro;
 
-	public PermisoV1() {
+	public UsuarioRol() {
 		super();
 		this.id = 0;
 	}
@@ -74,7 +71,7 @@ public class PermisoV1 implements Serializable {
 	@Override
 	public boolean equals(Object obj) {
 		try {
-			if(((PermisoV1)obj).id==this.id){
+			if(((UsuarioRol)obj).id==this.id){
 				return true;
 			}else{
 				return false;
@@ -98,22 +95,6 @@ public class PermisoV1 implements Serializable {
 
 	public void setEstado(String estado) {
 		this.estado = estado;
-	}
-
-	public Rol getRol() {
-		return rol;
-	}
-
-	public void setRol(Rol rol) {
-		this.rol = rol;
-	}
-
-	public DetallePagina getDetallePagina() {
-		return detallePagina;
-	}
-
-	public void setDetallePagina(DetallePagina detallePagina) {
-		this.detallePagina = detallePagina;
 	}
 
 	public Date getFechaRegistro() {
@@ -140,7 +121,21 @@ public class PermisoV1 implements Serializable {
 		this.usuarioRegistro = usuarioRegistro;
 	}
 
+	public Usuario getUsuario() {
+		return usuario;
+	}
 
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
+
+	public Roles getRol() {
+		return rol;
+	}
+
+	public void setRol(Roles rol) {
+		this.rol = rol;
+	}
 }
 
 

@@ -20,7 +20,7 @@ import org.richfaces.cdi.push.Push;
 
 import bo.com.qbit.webapp.data.UsuarioRepository;
 import bo.com.qbit.webapp.model.Usuario;
-import bo.com.qbit.webapp.service.UserRegistration;
+import bo.com.qbit.webapp.service.UsuarioRegistration;
 
 
 @Named(value = "perfilController")
@@ -42,7 +42,7 @@ public class PerfilController implements Serializable {
 	private UsuarioRepository usuarioRepository;
 
 	@Inject
-	private UserRegistration usuarioRegistration;
+	private UsuarioRegistration usuarioRegistration;
 
 	private Usuario usuarioSession;
 	

@@ -80,8 +80,8 @@ public class ClienteController implements Serializable {
 	public void initNewClientes() {
 		log.info(" init new initNewCliente");
 		beginConversation();
-		nombreUsuario = sessionMain.getUsuarioLoggin().getLogin();
-		empresaLogin = sessionMain.getEmpresaLoggin();
+		nombreUsuario = sessionMain.getUsuarioLogin().getLogin();
+		empresaLogin = sessionMain.getEmpresaLogin();
 		
 		tituloPanel = "Centro Costo";
 		newClientes = new Cliente();

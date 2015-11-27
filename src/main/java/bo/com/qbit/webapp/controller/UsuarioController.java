@@ -18,27 +18,29 @@ import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
 
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
+
 import bo.com.qbit.webapp.data.RolesRepository;
 import bo.com.qbit.webapp.data.UsuarioRepository;
 import bo.com.qbit.webapp.data.UsuarioRolRepository;
 import bo.com.qbit.webapp.model.Empresa;
-import bo.com.qbit.webapp.model.Roles;
+import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.Usuario;
-import bo.com.qbit.webapp.model.UsuarioRol;
-import bo.com.qbit.webapp.service.UserRegistration;
-import bo.com.qbit.webapp.service.UsuarioRolesRegistration;
+import bo.com.qbit.webapp.model.security.Roles;
+import bo.com.qbit.webapp.model.security.UsuarioRol;
+import bo.com.qbit.webapp.service.UsuarioRegistration;
+import bo.com.qbit.webapp.service.UsuarioRolRegistration;
 import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.SessionMain;
 
-@SuppressWarnings("serial")
 @Named(value = "usuarioController")
 @ConversationScoped
 public class UsuarioController implements Serializable {
+
+	private static final long serialVersionUID = 6211210765749674269L;
 
 	public static final String PUSH_CDI_TOPIC = "pushCdi";
 
@@ -49,26 +51,29 @@ public class UsuarioController implements Serializable {
 	Conversation conversation;
 
 	@Inject
-	private UserRegistration usuarioRegistration;
+	private UsuarioRegistration usuarioRegistration;
 
 	@Inject
 	private UsuarioRepository usuarioRepository;
 
 	@Inject
-	private UsuarioRolesRegistration usuarioRolesRegistration;
+	private UsuarioRolRegistration usuarioRolRegistration;
 
 	@Inject
 	private RolesRepository rolesRepository;
-	
+
+	@Inject
+	private UsuarioRolRepository usuarioRolRepository;
+
 	@Inject
 	private UsuarioRolRepository usuarioRolesRepository;
-	
+
 	private Logger log = Logger.getLogger(this.getClass());
-	
+
 	private @Inject SessionMain sessionMain; //variable del login
 	private String nombreUsuario;	
 	private Empresa empresaLogin;
-
+	private Gestion gestionLogin;
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
@@ -82,12 +87,11 @@ public class UsuarioController implements Serializable {
 	@Named
 	private Usuario newUsuario;
 	private Usuario selectedUsuario;
-	private Roles rol;
+	private Roles selectedRol;
 
 	private List<Usuario> listUsuario = new ArrayList<Usuario>();
 	private List<Usuario> listFilterUsuario = new ArrayList<Usuario>();
-
-	private List<Roles> listaRoles = new ArrayList<Roles>();
+	private List<Roles> listRol = new ArrayList<Roles>();
 	private String[] listEstado = {"ACTIVO","INACTIVO"};	
 
 	//estados
@@ -95,7 +99,7 @@ public class UsuarioController implements Serializable {
 	private boolean registrar = false;
 	private boolean modificar = false;
 	private boolean stateInicial = true;
-	
+
 	//columnas
 	private String tipoColumnRegistro= "col-md-4"; //4
 	private String tipoColumnTable = "col-md-12"; //8
@@ -103,48 +107,36 @@ public class UsuarioController implements Serializable {
 	@PostConstruct
 	public void initNewUsuario() {
 
-		System.out.println(" init new initNewUsuario");
+		log.info(" init new initNewUsuario");
 		beginConversation();
-		nombreUsuario = sessionMain.getUsuarioLoggin().getLogin();
-		empresaLogin = sessionMain.getEmpresaLoggin();
-	
+		nombreUsuario = sessionMain.getUsuarioLogin().getLogin();
+		empresaLogin = sessionMain.getEmpresaLogin();
+		gestionLogin = sessionMain.getGestionLogin();
+
+		listRol = rolesRepository.findAllOrderByAsc();
 
 		loadDefault();
-		
+
 	}
-	
+
 	private void loadDefault(){
 		newUsuario = new Usuario();
 		selectedUsuario = new Usuario();
-		rol = obtenerRolUserLogin();
 		listUsuario = usuarioRepository.findAllOrderedByID();
-		
-		listaRoles = rolesRepository.findAll();
-		nombreRol = listaRoles.size()>0?listaRoles.get(0).getName():"";
+
+		nombreRol = listRol.get(0).getNombre();
+		selectedRol = listRol.get(0);
 
 		// tituloPanel
 		tituloPanel = "Registrar Usuario";
 		modificar = false;
 	}
 
-	public Roles obtenerRolUserLogin(){
-		List<Roles> list = rolesRepository.findAll();
-		String nameRoles = "";
-		HttpServletRequest request = (HttpServletRequest) facesContext
-				.getExternalContext().getRequest();
-		for(Roles r: list){
-			if(request.isUserInRole(r.getName())){
-				nameRoles = r.getName();
-			}
-		}
-		return rolesRepository.findByName(nameRoles);
-	}
-
 	public void resetearFitrosTabla(String id) {
-        DataTable table = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(id);
-        table.setSelection(null);
-        table.reset();
-    }
+		DataTable table = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(id);
+		table.setSelection(null);
+		table.reset();
+	}
 
 	public void beginConversation() {
 		if (conversation.isTransient()) {
@@ -163,19 +155,24 @@ public class UsuarioController implements Serializable {
 	public void registrarUsuario() {
 		try {
 			log.info("Ingreso a registrarUsuario: ");
-			
-			Roles roles = rolesRepository.findByName(nombreRol);
+			Date fechaActual = new Date();
 			newUsuario.setFechaRegistro(new Date());
 			newUsuario.setUsuarioRegistro(nombreUsuario);
 			newUsuario.setState(nombreEstado.equals("ACTIVO")?"AC":"IN");
-			
-			
+			if(!newUsuario.validate(facesContext, empresaLogin, gestionLogin)){
+				log.info("registrarUsuario - > false ");
+				resetearFitrosTabla("formTableUsuario:dataTableUser");
+				return;
+			}
+
 			newUsuario = usuarioRegistration.create(newUsuario);
 			UsuarioRol usuarioRol = new UsuarioRol();
-			usuarioRol.setRoles(roles);
+			usuarioRol.setRol(selectedRol);
 			usuarioRol.setUsuario(newUsuario);
-			usuarioRolesRegistration.register(usuarioRol);
-			
+			usuarioRol.setEstado("AC");
+			usuarioRol.setFechaRegistro(fechaActual);
+			usuarioRolRegistration.create(usuarioRol);
+
 			resetearFitrosTabla("formTableUsuario:dataTableUser");
 			FacesUtil.infoMessage("Registro", "Usuario Registrado! "+newUsuario.getLogin());
 			loadDefault();
@@ -189,19 +186,21 @@ public class UsuarioController implements Serializable {
 		try {
 			log.info("Ingreso a modificarUsuario: "
 					+ newUsuario.getId());
+			Date fechaActual = new Date();
 			newUsuario.setFechaModificacion(new Date());
 			newUsuario.setState(nombreEstado.equals("ACTIVO")?"AC":"IN");
-			
+			if(!newUsuario.validate(facesContext, empresaLogin, gestionLogin)){
+				log.info("registrarUsuario - > false ");
+				resetearFitrosTabla("formTableUsuario:dataTableUser");
+				return;
+			}
 			usuarioRegistration.update(newUsuario);
-			Roles roles = rolesRepository.findByName(nombreRol);
-			UsuarioRol usuarioRol = new UsuarioRol();
-			usuarioRol.setRoles(roles);
-			usuarioRol.setUsuario(newUsuario);
-			usuarioRolesRegistration.update(usuarioRol);
+			UsuarioRol usuarioRol = usuarioRolRepository.findByUsuario(newUsuario);
+			usuarioRol.setRol(selectedRol);
+			usuarioRol.setFechaModificacion(fechaActual);
+			usuarioRolRegistration.update(usuarioRol);
 			
-			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
-					"Usuario Modificado", newUsuario.getLogin());
-			facesContext.addMessage(null, m);
+			FacesUtil.infoMessage("Usuario Modificado", ""+newUsuario.getLogin());
 			crear = false;
 			registrar = true;
 			modificar = false;
@@ -209,10 +208,7 @@ public class UsuarioController implements Serializable {
 			resetearFitrosTabla("formTableUsuario:dataTableUser");			
 			loadDefault();
 		} catch (Exception e) {
-			String errorMessage = getRootErrorMessage(e);
-			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-					errorMessage, "Registro Incorrecto.");
-			facesContext.addMessage(null, m);
+			log.error("Error al Modificar. Usuario error: "+e.getMessage());
 		}
 	}
 
@@ -223,9 +219,8 @@ public class UsuarioController implements Serializable {
 			newUsuario.setState("RM");
 			newUsuario.setFechaModificacion(new Date());
 			usuarioRegistration.update(newUsuario);
-			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
-					"Usuario Eliminado!", newUsuario.getLogin()+"!");
-			facesContext.addMessage(null, m);
+
+			FacesUtil.infoMessage("Usuario Eliminado", ""+newUsuario.getLogin());
 			crear = false;
 			registrar = true;
 			modificar = false;
@@ -233,44 +228,13 @@ public class UsuarioController implements Serializable {
 			resetearFitrosTabla("formTableUsuario:dataTableUser");
 			loadDefault();
 		} catch (Exception e) {
-			String errorMessage = getRootErrorMessage(e);
-			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-					errorMessage, "Error al Eliminar.");
-			facesContext.addMessage(null, m);
-		}
-	}
-
-	private String getRootErrorMessage(Exception e) {
-		String errorMessage = "Registration failed. See server log for more information";
-		if (e == null) {
-			return errorMessage;
-		}
-		Throwable t = e;
-		while (t != null) {
-			errorMessage = t.getLocalizedMessage();
-			t = t.getCause();
-		}
-		return errorMessage;
-	}
-
-	public boolean isRole(String permiso){
-		
-		return false;
-	}
-
-	public void verificarPermisoPagina(String permiso){
-		if(!isRole(permiso)){
-			try {
-				FacesContext.getCurrentInstance().getExternalContext()
-				.redirect("/webapp/error403.xhtml");
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			log.error("Error al Eliminar. Usuario error: "+e.getMessage());
 		}
 	}
 
 	public void onRowSelect(SelectEvent event) {
-		nombreRol = usuarioRolesRepository.findByUsuario(selectedUsuario).getRoles().getName();
+		selectedRol = usuarioRolesRepository.findByUsuario(selectedUsuario).getRol();
+		nombreRol = selectedRol.getNombre();
 		newUsuario = selectedUsuario;
 		nombreEstado = newUsuario.getState().equals("AC")?"ACTIVO":"INACTIVO";
 		crear = false;
@@ -289,7 +253,7 @@ public class UsuarioController implements Serializable {
 		selectedUsuario = new Usuario();
 		resetearFitrosTabla("formTableUsuario:dataTableUser");
 	}
-	
+
 	public void cambiarAspecto(){
 		crear = false;
 		registrar = true;
@@ -300,15 +264,24 @@ public class UsuarioController implements Serializable {
 	}
 
 	//validaciones
-	
+
 	public void validate(FacesContext arg0, UIComponent arg1, Object arg2)
-	         throws ValidatorException {
-	      if (((String)arg2).length()<1) {
-	         throw new ValidatorException(new FacesMessage("Al menos 1 caracteres "));
-	      }
-	   }
-	
-	
+			throws ValidatorException {
+		if (((String)arg2).length()<1) {
+			throw new ValidatorException(new FacesMessage("Al menos 1 caracteres "));
+		}
+	}
+
+	private Roles obtenerRolByLocal(String nombreRol){
+		for(Roles r: listRol){
+			if(r.getNombre().equals(nombreRol)){
+				return r;
+			}
+		}
+		return null;
+	}
+
+
 	// ----------  get and set -------------
 	public String getTituloPanel() {
 		return tituloPanel;
@@ -348,6 +321,7 @@ public class UsuarioController implements Serializable {
 
 	public void setNombreRol(String nombreRol) {
 		this.nombreRol = nombreRol;
+		selectedRol = obtenerRolByLocal( nombreRol);
 	}
 
 	public List<Usuario> getListFilterUsuario() {
@@ -398,14 +372,6 @@ public class UsuarioController implements Serializable {
 		this.tipoColumnTable = tipoColumnTable;
 	}
 
-	public List<Roles> getListaRoles() {
-		return listaRoles;
-	}
-
-	public void setListaRoles(List<Roles> listaRoles) {
-		this.listaRoles = listaRoles;
-	}
-
 	public boolean isCrear() {
 		return crear;
 	}
@@ -420,6 +386,22 @@ public class UsuarioController implements Serializable {
 
 	public void setRegistrar(boolean registrar) {
 		this.registrar = registrar;
+	}
+
+	public Roles getSelectedRol() {
+		return selectedRol;
+	}
+
+	public void setSelectedRol(Roles selectedRol) {
+		this.selectedRol = selectedRol;
+	}
+
+	public List<Roles> getListRol() {
+		return listRol;
+	}
+
+	public void setListRol(List<Roles> listRol) {
+		this.listRol = listRol;
 	}
 
 }

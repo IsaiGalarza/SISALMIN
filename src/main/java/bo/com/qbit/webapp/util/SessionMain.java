@@ -20,8 +20,8 @@ import bo.com.qbit.webapp.model.Almacen;
 import bo.com.qbit.webapp.model.Empresa;
 import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.Usuario;
-import bo.com.qbit.webapp.model.security.PermisoV1;
-import bo.com.qbit.webapp.model.security.Rol;
+import bo.com.qbit.webapp.model.security.Permiso;
+import bo.com.qbit.webapp.model.security.Roles;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -52,36 +52,36 @@ public class SessionMain implements Serializable {
 	private @Inject GestionRepository gestionRepository;
 
 	//Object
-	private Usuario usuarioLoggin;
-	private Empresa empresaLoggin;
+	private Usuario usuarioLogin;
+	private Empresa empresaLogin;
 	private Gestion gestionLogin;
 	private Almacen almacenLogin;
 
 	private StreamedContent fotoPerfil;
 
 	//list Permisos del usuario
-	private List<PermisoV1> listPermiso;
+	private List<Permiso> listPermiso;
 
 
 	@PostConstruct
 	public void initSessionMain(){
-		log.info("----- initSessionMain() --------");
-		listPermiso = new ArrayList<PermisoV1>();
-		usuarioLoggin = null;
-		empresaLoggin = null;
+		System.out.println("----- initSessionMain() --------");
+		listPermiso = new ArrayList<Permiso>();
+		usuarioLogin = null;
+		empresaLogin = null;
 		gestionLogin = null;
 		fotoPerfil = null;
 		almacenLogin = null;
 	}
 
-	public Usuario validarUsuario(String username,String password){
-		if(usuarioLoggin == null){
-			setUsuarioLoggin(usuarioRepository.findByLogin(username, password));
-		}
-		return getUsuarioLoggin();
-	}
+//	public Usuario validarUsuario(String username,String password){
+//		if(usuarioLogin == null){
+//			setUsuarioLogin(usuarioRepository.findByLogin(username, password));
+//		}
+//		return getUsuarioLogin();
+//	}
 	
-	public Usuario validarUsuarioV2(String username,String password){
+	public Usuario validarUsuario_(String username,String password){
 		//if(usuarioLoggin == null){
 		return	usuarioRepository.findByLogin(username, password);
 		//}
@@ -94,10 +94,10 @@ public class SessionMain implements Serializable {
 	 * @return boolean
 	 */
 	public boolean tienePermisoPagina(String pagina){
-		if(pagina.equals("index.xhtml") || pagina.equals("index_.xhtml") || pagina.equals("profile.xhtml")  || pagina.equals("dashboard.xhtml") || pagina.equals("comprobante.xhtml")|| pagina.equals("permiso2.xhtml") || pagina.equals("certificacion.xhtml")){
+		if( pagina.equals("profile.xhtml")  || pagina.equals("dashboard.xhtml") ){
 			return true;
 		}
-		for(PermisoV1 p: listPermiso){
+		for(Permiso p: listPermiso){
 			if(p.getDetallePagina().getPagina().getPath().equals(pagina)){
 				return true;
 			}
@@ -110,13 +110,13 @@ public class SessionMain implements Serializable {
 	 */
 	public void setImageUserSession() {
 		try{
-			log.info("----- setImageUserSession() --------");
-			if(getUsuarioLoggin().getPesoFoto() == 0){
-				this.usuarioLoggin.setFotoPerfil(toByteArrayUsingJava(getImageDefaul().getStream()));
-				this.usuarioLoggin.setPesoFoto(32);
+			System.out.println("----- setImageUserSession() --------");
+			if(getUsuarioLogin().getPesoFoto() == 0){
+				this.usuarioLogin.setFotoPerfil(toByteArrayUsingJava(getImageDefaul().getStream()));
+				this.usuarioLogin.setPesoFoto(32);
 			}
 		}catch(Exception e){
-			log.info("setImageUserSession() - Error: "+e.getMessage());
+			System.out.println("setImageUserSession() - Error: "+e.getMessage());
 		}
 	}
 
@@ -175,56 +175,56 @@ public class SessionMain implements Serializable {
 
 	//----------------------------------------
 
-	public void cargarPermisos(Rol rol){
+	public void cargarPermisos(Roles rol){
 		listPermiso = permmisoRepository.findByRol(rol);
 	}
 
-	public List<PermisoV1> getListPermiso() {
+	public List<Permiso> getListPermiso() {
 		return listPermiso;
 	}
 
-	public void setListPermiso(List<PermisoV1> listPermiso) {
+	public void setListPermiso(List<Permiso> listPermiso) {
 		this.listPermiso = listPermiso;
 	}
 
-	public Usuario getUsuarioLoggin() {
-		return usuarioLoggin;
+	public Usuario getUsuarioLogin() {
+		return usuarioLogin;
 	}
 
-	public void setUsuarioLoggin(Usuario usuarioLoggin) {
-		this.usuarioLoggin = usuarioLoggin;
+	public void setUsuarioLogin(Usuario usuarioLogin) {
+		this.usuarioLogin = usuarioLogin;
 	}
 
-	public Empresa getEmpresaLoggin() {
-		if(empresaLoggin == null){
+	public Empresa getEmpresaLogin() {
+		if(empresaLogin == null){
 			String empresa= "";
 			try{
 				HttpSession request = (HttpSession) facesContext.getExternalContext().getSession(false);
 				empresa = request.getAttribute("empresa")!=null?request.getAttribute("empresa").toString():"";
 				if(! empresa.isEmpty()){
-					empresaLoggin =  empresaRepository.findByRazonSocial(empresa);
-					log.info("getEmpresaLoggin() -> empresaLoggin : "+empresaLoggin.getRazonSocial());
+					empresaLogin =  empresaRepository.findByRazonSocial(empresa);
+					System.out.println("getEmpresaLoggin() -> empresaLoggin : "+empresaLogin.getRazonSocial());
 				}
 			}catch(Exception e){
-				empresaLoggin =  null;
+				empresaLogin =  null;
 				log.error("getEmpresaLoggin() ERROR: "+e.getMessage());
 			}
 		}
-		return empresaLoggin;
+		return empresaLogin;
 	}
 
 	public void setEmpresaLoggin(Empresa empresaLoggin) {
-		this.empresaLoggin = empresaLoggin;
+		this.empresaLogin = empresaLoggin;
 	}
 
 	public StreamedContent getFotoPerfil() {
-		log.info("----- getFotoPerfil() --------");
+		System.out.println("----- getFotoPerfil() --------");
 		if(fotoPerfil == null){
-			log.info("----- fotoPerfil = null --------");
+			System.out.println("----- fotoPerfil = null --------");
 			String mimeType = "image/jpg";
 			InputStream is = null;
 			try{
-				is= new ByteArrayInputStream(getUsuarioLoggin().getFotoPerfil());
+				is= new ByteArrayInputStream(getUsuarioLogin().getFotoPerfil());
 				fotoPerfil = new DefaultStreamedContent(new ByteArrayInputStream(toByteArrayUsingJava(is)), mimeType);
 			}catch(Exception e){
 				log.error("getImageUserSession() -> error : "+e.getMessage());

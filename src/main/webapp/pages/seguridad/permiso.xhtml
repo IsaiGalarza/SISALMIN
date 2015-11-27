@@ -20,18 +20,18 @@
 						<div class="btn-group-demo">
 							<div class="btn-group">
 								<h:form id="formReg">
-									<h:commandLink id="buttonLimpar" value="&#160; Limpiar Todo"
+									<p:commandLink id="buttonLimpar" value="&#160; Limpiar Todo"
 										style="height:31px; padding:center"
-										styleClass="btn btn-primary icon-refresh">
-										<p:ajax update=":formTree"
-											listener="#{privilegioController.limpiarTodo()}" />
-									</h:commandLink>
-									<h:commandLink id="buttonGuardar" value="&#160; Guardar"
+										styleClass="btn btn-primary icon-refresh"
+										update="formTree"
+										action="#{permisoController.limpiarPermisos()}">
+									</p:commandLink>
+									<p:commandLink id="buttonGuardar" value="&#160; Guardar"
 										style="height:31px; padding:center"
 										styleClass="btn btn-success ion-checkmark"
-										action="#{privilegioController.test()}">
-										<f:ajax />
-									</h:commandLink>
+										update="formGrowl:msgs1"
+										action="#{permisoController.registrarPermisos()}">
+									</p:commandLink>
 								</h:form>
 							</div>
 						</div>
@@ -39,8 +39,11 @@
 				</div>
 				<div class="pull-right">
 					<ol class="breadcrumb">
-						<li><a href="#{request.contextPath}/pages/dashboard.jsf" style="color: #0090FF; font-size: 12px;">Inicio</a></li>
-						<li><a href="#{request.contextPath}/pages/seguridad/permiso.xhtml" style="color: #0090FF; font-size: 12px;">Seguridad</a></li>
+						<li><a href="#{request.contextPath}/pages/dashboard.jsf"
+							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
+						<li><a
+							href="#{request.contextPath}/pages/seguridad/permiso.xhtml"
+							style="color: #0090FF; font-size: 12px;">Seguridad</a></li>
 						<li class="active" style="font-size: 12px;">Permiso</li>
 					</ol>
 				</div>
@@ -62,11 +65,10 @@
 												<div class="col-md-6">
 													<h:form>
 														<h:selectOneMenu id="roles" styleClass="form-control"
-															immediate="true"
-															value="#{privilegioController.nombreRol}">
+															immediate="true" value="#{permisoController.nombreRol}">
 															<!-- 	<f:ajax render=":formTablePermiso" /> -->
-															<f:selectItems value="#{privilegioController.listaRoles}" />
-															<p:ajax update=":formTree" />
+															<f:selectItems value="#{permisoController.listRol}" />
+															<p:ajax update=":formTree:docs" />
 														</h:selectOneMenu>
 													</h:form>
 												</div>
@@ -86,24 +88,29 @@
 									<!-- start here register -->
 									<div class="row">
 										<h:form id="formTree">
-											<p:tree id="docs" value="#{privilegioController.root}"
+											<p:tree id="docs" value="#{permisoController.root}"
 												var="node" selectionMode="checkbox"
 												style="font-size: 13px !important; padding: 0 0 0 16px !important; width: 100%; font-family: sans-serif !important;"
-												selection="#{privilegioController.selectedNodes2}">
+												selection="#{permisoController.selectedNodes2}">
+												<p:ajax event="select" update=":formTree"
+													listener="#{permisoController.onNodeSelect}" />
 												<p:treeNode icon="ui-icon-star">
+													<h:outputText value="MODULO #{node.nombre}" />
+												</p:treeNode>
+												<p:treeNode type="1" icon="ui-icon-newwin">
 													<h:outputText value="#{node.nombre}" />
 												</p:treeNode>
-												<p:treeNode type="1" icon="ui-icon-newwin" >
+												<p:treeNode type="2" icon="ui-icon-newwin">
 													<h:outputText value="#{node.nombre}" />
 												</p:treeNode>
-												<p:treeNode type="2" icon="ui-icon-newwin" >
+												<p:treeNode type="3" icon="ui-icon-transferthick-e-w">
 													<h:outputText value="#{node.nombre}" />
 												</p:treeNode>
-												<p:treeNode type="3" icon="ui-icon-newwin" >
+												<p:treeNode type="4" icon="ui-icon-transferthick-e-w">
 													<h:outputText value="#{node.nombre}" />
 												</p:treeNode>
 											</p:tree>
-											
+
 										</h:form>
 									</div>
 								</div>
@@ -115,7 +122,7 @@
 		</div>
 		<!--END CONTENT-->
 
-		<!-- START GROWL -->
+		<!-- START GROWL formGrowl:msgs1 -->
 		<h:form id="formGrowl">
 			<p:growl id="msgs1" showDetail="true" />
 		</h:form>

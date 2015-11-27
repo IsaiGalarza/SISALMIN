@@ -77,7 +77,7 @@ public class EmpresaController implements Serializable {
 
 		log.info(" init new initNewEmpresa");
 		beginConversation();
-		usuarioSession = sessionMain.getUsuarioLoggin();
+		usuarioSession = sessionMain.getUsuarioLogin();
 		nombreUsuario = usuarioSession.getLogin();
 
 		loadValuesDefault();

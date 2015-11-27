@@ -168,7 +168,7 @@ public class Usuario extends Validator implements Serializable {
 		this.pesoFoto = pesoFoto;
 	}
 
-	public boolean validate(FacesContext facesContext,Empresa empresa){
+	public boolean validate(FacesContext facesContext,Empresa empresa , Gestion gestion){
 		if(isEmppty(this.nombre)){
 			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
 					"El campo nombre no puede ser vacío!",""+nombre);

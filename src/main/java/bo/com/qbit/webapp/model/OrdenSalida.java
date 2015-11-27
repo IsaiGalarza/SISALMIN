@@ -20,18 +20,12 @@ import javax.persistence.Table;
 public class OrdenSalida implements Serializable{
 
 	private static final long serialVersionUID = -5245389763015492273L;
-	
+	//Test
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
-	private Integer correlativo;
-	
-	@Column(name = "servidor_publico_solicitante", nullable = false)
-	private String servidorPublicoSolicitantes;
-	
-	@Column(name = "cargo", nullable = false)
-	private String cargo;
+	private String correlativo;
 	
 	@Column(name = "numero_pedido_materiales", nullable = false)
 	private String numeroPedidoMateriales;
@@ -41,6 +35,10 @@ public class OrdenSalida implements Serializable{
 	
 	@Column(name = "fecha_entrega", nullable = false)
 	private Date fechaEntrega;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "id_gestion", nullable = true)
+	private Gestion gestion;
 
 	private String estado;
 	
@@ -69,7 +67,14 @@ public class OrdenSalida implements Serializable{
 	private DetalleUnidad unidadSolicitante;
 	
 	@ManyToOne
-	@JoinColumn(name = "id_unidad")
+	@JoinColumn(name = "id_funcionario")
+	private Funcionario funcionario;
+	
+	@Column(name = "cargo", nullable = false)
+	private String cargo;
+
+	@ManyToOne
+	@JoinColumn(name = "id_proyecto")
 	private Proyecto proyecto;
 	
 	@Column(name = "detalle_proyecto_actividad")
@@ -77,8 +82,10 @@ public class OrdenSalida implements Serializable{
 
 	public OrdenSalida() {
 		this.id = 0 ;
-		this.almacen = new Almacen();		
+		this.unidadSolicitante = new DetalleUnidad();
+		this.funcionario = new Funcionario();
 		this.proyecto = new Proyecto();
+		this.almacen = new Almacen();		
 	}
 
 	public Integer getId() {
@@ -89,11 +96,11 @@ public class OrdenSalida implements Serializable{
 		this.id = id;
 	}
 
-	public Integer getCorrelativo() {
+	public String getCorrelativo() {
 		return correlativo;
 	}
 
-	public void setCorrelativo(Integer correlativo) {
+	public void setCorrelativo(String correlativo) {
 		this.correlativo = correlativo;
 	}
 	
@@ -103,6 +110,14 @@ public class OrdenSalida implements Serializable{
 
 	public void setEstado(String estado) {
 		this.estado = estado;
+	}
+	
+	public Gestion getGestion() {
+		return gestion;
+	}
+
+	public void setGestion(Gestion gestion) {
+		this.gestion = gestion;
 	}
 
 	public Date getFechaRegistro() {
@@ -153,15 +168,6 @@ public class OrdenSalida implements Serializable{
 		this.unidadSolicitante = unidadSolicitante;
 	}
 
-	public String getServidorPublicoSolicitantes() {
-		return servidorPublicoSolicitantes;
-	}
-
-	public void setServidorPublicoSolicitantes(
-			String servidorPublicoSolicitantes) {
-		this.servidorPublicoSolicitantes = servidorPublicoSolicitantes;
-	}
-
 	public String getDetalleProyectoActividad() {
 		return detalleProyectoActividad;
 	}
@@ -176,6 +182,14 @@ public class OrdenSalida implements Serializable{
 
 	public void setDetalleOrdenSalida(List<DetalleOrdenSalida> detalleOrdenSalida) {
 		this.detalleOrdenSalida = detalleOrdenSalida;
+	}
+	
+	public Funcionario getFuncionario() {
+		return funcionario;
+	}
+
+	public void setFuncionario(Funcionario funcionario) {
+		this.funcionario = funcionario;
 	}
 
 }

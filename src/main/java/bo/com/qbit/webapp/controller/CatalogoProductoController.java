@@ -54,7 +54,7 @@ public class CatalogoProductoController implements Serializable {
 
 		beginConversation();
 
-		usuarioSession = sessionMain.getUsuarioLoggin().getLogin();
+		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
 		
 		listaAlmacenProducto = almacenProductoRepository.findProductoConStockOrderedByID();
 

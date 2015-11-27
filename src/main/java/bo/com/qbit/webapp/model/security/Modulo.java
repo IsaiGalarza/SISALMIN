@@ -33,7 +33,7 @@ public class Modulo implements Serializable {
 	@Column(name="nombre", unique=true, nullable=false, length=25)
 	private String nombre;
 	
-	@ManyToOne(fetch=FetchType.LAZY,optional=true)
+	@ManyToOne(fetch=FetchType.EAGER,optional=true)
     @JoinColumn(name="id_modulo_padre", nullable=true)
 	@Lazy
 	private Modulo moduloPadre;

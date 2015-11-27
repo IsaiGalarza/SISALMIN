@@ -13,26 +13,27 @@ import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
 import bo.com.qbit.webapp.model.Empresa;
+import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.validator.Validator;
 
 /**
- * Class Rol
+ * Class Roles
  * @author Mauricio.Bejarano.Rivera
  * @version v1.0
  * 
  */
 @Entity
-@Table(name="rol", catalog="public")
-public class Rol extends Validator implements java.io.Serializable {
-	
-	private static final long serialVersionUID = 1L;
+@Table(name="roles", catalog="public")
+public class Roles extends Validator implements java.io.Serializable {
+
+	private static final long serialVersionUID = -2073567436499863322L;
 
 	@Id 
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="id", unique=true, nullable=false)
 	private Integer id;
 	
-	@Column(name="nombre", unique=true, nullable=false, length=255)
+	@Column(name="nombre", unique=true, nullable=false, length=25)
 	private String nombre;
 	
 	@Column(name="descripcion",  nullable=true, length=255)
@@ -50,7 +51,7 @@ public class Rol extends Validator implements java.io.Serializable {
 	@Column(name="usuario_registro",nullable=false )
 	private String usuarioRegistro;
 	
-	public Rol() {
+	public Roles() {
 		super();
 		this.id = 0;
 		this.nombre = "";
@@ -72,7 +73,7 @@ public class Rol extends Validator implements java.io.Serializable {
 	@Override
 	public boolean equals(Object obj) {
 		try {
-			if(((Rol)obj).id==this.id){
+			if(((Roles)obj).id==this.id){
 				return true;
 			}else{
 				return false;
@@ -106,7 +107,7 @@ public class Rol extends Validator implements java.io.Serializable {
 		this.fechaRegistro = fechaRegistro;
 	}
 	
-	public boolean validate(FacesContext facesContext,Empresa empresa){
+	public boolean validate(FacesContext facesContext,Empresa empresa , Gestion gestion){
 		if(isEmppty(this.nombre)){
 			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
 					"El campo nombre no puede ser vacío!","");

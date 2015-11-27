@@ -9,8 +9,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import bo.com.qbit.webapp.model.Roles;
 import bo.com.qbit.webapp.model.Usuario;
+import bo.com.qbit.webapp.model.security.Roles;
 
 @Stateless
 public class UsuarioRepository {
@@ -65,7 +65,7 @@ public class UsuarioRepository {
 			criteria.select(user).where(cb.equal(user.get("login"), login),cb.equal(user.get("password"), password));
 			return em.createQuery(criteria).getSingleResult();
 		}catch(Exception e){
-			System.out.println("usuario no valido");
+			System.out.println("usuario no valido error: "+e.getMessage());
 			return null;
 		}
 	}
@@ -86,7 +86,7 @@ public class UsuarioRepository {
 		return em.createQuery(criteria).getResultList();
 	}
 
-	public List<Roles> findAllRoles(){
+	public List<Roles> findAllRol(){
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Roles> criteria = cb.createQuery(Roles.class);
 		Root<Roles> user = criteria.from(Roles.class);
