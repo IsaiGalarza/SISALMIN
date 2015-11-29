@@ -9,6 +9,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import bo.com.qbit.webapp.model.Almacen;
 import bo.com.qbit.webapp.model.Proyecto;
 import bo.com.qbit.webapp.model.Usuario;
 
@@ -50,7 +51,7 @@ public class ProyectoRepository {
 			return Proyecto;
 		}
 	}
-	
+
 
 	public List<Proyecto> findAllOrderedByFechaRegistro() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -98,8 +99,22 @@ public class ProyectoRepository {
 					.setMaxResults(100).getResultList();
 			return listaProyecto;
 		} catch (Exception e) {
-			// TODO: handle exception
 			System.out.println("Error en findAll100UltimosProyecto: "
+					+ e.getMessage());
+			return null;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Proyecto> findAllProyectoForQueryNombre(String criterio) {
+		try {
+			String query = "select ser from Proyecto ser where ser.nombre like '%"
+					+ criterio + "%' and ser.estado='AC' order by ser.nombre asc";
+			System.out.println("Consulta: " + query);
+			List<Proyecto> listaProyecto = em.createQuery(query).getResultList();
+			return listaProyecto;
+		} catch (Exception e) {
+			System.out.println("Error en findAllProyectoForDescription: "
 					+ e.getMessage());
 			return null;
 		}

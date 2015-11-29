@@ -206,17 +206,17 @@
 													<h:outputText value="#{item.descripcion}" />
 												</p:column>
 												
-												<p:column 
+												<p:column width="10%" style="text-align:center;"
 													filterStyle="width: 100%; height:25px;" headerText="NIT"
 													filterBy="#{item.nit}">
 													<h:outputText value="#{item.nit}" />
 												</p:column>
-												<p:column
+												<p:column width="10%" style="text-align:center;"
 													filterStyle="width: 100%; height:25px;"
 													headerText="Telefono" filterBy="#{item.telefono}">
 													<h:outputText value="#{item.telefono}" />
 												</p:column>
-												<p:column width="8%" filterStyle="width: 100%; height:25px;"
+												<p:column width="10%" filterStyle="width: 100%; height:25px;"
 													style="text-align:center;" headerText="Estado"
 													filterBy="#{item.estado}">
 													<span class="label label-success"><h:outputText
@@ -224,18 +224,18 @@
 													<span class="label label-danger"><h:outputText
 															rendered="#{item.estado=='IN'}" value="Inactivo" /></span>
 												</p:column>
-												<p:column headerText="Usuario Reg."
+												<p:column width="10%" headerText="Usuario Reg."
 													filterStyle="width: 100%; height:25px;"
 													style="text-align:center;"
 													filterBy="#{item.usuarioRegistro}">
 													<h:outputText value="#{item.usuarioRegistro}">
 													</h:outputText>
 												</p:column>
-												<p:column headerText="Fecha Reg."
+												<p:column width="10%"  headerText="Fecha Reg."
 													filterStyle="width: 100%; height:25px;"
 													style="text-align:center;" filterBy="#{item.fechaRegistro}">
 													<h:outputText value="#{item.fechaRegistro}">
-														<f:convertDateTime pattern="dd/MM/yyyy H:mm" />
+														<f:convertDateTime pattern="dd/MM/yyyy" />
 													</h:outputText>
 												</p:column>
 												<f:facet name="footer">

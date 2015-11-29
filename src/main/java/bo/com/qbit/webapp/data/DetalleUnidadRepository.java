@@ -10,6 +10,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import bo.com.qbit.webapp.model.DetalleUnidad;
+import bo.com.qbit.webapp.model.Producto;
 import bo.com.qbit.webapp.model.Usuario;
 
 @ApplicationScoped
@@ -100,6 +101,22 @@ public class DetalleUnidadRepository {
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println("Error en findAll100UltimosDetalleUnidad: "
+					+ e.getMessage());
+			return null;
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<DetalleUnidad> findAllDetalleUnidadForQueryNombre(String criterio) {
+		try {
+			String query = "select ser from DetalleUnidad ser where ser.nombre like '%"
+					+ criterio + "%' and ser.estado='AC' order by ser.nombre asc";
+			System.out.println("Consulta: " + query);
+			List<DetalleUnidad> listaDetalleUnidad = em.createQuery(query).getResultList();
+			return listaDetalleUnidad;
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("Error en findAllPartidaForDescription: "
 					+ e.getMessage());
 			return null;
 		}

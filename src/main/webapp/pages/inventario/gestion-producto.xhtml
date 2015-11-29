@@ -67,7 +67,7 @@
 									onclick="dlgEliminar.show()"
 									style="height:31px; padding:center">
 								</p:commandLink>
-								
+
 								<p:dialog header="Desea Eliminar el Producto?"
 									widgetVar="dlgEliminar" minHeight="40" modal="true">
 									<h:panelGrid columns="2" cellpadding="5">
@@ -129,8 +129,6 @@
 											<div class="row">
 												<div class="col-md-12 box-content form-horizontal">
 
-
-
 													<div class="form-group ">
 														<div class="col-md-4">Partida</div>
 														<div class="col-md-8">
@@ -138,13 +136,11 @@
 															<p:autoComplete id="partidaID"
 																value="#{productoController.newProducto.partida.nombre}"
 																completeMethod="#{productoController.completePartida}"
-																minQueryLength="3" size="40" dropdown="true"
-																style="color: red; width: 100%;" required="true"
+																minQueryLength="3" dropdown="true" required="true"
 																requiredMessage="Partida Requerido."
 																forceSelection="true" var="_var" itemLabel="#{_var}"
 																itemValue="#{_var.nombre}"
-																placeholder="[Escriba Área Farmacéutica]"
-																maxResults="10">
+																placeholder="[Escriba Partida]" maxResults="10">
 
 																<p:ajax event="itemSelect"
 																	listener="#{productoController.onRowSelectPartidaClick}"
@@ -162,8 +158,9 @@
 													<div class="form-group ">
 														<div class="col-md-4">Nombre Producto</div>
 														<div class="col-md-8">
-															<p:inputText id="nombreID" styleClass="form-control"
-																size="40"
+															<p:inputText id="nombreID"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control" size="40"
 																value="#{productoController.newProducto.nombre}"
 																required="true" requiredMessage="Requerido.">
 																<p:ajax event="change" />
@@ -173,8 +170,9 @@
 													<div class="form-group ">
 														<div class="col-md-4">Descripción</div>
 														<div class="col-md-8">
-															<p:inputText id="descripcionID" styleClass="form-control"
-																size="40"
+															<p:inputText id="descripcionID"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control" size="40"
 																value="#{productoController.newProducto.descripcion}"
 																required="true" requiredMessage="Requerido.">
 																<p:ajax event="change" />
@@ -185,7 +183,9 @@
 													<div class="form-group ">
 														<div class="col-md-4">Precio Unitario</div>
 														<div class="col-md-8">
-															<p:inputText id="precioID" required="true"
+															<p:inputText id="precioID"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control" required="true"
 																requiredMessage="Precio Requerido."
 																value="#{productoController.newProducto.precioUnitario}"
 																size="40">
@@ -198,11 +198,12 @@
 													<div class="form-group ">
 														<div class="col-md-4">Tipo Producto</div>
 														<div class="col-md-8">
-															<h:selectOneMenu id="tipoID" required="true"
+															<h:selectOneMenu id="tipoID"
+																style=" color: #555555; background-image: none; width:100%;"
+																styleClass="input-sm form-control" required="true"
 																requiredMessage="Tipo Requerido."
-																value="#{productoController.newProducto.tipoProducto}"
-																style="width:100%;">
-																<f:selectItem itemLabel="--Seleccione--" itemValue="" />
+																value="#{productoController.newProducto.tipoProducto}">
+																<f:selectItem itemLabel="SELECCIONE" itemValue="" />
 																<f:selectItem itemLabel="INSUMOS" itemValue="INSUMOS" />
 																<f:selectItem itemLabel="MATERIALES"
 																	itemValue="MATERIALES" />
@@ -216,11 +217,12 @@
 													<div class="form-group ">
 														<div class="col-md-4">Unidad Medida</div>
 														<div class="col-md-8">
-															<h:selectOneMenu id="medidaID" required="true"
+															<h:selectOneMenu id="medidaID"
+																style=" color: #555555; background-image: none; width:100%;"
+																styleClass="input-sm form-control" required="true"
 																requiredMessage="Medida Requerido."
-																value="#{productoController.newProducto.unidadMedida}"
-																style="width:100%;">
-																<f:selectItem itemLabel="--Seleccione--" itemValue="" />
+																value="#{productoController.newProducto.unidadMedida}">
+																<f:selectItem itemLabel="SELECCIONE" itemValue="" />
 																<f:selectItem itemLabel="PIEZA" itemValue="PIEZA" />
 																<f:selectItem itemLabel="GRAMO" itemValue="GRAMO" />
 																<f:selectItem itemLabel="METRO" itemValue="METRO" />
@@ -235,7 +237,8 @@
 														<div class="col-md-4">Fecha</div>
 														<div class="col-md-8">
 															<p:inputText id="fechaRegistroID"
-																styleClass="form-control" size="40"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control" size="40"
 																value="#{productoController.newProducto.fechaRegistro}"
 																disabled="true" required="true"
 																requiredMessage="Requerido.">
@@ -248,7 +251,8 @@
 														<div class="col-md-4">Registro</div>
 														<div class="col-md-8">
 															<p:inputText id="usuarioRegistroID"
-																styleClass="form-control" size="40"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control" size="40"
 																value="#{productoController.newProducto.usuarioRegistro}"
 																disabled="true" required="true"
 																requiredMessage="Usuario Registro Requerido." />
@@ -276,7 +280,7 @@
 										<div class="box-content no-padding">
 
 											<p:dataTable
-												styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+												style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
 												selection="#{productoController.selectedProducto}"
 												selectionMode="single" rowKey="#{_var.id}"
 												id="productoTable" var="_var" value="#{listaProducto}"
@@ -287,9 +291,10 @@
 													update=":formTableProducto, :formBotonesHeader"
 													listener="#{productoController.onRowSelectProductoClick}" />
 
-												<p:column width="5%" headerText="ID" filterBy="#{_var.id}"
-													filterStyle="width: 100%;" filterMatchMode="contains">
-													<span class="badge alert-success">#{_var.id}</span>
+												<p:column width="5%" headerText="Id" filterBy="#{_var.id}"
+													style="text-align:center;" filterStyle="width: 100%;"
+													filterMatchMode="contains">
+													<h:outputText value="#{_var.id}" />
 												</p:column>
 
 												<p:column width="5%" headerText="Partida"
@@ -321,9 +326,9 @@
 													<h:outputText value="#{_var.unidadMedida}" />
 												</p:column>
 
-												<p:column width="7%" headerText="Estado"
-													filterBy="#{_var.estado}" filterStyle="width: 100%;"
-													filterMatchMode="contains">
+												<p:column width="10%" headerText="Estado"
+													style="text-align:center;" filterBy="#{_var.estado}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
 													<span class="label label-success"><h:outputText
 															rendered="#{_var.estado=='AC'}" value="Activo" /></span>
 													<span class="label label-danger"><h:outputText
@@ -331,15 +336,16 @@
 												</p:column>
 
 												<p:column width="10%" headerText="Fecha"
-													filterBy="#{_var.fechaRegistro}" filterStyle="width: 100%;"
-													filterMatchMode="contains">
+													style="text-align:center;" filterBy="#{_var.fechaRegistro}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.fechaRegistro}">
 														<f:convertDateTime pattern="dd/MM/yyyy" />
 													</h:outputText>
 												</p:column>
-												<p:column width="5%" headerText="Registro"
+												<p:column width="10%" headerText="Registro"
 													filterBy="#{_var.usuarioRegistro}"
-													filterStyle="width: 100%;" filterMatchMode="contains">
+													style="text-align:center;" filterStyle="width: 100%;"
+													filterMatchMode="contains">
 													<h:outputText value="#{_var.usuarioRegistro}" />
 												</p:column>
 

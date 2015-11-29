@@ -6,6 +6,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
+import bo.com.qbit.webapp.model.Almacen;
 import bo.com.qbit.webapp.model.AlmacenProducto;
 import bo.com.qbit.webapp.model.Producto;
 
@@ -32,6 +33,18 @@ public class AlmacenProductoRepository {
 					+ producto.getId() ;
 			System.out.println("Query AlmacenProducto: " + query);
 			return (AlmacenProducto) em.createQuery(query).getSingleResult();
+		}catch(Exception e){
+			return null;
+		}
+	}
+	
+	
+	public List<AlmacenProducto> findByAlmacen(Almacen almacen) {
+		try{
+			String query = "select em from AlmacenProducto em where ( em.estado='AC' or em.estado='IN' ) and em.almacen.id="
+					+ almacen.getId() ;
+			System.out.println("Query AlmacenProducto: " + query);
+			return em.createQuery(query).getResultList();
 		}catch(Exception e){
 			return null;
 		}

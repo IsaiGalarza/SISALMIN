@@ -14,8 +14,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "detalle_orden_ingreso", schema = "public")
-public class DetalleOrdenIngreso implements Serializable{
+@Table(name = "detalle_toma_inventario", schema = "public")
+public class DetalleTomaInventario implements Serializable{
 
 	private static final long serialVersionUID = 6101168071340551453L;
 
@@ -29,7 +29,13 @@ public class DetalleOrdenIngreso implements Serializable{
 	
 	private String observacion;
 	
-	private double total;
+	@Column(name="cantidad_registrada")
+	private double cantidadRegistrada;
+	
+	@Column(name="cantidad_verificada")
+	private double cantidadVerificada;
+	
+	private double diferencia;
 
 	@Column(name="fecha_registro")
 	private Date fechaRegistro;
@@ -39,18 +45,18 @@ public class DetalleOrdenIngreso implements Serializable{
 
 	// bi-directional many-to-one association to PedidoMov
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	@JoinColumn(name = "id_orden_ingreso")
-	private OrdenIngreso ordenIngreso;
+	@JoinColumn(name = "id_toma_inventario")
+	private TomaInventario tomaInventario;
 
 	// bi-directional many-to-one association to Producto
-	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "id_producto", nullable = true)
 	private Producto producto;
 	
-	public DetalleOrdenIngreso() {
+	public DetalleTomaInventario() {
 		super();
 		this.id = 0 ;
-		this.cantidad = 1;
+		this.cantidad = 0;
 		this.setEstado("AC");
 	}
 	
@@ -68,14 +74,6 @@ public class DetalleOrdenIngreso implements Serializable{
 	
 	public void setFechaRegistro(Date fechaRegistro) {
 		this.fechaRegistro = fechaRegistro;
-	}
-	
-	public double getTotal() {
-		return total;
-	}
-	
-	public void setTotal(double total) {
-		this.total = total;
 	}
 	
 	public String getUsuarioRegistro() {
@@ -109,14 +107,6 @@ public class DetalleOrdenIngreso implements Serializable{
 	public void setEstado(String estado) {
 		this.estado = estado;
 	}
-	
-	public OrdenIngreso getOrdenIngreso() {
-		return ordenIngreso;
-	}
-	
-	public void setOrdenIngreso(OrdenIngreso ordenIngreso) {
-		this.ordenIngreso = ordenIngreso;
-	}
 
 	public String getObservacion() {
 		return observacion;
@@ -124,6 +114,38 @@ public class DetalleOrdenIngreso implements Serializable{
 
 	public void setObservacion(String observacion) {
 		this.observacion = observacion;
+	}
+
+	public double getCantidadRegistrada() {
+		return cantidadRegistrada;
+	}
+
+	public void setCantidadRegistrada(double cantidadRegistrada) {
+		this.cantidadRegistrada = cantidadRegistrada;
+	}
+
+	public double getCantidadVerificada() {
+		return cantidadVerificada;
+	}
+
+	public void setCantidadVerificada(double cantidadVerificada) {
+		this.cantidadVerificada = cantidadVerificada;
+	}
+
+	public double getDiferencia() {
+		return diferencia;
+	}
+
+	public void setDiferencia(double diferencia) {
+		this.diferencia = diferencia;
+	}
+
+	public TomaInventario getTomaInventario() {
+		return tomaInventario;
+	}
+
+	public void setTomaInventario(TomaInventario tomaInventario) {
+		this.tomaInventario = tomaInventario;
 	}
 
 }

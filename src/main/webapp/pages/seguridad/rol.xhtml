@@ -104,12 +104,11 @@
 													<div class="form-group ">
 														<label class="col-md-4 control-label">Descripcion</label>
 														<div class="col-md-8">
-															<h:inputText value="#{rolController.newRol.descripcion}"
-																required="true" maxlength="255"
-																style=" color: #555555; background-image: none;"
-																styleClass="input-sm form-control">
+															<p:inputTextarea id="descripcionID" styleClass="form-control"
+																size="40" value="#{rolController.newRol.descripcion}"
+																required="true" requiredMessage="Requerido." rows="5">
 																<p:ajax event="change" />
-															</h:inputText>
+															</p:inputTextarea>
 														</div>
 													</div>
 													<div class="form-group">
@@ -152,11 +151,11 @@
 											<p:ajax event="rowSelect"
 												listener="#{rolController.onRowSelect}"
 												update=":formReg,:formBotonesHeader,:formTableRoles" />
-											<p:column width="20%" filterStyle="width: 100%; height:25px;"
+											<p:column width="8%" filterStyle="width: 100%; height:25px;" style="text-align:center;"
 												headerText="Id" filterBy="#{item.id}">
 												<h:outputText value="#{item.id}" />
 											</p:column>
-											<p:column filterStyle="width: 100%; height:25px;"
+											<p:column width="15%" filterStyle="width: 100%; height:25px;"
 												headerText="Nombre" filterBy="#{item.nombre}">
 												<h:outputText value="#{item.nombre}" />
 											</p:column>
@@ -164,7 +163,7 @@
 												headerText="Descripcion" filterBy="#{item.descripcion}">
 												<h:outputText value="#{item.descripcion}" />
 											</p:column>
-											<p:column filterStyle="width: 100%; height:25px;"
+											<p:column width="15%" filterStyle="width: 100%; height:25px;" style="text-align:center;"
 												headerText="Estado" filterBy="#{item.estado}">
 												<span class="label label-success"><h:outputText
 														rendered="#{item.estado=='AC'}" value="ACTIVO" /></span>
@@ -173,7 +172,7 @@
 												<span class="label label-success"><h:outputText
 														rendered="#{item.estado=='SU'}" value="SUPER" /></span>
 											</p:column>
-											<p:column filterStyle="width: 100%; height:25px;"
+											<p:column width="15%" filterStyle="width: 100%; height:25px;"
 												headerText="Fecha Reg." filterBy="#{item.fechaRegistro}">
 												<h:outputText value="#{item.fechaRegistro}">
 													<f:convertDateTime pattern="dd/MM/yyyy" />

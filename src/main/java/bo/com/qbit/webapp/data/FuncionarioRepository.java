@@ -9,6 +9,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import bo.com.qbit.webapp.model.DetalleUnidad;
 import bo.com.qbit.webapp.model.Funcionario;
 
 @ApplicationScoped
@@ -35,7 +36,7 @@ public class FuncionarioRepository {
 		System.out.println("Query Funcionario: " + query);
 		return em.createQuery(query).getResultList();
 	}
-	
+
 
 	public List<Funcionario> findAllOrderedByFechaRegistro() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -83,8 +84,22 @@ public class FuncionarioRepository {
 					.setMaxResults(100).getResultList();
 			return listaFuncionario;
 		} catch (Exception e) {
-			// TODO: handle exception
 			System.out.println("Error en findAll100UltimosFuncionario: "
+					+ e.getMessage());
+			return null;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Funcionario> findAllFuncionarioForQueryNombre(String criterio) {
+		try {
+			String query = "select ser from Funcionario ser where ser.nombre like '%"
+					+ criterio + "%' and ser.estado='AC' order by ser.nombre asc";
+			System.out.println("Consulta: " + query);
+			List<Funcionario> listaFuncionario = em.createQuery(query).getResultList();
+			return listaFuncionario;
+		} catch (Exception e) {
+			System.out.println("Error en findAllFuncionarioForDescription: "
 					+ e.getMessage());
 			return null;
 		}

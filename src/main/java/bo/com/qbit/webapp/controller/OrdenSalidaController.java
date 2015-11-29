@@ -14,39 +14,34 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
-import org.primefaces.component.datatable.DataTable;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
 
 import bo.com.qbit.webapp.data.AlmacenProductoRepository;
 import bo.com.qbit.webapp.data.AlmacenRepository;
-import bo.com.qbit.webapp.data.DetalleOrdenIngresoRepository;
 import bo.com.qbit.webapp.data.DetalleOrdenSalidaRepository;
+import bo.com.qbit.webapp.data.DetalleUnidadRepository;
 import bo.com.qbit.webapp.data.FuncionarioRepository;
 import bo.com.qbit.webapp.data.KardexProductoRepository;
-import bo.com.qbit.webapp.data.OrdenIngresoRepository;
 import bo.com.qbit.webapp.data.OrdenSalidaRepository;
 import bo.com.qbit.webapp.data.ProductoRepository;
-import bo.com.qbit.webapp.data.ProveedorRepository;
+import bo.com.qbit.webapp.data.ProyectoRepository;
 import bo.com.qbit.webapp.data.UsuarioRepository;
 import bo.com.qbit.webapp.model.Almacen;
 import bo.com.qbit.webapp.model.AlmacenProducto;
-import bo.com.qbit.webapp.model.DetalleOrdenIngreso;
 import bo.com.qbit.webapp.model.DetalleOrdenSalida;
+import bo.com.qbit.webapp.model.DetalleUnidad;
 import bo.com.qbit.webapp.model.Funcionario;
 import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.KardexProducto;
-import bo.com.qbit.webapp.model.OrdenIngreso;
 import bo.com.qbit.webapp.model.OrdenSalida;
 import bo.com.qbit.webapp.model.Producto;
-import bo.com.qbit.webapp.model.Proveedor;
+import bo.com.qbit.webapp.model.Proyecto;
 import bo.com.qbit.webapp.model.Usuario;
 import bo.com.qbit.webapp.service.AlmacenProductoRegistration;
-import bo.com.qbit.webapp.service.DetalleOrdenIngresoRegistration;
 import bo.com.qbit.webapp.service.DetalleOrdenSalidaRegistration;
 import bo.com.qbit.webapp.service.KardexProductoRegistration;
-import bo.com.qbit.webapp.service.OrdenIngresoRegistration;
 import bo.com.qbit.webapp.service.OrdenSalidaRegistration;
 import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.SessionMain;
@@ -62,6 +57,7 @@ public class OrdenSalidaController implements Serializable {
 	@Inject
 	Conversation conversation;
 
+	//Repository
 	private @Inject AlmacenRepository almacenRepository;
 	private @Inject UsuarioRepository usuarioRepository;
 	private @Inject OrdenSalidaRepository ordenSalidaRepository;
@@ -70,7 +66,10 @@ public class OrdenSalidaController implements Serializable {
 	private @Inject AlmacenProductoRepository almacenProductoRepository;
 	private @Inject KardexProductoRepository kardexProductoRepository;
 	private @Inject FuncionarioRepository funcionarioRepository;
+	private @Inject DetalleUnidadRepository detalleUnidadRepository;
+	private @Inject ProyectoRepository proyectoRepository;
 
+	//Registration
 	private @Inject OrdenSalidaRegistration ordenSalidaRegistration;
 	private @Inject DetalleOrdenSalidaRegistration detalleOrdenSalidaRegistration;
 	private @Inject AlmacenProductoRegistration almacenProductoRegistration;
@@ -88,21 +87,23 @@ public class OrdenSalidaController implements Serializable {
 	private boolean registrar = false;
 	private boolean crear = true;
 	private boolean verButtonDetalle = true;
-	private boolean editarOrdenIngreso = false;
+	private boolean editarOrdenSalida = false;
 	private boolean verProcesar = true;
 
 	private String tituloProducto = "Agregar Producto";
 	private String tituloPanel = "Registrar Orden Salida";
-	private String urlOrdenIngreso = "";
+	private String urlOrdenSalida = "";
 
 	//OBJECT
 	private Funcionario selectedFuncionario;
+	private DetalleUnidad selectedDetalleUnidad;
 	private Producto selectedProducto;
 	private Almacen selectedAlmacen;
 	private Almacen selectedAlmacenOrigen;
 	private OrdenSalida selectedOrdenSalida;
 	private OrdenSalida newOrdenSalida;
 	private DetalleOrdenSalida selectedDetalleOrdenSalida;
+	private Proyecto selectedProyecto;
 
 	//LIST
 	private List<Usuario> listUsuario = new ArrayList<Usuario>();
@@ -111,6 +112,9 @@ public class OrdenSalidaController implements Serializable {
 	private List<Almacen> listaAlmacen = new ArrayList<Almacen>();
 	private List<Funcionario> listaFuncionario = new ArrayList<Funcionario>();
 	private List<DetalleOrdenSalida> listDetalleOrdenSalidaEliminados = new ArrayList<DetalleOrdenSalida>();
+	private List<DetalleUnidad> listDetalleUnidad = new ArrayList<DetalleUnidad>();
+	private List<Proyecto> listaProyecto = new ArrayList<Proyecto>();
+	private List<Producto> listaProducto= new ArrayList<Producto>();
 
 	//SESSION
 	private @Inject SessionMain sessionMain; //variable del login
@@ -122,12 +126,12 @@ public class OrdenSalidaController implements Serializable {
 	@PostConstruct
 	public void initNewOrdenSalida() {
 
-		beginConversation();
-
 		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
 		gestionSesion = sessionMain.getGestionLogin();
 		listUsuario = usuarioRepository.findAllOrderedByID();
 
+		selectedProyecto = new Proyecto();
+		selectedDetalleUnidad = new DetalleUnidad();
 		selectedProducto = new Producto();
 		selectedAlmacen = new Almacen();
 		selectedFuncionario = new Funcionario();
@@ -146,8 +150,6 @@ public class OrdenSalidaController implements Serializable {
 
 		listaDetalleOrdenSalida = new ArrayList<DetalleOrdenSalida>();
 		listaOrdenSalida = ordenSalidaRepository.findAllOrderedByID();
-		listaAlmacen = almacenRepository.findAllOrderedByID();
-		listaFuncionario = funcionarioRepository.findAllOrderedByID();
 
 		newOrdenSalida = new OrdenSalida();
 		newOrdenSalida.setCorrelativo(cargarCorrelativo(listaOrdenSalida.size()+1));
@@ -175,23 +177,26 @@ public class OrdenSalidaController implements Serializable {
 		registrar = false;
 		crear = false;
 		newOrdenSalida = selectedOrdenSalida;
-		selectedAlmacen = newOrdenSalida.getAlmacen();
-		selectedFuncionario = newOrdenSalida.getFuncionario();
+		selectedAlmacen = selectedOrdenSalida.getAlmacen();
+		selectedDetalleUnidad = selectedOrdenSalida.getUnidadSolicitante();
+		selectedFuncionario = selectedOrdenSalida.getFuncionario();
+		selectedProyecto = selectedOrdenSalida.getProyecto();
 		listaDetalleOrdenSalida = detalleOrdenSalidaRepository.findAllByOrdenSalida(selectedOrdenSalida);
 	}
 
-	public void beginConversation() {
-		if (conversation.isTransient()) {
-			System.out.println("beginning conversation : " + this.conversation);
+	public void initConversation() {
+		if (!FacesContext.getCurrentInstance().isPostback() && conversation.isTransient()) {
 			conversation.begin();
-			System.out.println("---> Init Conversation");
+			System.out.println(">>>>>>>>>> CONVERSACION INICIADA...");
 		}
 	}
 
-	public void endConversation() {
+	public String endConversation() {
 		if (!conversation.isTransient()) {
 			conversation.end();
+			System.out.println(">>>>>>>>>> CONVERSACION TERMINADA...");
 		}
+		return "orden_ingreso.xhtml?faces-redirect=true";
 	}
 
 	//correlativo incremental por gestion
@@ -231,20 +236,26 @@ public class OrdenSalidaController implements Serializable {
 
 	public void registrarOrdenSalida() {
 		try {
-			Date date = new Date();
+			Date fechaActual = new Date();
 			calcularTotal();
 			System.out.println("Ingreso a registrarOrdenSalida: ");
-			newOrdenSalida.setFechaRegistro(date);
-			newOrdenSalida.setAlmacen(selectedAlmacen);
+			newOrdenSalida.setUnidadSolicitante(selectedDetalleUnidad);
 			newOrdenSalida.setFuncionario(selectedFuncionario);
+			newOrdenSalida.setProyecto(selectedProyecto);
+			newOrdenSalida.setAlmacen(selectedAlmacen);
+			newOrdenSalida.setGestion(gestionSesion);
+			newOrdenSalida.setEstado("AC");
+			newOrdenSalida.setFechaRegistro(fechaActual);
+			newOrdenSalida.setUsuarioRegistro(usuarioSession);
 			newOrdenSalida = ordenSalidaRegistration.register(newOrdenSalida);
 			for(DetalleOrdenSalida d: listaDetalleOrdenSalida){
-				d.setFechaRegistro(date);
+				d.setFechaRegistro(fechaActual);
+				d.setEstado("AC");
 				d.setUsuarioRegistro(usuarioSession);
 				d.setOrdenSalida(newOrdenSalida);
 				detalleOrdenSalidaRegistration.register(d);
 			}
-			FacesUtil.infoMessage("Orden de Salida Registrada!", ""+newOrdenSalida.getId());
+			FacesUtil.infoMessage("Orden de Salida Registrada!", ""+newOrdenSalida.getCorrelativo());
 			initNewOrdenSalida();
 		} catch (Exception e) {
 			FacesUtil.errorMessage("Error al Registrar.");
@@ -254,8 +265,16 @@ public class OrdenSalidaController implements Serializable {
 	public void modificarOrdenSalida() {
 		try {
 			System.out.println("Ingreso a modificarOrdenSalida: ");
+			Date fechaActual = new Date();
 			double total = 0;
 			for(DetalleOrdenSalida d: listaDetalleOrdenSalida){
+				if(d.getId()==0){//si es un nuevo registro
+					d.setFechaRegistro(fechaActual);
+					d.setUsuarioRegistro(usuarioSession);
+					d.setEstado("AC");
+					d.setOrdenSalida(newOrdenSalida);
+					detalleOrdenSalidaRegistration.register(d);
+				}
 				total = total + d.getTotal();
 				detalleOrdenSalidaRegistration.updated(d);
 			}
@@ -270,7 +289,7 @@ public class OrdenSalidaController implements Serializable {
 			newOrdenSalida.setFuncionario(selectedFuncionario);
 			newOrdenSalida.setTotalImporte(total);
 			ordenSalidaRegistration.updated(newOrdenSalida);
-			FacesUtil.infoMessage("Orden de Salida Modificada!", ""+newOrdenSalida.getId());
+			FacesUtil.infoMessage("Orden de Salida Modificada!", ""+newOrdenSalida.getCorrelativo());
 			initNewOrdenSalida();
 			
 		} catch (Exception e) {
@@ -278,14 +297,14 @@ public class OrdenSalidaController implements Serializable {
 		}
 	}
 
-	public void eliminarOrdenIngreso() {
+	public void eliminarOrdenSalida() {
 		try {
-			System.out.println("Ingreso a eliminarOrdenIngreso: ");
+			System.out.println("Ingreso a eliminarOrdenSalida: ");
 			ordenSalidaRegistration.remover(newOrdenSalida);
 			for(DetalleOrdenSalida d: listaDetalleOrdenSalida){
 				detalleOrdenSalidaRegistration.remover(d);
 			}
-			FacesUtil.infoMessage("Orden de SAlida Eliminada!", ""+newOrdenSalida.getId());
+			FacesUtil.infoMessage("Orden de Salida Eliminada!", ""+newOrdenSalida.getId());
 			initNewOrdenSalida();
 			
 		} catch (Exception e) {
@@ -357,12 +376,11 @@ public class OrdenSalidaController implements Serializable {
 			almacenProductoRegistration.updated(almProd);
 			return ;
 		}
-		
 	}
 
 	public void cargarReporte(){
 		try {
-			urlOrdenIngreso = loadURL();
+			urlOrdenSalida = loadURL();
 			RequestContext context = RequestContext.getCurrentInstance();
 			context.execute("PF('dlgVistaPreviaOrdenSalida').show();");
 
@@ -378,49 +396,45 @@ public class OrdenSalidaController implements Serializable {
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
 			String urlPath = request.getRequestURL().toString();
 			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
-			String urlPDFreporte = urlPath+"ReporteOrdenIngreso?pIdOrdenIngreso="+selectedOrdenSalida.getId()+"&pIdEmpresa=1&pUsuario="+usuarioSession;
+			String urlPDFreporte = urlPath+"ReporteOrdenSalida?pIdOrdenSalida="+selectedOrdenSalida.getId()+"&pIdEmpresa=1&pUsuario="+usuarioSession;
 			return urlPDFreporte;
 		}catch(Exception e){
 			return "error";
 		}
 	}
 
-	// DETALLE ORDEN INGRESO ITEMS
+	// DETALLE ORDEN SALIDA ITEMS
 
 	public void editarDetalleOrdenIngreso(){
 		tituloProducto = "Modificar Producto";
 		selectedProducto = selectedDetalleOrdenSalida.getProducto();
 		verButtonDetalle = true;
-		editarOrdenIngreso = true;
+		editarOrdenSalida = true;
 		calcular();
 	}
 
 	public void borrarDetalleOrdenIngreso(){
 		listaDetalleOrdenSalida.remove(selectedDetalleOrdenSalida);
 		listDetalleOrdenSalidaEliminados.add(selectedDetalleOrdenSalida);
-		updateDataTable("formTableOrdenSalida:itemsTable1");
+		FacesUtil.resetDataTable("formTableOrdenSalida:itemsTable1");
 		verButtonDetalle = true;
 	}
 
 	public void limpiarDatosProducto(){
 		selectedProducto = new Producto();
 		selectedDetalleOrdenSalida = new DetalleOrdenSalida();
-		updateDataTable("formTableOrdenSalida:itemsTable1");
+		FacesUtil.resetDataTable("formTableOrdenSalida:itemsTable1");
 		verButtonDetalle = true;
-		editarOrdenIngreso = false;
+		editarOrdenSalida = false;
 	}
 
-	public void agregarDetalleOrdenIngreso(){
+	public void agregarDetalleOrdenSalida(){
 		System.out.println("agregarDetalleOrdenIngreso ");
 		selectedDetalleOrdenSalida.setProducto(selectedProducto);
 		listaDetalleOrdenSalida.add(0, selectedDetalleOrdenSalida);
-		for(DetalleOrdenSalida d: listaDetalleOrdenSalida){
-			System.out.println("for  listaDetalleOrdenSalida -> d= "+d.getPrecioUnitario());
-		}
-
 		selectedProducto = new Producto();
 		selectedDetalleOrdenSalida = new DetalleOrdenSalida();
-		updateDataTable("formTableOrdenSalida:itemsTable1");
+		FacesUtil.resetDataTable("formTableOrdenSalida:itemsTable1");
 		verButtonDetalle = true;
 	}
 
@@ -433,9 +447,9 @@ public class OrdenSalidaController implements Serializable {
 		}
 		selectedProducto = new Producto();
 		selectedDetalleOrdenSalida = new DetalleOrdenSalida();
-		updateDataTable("formTableOrdenSalida:itemsTable1");
+		FacesUtil.resetDataTable("formTableOrdenSalida:itemsTable1");
 		verButtonDetalle = true;
-		editarOrdenIngreso = false;
+		editarOrdenSalida = false;
 	}
 
 	//calcular totales
@@ -443,7 +457,6 @@ public class OrdenSalidaController implements Serializable {
 		System.out.println("calcular()");
 		double precio = selectedProducto.getPrecioUnitario();
 		double cantidad = selectedDetalleOrdenSalida.getCantidadSolicitada();
-		selectedDetalleOrdenSalida.setPrecioUnitario(precio);
 		selectedDetalleOrdenSalida.setTotal(precio * cantidad);
 	}
 
@@ -458,16 +471,11 @@ public class OrdenSalidaController implements Serializable {
 	// ONCOMPLETETEXT PROVEEDOR
 	public List<Funcionario> completeFuncionario(String query) {
 		String upperQuery = query.toUpperCase();
-		List<Funcionario> results = new ArrayList<Funcionario>();
-		for(Funcionario i : listaFuncionario) {
-			if(i.getNombre().toUpperCase().contains(upperQuery)){
-				results.add(i);
-			}
-		}         
-		return results;
+		listaFuncionario = funcionarioRepository.findAllFuncionarioForQueryNombre(upperQuery);       
+		return listaFuncionario;
 	}
 
-	public void onRowSelectProveedorClick(SelectEvent event) {
+	public void onRowSelectFuncionarioClick(SelectEvent event) {
 		String nombre =  event.getObject().toString();
 		for(Funcionario i : listaFuncionario){
 			if(i.getNombre().equals(nombre)){
@@ -476,17 +484,29 @@ public class OrdenSalidaController implements Serializable {
 			}
 		}
 	}
+	
+	// ONCOMPLETETEXT DETALLE UNIDAD
+	public List<DetalleUnidad> completeDetalleUnidad(String query) {
+		String upperQuery = query.toUpperCase();
+		listDetalleUnidad =  detalleUnidadRepository.findAllDetalleUnidadForQueryNombre(upperQuery);
+		return listDetalleUnidad;
+	}
+
+	public void onRowSelectDetalleUnidadClick(SelectEvent event) {
+		String nombre =  event.getObject().toString();
+		for(DetalleUnidad i : listDetalleUnidad){
+			if(i.getNombre().equals(nombre)){
+				selectedDetalleUnidad = i;
+				return;
+			}
+		}
+	}
 
 	// ONCOMPLETETEXT ALMACEN
 	public List<Almacen> completeAlmacen(String query) {
 		String upperQuery = query.toUpperCase();
-		List<Almacen> results = new ArrayList<Almacen>();
-		for(Almacen i : listaAlmacen) {
-			if(i.getNombre().toUpperCase().contains(upperQuery)){
-				results.add(i);
-			}
-		}         
-		return results;
+		listaAlmacen = almacenRepository.findAllAlmacenForQueryNombre(upperQuery);
+		return listaAlmacen;
 	}
 
 	public void onRowSelectAlmacenClick(SelectEvent event) {
@@ -501,13 +521,14 @@ public class OrdenSalidaController implements Serializable {
 
 	// ONCOMPLETETEXT PRODUCTO
 	public List<Producto> completeProducto(String query) {
-		return productoRepository.findAllProductoForQueryNombre(query);
+		String upperQuery = query.toUpperCase();
+		listaProducto =  productoRepository.findAllProductoForQueryNombre(upperQuery);
+		return listaProducto;
 	}
 
 	public void onRowSelectProductoClick(SelectEvent event) {
 		String nombre =  event.getObject().toString();
-		List<Producto> listProducto = productoRepository.findAllProductoActivosByID();
-		for(Producto i : listProducto){
+		for(Producto i : listaProducto){
 			if(i.getNombre().equals(nombre)){
 				selectedProducto = i;
 				calcular();
@@ -515,11 +536,23 @@ public class OrdenSalidaController implements Serializable {
 			}
 		}
 	}
-
-	public void updateDataTable(String id) {
-		DataTable table = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(id);
-		table.setSelection(null);
-		table.reset();
+	
+	// ONCOMPLETETEXT PROYECTO
+	
+	public List<Proyecto> completeProyecto(String query) {
+		String upperQuery = query.toUpperCase();
+		listaProyecto = proyectoRepository.findAllProyectoForQueryNombre(upperQuery);      
+		return listaProyecto;
+	}
+	
+	public void onRowSelectProyectoClick(SelectEvent event) {
+		String nombre =  event.getObject().toString();
+		for(Proyecto i : listaProyecto){
+			if(i.getNombre().equals(nombre)){
+				selectedProyecto = i;
+				return;
+			}
+		}
 	}
 
 	// -------- get and set -------
@@ -619,20 +652,20 @@ public class OrdenSalidaController implements Serializable {
 		this.verProcesar = verProcesar;
 	}
 
-	public String getUrlOrdenIngreso() {
-		return urlOrdenIngreso;
+	public String getUrlOrdenSalida() {
+		return urlOrdenSalida;
 	}
 
-	public void setUrlOrdenIngreso(String urlOrdenIngreso) {
-		this.urlOrdenIngreso = urlOrdenIngreso;
+	public void setUrlOrdenSalida(String urlOrdenSalida) {
+		this.urlOrdenSalida = urlOrdenSalida;
 	}
 
-	public boolean isEditarOrdenIngreso() {
-		return editarOrdenIngreso;
+	public boolean isEditarOrdenSalida() {
+		return editarOrdenSalida;
 	}
 
-	public void setEditarOrdenIngreso(boolean editarOrdenIngreso) {
-		this.editarOrdenIngreso = editarOrdenIngreso;
+	public void setEditarOrdenSalida(boolean editarOrdenSalida) {
+		this.editarOrdenSalida = editarOrdenSalida;
 	}
 
 	public Almacen getSelectedAlmacenOrigen() {
@@ -706,6 +739,38 @@ public class OrdenSalidaController implements Serializable {
 
 	public void setListaFuncionario(List<Funcionario> listaFuncionario) {
 		this.listaFuncionario = listaFuncionario;
+	}
+
+	public DetalleUnidad getSelectedDetalleUnidad() {
+		return selectedDetalleUnidad;
+	}
+
+	public void setSelectedDetalleUnidad(DetalleUnidad selectedDetalleUnidad) {
+		this.selectedDetalleUnidad = selectedDetalleUnidad;
+	}
+
+	public Proyecto getSelectedProyecto() {
+		return selectedProyecto;
+	}
+
+	public void setSelectedProyecto(Proyecto selectedProyecto) {
+		this.selectedProyecto = selectedProyecto;
+	}
+
+	public List<Proyecto> getListaProyecto() {
+		return listaProyecto;
+	}
+
+	public void setListaProyecto(List<Proyecto> listaProyecto) {
+		this.listaProyecto = listaProyecto;
+	}
+
+	public List<Producto> getListaProducto() {
+		return listaProducto;
+	}
+
+	public void setListaProducto(List<Producto> listaProducto) {
+		this.listaProducto = listaProducto;
 	}
 
 }

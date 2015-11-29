@@ -51,7 +51,7 @@
 								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
 									styleClass="btn btn-danger ion-trash-b" style="height:31px;"
 									rendered="#{usuarioController.modificar}"
-									disabled="#{newUsuario.state =='SU'}"
+									disabled="#{newUsuario.state.equals('SU')}"
 									update="formTableUsuario,formReg,formGrowl:msgs1,:formBotonesHeader"
 									action="#{usuarioController.eliminarUsuario()}">
 								</p:commandLink>
@@ -61,8 +61,11 @@
 				</div>
 				<div class="pull-right">
 					<ol class="breadcrumb">
-						<li><a href="#{request.contextPath}/pages/dashboard.xhtml" style="color: #0090FF; font-size: 12px;">Inicio</a></li>
-						<li><a href="#{request.contextPath}/pages/seguridad/usuario.xhtml" style="color: #0090FF; font-size: 12px;">Seguridad</a></li>
+						<li><a href="#{request.contextPath}/pages/dashboard.xhtml"
+							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
+						<li><a
+							href="#{request.contextPath}/pages/seguridad/usuario.xhtml"
+							style="color: #0090FF; font-size: 12px;">Seguridad</a></li>
 						<li class="active" style="font-size: 12px;">Usuario</li>
 					</ol>
 				</div>
@@ -146,8 +149,7 @@
 															<h:selectOneMenu id="estado"
 																styleClass="input-sm form-control"
 																style=" color: #555555; height:25px; font-size:11px;"
-																disabled="#{newUsuario.state =='SU'}"
-																immediate="true"
+																disabled="#{newUsuario.state =='SU'}" immediate="true"
 																value="#{usuarioController.nombreEstado}">
 																<f:ajax />
 																<f:selectItems value="#{usuarioController.listEstado}" />
@@ -181,8 +183,8 @@
 												filteredValue="#{usuarioController.listFilterUsuario}">
 												<p:ajax event="rowSelect"
 													listener="#{usuarioController.onRowSelect}"
-													update=":formReg,:formBotonesHeader,:formTableUsuario" />
-												<p:column headerText="Id" width="10%"
+													update="formReg,formBotonesHeader,formTableUsuario" />
+												<p:column headerText="Id" width="8%" style="text-align:center;"
 													filterMatchMode="contains"
 													filterStyle="width: 100%; height:25px;"
 													filterBy="#{item.id}">
@@ -210,6 +212,8 @@
 															rendered="#{item.state=='AC'}" value="Activo" /></span>
 													<span class="label label-danger"><h:outputText
 															rendered="#{item.state=='IN'}" value="Inactivo" /></span>
+													<span class="label label-success"><h:outputText
+															rendered="#{item.state=='SU'}" value="SUPER" /></span>
 												</p:column>
 												<p:column width="9%" headerText="Usuario Reg."
 													filterStyle="width: 100%; height:25px;"

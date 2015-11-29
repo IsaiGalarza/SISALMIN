@@ -158,7 +158,7 @@
 															</p:inputText>
 														</div>
 													</div>
-													
+
 													<div class="form-group ">
 														<div class="col-md-4">Cargo</div>
 														<div class="col-md-8">
@@ -211,7 +211,8 @@
 																itemValue="#{_var.nombre}"
 																placeholder="[Escriba Unidad]" maxResults="10">
 
-																<p:ajax event="itemSelect" update="formTableFuncionario:unidadID"
+																<p:ajax event="itemSelect"
+																	update="formTableFuncionario:unidadID"
 																	listener="#{funcionarioController.onRowSelectDetalleUnidadClick}" />
 
 																<p:column>
@@ -269,7 +270,7 @@
 										<div class="box-content no-padding">
 
 											<p:dataTable
-												styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+												style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
 												selection="#{funcionarioController.selectedFuncionario}"
 												selectionMode="single" rowKey="#{_Funcionario.id}"
 												id="FuncionarioTable" var="_Funcionario"
@@ -281,7 +282,8 @@
 													update=":formTableFuncionario, :formBotonesHeader"
 													listener="#{funcionarioController.onRowSelectFuncionarioClick}" />
 
-												<p:column headerText="ID" filterBy="#{_Funcionario.id}"
+												<p:column width="8%" headerText="Id"
+													filterBy="#{_Funcionario.id}" style="text-align:center;"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_Funcionario.id}" />
 												</p:column>
@@ -299,13 +301,15 @@
 													<h:outputText value="#{_Funcionario.direccion}" />
 												</p:column>
 
-												<p:column headerText="Telefono"
+												<p:column width="10%" headerText="Telefono"
+													style="text-align:center;"
 													filterBy="#{_Funcionario.telefono}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_Funcionario.telefono}" />
 												</p:column>
 
-												<p:column headerText="Estado"
+												<p:column width="10%" headerText="Estado"
+													style="text-align:center;"
 													filterBy="#{_Funcionario.estado}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<span class="label label-success"><h:outputText
@@ -314,14 +318,16 @@
 															rendered="#{_Funcionario.estado=='IN'}" value="Inactivo" /></span>
 												</p:column>
 
-												<p:column headerText="Fecha"
+												<p:column width="10%" headerText="Fecha"
+													style="text-align:center;"
 													filterBy="#{_Funcionario.fechaRegistro}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_Funcionario.fechaRegistro}">
 														<f:convertDateTime pattern="dd/MM/yyyy" />
 													</h:outputText>
 												</p:column>
-												<p:column headerText="Registro"
+												<p:column width="10%" headerText="Registro"
+													style="text-align:center;"
 													filterBy="#{_Funcionario.usuarioRegistro}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_Funcionario.usuarioRegistro}" />

@@ -25,14 +25,11 @@ import javax.sql.DataSource;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
-import org.apache.log4j.Logger;
 
+@WebServlet("/ReporteOrdenSalida")
+public class ReporteOrdenSalida  extends HttpServlet{
 
-@WebServlet("/ReporteOrdenIngreso")
-@SuppressWarnings("serial")
-public class ReporteOrdenIngreso  extends HttpServlet{
-
-	private Logger log = Logger.getLogger(this.getClass());
+	private static final long serialVersionUID = 8446900157389628757L;
 
 	@SuppressWarnings({ "unchecked", "deprecation" })
 	protected void doGet(HttpServletRequest request,
@@ -54,57 +51,57 @@ public class ReporteOrdenIngreso  extends HttpServlet{
 
 
 			if(conn!=null){
-				log.info("Conexion Exitosa datasource...");
+				System.out.println("Conexion Exitosa datasource...");
 			}else{
-				log.info("Error Conexion datasource...");
+				System.out.println("Error Conexion datasource...");
 			}
 
 		} catch (Exception e) {
-			log.error("Error al conectar JDBC: "+e.getMessage());
+			System.out.println("Error al conectar JDBC: "+e.getMessage());
 		}
 		try {
 			Integer pIdEmpresa = Integer.parseInt(request.getParameter("pIdEmpresa"));
-			Integer pIdOrdenIngreso = Integer.parseInt(request.getParameter("pIdOrdenIngreso"));
+			Integer pIdOrdenSalida = Integer.parseInt(request.getParameter("pIdOrdenSalida"));
 			String  pUsuario = request.getParameter("pUsuario");
 
 			String realPath = request.getRealPath("/");
-			log.info("Real Path: "+realPath);
+			System.out.println("Real Path: "+realPath);
 
 			String urlPath = request.getRequestURL().toString();
 			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
-			log.info("URL ::::: "+urlPath);
+			System.out.println("URL ::::: "+urlPath);
 
-			String rutaReporte = urlPath+"resources/report/orden_ingreso.jasper";
-			log.info("rutaReporte: "+rutaReporte);
+			String rutaReporte = urlPath+"resources/report/orden_salida.jasper";
+			System.out.println("rutaReporte: "+rutaReporte);
 			
 			// create a map of parameters to pass to the report.   
 			@SuppressWarnings("rawtypes")
 			Map parameters = new HashMap();
-			parameters.put("pIdOrdenIngreso", pIdOrdenIngreso);
+			parameters.put("pIdOrdenSalida", pIdOrdenSalida);
 			parameters.put("pIdEmpresa", pIdEmpresa);
 			parameters.put("pUsuario", pUsuario);
 
-			log.info("parameters "+parameters.toString());
+			System.out.println("parameters "+parameters.toString());
 
 			//find file .jasper
 			jasperReport = (JasperReport)JRLoader.loadObject (new URL(rutaReporte));
 
 			if(jasperReport!=null){
-				log.info("jasperReport : "+jasperReport.getName()+" loading.....");
-				//log.info("jasperReport query: "+jasperReport.getQuery().getText());
+				System.out.println("jasperReport : "+jasperReport.getName()+" loading.....");
+				//System.out.println("jasperReport query: "+jasperReport.getQuery().getText());
 			}
 
 			JasperPrint jasperPrint2 = JasperFillManager.fillReport(jasperReport, parameters, conn);
 
 			if(jasperPrint2!=null){
-				log.info("jasperPrint name: "+jasperPrint2.getName());
+				System.out.println("jasperPrint name: "+jasperPrint2.getName());
 			}else{
-				log.info("jasperPrint null");
+				System.out.println("jasperPrint null");
 			}
 
 			//save report to path
 			//JasperExportManager.exportReportToPdfFile(jasperPrint,"C:/etiquetas/Etiqueta+"+pCodigoPre+"-"+pNombreElaborado+".pdf");
-			response.setContentType("application/pdf");// text/html  application/pdf   application/html
+			response.setContentType("application/pdf");
 			JasperExportManager.exportReportToPdfStream(jasperPrint2,servletOutputStream);
 
 			servletOutputStream.flush();
@@ -113,7 +110,7 @@ public class ReporteOrdenIngreso  extends HttpServlet{
 		} catch (Exception e) {
 			// display stack trace in the browser
 			e.printStackTrace();
-			log.info("Error en reporte OrdenIngreso: " + e.getMessage());
+			System.out.println("Error en reporte OrdenIngreso: " + e.getMessage());
 			StringWriter stringWriter = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(stringWriter);
 			e.printStackTrace(printWriter);

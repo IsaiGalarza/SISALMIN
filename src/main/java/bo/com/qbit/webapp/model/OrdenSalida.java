@@ -30,61 +30,52 @@ public class OrdenSalida implements Serializable{
 	@Column(name = "numero_pedido_materiales", nullable = false)
 	private String numeroPedidoMateriales;
 	
-	@Column(name = "fecha_salida", nullable = false)
-	private Date fechaSalida;
-	
-	@Column(name = "fecha_entrega", nullable = false)
-	private Date fechaEntrega;
-	
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "id_gestion", nullable = true)
-	private Gestion gestion;
+	@Column(name = "fecha_pedido", nullable = false)
+	private Date fechaPedido;
 
+	@Column(name = "fecha_aprobacion", nullable = true)
+	private Date fechaAprobacion;
+	
+	@Column(name = "total_importe")
+	private double totalImporte;
+	
 	private String estado;
 	
 	@Column(name = "fecha_registro")
 	private Date fechaRegistro;
 	
-	@Column(name = "total_importe")
-	private double totalImporte;
-	
 	@Column(name = "usuario_registro")
 	private String usuarioRegistro;
-
-	@Column(name = "fecha_aprobacion")
-	private Date fechaAprobacion;
 
 	// bi-directional many-to-one association 
 	@OneToMany(mappedBy = "ordenSalida")
 	private List<DetalleOrdenSalida> detalleOrdenSalida;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "id_gestion", nullable = true)
+	private Gestion gestion;
 
 	@ManyToOne
 	@JoinColumn(name = "id_almacen")
 	private Almacen almacen;
 	
 	@ManyToOne
-	@JoinColumn(name = "id_unidad", insertable = false, updatable = false ) //insert="false" update="false"
+	@JoinColumn(name = "id_detalle_unidad") //insert="false" update="false"
 	private DetalleUnidad unidadSolicitante;
 	
 	@ManyToOne
 	@JoinColumn(name = "id_funcionario")
 	private Funcionario funcionario;
-	
-	@Column(name = "cargo", nullable = false)
-	private String cargo;
 
 	@ManyToOne
 	@JoinColumn(name = "id_proyecto")
 	private Proyecto proyecto;
-	
-	@Column(name = "detalle_proyecto_actividad")
-	private String detalleProyectoActividad;
 
 	public OrdenSalida() {
 		this.id = 0 ;
 		this.unidadSolicitante = new DetalleUnidad();
 		this.funcionario = new Funcionario();
-		this.proyecto = new Proyecto();
+		this.setProyecto(new Proyecto());
 		this.almacen = new Almacen();		
 	}
 
@@ -167,14 +158,6 @@ public class OrdenSalida implements Serializable{
 	public void setUnidadSolicitante(DetalleUnidad unidadSolicitante) {
 		this.unidadSolicitante = unidadSolicitante;
 	}
-
-	public String getDetalleProyectoActividad() {
-		return detalleProyectoActividad;
-	}
-
-	public void setDetalleProyectoActividad(String detalleProyectoActividad) {
-		this.detalleProyectoActividad = detalleProyectoActividad;
-	}
 	
 	public List<DetalleOrdenSalida> getDetalleOrdenSalida() {
 		return detalleOrdenSalida;
@@ -190,6 +173,30 @@ public class OrdenSalida implements Serializable{
 
 	public void setFuncionario(Funcionario funcionario) {
 		this.funcionario = funcionario;
+	}
+
+	public Date getFechaPedido() {
+		return fechaPedido;
+	}
+
+	public void setFechaPedido(Date fechaPedido) {
+		this.fechaPedido = fechaPedido;
+	}
+
+	public Proyecto getProyecto() {
+		return proyecto;
+	}
+
+	public void setProyecto(Proyecto proyecto) {
+		this.proyecto = proyecto;
+	}
+
+	public String getNumeroPedidoMateriales() {
+		return numeroPedidoMateriales;
+	}
+
+	public void setNumeroPedidoMateriales(String numeroPedidoMateriales) {
+		this.numeroPedidoMateriales = numeroPedidoMateriales;
 	}
 
 }

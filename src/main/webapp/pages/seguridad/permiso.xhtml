@@ -22,8 +22,7 @@
 								<h:form id="formReg">
 									<p:commandLink id="buttonLimpar" value="&#160; Limpiar Todo"
 										style="height:31px; padding:center"
-										styleClass="btn btn-primary icon-refresh"
-										update="formTree"
+										styleClass="btn btn-primary icon-refresh" update="formTree"
 										action="#{permisoController.limpiarPermisos()}">
 									</p:commandLink>
 									<p:commandLink id="buttonGuardar" value="&#160; Guardar"
@@ -68,9 +67,21 @@
 															immediate="true" value="#{permisoController.nombreRol}">
 															<!-- 	<f:ajax render=":formTablePermiso" /> -->
 															<f:selectItems value="#{permisoController.listRol}" />
-															<p:ajax update=":formTree:docs" />
+															<p:ajax update="formTree:docs,descripcionID" />
 														</h:selectOneMenu>
 													</h:form>
+												</div>
+											</div>
+											<br />
+											<div class="form-group ">
+												<label class="col-md-6 control-label">Descripcion</label>
+												<div class="col-md-6">
+													<p:inputTextarea id="descripcionID"
+														styleClass="form-control" size="40" disabled="true"
+														value="#{permisoController.selectedRol.descripcion}"
+														required="true" requiredMessage="Requerido." rows="5">
+														<p:ajax event="change" />
+													</p:inputTextarea>
 												</div>
 											</div>
 										</div>

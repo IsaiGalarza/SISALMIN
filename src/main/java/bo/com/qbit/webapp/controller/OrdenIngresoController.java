@@ -14,8 +14,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
-import org.primefaces.component.datatable.DataTable;
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
 
@@ -82,6 +80,7 @@ public class OrdenIngresoController implements Serializable {
 	private boolean verButtonDetalle = true;
 	private boolean editarOrdenIngreso = false;
 	private boolean verProcesar = true;
+	private boolean verReport = false;
 
 	private String tituloProducto = "Agregar Producto";
 	private String tituloPanel = "Registrar Almacen";
@@ -277,7 +276,7 @@ public class OrdenIngresoController implements Serializable {
 			for(DetalleOrdenIngreso d: listaDetalleOrdenIngreso){
 				detalleOrdenIngresoRegistration.remover(d);
 			}
-			FacesUtil.infoMessage("Orden de Ingreso Eliminada!", ""+newOrdenIngreso.getId());
+			FacesUtil.infoMessage("Orden de Ingreso Eliminada!", ""+newOrdenIngreso.getCorrelativo());
 			initNewOrdenIngreso();
 		} catch (Exception e) {
 			FacesUtil.errorMessage("Error al Eliminar.");
@@ -365,10 +364,11 @@ public class OrdenIngresoController implements Serializable {
 	public void cargarReporte(){
 		try {
 			urlOrdenIngreso = loadURL();
-			RequestContext context = RequestContext.getCurrentInstance();
-			context.execute("PF('dlgVistaPreviaOrdenIngreso').show();");
+			//RequestContext context = RequestContext.getCurrentInstance();
+			//context.execute("PF('dlgVistaPreviaOrdenIngreso').show();");
+			verReport = true;
 
-			initNewOrdenIngreso();
+			//initNewOrdenIngreso();
 		} catch (Exception e) {
 			FacesUtil.errorMessage("Proceso Incorrecto.");
 		}
@@ -399,14 +399,14 @@ public class OrdenIngresoController implements Serializable {
 	public void borrarDetalleOrdenIngreso(){
 		listaDetalleOrdenIngreso.remove(selectedDetalleOrdenIngreso);
 		listDetalleOrdenIngresoEliminados.add(selectedDetalleOrdenIngreso);
-		updateDataTable("formTableOrdenIngreso:itemsTable1");
+		FacesUtil.resetDataTable("formTableOrdenIngreso:itemsTable1");
 		verButtonDetalle = true;
 	}
 
 	public void limpiarDatosProducto(){
 		selectedProducto = new Producto();
 		selectedDetalleOrdenIngreso = new DetalleOrdenIngreso();
-		updateDataTable("formTableOrdenIngreso:itemsTable1");
+		FacesUtil.resetDataTable("formTableOrdenIngreso:itemsTable1");
 		verButtonDetalle = true;
 		editarOrdenIngreso = false;
 	}
@@ -415,13 +415,9 @@ public class OrdenIngresoController implements Serializable {
 		System.out.println("agregarDetalleOrdenIngreso ");
 		selectedDetalleOrdenIngreso.setProducto(selectedProducto);
 		listaDetalleOrdenIngreso.add(0, selectedDetalleOrdenIngreso);
-		for(DetalleOrdenIngreso d: listaDetalleOrdenIngreso){
-			System.out.println("for  listaDetalleOrdenIngreso -> d= "+d.getPrecioUnitario());
-		}
-
 		selectedProducto = new Producto();
 		selectedDetalleOrdenIngreso = new DetalleOrdenIngreso();
-		updateDataTable("formTableOrdenIngreso:itemsTable1");
+		FacesUtil.resetDataTable("formTableOrdenIngreso:itemsTable1");
 		verButtonDetalle = true;
 	}
 
@@ -434,7 +430,7 @@ public class OrdenIngresoController implements Serializable {
 		}
 		selectedProducto = new Producto();
 		selectedDetalleOrdenIngreso = new DetalleOrdenIngreso();
-		updateDataTable("formTableOrdenIngreso:itemsTable1");
+		FacesUtil.resetDataTable("formTableOrdenIngreso:itemsTable1");
 		verButtonDetalle = true;
 		editarOrdenIngreso = false;
 	}
@@ -444,7 +440,6 @@ public class OrdenIngresoController implements Serializable {
 		System.out.println("calcular()");
 		double precio = selectedProducto.getPrecioUnitario();
 		double cantidad = selectedDetalleOrdenIngreso.getCantidad();
-		selectedDetalleOrdenIngreso.setPrecioUnitario(precio);
 		selectedDetalleOrdenIngreso.setTotal(precio * cantidad);
 	}
 
@@ -515,12 +510,6 @@ public class OrdenIngresoController implements Serializable {
 				return;
 			}
 		}
-	}
-
-	public void updateDataTable(String id) {
-		DataTable table = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(id);
-		table.setSelection(null);
-		table.reset();
 	}
 
 	// -------- get and set -------
@@ -699,6 +688,14 @@ public class OrdenIngresoController implements Serializable {
 
 	public void setSelectedAlmacenOrigen(Almacen selectedAlmacenOrigen) {
 		this.selectedAlmacenOrigen = selectedAlmacenOrigen;
+	}
+
+	public boolean isVerReport() {
+		return verReport;
+	}
+
+	public void setVerReport(boolean verReport) {
+		this.verReport = verReport;
 	}
 
 }

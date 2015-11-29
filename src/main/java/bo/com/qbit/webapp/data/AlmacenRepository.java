@@ -10,6 +10,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import bo.com.qbit.webapp.model.Almacen;
+import bo.com.qbit.webapp.model.DetalleUnidad;
 import bo.com.qbit.webapp.model.Usuario;
 
 @ApplicationScoped
@@ -50,7 +51,7 @@ public class AlmacenRepository {
 			return almacen;
 		}
 	}
-	
+
 
 	public List<Almacen> findAllOrderedByFechaRegistro() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -61,6 +62,7 @@ public class AlmacenRepository {
 		return em.createQuery(criteria).getResultList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Almacen> findAllAlmacenForDescription(String criterio) {
 		try {
 			String query = "select ser from Almacen ser where ser.nombre like '%"
@@ -69,13 +71,13 @@ public class AlmacenRepository {
 			List<Almacen> listaAlmacen = em.createQuery(query).getResultList();
 			return listaAlmacen;
 		} catch (Exception e) {
-			// TODO: handle exception
 			System.out.println("Error en findAllAlmacenForDescription: "
 					+ e.getMessage());
 			return null;
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Almacen> traerAlmacenActivas() {
 		try {
 			String query = "select ser from Almacen ser where ser.estado='AC' order by ser.id desc";
@@ -83,13 +85,13 @@ public class AlmacenRepository {
 			List<Almacen> listaAlmacen = em.createQuery(query).getResultList();
 			return listaAlmacen;
 		} catch (Exception e) {
-			// TODO: handle exception
 			System.out.println("Error en traerAlmacenActivas: "
 					+ e.getMessage());
 			return null;
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Almacen> findAll100UltimosAlmacen() {
 		try {
 			String query = "select ser from Almacen ser order by ser.fechaRegistro desc";
@@ -98,8 +100,22 @@ public class AlmacenRepository {
 					.setMaxResults(100).getResultList();
 			return listaAlmacen;
 		} catch (Exception e) {
-			// TODO: handle exception
 			System.out.println("Error en findAll100UltimosAlmacen: "
+					+ e.getMessage());
+			return null;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Almacen> findAllAlmacenForQueryNombre(String criterio) {
+		try {
+			String query = "select ser from Almacen ser where ser.nombre like '%"
+					+ criterio + "%' and ser.estado='AC' order by ser.nombre asc";
+			System.out.println("Consulta: " + query);
+			List<Almacen> listaAlmacen = em.createQuery(query).getResultList();
+			return listaAlmacen;
+		} catch (Exception e) {
+			System.out.println("Error en findAllAlmacenForDescription: "
 					+ e.getMessage());
 			return null;
 		}

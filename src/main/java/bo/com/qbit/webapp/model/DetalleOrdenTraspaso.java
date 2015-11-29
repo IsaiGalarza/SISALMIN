@@ -23,8 +23,6 @@ public class DetalleOrdenTraspaso implements Serializable{
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
 
-	private Integer correlativo;
-
 	private int cantidad;
 
 	private String estado;
@@ -48,11 +46,9 @@ public class DetalleOrdenTraspaso implements Serializable{
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "id_producto", nullable = true)
 	private Producto producto;
-
-	@Column(name="precio_unitario")
-	private double precioUnitario;
 	
 	public DetalleOrdenTraspaso() {
+		super();
 		this.id = 0 ;
 		this.cantidad = 1;
 		this.setEstado("AC");
@@ -106,28 +102,12 @@ public class DetalleOrdenTraspaso implements Serializable{
 		this.id = id;
 	}
 	
-	public Integer getCorrelativo() {
-		return correlativo;
-	}
-	
-	public void setCorrelativo(Integer correlativo) {
-		this.correlativo = correlativo;
-	}
-	
 	public String getEstado() {
 		return estado;
 	}
 	
 	public void setEstado(String estado) {
 		this.estado = estado;
-	}
-	
-	public double getPrecioUnitario() {
-		return precioUnitario;
-	}
-	
-	public void setPrecioUnitario(double precioUnitario) {
-		this.precioUnitario = precioUnitario;
 	}
 	
 	public OrdenTraspaso getOrdenTraspaso() {

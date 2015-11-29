@@ -14,7 +14,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
-import org.primefaces.component.datatable.DataTable;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
@@ -405,14 +404,14 @@ public class OrdenTraspasoController implements Serializable {
 	public void borrarDetalleOrdenTraspaso(){
 		listaDetalleOrdenTraspaso.remove(selectedDetalleOrdenTraspaso);
 		listDetalleOrdenTraspasoEliminados.add(selectedDetalleOrdenTraspaso);
-		updateDataTable("formTableOrdenTraspaso:itemsTable1");
+		FacesUtil.resetDataTable("formTableOrdenTraspaso:itemsTable1");
 		verButtonDetalle = true;
 	}
 
 	public void limpiarDatosProducto(){
 		selectedProducto = new Producto();
 		selectedDetalleOrdenTraspaso = new DetalleOrdenTraspaso();
-		updateDataTable("formTableOrdenTraspaso:itemsTable1");
+		FacesUtil.resetDataTable("formTableOrdenTraspaso:itemsTable1");
 		verButtonDetalle = true;
 		editarOrdenTraspaso = false;
 	}
@@ -421,13 +420,9 @@ public class OrdenTraspasoController implements Serializable {
 		System.out.println("agregarDetalleOrdenTraspaso ");
 		selectedDetalleOrdenTraspaso.setProducto(selectedProducto);
 		listaDetalleOrdenTraspaso.add(0, selectedDetalleOrdenTraspaso);
-		for(DetalleOrdenTraspaso d: listaDetalleOrdenTraspaso){
-			System.out.println("for  listaDetalleOrdenTraspaso -> d= "+d.getPrecioUnitario());
-		}
-
 		selectedProducto = new Producto();
 		selectedDetalleOrdenTraspaso = new DetalleOrdenTraspaso();
-		updateDataTable("formTableOrdenTraspaso:itemsTable1");
+		FacesUtil.resetDataTable("formTableOrdenTraspaso:itemsTable1");
 		verButtonDetalle = true;
 	}
 
@@ -440,7 +435,7 @@ public class OrdenTraspasoController implements Serializable {
 		}
 		selectedProducto = new Producto();
 		selectedDetalleOrdenTraspaso = new DetalleOrdenTraspaso();
-		updateDataTable("formTableOrdenTraspaso:itemsTable1");
+		FacesUtil.resetDataTable("formTableOrdenTraspaso:itemsTable1");
 		verButtonDetalle = true;
 		editarOrdenTraspaso = false;
 	}
@@ -450,7 +445,6 @@ public class OrdenTraspasoController implements Serializable {
 		System.out.println("calcular()");
 		double precio = selectedProducto.getPrecioUnitario();
 		double cantidad = selectedDetalleOrdenTraspaso.getCantidad();
-		selectedDetalleOrdenTraspaso.setPrecioUnitario(precio);
 		selectedDetalleOrdenTraspaso.setTotal(precio * cantidad);
 	}
 
@@ -546,12 +540,6 @@ public class OrdenTraspasoController implements Serializable {
 			}
 		}
 
-	}
-
-	public void updateDataTable(String id) {
-		DataTable table = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(id);
-		table.setSelection(null);
-		table.reset();
 	}
 
 	// -------- get and set -------
