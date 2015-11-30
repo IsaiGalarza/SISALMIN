@@ -35,7 +35,7 @@ public class KardexProductoRepository {
 	}
 
 	public KardexProducto findKardexStockAnteriorByProducto(Producto producto) {
-		String query = "select ser from KardexProducto ser Producto prod,Gestion ges where ser.producto.id = prod.id = and ser.gestion.id = ges.id and (ser.estado='AC' or ser.estado='IN') and ser.producto.id="+producto.getId()+" order by ser.id desc";
+		String query = "select ser from KardexProducto ser, Producto prod,Gestion ges where ser.producto.id = prod.id  and ser.gestion.id = ges.id and (ser.estado='AC' or ser.estado='IN') and ser.producto.id="+producto.getId()+" order by ser.id desc";
 		System.out.println("Query KardexProducto: " + query);
 		List<KardexProducto> list =  em.createQuery(query).getResultList();
 		return list.size()>0?list.get(0):null;

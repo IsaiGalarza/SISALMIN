@@ -23,6 +23,14 @@
 						<div class="btn-group-demo">
 							<div class="btn-group">
 
+								<p:commandLink id="buttonAtras" value="&#160; Atras"
+									styleClass="btn btn-warning ion-minus-circled"
+									update="formTableOrdenTraspaso, formBotonesHeader"
+									rendered="#{ordenTraspasoController.verReport}"
+									style="height:31px; padding:center"
+									action="#{ordenTraspasoController.setVerReport(false)}">
+								</p:commandLink>
+
 								<p:commandLink id="buttonCancelar" value="&#160; Cancelar"
 									styleClass="btn btn-warning ion-minus-circled"
 									update="formTableOrdenTraspaso, formBotonesHeader"
@@ -34,7 +42,7 @@
 								<p:commandLink id="buttonCrear1"
 									value="&#160; Nueva Orden Traspaso"
 									styleClass="btn btn-success ion-plus-round"
-									rendered="#{ordenTraspasoController.crear}"
+									rendered="#{ordenTraspasoController.crear and ! ordenTraspasoController.verReport}"
 									update="formTableOrdenTraspaso, formBotonesHeader"
 									action="#{ordenTraspasoController.cambiarAspecto()}"
 									style="height:31px;">
@@ -50,7 +58,7 @@
 
 								<p:commandLink id="buttonVerModificar" value="&#160; Modificar"
 									styleClass="btn btn-primary ion-edit"
-									rendered="#{ordenTraspasoController.selectedOrdenTraspaso != null and ordenTraspasoController.crear and ordenTraspasoController.verProcesar }"
+									rendered="#{ordenTraspasoController.selectedOrdenTraspaso != null and ordenTraspasoController.crear and ordenTraspasoController.verProcesar and ! ordenTraspasoController.verReport }"
 									style="height:31px; padding:center"
 									update="formTableOrdenTraspaso, :formBotonesHeader"
 									action="#{ordenTraspasoController.cambiarAspectoModificar()}">
@@ -74,7 +82,7 @@
 
 								<p:commandLink id="buttonProcesar" value="&#160; Procesar"
 									styleClass="btn btn-info ion-ios7-loop-strong"
-									rendered="#{ordenTraspasoController.selectedOrdenTraspaso != null and ordenTraspasoController.crear and ordenTraspasoController.verProcesar}"
+									rendered="#{ordenTraspasoController.selectedOrdenTraspaso != null and ordenTraspasoController.crear and ordenTraspasoController.verProcesar and ! ordenTraspasoController.verReport}"
 									style="height:31px; padding:center"
 									update="formTableOrdenTraspaso, :formBotonesHeader"
 									action="#{ordenTraspasoController.procesarOrdenTraspaso()}">
@@ -82,7 +90,7 @@
 
 								<p:commandLink id="buttonVerReporte" value="&#160; Ver Reporte"
 									styleClass="btn btn-info ion-printer"
-									rendered="#{ordenTraspasoController.selectedOrdenTraspaso != null and ordenTraspasoController.crear}"
+									rendered="#{ordenTraspasoController.selectedOrdenTraspaso != null and ordenTraspasoController.crear and ! ordenTraspasoController.verReport}"
 									style="height:31px; padding:center"
 									update="formTableOrdenTraspaso, :formBotonesHeader,formModalVistaPrevia"
 									action="#{ordenTraspasoController.cargarReporte()}">
@@ -133,369 +141,387 @@
 
 						<h:form id="formTableOrdenTraspaso" styleClass="form-horizontal">
 
-							<ui:fragment
-								rendered="#{ordenTraspasoController.modificar or ordenTraspasoController.registrar}">
-								<div class="col-md-4">
-									<div class="panel panel-default">
-										<div class="panel-heading">
-											<h3 class="panel-title">Registro Datos Orden Traspaso</h3>
-										</div>
-										<div class="panel-body">
-											<!-- start here register -->
-											<div class="row">
-												<div class="col-md-12 box-content form-horizontal">
+							<ui:fragment rendered="#{ ! ordenTraspasoController.verReport}">
 
-													<div class="form-group ">
-														<div class="col-md-4">Nro Orden Traspaso</div>
-														<div class="col-md-8">
-															<p:inputText id="NroOrdenTraspasoID"
-																style=" color: #555555; background-image: none;"
-																styleClass="input-sm form-control" size="40"
-																disabled="true"
-																value="#{ordenTraspasoController.newOrdenTraspaso.correlativo}">
-																<p:ajax event="change" />
-															</p:inputText>
+								<ui:fragment
+									rendered="#{ordenTraspasoController.modificar or ordenTraspasoController.registrar}">
+									<div class="col-md-4">
+										<div class="panel panel-default">
+											<div class="panel-heading">
+												<h3 class="panel-title">Registro Datos Orden Traspaso</h3>
+											</div>
+											<div class="panel-body">
+												<!-- start here register -->
+												<div class="row">
+													<div class="col-md-12 box-content form-horizontal">
+
+														<div class="form-group ">
+															<div class="col-md-4">Nro Orden Traspaso</div>
+															<div class="col-md-8">
+																<p:inputText id="NroOrdenTraspasoID"
+																	style=" color: #555555; background-image: none;"
+																	styleClass="input-sm form-control" size="40"
+																	disabled="true"
+																	value="#{ordenTraspasoController.newOrdenTraspaso.correlativo}">
+																	<p:ajax event="change" />
+																</p:inputText>
+															</div>
 														</div>
-													</div>
 
-													<div class="form-group ">
-														<div class="col-md-4">Almacen</div>
-														<div class="col-md-8">
+														<div class="form-group ">
+															<div class="col-md-4">Almacen</div>
+															<div class="col-md-8">
 
-															<p:autoComplete id="almacenID"
-																value="#{ordenTraspasoController.selectedAlmacen.nombre}"
-																completeMethod="#{ordenTraspasoController.completeAlmacen}"
-																minQueryLength="3" dropdown="true" required="true"
-																requiredMessage="Almacen Requerido."
-																forceSelection="true" var="_var" itemLabel="#{_var}"
-																itemValue="#{_var.nombre}"
-																placeholder="[Escriba Almacen]" maxResults="10">
+																<p:autoComplete id="almacenID"
+																	value="#{ordenTraspasoController.selectedAlmacen.nombre}"
+																	completeMethod="#{ordenTraspasoController.completeAlmacen}"
+																	minQueryLength="3" dropdown="true" required="true"
+																	requiredMessage="Almacen Requerido."
+																	forceSelection="true" var="_var" itemLabel="#{_var}"
+																	itemValue="#{_var.nombre}"
+																	placeholder="[Escriba Almacen]" maxResults="10">
 
-																<p:ajax event="itemSelect"
-																	update="formTableOrdenTraspaso:almacenID"
-																	listener="#{ordenTraspasoController.onRowSelectAlmacenClick}" />
+																	<p:ajax event="itemSelect"
+																		update="formTableOrdenTraspaso:almacenID"
+																		listener="#{ordenTraspasoController.onRowSelectAlmacenClick}" />
 
-																<p:column>
-																	<h:outputText value="#{_var.nombre}" />
-																</p:column>
+																	<p:column>
+																		<h:outputText value="#{_var.nombre}" />
+																	</p:column>
 
-															</p:autoComplete>
+																</p:autoComplete>
+															</div>
 														</div>
-													</div>
 
-													<div class="form-group ">
-														<div class="col-md-4">Servidor Publico</div>
-														<div class="col-md-8">
-															<p:autoComplete id="servidorPublicoID"
-																value="#{ordenTraspasoController.selectedFuncionario.nombre}"
-																completeMethod="#{ordenTraspasoController.completeFuncionario}"
-																minQueryLength="3" dropdown="true" required="true"
-																requiredMessage="Funcionario Requerido."
-																forceSelection="true" var="_var" itemLabel="#{_var}"
-																itemValue="#{_var.nombre}"
-																placeholder="[Escriba Funcionario]" maxResults="10">
+														<div class="form-group ">
+															<div class="col-md-4">Servidor Publico</div>
+															<div class="col-md-8">
+																<p:autoComplete id="servidorPublicoID"
+																	value="#{ordenTraspasoController.selectedFuncionario.nombre}"
+																	completeMethod="#{ordenTraspasoController.completeFuncionario}"
+																	minQueryLength="3" dropdown="true" required="true"
+																	requiredMessage="Funcionario Requerido."
+																	forceSelection="true" var="_var" itemLabel="#{_var}"
+																	itemValue="#{_var.nombre}"
+																	placeholder="[Escriba Funcionario]" maxResults="10">
 
-																<p:ajax event="itemSelect"
-																	update="formTableOrdenTraspaso:servidorPublicoID,formTableOrdenTraspaso:cargoID"
-																	listener="#{ordenTraspasoController.onRowSelectFuncionarioClick}" />
+																	<p:ajax event="itemSelect"
+																		update="formTableOrdenTraspaso:servidorPublicoID,formTableOrdenTraspaso:cargoID"
+																		listener="#{ordenTraspasoController.onRowSelectFuncionarioClick}" />
 
-																<p:column>
-																	<h:outputText value="#{_var.nombre}" />
-																</p:column>
+																	<p:column>
+																		<h:outputText value="#{_var.nombre}" />
+																	</p:column>
 
-															</p:autoComplete>
+																</p:autoComplete>
+															</div>
 														</div>
-													</div>
 
-													<div class="form-group ">
-														<div class="col-md-4">Cargo</div>
-														<div class="col-md-8">
-															<p:inputText id="cargoID"
-																style=" color: #555555; background-image: none;"
-																styleClass="input-sm form-control" size="40"
-																disabled="true"
-																value="#{ordenTraspasoController.selectedFuncionario.cargo}">
-																<p:ajax event="change" />
-															</p:inputText>
+														<div class="form-group ">
+															<div class="col-md-4">Cargo</div>
+															<div class="col-md-8">
+																<p:inputText id="cargoID"
+																	style=" color: #555555; background-image: none;"
+																	styleClass="input-sm form-control" size="40"
+																	disabled="true"
+																	value="#{ordenTraspasoController.selectedFuncionario.cargo}">
+																	<p:ajax event="change" />
+																</p:inputText>
+															</div>
 														</div>
-													</div>
 
-													<div class="form-group ">
-														<div class="col-md-4">Proyecto</div>
-														<div class="col-md-8">
+														<div class="form-group ">
+															<div class="col-md-4">Proyecto</div>
+															<div class="col-md-8">
 
-															<p:autoComplete id="proyectoID"
-																value="#{ordenTraspasoController.selectedProyecto.nombre}"
-																completeMethod="#{ordenTraspasoController.completeProyecto}"
-																minQueryLength="3" dropdown="true" required="true"
-																requiredMessage="Proyecto Requerido."
-																forceSelection="true" var="_var" itemLabel="#{_var}"
-																itemValue="#{_var.nombre}"
-																placeholder="[Escriba Proyecto]" maxResults="10">
+																<p:autoComplete id="proyectoID"
+																	value="#{ordenTraspasoController.selectedProyecto.nombre}"
+																	completeMethod="#{ordenTraspasoController.completeProyecto}"
+																	minQueryLength="3" dropdown="true" required="true"
+																	requiredMessage="Proyecto Requerido."
+																	forceSelection="true" var="_var" itemLabel="#{_var}"
+																	itemValue="#{_var.nombre}"
+																	placeholder="[Escriba Proyecto]" maxResults="10">
 
-																<p:ajax event="itemSelect"
-																	update="formTableOrdenTraspaso:proyectoID,formTableOrdenTraspaso:tipoDocumentoAdjID"
-																	listener="#{ordenTraspasoController.onRowSelectProyectoClick}" />
+																	<p:ajax event="itemSelect"
+																		update="formTableOrdenTraspaso:proyectoID,formTableOrdenTraspaso:tipoDocumentoAdjID"
+																		listener="#{ordenTraspasoController.onRowSelectProyectoClick}" />
 
-																<p:column>
-																	<h:outputText value="#{_var.nombre}" />
-																</p:column>
+																	<p:column>
+																		<h:outputText value="#{_var.nombre}" />
+																	</p:column>
 
-															</p:autoComplete>
+																</p:autoComplete>
+															</div>
 														</div>
-													</div>
 
-													<div class="form-group">
-														<div class="col-md-4">Detalle Proyecto</div>
-														<div class="col-md-8">
-															<p:inputText id="tipoDocumentoAdjID"
-																style=" color: #555555; background-image: none;"
-																disabled="true"
-																styleClass="input-sm form-control" size="40"
-																value="#{ordenTraspasoController.selectedProyecto.descripcion}"
-																required="true" requiredMessage="Requerido.">
-																<p:ajax event="change" />
-															</p:inputText>
+														<div class="form-group">
+															<div class="col-md-4">Detalle Proyecto</div>
+															<div class="col-md-8">
+																<p:inputText id="tipoDocumentoAdjID"
+																	style=" color: #555555; background-image: none;"
+																	disabled="true" styleClass="input-sm form-control"
+																	size="40"
+																	value="#{ordenTraspasoController.selectedProyecto.descripcion}"
+																	required="true" requiredMessage="Requerido.">
+																	<p:ajax event="change" />
+																</p:inputText>
+															</div>
 														</div>
-													</div>
 
-													<div class="form-group ">
-														<div class="col-md-4">Fecha Documento</div>
-														<div class="col-md-8">
-															<p:calendar pattern="dd/MM/yyyy" id="fechaComp"
-																locale="es"
-																value="#{ordenTraspasoController.newOrdenTraspaso.fechaDocumento}"
-																onkeypress="return permiteKey(event, 'none')"
-																style=" color: #555555; background-image: none;">
-															</p:calendar>
+														<div class="form-group ">
+															<div class="col-md-4">Fecha Documento</div>
+															<div class="col-md-8">
+																<p:calendar pattern="dd/MM/yyyy" id="fechaComp"
+																	locale="es"
+																	value="#{ordenTraspasoController.newOrdenTraspaso.fechaDocumento}"
+																	onkeypress="return permiteKey(event, 'none')"
+																	style=" color: #555555; background-image: none;">
+																</p:calendar>
+															</div>
 														</div>
-													</div>
 
-													<div class="form-group ">
-														<div class="col-md-4">Observación</div>
-														<div class="col-md-8">
-															<p:inputTextarea id="descripcionID"
-																styleClass="form-control" size="40"
-																value="#{ordenTraspasoController.newOrdenTraspaso.observacion}"
-																required="true" requiredMessage="Requerido." rows="5">
-																<p:ajax event="change" />
-															</p:inputTextarea>
+														<div class="form-group ">
+															<div class="col-md-4">Observación</div>
+															<div class="col-md-8">
+																<p:inputTextarea id="descripcionID"
+																	styleClass="form-control" size="40"
+																	value="#{ordenTraspasoController.newOrdenTraspaso.observacion}"
+																	required="true" requiredMessage="Requerido." rows="5">
+																	<p:ajax event="change" />
+																</p:inputTextarea>
+															</div>
 														</div>
-													</div>
 
-													<div class="form-group ">
-														<div class="col-md-4">Fecha</div>
-														<div class="col-md-8">
-															<p:inputText id="fechaRegistroID"
-																style=" color: #555555; background-image: none;"
-																styleClass="input-sm form-control" size="40"
-																value="#{ordenTraspasoController.newOrdenTraspaso.fechaRegistro}"
-																disabled="true" required="true"
-																requiredMessage="Requerido.">
-																<f:convertDateTime pattern="dd/MM/yyyy" />
-															</p:inputText>
+														<div class="form-group ">
+															<div class="col-md-4">Fecha</div>
+															<div class="col-md-8">
+																<p:inputText id="fechaRegistroID"
+																	style=" color: #555555; background-image: none;"
+																	styleClass="input-sm form-control" size="40"
+																	value="#{ordenTraspasoController.newOrdenTraspaso.fechaRegistro}"
+																	disabled="true" required="true"
+																	requiredMessage="Requerido.">
+																	<f:convertDateTime pattern="dd/MM/yyyy" />
+																</p:inputText>
+															</div>
 														</div>
-													</div>
 
-													<div class="form-group ">
-														<div class="col-md-4">Registro</div>
-														<div class="col-md-8">
-															<p:inputText id="usuarioRegistroID"
-																style=" color: #555555; background-image: none;"
-																styleClass="input-sm form-control" size="40"
-																value="#{ordenTraspasoController.newOrdenTraspaso.usuarioRegistro}"
-																disabled="true" required="true"
-																requiredMessage="Usuario Registro Requerido." />
+														<div class="form-group ">
+															<div class="col-md-4">Registro</div>
+															<div class="col-md-8">
+																<p:inputText id="usuarioRegistroID"
+																	style=" color: #555555; background-image: none;"
+																	styleClass="input-sm form-control" size="40"
+																	value="#{ordenTraspasoController.newOrdenTraspaso.usuarioRegistro}"
+																	disabled="true" required="true"
+																	requiredMessage="Usuario Registro Requerido." />
+															</div>
 														</div>
-													</div>
 
+													</div>
 												</div>
 											</div>
 										</div>
 									</div>
-								</div>
-								<div class="col-md-8">
+									<div class="col-md-8">
 
-									<div class="panel panel-default">
-										<div class="panel-heading">
-											<h3 class="panel-title">Lista de ITEMS</h3>
+										<div class="panel panel-default">
+											<div class="panel-heading">
+												<h3 class="panel-title">Lista de ITEMS</h3>
+											</div>
+											<!-- start here datatable -->
+											<div class="box-content no-padding">
+
+												<div class="table-responsive">
+
+													<p:dataTable id="itemsTable1"
+														style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+														selection="#{ordenTraspasoController.selectedDetalleOrdenTraspaso}"
+														selectionMode="single" rowKey="#{_var}" var="_var"
+														value="#{ordenTraspasoController.listaDetalleOrdenTraspaso}"
+														emptyMessage="No se encontraron Registros de ITEMS.">
+
+														<p:ajax event="rowSelect" update="formTableOrdenTraspaso"
+															listener="#{ordenTraspasoController.onRowSelectDetalleOrdenTraspasoClick}" />
+
+														<p:column headerText="Partida">
+															<h:outputText value="#{_var.producto.partida.nombre}" />
+														</p:column>
+
+														<p:column headerText="Nombre ITEM">
+															<h:outputText value="#{_var.producto.nombre}" />
+														</p:column>
+
+														<p:column headerText="Unidad Medida" width="10%">
+															<h:outputText value="#{_var.producto.unidadMedida}" />
+														</p:column>
+
+														<p:column headerText="Cantidad" width="10%">
+															<h:outputText value="#{_var.cantidad}" />
+														</p:column>
+
+														<p:column headerText="Precio U." width="12%">
+															<h:outputText value="#{_var.producto.precioUnitario}">
+																<f:convertNumber pattern="#,##0.00" />
+															</h:outputText>#{' '}
+														<h:outputText value="Bs.-" />
+														</p:column>
+
+														<p:column headerText="Total" width="12%">
+															<h:outputText value="#{_var.total}">
+																<f:convertNumber pattern="#,##0.00" />
+															</h:outputText>
+														</p:column>
+
+														<p:column headerText="Obervacion">
+															<h:outputText value="#{_var.observacion}" />
+														</p:column>
+
+													</p:dataTable>
+												</div>
+											</div>
+
+											<br />
+
+											<div class="row">
+												<div class="col-sm-12">
+													<div class="form-group">
+														<div class="col-md-9"></div>
+														<div class="col-md-1">
+															<p:commandLink value="&#160;"
+																styleClass="btn btn-success ion-plus-round "
+																update="formDialogProducto"
+																oncomplete="PF('dlgProducto').show();" immediate="true">
+															</p:commandLink>
+
+														</div>
+														<div class="col-md-1">
+															<p:commandLink id="editarDetalleOrdenTraspaso"
+																value="&#160;" styleClass="btn btn-primary ion-edit"
+																update="formDialogProducto"
+																oncomplete="PF('dlgProducto').show();"
+																disabled="#{ordenTraspasoController.verButtonDetalle}"
+																action="#{ordenTraspasoController.editarDetalleOrdenTraspaso()}"
+																immediate="true">
+															</p:commandLink>
+														</div>
+														<div class="col-md-1">
+															<p:commandLink id="eliminarDetalleOrdenTraspaso"
+																value="&#160;" styleClass="btn btn-danger ion-close"
+																disabled="#{ordenTraspasoController.verButtonDetalle}"
+																update="formTableOrdenTraspaso:itemsTable1"
+																immediate="true"
+																action="#{ordenTraspasoController.borrarDetalleOrdenTraspaso()}">
+															</p:commandLink>
+														</div>
+
+													</div>
+												</div>
+											</div>
+
+											<!-- end here datatable -->
+											<div class="panel-body"></div>
+
 										</div>
-										<!-- start here datatable -->
-										<div class="box-content no-padding">
 
-											<div class="table-responsive">
+									</div>
+								</ui:fragment>
 
-												<p:dataTable id="itemsTable1"
+								<ui:fragment rendered="#{ordenTraspasoController.crear}">
+
+									<div class="col-md-12" align="left">
+
+										<div class="panel panel-default">
+											<div class="panel-heading">
+												<h3 class="panel-title">Lista de Orden De Traspaso</h3>
+											</div>
+											<!-- start here datatable -->
+											<div class="box-content no-padding">
+
+												<p:dataTable
 													style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
-													selection="#{ordenTraspasoController.selectedDetalleOrdenTraspaso}"
-													selectionMode="single" rowKey="#{_var}" var="_var"
-													value="#{ordenTraspasoController.listaDetalleOrdenTraspaso}"
+													selection="#{ordenTraspasoController.selectedOrdenTraspaso}"
+													selectionMode="single" rowKey="#{_var}" id="itemsTable2"
+													var="_var"
+													value="#{ordenTraspasoController.listaOrdenTraspaso}"
 													emptyMessage="No se encontraron Registros de ITEMS.">
 
-													<p:ajax event="rowSelect" update="formTableOrdenTraspaso"
-														listener="#{ordenTraspasoController.onRowSelectDetalleOrdenTraspasoClick}" />
+													<p:ajax event="rowSelect"
+														update="formTableOrdenTraspaso, formBotonesHeader"
+														listener="#{ordenTraspasoController.onRowSelectOrdenTraspasoClick}" />
 
-													<p:column headerText="Partida">
-														<h:outputText value="#{_var.producto.partida.nombre}" />
+													<p:column width="7%" headerText="Codigo"
+														style="text-align:center;" filterBy="#{_var.correlativo}"
+														filterStyle="width: 100%;" filterMatchMode="contains">
+														<h:outputText value="#{_var.correlativo}" />
 													</p:column>
 
-													<p:column headerText="Nombre ITEM">
-														<h:outputText value="#{_var.producto.nombre}" />
+													<p:column headerText="Almacen"
+														filterBy="#{_var.almacenDestino.nombre}"
+														filterStyle="width: 100%;" filterMatchMode="contains">
+														<h:outputText value="#{_var.almacenDestino.nombre}" />
 													</p:column>
 
-													<p:column headerText="Unidad Medida" width="10%">
-														<h:outputText value="#{_var.producto.unidadMedida}" />
-													</p:column>
-
-													<p:column headerText="Cantidad" width="10%">
-														<h:outputText value="#{_var.cantidad}" />
-													</p:column>
-
-													<p:column headerText="Precio U." width="12%">
-														<h:outputText value="#{_var.producto.precioUnitario}">
+													<p:column headerText="Total Importe" width="15%"
+														style="text-align:center;" filterBy="#{_var.totalImporte}"
+														filterStyle="width: 100%;" filterMatchMode="contains">
+														<h:outputText value="#{_var.totalImporte}">
 															<f:convertNumber pattern="#,##0.00" />
-														</h:outputText>#{' '}
+														</h:outputText>
+														#{' '}
 														<h:outputText value="Bs.-" />
 													</p:column>
 
-													<p:column headerText="Total" width="12%">
-														<h:outputText value="#{_var.total}">
-															<f:convertNumber pattern="#,##0.00" />
+													<p:column headerText="Estado" width="8%"
+														style="text-align:center;" filterBy="#{_var.estado}"
+														filterStyle="width: 100%;" filterMatchMode="contains">
+														<span class="label label-primary"><h:outputText
+																rendered="#{_var.estado=='AC'}" value="Activo" /></span>
+														<span class="label label-danger"><h:outputText
+																rendered="#{_var.estado=='IN'}" value="Inactivo" /></span>
+														<span class="label label-success"><h:outputText
+																rendered="#{_var.estado=='PR'}" value="Procesado" /></span>
+													</p:column>
+
+													<p:column width="10%" headerText="Fecha"
+														style="text-align:center;"
+														filterBy="#{_var.fechaRegistro}"
+														filterStyle="width: 100%;" filterMatchMode="contains">
+														<h:outputText value="#{_var.fechaRegistro}">
+															<f:convertDateTime pattern="dd/MM/yyyy" />
 														</h:outputText>
 													</p:column>
 
-													<p:column headerText="Obervacion">
-														<h:outputText value="#{_var.observacion}" />
+													<p:column width="8%" headerText="Registro"
+														style="text-align:center;"
+														filterBy="#{_var.usuarioRegistro}"
+														filterStyle="width: 100%;" filterMatchMode="contains">
+														<h:outputText value="#{_var.usuarioRegistro}" />
 													</p:column>
 
 												</p:dataTable>
 											</div>
+											<!-- end here datatable -->
+											<div class="panel-body"></div>
+
 										</div>
-										
-										<br />
-
-										<div class="row">
-											<div class="col-sm-12">
-												<div class="form-group">
-													<div class="col-md-9"></div>
-													<div class="col-md-1">
-														<p:commandLink value="&#160;"
-															styleClass="btn btn-success ion-plus-round "
-															update="formDialogProducto"
-															oncomplete="PF('dlgProducto').show();" immediate="true">
-														</p:commandLink>
-
-													</div>
-													<div class="col-md-1">
-														<p:commandLink id="editarDetalleOrdenTraspaso"
-															value="&#160;" styleClass="btn btn-primary ion-edit"
-															update="formDialogProducto"
-															oncomplete="PF('dlgProducto').show();"
-															disabled="#{ordenTraspasoController.verButtonDetalle}"
-															action="#{ordenTraspasoController.editarDetalleOrdenTraspaso()}"
-															immediate="true">
-														</p:commandLink>
-													</div>
-													<div class="col-md-1">
-														<p:commandLink id="eliminarDetalleOrdenTraspaso"
-															value="&#160;" styleClass="btn btn-danger ion-close"
-															disabled="#{ordenTraspasoController.verButtonDetalle}"
-															update="formTableOrdenTraspaso:itemsTable1"
-															immediate="true"
-															action="#{ordenTraspasoController.borrarDetalleOrdenTraspaso()}">
-														</p:commandLink>
-													</div>
-
-												</div>
-											</div>
-										</div>
-
-										<!-- end here datatable -->
-										<div class="panel-body"></div>
-
 									</div>
-
-								</div>
+								</ui:fragment>
 							</ui:fragment>
 
-							<ui:fragment rendered="#{ordenTraspasoController.crear}">
-
-								<div class="col-md-12" align="left">
-
+							<ui:fragment rendered="#{ordenTraspasoController.verReport}">
+								<div class="col-md-12">
 									<div class="panel panel-default">
-										<div class="panel-heading">
-											<h3 class="panel-title">Lista de Orden De Traspaso</h3>
+										<div class="panel-body" style="text-align: center;">
+											<p:media player="pdf" rendered="true"
+												value="#{ordenTraspasoController.urlOrdenTraspaso}"
+												width="800px" height="1125px" />
 										</div>
-										<!-- start here datatable -->
-										<div class="box-content no-padding">
-
-											<p:dataTable
-												style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
-												selection="#{ordenTraspasoController.selectedOrdenTraspaso}"
-												selectionMode="single" rowKey="#{_var}" id="itemsTable2"
-												var="_var"
-												value="#{ordenTraspasoController.listaOrdenTraspaso}"
-												emptyMessage="No se encontraron Registros de ITEMS.">
-
-												<p:ajax event="rowSelect"
-													update="formTableOrdenTraspaso, formBotonesHeader"
-													listener="#{ordenTraspasoController.onRowSelectOrdenTraspasoClick}" />
-
-												<p:column width="7%" headerText="Codigo" style="text-align:center;"
-													filterBy="#{_var.correlativo}" filterStyle="width: 100%;"
-													filterMatchMode="contains">
-													<h:outputText value="#{_var.correlativo}" />
-												</p:column>
-
-												<p:column headerText="Almacen"
-													filterBy="#{_var.almacenDestino.nombre}"
-													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.almacenDestino.nombre}" />
-												</p:column>
-
-												<p:column headerText="Total Importe" width="15%" style="text-align:center;"
-													filterBy="#{_var.totalImporte}" filterStyle="width: 100%;"
-													filterMatchMode="contains">
-													<h:outputText value="#{_var.totalImporte}">
-														<f:convertNumber pattern="#,##0.00" />
-													</h:outputText>
-														#{' '}
-														<h:outputText value="Bs.-" />
-												</p:column>
-
-												<p:column headerText="Estado" width="8%" style="text-align:center;"
-													filterBy="#{_var.estado}" filterStyle="width: 100%;"
-													filterMatchMode="contains">
-													<span class="label label-primary"><h:outputText
-															rendered="#{_var.estado=='AC'}" value="Activo" /></span>
-													<span class="label label-danger"><h:outputText
-															rendered="#{_var.estado=='IN'}" value="Inactivo" /></span>
-													<span class="label label-success"><h:outputText
-															rendered="#{_var.estado=='PR'}" value="Procesado" /></span>
-												</p:column>
-
-												<p:column width="10%" headerText="Fecha" style="text-align:center;"
-													filterBy="#{_var.fechaRegistro}" filterStyle="width: 100%;"
-													filterMatchMode="contains">
-													<h:outputText value="#{_var.fechaRegistro}">
-														<f:convertDateTime pattern="dd/MM/yyyy" />
-													</h:outputText>
-												</p:column>
-
-												<p:column width="8%" headerText="Registro" style="text-align:center;"
-													filterBy="#{_var.usuarioRegistro}"
-													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.usuarioRegistro}" />
-												</p:column>
-
-											</p:dataTable>
-										</div>
-										<!-- end here datatable -->
-										<div class="panel-body"></div>
-
 									</div>
 								</div>
 							</ui:fragment>
+
 						</h:form>
 					</div>
 				</section>

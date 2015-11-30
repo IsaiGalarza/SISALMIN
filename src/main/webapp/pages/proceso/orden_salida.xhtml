@@ -24,6 +24,14 @@
 						<div class="btn-group-demo">
 							<div class="btn-group">
 
+								<p:commandLink id="buttonAtras" value="&#160; Atras"
+									styleClass="btn btn-warning ion-minus-circled"
+									update="formTableOrdenSalida, formBotonesHeader"
+									rendered="#{ordenSalidaController.verReport}"
+									style="height:31px; padding:center"
+									action="#{ordenSalidaController.setVerReport(false)}">
+								</p:commandLink>
+
 								<p:commandLink id="buttonCancelar" value="&#160; Cancelar"
 									styleClass="btn btn-warning ion-minus-circled"
 									update="formTableOrdenSalida, formBotonesHeader"
@@ -35,7 +43,7 @@
 								<p:commandLink id="buttonCrear1"
 									value="&#160; Nueva Orden Salida"
 									styleClass="btn btn-success ion-plus-round"
-									rendered="#{ordenSalidaController.crear}"
+									rendered="#{ordenSalidaController.crear  and ! ordenSalidaController.verReport}"
 									update="formTableOrdenSalida, formBotonesHeader"
 									action="#{ordenSalidaController.cambiarAspecto()}"
 									style="height:31px;">
@@ -51,7 +59,7 @@
 
 								<p:commandLink id="buttonVerModificar" value="&#160; Modificar"
 									styleClass="btn btn-primary ion-edit"
-									rendered="#{ordenSalidaController.selectedOrdenSalida != null and ordenSalidaController.crear and ordenSalidaController.verProcesar }"
+									rendered="#{ordenSalidaController.selectedOrdenSalida != null and ordenSalidaController.crear and ordenSalidaController.verProcesar and ! ordenSalidaController.verReport}"
 									style="height:31px; padding:center"
 									update="formTableOrdenSalida, :formBotonesHeader"
 									action="#{ordenSalidaController.cambiarAspectoModificar()}">
@@ -59,7 +67,7 @@
 
 								<p:commandLink id="buttonModificar" value="&#160; Modificar"
 									styleClass="btn btn-primary ion-edit"
-									rendered="#{ordenSalidaController.modificar and ordenSalidaController.verProcesar}"
+									rendered="#{ordenSalidaController.modificar and ordenSalidaController.verProcesar }"
 									style="height:31px; padding:center"
 									update="formTableOrdenSalida, formBotonesHeader"
 									action="#{ordenSalidaController.modificarOrdenSalida()}">
@@ -75,15 +83,15 @@
 
 								<p:commandLink id="buttonProcesar" value="&#160; Procesar"
 									styleClass="btn btn-info ion-ios7-loop-strong"
-									rendered="#{ordenSalidaController.selectedOrdenSalida != null and ordenSalidaController.crear and ordenSalidaController.verProcesar}"
+									rendered="#{ordenSalidaController.selectedOrdenSalida != null and ordenSalidaController.crear and ordenSalidaController.verProcesar and ! ordenSalidaController.verReport}"
 									style="height:31px; padding:center"
 									update="formTableOrdenSalida, :formBotonesHeader"
-									action="#{ordenSalidaController.procesarOrdenIngreso()}">
+									action="#{ordenSalidaController.procesarOrdenSalida()}">
 								</p:commandLink>
 
 								<p:commandLink id="buttonVerReporte" value="&#160; Ver Reporte"
 									styleClass="btn btn-info ion-printer"
-									rendered="#{ordenSalidaController.selectedOrdenSalida != null and ordenSalidaController.crear}"
+									rendered="#{ordenSalidaController.selectedOrdenSalida != null and ordenSalidaController.crear and ! ordenSalidaController.verReport}"
 									style="height:31px; padding:center"
 									update="formTableOrdenSalida, :formBotonesHeader,formModalVistaPrevia"
 									action="#{ordenSalidaController.cargarReporte()}">
@@ -134,142 +142,144 @@
 
 						<h:form id="formTableOrdenSalida" styleClass="form-horizontal">
 
-							<ui:fragment
-								rendered="#{ordenSalidaController.modificar or ordenSalidaController.registrar}">
-								<div class="col-md-4">
-									<div class="panel panel-default">
-										<div class="panel-heading">
-											<h3 class="panel-title">Registro Datos Orden Salida</h3>
-										</div>
-										<div class="panel-body">
-											<!-- start here register -->
-											<div class="row">
-												<div class="col-md-12 box-content form-horizontal">
+							<ui:fragment rendered="#{ ! ordenSalidaController.verReport}">
 
-													<div class="form-group ">
-														<div class="col-md-4">Nro Orden Salida</div>
-														<div class="col-md-8">
-															<p:inputText id="NroOrdenIngresoID"
-																style=" color: #555555; background-image: none;"
-																styleClass="input-sm form-control" size="40"
-																disabled="true"
-																value="#{ordenSalidaController.newOrdenSalida.correlativo}">
-																<p:ajax event="change" />
-															</p:inputText>
+								<ui:fragment
+									rendered="#{ordenSalidaController.modificar or ordenSalidaController.registrar}">
+									<div class="col-md-4">
+										<div class="panel panel-default">
+											<div class="panel-heading">
+												<h3 class="panel-title">Registro Datos Orden Salida</h3>
+											</div>
+											<div class="panel-body">
+												<!-- start here register -->
+												<div class="row">
+													<div class="col-md-12 box-content form-horizontal">
+
+														<div class="form-group ">
+															<div class="col-md-4">Nro Orden Salida</div>
+															<div class="col-md-8">
+																<p:inputText id="NroOrdenIngresoID"
+																	style=" color: #555555; background-image: none;"
+																	styleClass="input-sm form-control" size="40"
+																	disabled="true"
+																	value="#{ordenSalidaController.newOrdenSalida.correlativo}">
+																	<p:ajax event="change" />
+																</p:inputText>
+															</div>
 														</div>
-													</div>
 
-													<div class="form-group ">
-														<div class="col-md-4">Unidad Solicitante</div>
-														<div class="col-md-8">
+														<div class="form-group ">
+															<div class="col-md-4">Unidad Solicitante</div>
+															<div class="col-md-8">
 
-															<p:autoComplete id="unidadID"
-																value="#{ordenSalidaController.selectedDetalleUnidad.nombre}"
-																completeMethod="#{ordenSalidaController.completeDetalleUnidad}"
-																minQueryLength="3" dropdown="true" required="true"
-																requiredMessage="Almacen Requerido."
-																forceSelection="true" var="_var" itemLabel="#{_var}"
-																itemValue="#{_var.nombre}"
-																placeholder="[Escriba Unidad]" maxResults="10">
+																<p:autoComplete id="unidadID"
+																	value="#{ordenSalidaController.selectedDetalleUnidad.nombre}"
+																	completeMethod="#{ordenSalidaController.completeDetalleUnidad}"
+																	minQueryLength="3" dropdown="true" required="true"
+																	requiredMessage="Almacen Requerido."
+																	forceSelection="true" var="_var" itemLabel="#{_var}"
+																	itemValue="#{_var.nombre}"
+																	placeholder="[Escriba Unidad]" maxResults="10">
 
-																<p:ajax event="itemSelect"
-																	update="formTableOrdenSalida:unidadID"
-																	listener="#{ordenSalidaController.onRowSelectDetalleUnidadClick}" />
+																	<p:ajax event="itemSelect"
+																		update="formTableOrdenSalida:unidadID"
+																		listener="#{ordenSalidaController.onRowSelectDetalleUnidadClick}" />
 
-																<p:column>
-																	<h:outputText value="#{_var.nombre}" />
-																</p:column>
+																	<p:column>
+																		<h:outputText value="#{_var.nombre}" />
+																	</p:column>
 
-															</p:autoComplete>
+																</p:autoComplete>
+															</div>
 														</div>
-													</div>
 
-													<div class="form-group ">
-														<div class="col-md-4">Servidor Publico</div>
-														<div class="col-md-8">
-															<p:autoComplete id="servidorPublicoID"
-																value="#{ordenSalidaController.selectedFuncionario.nombre}"
-																completeMethod="#{ordenSalidaController.completeFuncionario}"
-																minQueryLength="3" dropdown="true" required="true"
-																requiredMessage="Funcionario Requerido."
-																forceSelection="true" var="_var" itemLabel="#{_var}"
-																itemValue="#{_var.nombre}"
-																placeholder="[Escriba Funcionario]" maxResults="10">
+														<div class="form-group ">
+															<div class="col-md-4">Servidor Publico</div>
+															<div class="col-md-8">
+																<p:autoComplete id="servidorPublicoID"
+																	value="#{ordenSalidaController.selectedFuncionario.nombre}"
+																	completeMethod="#{ordenSalidaController.completeFuncionario}"
+																	minQueryLength="3" dropdown="true" required="true"
+																	requiredMessage="Funcionario Requerido."
+																	forceSelection="true" var="_var" itemLabel="#{_var}"
+																	itemValue="#{_var.nombre}"
+																	placeholder="[Escriba Funcionario]" maxResults="10">
 
-																<p:ajax event="itemSelect"
-																	update="formTableOrdenSalida:servidorPublicoID,formTableOrdenSalida:cargoID"
-																	listener="#{ordenSalidaController.onRowSelectFuncionarioClick}" />
+																	<p:ajax event="itemSelect"
+																		update="formTableOrdenSalida:servidorPublicoID,formTableOrdenSalida:cargoID"
+																		listener="#{ordenSalidaController.onRowSelectFuncionarioClick}" />
 
-																<p:column>
-																	<h:outputText value="#{_var.nombre}" />
-																</p:column>
+																	<p:column>
+																		<h:outputText value="#{_var.nombre}" />
+																	</p:column>
 
-															</p:autoComplete>
+																</p:autoComplete>
+															</div>
 														</div>
-													</div>
-													<div class="form-group ">
-														<div class="col-md-4">Cargo</div>
-														<div class="col-md-8">
-															<p:inputText id="cargoID"
-																style=" color: #555555; background-image: none;"
-																styleClass="input-sm form-control" size="40"
-																disabled="true"
-																value="#{ordenSalidaController.selectedFuncionario.cargo}">
-																<p:ajax event="change" />
-															</p:inputText>
+														<div class="form-group ">
+															<div class="col-md-4">Cargo</div>
+															<div class="col-md-8">
+																<p:inputText id="cargoID"
+																	style=" color: #555555; background-image: none;"
+																	styleClass="input-sm form-control" size="40"
+																	disabled="true"
+																	value="#{ordenSalidaController.selectedFuncionario.cargo}">
+																	<p:ajax event="change" />
+																</p:inputText>
+															</div>
 														</div>
-													</div>
 
-													<div class="form-group ">
-														<div class="col-md-4">Proyecto</div>
-														<div class="col-md-8">
+														<div class="form-group ">
+															<div class="col-md-4">Proyecto</div>
+															<div class="col-md-8">
 
-															<p:autoComplete id="proyectoID"
-																value="#{ordenSalidaController.selectedProyecto.nombre}"
-																completeMethod="#{ordenSalidaController.completeProyecto}"
-																minQueryLength="3" dropdown="true" required="true"
-																requiredMessage="Proyecto Requerido."
-																forceSelection="true" var="_var" itemLabel="#{_var}"
-																itemValue="#{_var.nombre}"
-																placeholder="[Escriba Proyecto]" maxResults="10">
+																<p:autoComplete id="proyectoID"
+																	value="#{ordenSalidaController.selectedProyecto.nombre}"
+																	completeMethod="#{ordenSalidaController.completeProyecto}"
+																	minQueryLength="3" dropdown="true" required="true"
+																	requiredMessage="Proyecto Requerido."
+																	forceSelection="true" var="_var" itemLabel="#{_var}"
+																	itemValue="#{_var.nombre}"
+																	placeholder="[Escriba Proyecto]" maxResults="10">
 
-																<p:ajax event="itemSelect"
-																	update="formTableOrdenSalida:proyectoID,formTableOrdenSalida:tipoDocumentoAdjID"
-																	listener="#{ordenSalidaController.onRowSelectProyectoClick}" />
+																	<p:ajax event="itemSelect"
+																		update="formTableOrdenSalida:proyectoID,formTableOrdenSalida:tipoDocumentoAdjID"
+																		listener="#{ordenSalidaController.onRowSelectProyectoClick}" />
 
-																<p:column>
-																	<h:outputText value="#{_var.nombre}" />
-																</p:column>
+																	<p:column>
+																		<h:outputText value="#{_var.nombre}" />
+																	</p:column>
 
-															</p:autoComplete>
+																</p:autoComplete>
+															</div>
 														</div>
-													</div>
 
-													<div class="form-group">
-														<div class="col-md-4">Detalle Proyecto</div>
-														<div class="col-md-8">
-															<p:inputText id="tipoDocumentoAdjID"
-																style=" color: #555555; background-image: none;"
-																disabled="true" styleClass="input-sm form-control"
-																size="40"
-																value="#{ordenSalidaController.selectedProyecto.descripcion}"
-																required="true" requiredMessage="Requerido.">
-																<p:ajax event="change" />
-															</p:inputText>
+														<div class="form-group">
+															<div class="col-md-4">Detalle Proyecto</div>
+															<div class="col-md-8">
+																<p:inputText id="tipoDocumentoAdjID"
+																	style=" color: #555555; background-image: none;"
+																	disabled="true" styleClass="input-sm form-control"
+																	size="40"
+																	value="#{ordenSalidaController.selectedProyecto.descripcion}"
+																	required="true" requiredMessage="Requerido.">
+																	<p:ajax event="change" />
+																</p:inputText>
+															</div>
 														</div>
-													</div>
-													<div class="form-group ">
-														<div class="col-md-4">Nro Pedido Materiales</div>
-														<div class="col-md-8">
-															<p:inputText id="NroPedidoID"
-																style=" color: #555555; background-image: none;"
-																styleClass="input-sm form-control" size="40"
-																value="#{ordenSalidaController.newOrdenSalida.numeroPedidoMateriales}">
-																<p:ajax event="change" />
-															</p:inputText>
+														<div class="form-group ">
+															<div class="col-md-4">Nro Pedido Materiales</div>
+															<div class="col-md-8">
+																<p:inputText id="NroPedidoID"
+																	style=" color: #555555; background-image: none;"
+																	styleClass="input-sm form-control" size="40"
+																	value="#{ordenSalidaController.newOrdenSalida.numeroPedidoMateriales}">
+																	<p:ajax event="change" />
+																</p:inputText>
+															</div>
 														</div>
-													</div>
-													<div class="form-group ">
+														<div class="form-group ">
 															<div class="col-md-4">Fecha Pedido</div>
 															<div class="col-md-8">
 																<p:calendar pattern="dd/MM/yyyy" id="fechaPedido"
@@ -277,248 +287,266 @@
 																	value="#{ordenSalidaController.newOrdenSalida.fechaPedido}"
 																	onkeypress="return permiteKey(event, 'none')"
 																	style=" color: #555555; background-image: none;">
-																	<p:ajax event="dateSelect" /> 
+																	<p:ajax event="dateSelect" />
 																</p:calendar>
 															</div>
 														</div>
-													<div class="form-group ">
-														<div class="col-md-4">Almacen</div>
-														<div class="col-md-8">
+														<div class="form-group ">
+															<div class="col-md-4">Almacen</div>
+															<div class="col-md-8">
 
-															<p:autoComplete id="almacenID"
-																value="#{ordenSalidaController.selectedAlmacen.nombre}"
-																completeMethod="#{ordenSalidaController.completeAlmacen}"
-																minQueryLength="3" dropdown="true" required="true"
-																requiredMessage="Almacen Requerido."
-																forceSelection="true" var="_var" itemLabel="#{_var}"
-																itemValue="#{_var.nombre}"
-																placeholder="[Escriba Almacen]" maxResults="10">
+																<p:autoComplete id="almacenID"
+																	value="#{ordenSalidaController.selectedAlmacen.nombre}"
+																	completeMethod="#{ordenSalidaController.completeAlmacen}"
+																	minQueryLength="3" dropdown="true" required="true"
+																	requiredMessage="Almacen Requerido."
+																	forceSelection="true" var="_var" itemLabel="#{_var}"
+																	itemValue="#{_var.nombre}"
+																	placeholder="[Escriba Almacen]" maxResults="10">
 
-																<p:ajax event="itemSelect"
-																	update="formTableOrdenSalida:almacenID"
-																	listener="#{ordenSalidaController.onRowSelectAlmacenClick}" />
+																	<p:ajax event="itemSelect"
+																		update="formTableOrdenSalida:almacenID"
+																		listener="#{ordenSalidaController.onRowSelectAlmacenClick}" />
 
-																<p:column>
-																	<h:outputText value="#{_var.nombre}" />
-																</p:column>
+																	<p:column>
+																		<h:outputText value="#{_var.nombre}" />
+																	</p:column>
 
-															</p:autoComplete>
+																</p:autoComplete>
+															</div>
 														</div>
-													</div>
 
-													<div class="form-group ">
-														<div class="col-md-4">Fecha</div>
-														<div class="col-md-8">
-															<p:inputText id="fechaRegistroID"
-																style=" color: #555555; background-image: none;"
-																styleClass="input-sm form-control" size="40"
-																value="#{ordenSalidaController.newOrdenSalida.fechaRegistro}"
-																disabled="true" required="true"
-																requiredMessage="Requerido.">
-																<f:convertDateTime pattern="dd/MM/yyyy" />
-															</p:inputText>
+														<div class="form-group ">
+															<div class="col-md-4">Fecha</div>
+															<div class="col-md-8">
+																<p:inputText id="fechaRegistroID"
+																	style=" color: #555555; background-image: none;"
+																	styleClass="input-sm form-control" size="40"
+																	value="#{ordenSalidaController.newOrdenSalida.fechaRegistro}"
+																	disabled="true" required="true"
+																	requiredMessage="Requerido.">
+																	<f:convertDateTime pattern="dd/MM/yyyy" />
+																</p:inputText>
+															</div>
 														</div>
-													</div>
 
-													<div class="form-group ">
-														<div class="col-md-4">Registro</div>
-														<div class="col-md-8">
-															<p:inputText id="usuarioRegistroID"
-																style=" color: #555555; background-image: none;"
-																styleClass="input-sm form-control" size="40"
-																value="#{ordenSalidaController.newOrdenSalida.usuarioRegistro}"
-																disabled="true" required="true"
-																requiredMessage="Usuario Registro Requerido." />
+														<div class="form-group ">
+															<div class="col-md-4">Registro</div>
+															<div class="col-md-8">
+																<p:inputText id="usuarioRegistroID"
+																	style=" color: #555555; background-image: none;"
+																	styleClass="input-sm form-control" size="40"
+																	value="#{ordenSalidaController.newOrdenSalida.usuarioRegistro}"
+																	disabled="true" required="true"
+																	requiredMessage="Usuario Registro Requerido." />
+															</div>
 														</div>
-													</div>
 
+													</div>
 												</div>
 											</div>
 										</div>
 									</div>
-								</div>
-								<div class="col-md-8">
+									<div class="col-md-8">
 
-									<div class="panel panel-default">
-										<div class="panel-heading">
-											<h3 class="panel-title">Lista de ITEMS</h3>
+										<div class="panel panel-default">
+											<div class="panel-heading">
+												<h3 class="panel-title">Lista de ITEMS</h3>
+											</div>
+											<!-- start here datatable -->
+											<div class="box-content no-padding">
+
+												<div class="table-responsive">
+
+													<p:dataTable id="itemsTable1"
+														style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+														selection="#{ordenSalidaController.selectedDetalleOrdenSalida}"
+														selectionMode="single" rowKey="#{_var}" var="_var"
+														value="#{ordenSalidaController.listaDetalleOrdenSalida}"
+														emptyMessage="No se encontraron Registros de ITEMS.">
+
+														<p:ajax event="rowSelect" update="formTableOrdenSalida"
+															listener="#{ordenSalidaController.onRowSelectDetalleOrdenSalidaClick}" />
+
+														<p:column headerText="Partida">
+															<h:outputText value="#{_var.producto.partida.nombre}" />
+														</p:column>
+
+														<p:column headerText="Nombre ITEM">
+															<h:outputText value="#{_var.producto.nombre}" />
+														</p:column>
+
+														<p:column headerText="Unidad Medida" width="10%">
+															<h:outputText value="#{_var.producto.unidadMedida}" />
+														</p:column>
+
+														<p:column headerText="Cantidad" width="10%">
+															<h:outputText value="#{_var.cantidadSolicitada}" />
+														</p:column>
+
+														<p:column headerText="Precio U." width="12%">
+															<h:outputText value="#{_var.producto.precioUnitario}">
+																<f:convertNumber pattern="#,##0.00" />
+															</h:outputText>#{' '}
+														<h:outputText value="Bs.-" />
+														</p:column>
+
+														<p:column headerText="Total" width="12%">
+															<h:outputText value="#{_var.total}">
+																<f:convertNumber pattern="#,##0.00" />
+															</h:outputText>
+														</p:column>
+
+														<p:column headerText="Obervacion">
+															<h:outputText value="#{_var.observacion}" />
+														</p:column>
+
+													</p:dataTable>
+												</div>
+											</div>
+
+											<br />
+
+											<div class="row">
+												<div class="col-sm-12">
+													<div class="form-group">
+														<div class="col-md-9"></div>
+														<div class="col-md-1">
+															<p:commandLink value="&#160;"
+																styleClass="btn btn-success ion-plus-round "
+																update="formDialogProducto"
+																oncomplete="PF('dlgProducto').show();" immediate="true">
+															</p:commandLink>
+
+														</div>
+														<div class="col-md-1">
+															<p:commandLink id="editarDetalleOrdenIngreso"
+																value="&#160;" styleClass="btn btn-primary ion-edit"
+																update="formDialogProducto"
+																oncomplete="PF('dlgProducto').show();"
+																disabled="#{ordenSalidaController.verButtonDetalle}"
+																action="#{ordenSalidaController.editarDetalleOrdenIngreso()}"
+																immediate="true">
+															</p:commandLink>
+														</div>
+														<div class="col-md-1">
+															<p:commandLink id="eliminarDetalleOrdenIngreso"
+																value="&#160;" styleClass="btn btn-danger ion-close"
+																disabled="#{ordenSalidaController.verButtonDetalle}"
+																update="formTableOrdenSalida:itemsTable1"
+																immediate="true"
+																action="#{ordenSalidaController.borrarDetalleOrdenIngreso()}">
+															</p:commandLink>
+														</div>
+
+													</div>
+												</div>
+											</div>
+
+											<!-- end here datatable -->
+											<div class="panel-body"></div>
+
 										</div>
-										<!-- start here datatable -->
-										<div class="box-content no-padding">
 
-											<div class="table-responsive">
+									</div>
+								</ui:fragment>
 
-												<p:dataTable id="itemsTable1"
+								<ui:fragment rendered="#{ordenSalidaController.crear}">
+
+									<div class="col-md-12" align="left">
+
+										<div class="panel panel-default">
+											<div class="panel-heading">
+												<h3 class="panel-title">Lista de Orden De Salida</h3>
+											</div>
+											<!-- start here datatable -->
+											<div class="box-content no-padding">
+
+												<p:dataTable
 													style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
-													selection="#{ordenSalidaController.selectedDetalleOrdenSalida}"
-													selectionMode="single" rowKey="#{_var}" var="_var"
-													value="#{ordenSalidaController.listaDetalleOrdenSalida}"
+													selection="#{ordenSalidaController.selectedOrdenSalida}"
+													selectionMode="single" rowKey="#{_var}" id="itemsTable2"
+													var="_var"
+													value="#{ordenSalidaController.listaOrdenSalida}"
 													emptyMessage="No se encontraron Registros de ITEMS.">
 
-													<p:ajax event="rowSelect" update="formTableOrdenSalida"
-														listener="#{ordenSalidaController.onRowSelectDetalleOrdenSalidaClick}" />
+													<p:ajax event="rowSelect"
+														update="formTableOrdenSalida, formBotonesHeader"
+														listener="#{ordenSalidaController.onRowSelectOrdenSalidaClick}" />
 
-													<p:column headerText="Partida">
-														<h:outputText value="#{_var.producto.partida.nombre}" />
+													<p:column width="8%" headerText="Codigo"
+														style="text-align:center;" filterBy="#{_var.correlativo}"
+														filterStyle="width: 100%;" filterMatchMode="contains">
+														<h:outputText value="#{_var.correlativo}" />
 													</p:column>
 
-													<p:column headerText="Nombre ITEM">
-														<h:outputText value="#{_var.producto.nombre}" />
-													</p:column>
-													
-													<p:column headerText="Unidad Medida" width="10%">
-														<h:outputText value="#{_var.producto.unidadMedida}" />
+													<p:column headerText="Almacen"
+														filterBy="#{_var.almacen.nombre}"
+														filterStyle="width: 100%;" filterMatchMode="contains">
+														<h:outputText value="#{_var.almacen.nombre}" />
 													</p:column>
 
-													<p:column headerText="Cantidad" width="10%">
-														<h:outputText value="#{_var.cantidadSolicitada}" />
-													</p:column>
 
-													<p:column headerText="Precio U." width="12%">
-														<h:outputText value="#{_var.producto.precioUnitario}">
+													<p:column headerText="Total Importe" width="15%"
+														style="text-align:center;" filterBy="#{_var.totalImporte}"
+														filterStyle="width: 100%;" filterMatchMode="contains">
+														<h:outputText value="#{_var.totalImporte}">
 															<f:convertNumber pattern="#,##0.00" />
-														</h:outputText>#{' '}
+														</h:outputText>
+														#{' '}
 														<h:outputText value="Bs.-" />
 													</p:column>
 
-													<p:column headerText="Total" width="12%">
-														<h:outputText value="#{_var.total}">
-															<f:convertNumber pattern="#,##0.00" />
+													<p:column headerText="Estado" width="8%"
+														style="text-align:center;" filterBy="#{_var.estado}"
+														filterStyle="width: 100%;" filterMatchMode="contains">
+														<span class="label label-primary"><h:outputText
+																rendered="#{_var.estado=='AC'}" value="Activo" /></span>
+														<span class="label label-danger"><h:outputText
+																rendered="#{_var.estado=='IN'}" value="Inactivo" /></span>
+														<span class="label label-success"><h:outputText
+																rendered="#{_var.estado=='PR'}" value="Procesado" /></span>
+													</p:column>
+
+													<p:column width="10%" headerText="Fecha"
+														style="text-align:center;"
+														filterBy="#{_var.fechaRegistro}"
+														filterStyle="width: 100%;" filterMatchMode="contains">
+														<h:outputText value="#{_var.fechaRegistro}">
+															<f:convertDateTime pattern="dd/MM/yyyy" />
 														</h:outputText>
 													</p:column>
 
-													<p:column headerText="Obervacion">
-														<h:outputText value="#{_var.observacion}" />
+													<p:column width="8%" headerText="Registro"
+														style="text-align:center;"
+														filterBy="#{_var.usuarioRegistro}"
+														filterStyle="width: 100%;" filterMatchMode="contains">
+														<h:outputText value="#{_var.usuarioRegistro}" />
 													</p:column>
 
 												</p:dataTable>
 											</div>
+											<!-- end here datatable -->
+											<div class="panel-body"></div>
+
 										</div>
-										
-										<br />
-
-										<div class="row">
-											<div class="col-sm-12">
-												<div class="form-group">
-													<div class="col-md-9"></div>
-													<div class="col-md-1">
-														<p:commandLink value="&#160;"
-															styleClass="btn btn-success ion-plus-round "
-															update="formDialogProducto"
-															oncomplete="PF('dlgProducto').show();" immediate="true">
-														</p:commandLink>
-
-													</div>
-													<div class="col-md-1">
-														<p:commandLink id="editarDetalleOrdenIngreso"
-															value="&#160;" styleClass="btn btn-primary ion-edit"
-															update="formDialogProducto"
-															oncomplete="PF('dlgProducto').show();"
-															disabled="#{ordenSalidaController.verButtonDetalle}"
-															action="#{ordenSalidaController.editarDetalleOrdenIngreso()}"
-															immediate="true">
-														</p:commandLink>
-													</div>
-													<div class="col-md-1">
-														<p:commandLink id="eliminarDetalleOrdenIngreso"
-															value="&#160;" styleClass="btn btn-danger ion-close"
-															disabled="#{ordenSalidaController.verButtonDetalle}"
-															update="formTableOrdenSalida:itemsTable1"
-															immediate="true"
-															action="#{ordenSalidaController.borrarDetalleOrdenIngreso()}">
-														</p:commandLink>
-													</div>
-
-												</div>
-											</div>
-										</div>
-
-										<!-- end here datatable -->
-										<div class="panel-body"></div>
-
 									</div>
+								</ui:fragment>
 
-								</div>
 							</ui:fragment>
-
-							<ui:fragment rendered="#{ordenSalidaController.crear}">
-
-								<div class="col-md-12" align="left">
-
+							
+							<ui:fragment rendered="#{ordenSalidaController.verReport}">								
+								<div class="col-md-12">
 									<div class="panel panel-default">
-										<div class="panel-heading">
-											<h3 class="panel-title">Lista de Orden De Salida</h3>
+										<div class="panel-body" style="text-align:center;">
+											<p:media player="pdf" rendered="true" 
+												value="#{ordenSalidaController.urlOrdenSalida}"
+												width="800px" height="1125px" />
 										</div>
-										<!-- start here datatable -->
-										<div class="box-content no-padding">
-
-											<p:dataTable
-												style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
-												selection="#{ordenSalidaController.selectedOrdenSalida}"
-												selectionMode="single" rowKey="#{_var}" id="itemsTable2"
-												var="_var" value="#{ordenSalidaController.listaOrdenSalida}"
-												emptyMessage="No se encontraron Registros de ITEMS.">
-
-												<p:ajax event="rowSelect"
-													update="formTableOrdenSalida, formBotonesHeader"
-													listener="#{ordenSalidaController.onRowSelectOrdenSalidaClick}" />
-
-												<p:column width="8%" headerText="Codigo" style="text-align:center;"
-													filterBy="#{_var.correlativo}" filterStyle="width: 100%;"
-													filterMatchMode="contains">
-													<h:outputText value="#{_var.correlativo}" />
-												</p:column>
-
-												<p:column headerText="Almacen"
-													filterBy="#{_var.almacen.nombre}"
-													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.almacen.nombre}" />
-												</p:column>
-
-
-												<p:column headerText="Total Importe" width="15%" style="text-align:center;"
-													filterBy="#{_var.totalImporte}" filterStyle="width: 100%;"
-													filterMatchMode="contains">
-													<h:outputText value="#{_var.totalImporte}">
-														<f:convertNumber pattern="#,##0.00" />
-													</h:outputText>
-														#{' '}
-														<h:outputText value="Bs.-" />
-												</p:column>
-
-												<p:column headerText="Estado" width="8%" style="text-align:center;"
-													filterBy="#{_var.estado}" filterStyle="width: 100%;"
-													filterMatchMode="contains">
-													<span class="label label-primary"><h:outputText
-															rendered="#{_var.estado=='AC'}" value="Activo" /></span>
-													<span class="label label-danger"><h:outputText
-															rendered="#{_var.estado=='IN'}" value="Inactivo" /></span>
-													<span class="label label-success"><h:outputText
-															rendered="#{_var.estado=='PR'}" value="Procesado" /></span>
-												</p:column>
-
-												<p:column width="10%" headerText="Fecha" style="text-align:center;"
-													filterBy="#{_var.fechaRegistro}" filterStyle="width: 100%;"
-													filterMatchMode="contains">
-													<h:outputText value="#{_var.fechaRegistro}">
-														<f:convertDateTime pattern="dd/MM/yyyy" />
-													</h:outputText>
-												</p:column>
-
-												<p:column width="8%" headerText="Registro" style="text-align:center;"
-													filterBy="#{_var.usuarioRegistro}"
-													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.usuarioRegistro}" />
-												</p:column>
-
-											</p:dataTable>
-										</div>
-										<!-- end here datatable -->
-										<div class="panel-body"></div>
-
 									</div>
 								</div>
 							</ui:fragment>
+							
 						</h:form>
 					</div>
 				</section>
@@ -672,10 +700,9 @@
 		</h:form>
 
 		<!-- VISTA PREVIA REPORTE -->
-		<p:dialog header="ORDEN SALIDA"
-			widgetVar="dlgVistaPreviaOrdenSalida" modal="true"
-			visible="#{not empty facesContext.maximumSeverity}" resizable="false"
-			position="center" width="750px">
+		<p:dialog header="ORDEN SALIDA" widgetVar="dlgVistaPreviaOrdenSalida"
+			modal="true" visible="#{not empty facesContext.maximumSeverity}"
+			resizable="false" position="center" width="750px">
 			<h:form id="formModalVistaPrevia">
 				<div class="row">
 					<div class="form-group ">

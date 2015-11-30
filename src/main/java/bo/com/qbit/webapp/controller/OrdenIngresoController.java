@@ -236,7 +236,7 @@ public class OrdenIngresoController implements Serializable {
 				d.setOrdenIngreso(newOrdenIngreso);
 				detalleOrdenIngresoRegistration.register(d);
 			}
-			FacesUtil.infoMessage("Orden de Ingreso Registrada!", ""+newOrdenIngreso.getId());
+			FacesUtil.infoMessage("Orden de Ingreso Registrada!", ""+newOrdenIngreso.getCorrelativo());
 			initNewOrdenIngreso();
 		} catch (Exception e) {
 			FacesUtil.errorMessage("Error al Registrar.");
@@ -262,7 +262,7 @@ public class OrdenIngresoController implements Serializable {
 			newOrdenIngreso.setProveedor(selectedProveedor);
 			newOrdenIngreso.setTotalImporte(total);
 			ordenIngresoRegistration.updated(newOrdenIngreso);
-			FacesUtil.infoMessage("Orden de Ingreso Modificada!", ""+newOrdenIngreso.getId());
+			FacesUtil.infoMessage("Orden de Ingreso Modificada!", ""+newOrdenIngreso.getCorrelativo());
 			initNewOrdenIngreso();
 		} catch (Exception e) {
 			FacesUtil.errorMessage("Error al Modificar.");

@@ -27,6 +27,17 @@ public class AlmacenProductoRepository {
 		return em.createQuery(query).getResultList();
 	}
 
+	public AlmacenProducto findByAlmacenProducto(Almacen almacen,Producto producto) {
+		try{
+			String query = "select em from AlmacenProducto em where ( em.estado='AC' or em.estado='IN' ) and em.almacen.id="
+					+ almacen.getId() + " and em.producto.id="+producto.getId();
+			System.out.println("Query AlmacenProducto: " + query);
+			return (AlmacenProducto) em.createQuery(query).getSingleResult();
+		}catch(Exception e){
+			return null;
+		}
+	}
+
 	public AlmacenProducto findByProducto(Producto producto) {
 		try{
 			String query = "select em from AlmacenProducto em where ( em.estado='AC' or em.estado='IN' ) and em.producto.id="
@@ -37,8 +48,8 @@ public class AlmacenProductoRepository {
 			return null;
 		}
 	}
-	
-	
+
+
 	public List<AlmacenProducto> findByAlmacen(Almacen almacen) {
 		try{
 			String query = "select em from AlmacenProducto em where ( em.estado='AC' or em.estado='IN' ) and em.almacen.id="
@@ -49,7 +60,7 @@ public class AlmacenProductoRepository {
 			return null;
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<AlmacenProducto> findAllByProducto(Producto producto) {
 		try{
@@ -61,7 +72,7 @@ public class AlmacenProductoRepository {
 			return null;
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<AlmacenProducto> findProductoConStockOrderedByID() {
 		String query = "select ser from AlmacenProducto ser where ser.estado='AC' and ser.stock > 0 order by ser.id desc";

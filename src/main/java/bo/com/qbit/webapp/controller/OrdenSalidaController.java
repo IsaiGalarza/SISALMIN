@@ -89,6 +89,7 @@ public class OrdenSalidaController implements Serializable {
 	private boolean verButtonDetalle = true;
 	private boolean editarOrdenSalida = false;
 	private boolean verProcesar = true;
+	private boolean verReport = false;
 
 	private String tituloProducto = "Agregar Producto";
 	private String tituloPanel = "Registrar Orden Salida";
@@ -291,7 +292,7 @@ public class OrdenSalidaController implements Serializable {
 			ordenSalidaRegistration.updated(newOrdenSalida);
 			FacesUtil.infoMessage("Orden de Salida Modificada!", ""+newOrdenSalida.getCorrelativo());
 			initNewOrdenSalida();
-			
+
 		} catch (Exception e) {
 			FacesUtil.errorMessage("Error al Modificar.");
 		}
@@ -306,13 +307,13 @@ public class OrdenSalidaController implements Serializable {
 			}
 			FacesUtil.infoMessage("Orden de Salida Eliminada!", ""+newOrdenSalida.getId());
 			initNewOrdenSalida();
-			
+
 		} catch (Exception e) {
 			FacesUtil.errorMessage("Error al Eliminar.");
 		}
 	}
 
-	public void procesarOrdenIngreso(){
+	public void procesarOrdenSalida(){
 		try {
 			Date fechaActual = new Date();
 			//actualizar estado de orden ingreso
@@ -324,68 +325,79 @@ public class OrdenSalidaController implements Serializable {
 			listaDetalleOrdenSalida = detalleOrdenSalidaRepository.findAllByOrdenSalida(selectedOrdenSalida);
 			for(DetalleOrdenSalida d: listaDetalleOrdenSalida){
 				Producto prod = d.getProducto();
-				actualizarStock(prod, Integer.valueOf(String.valueOf(d.getCantidadSolicitada())),fechaActual);
-				actualizarKardexProducto( prod,fechaActual, Integer.valueOf(String.valueOf(d.getCantidadSolicitada())));
+				actualizarStock(prod, d.getCantidadSolicitada(),fechaActual);
+				actualizarKardexProducto( prod,fechaActual, d.getCantidadSolicitada());
 			}
 
 			FacesUtil.infoMessage("Orden de Ingreso Procesada!", "");
 			initNewOrdenSalida();
-			
+
 		} catch (Exception e) {
+			System.out.println("Error : "+e.getMessage());
 			FacesUtil.errorMessage("Error al Procesar!");
 		}
 	}
 
 	//registro en la tabla kardex_producto
 	private void actualizarKardexProducto(Producto prod,Date fechaActual,double cantidad) throws Exception{
-		//registrar Kardex
-		KardexProducto kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProducto(prod);
-		double stockAnterior = 0;
-		if(kardexProductoAnt != null){
-			stockAnterior = kardexProductoAnt.getStockActual();
+		try{
+			System.out.println("actualizarKardexProducto()");
+			//registrar Kardex
+			KardexProducto kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProducto(prod);
+			double stockAnterior = 0;
+			if(kardexProductoAnt != null){
+				stockAnterior = kardexProductoAnt.getStockActual();
+			}
+			KardexProducto kardexProducto = new KardexProducto();
+			kardexProducto.setFecha(fechaActual);
+			kardexProducto.setAlmacen(selectedOrdenSalida.getAlmacen());
+			kardexProducto.setCantidad(cantidad);
+			kardexProducto.setEstado("AC");
+			kardexProducto.setFechaRegistro(fechaActual);
+			kardexProducto.setGestion(gestionSesion);
+			kardexProducto.setNumeroTransaccion(selectedOrdenSalida.getCorrelativo());
+			kardexProducto.setPrecioCompra(0);
+			kardexProducto.setPrecioVenta(0);
+			kardexProducto.setProducto(prod);
+
+			kardexProducto.setStock(cantidad);//estock que esta ingresando
+			kardexProducto.setStockActual(stockAnterior+cantidad);//anterior + cantidad
+			kardexProducto.setStockAnterior(stockAnterior);
+			kardexProducto.setTipoMovimiento("ORDEN SALIDA");
+			kardexProducto.setUsuarioRegistro(usuarioSession);
+			kardexProductoRegistration.register(kardexProducto);
+		}catch(Exception e){
+			System.out.println("actualizarKardexProducto Error : "+e.getMessage());
 		}
-		KardexProducto kardexProducto = new KardexProducto();
-		kardexProducto.setFecha(fechaActual);
-		kardexProducto.setAlmacen(selectedOrdenSalida.getAlmacen());
-		kardexProducto.setCantidad(cantidad);
-		kardexProducto.setEstado("AC");
-		kardexProducto.setFechaRegistro(fechaActual);
-		kardexProducto.setGestion(gestionSesion);
-		kardexProducto.setNumeroTransaccion(selectedOrdenSalida.getCorrelativo());
-		kardexProducto.setPrecioCompra(0);
-		kardexProducto.setPrecioVenta(0);
-		kardexProducto.setProducto(prod);
-		
-		kardexProducto.setStock(cantidad);//estock que esta ingresando
-		kardexProducto.setStockActual(stockAnterior+cantidad);//anterior + cantidad
-		kardexProducto.setStockAnterior(stockAnterior);
-		kardexProducto.setTipoMovimiento("ORDEN INGRESO");
-		kardexProducto.setUsuarioRegistro(usuarioSession);
-		kardexProductoRegistration.register(kardexProducto);
 	}
-	
-	private void actualizarStock(Producto prod ,int newStock,Date date) throws Exception {
-		//0 . verificar si existe el producto en el almacen
-		System.out.println("actualizarStock()");
-		AlmacenProducto almProd =  almacenProductoRepository.findByProducto(prod);
-		System.out.println("almProd = "+almProd);
-		if(almProd != null){
-			// 1 .  si existe el producto
-			double oldStock = almProd.getStock();
-			almProd.setStock(oldStock - newStock); //quitar (-)
-			almacenProductoRegistration.updated(almProd);
-			return ;
+
+	private void actualizarStock(Producto prod ,double newStock,Date date) throws Exception {
+		try{
+			//0 . verificar si existe el producto en el almacen
+			System.out.println("actualizarStock()");
+			AlmacenProducto almProd =  almacenProductoRepository.findByProducto(prod);
+			System.out.println("almProd = "+almProd);
+			if(almProd != null){
+				// 1 .  si existe el producto
+				double oldStock = almProd.getStock();
+				almProd.setStock(oldStock - newStock); //quitar (-)
+				almacenProductoRegistration.updated(almProd);
+				return ;
+			}
+		}catch(Exception e){
+			System.out.println("actualizarStock Error : "+e.getMessage());
 		}
 	}
 
 	public void cargarReporte(){
 		try {
 			urlOrdenSalida = loadURL();
-			RequestContext context = RequestContext.getCurrentInstance();
-			context.execute("PF('dlgVistaPreviaOrdenSalida').show();");
+			//RequestContext context = RequestContext.getCurrentInstance();
+			//context.execute("PF('dlgVistaPreviaOrdenSalida').show();");
 
-			initNewOrdenSalida();
-			
+			//initNewOrdenSalida();
+			verReport = true;
+
 		} catch (Exception e) {
 			FacesUtil.errorMessage("Proceso Incorrecto.");
 		}
@@ -484,7 +496,7 @@ public class OrdenSalidaController implements Serializable {
 			}
 		}
 	}
-	
+
 	// ONCOMPLETETEXT DETALLE UNIDAD
 	public List<DetalleUnidad> completeDetalleUnidad(String query) {
 		String upperQuery = query.toUpperCase();
@@ -536,15 +548,15 @@ public class OrdenSalidaController implements Serializable {
 			}
 		}
 	}
-	
+
 	// ONCOMPLETETEXT PROYECTO
-	
+
 	public List<Proyecto> completeProyecto(String query) {
 		String upperQuery = query.toUpperCase();
 		listaProyecto = proyectoRepository.findAllProyectoForQueryNombre(upperQuery);      
 		return listaProyecto;
 	}
-	
+
 	public void onRowSelectProyectoClick(SelectEvent event) {
 		String nombre =  event.getObject().toString();
 		for(Proyecto i : listaProyecto){
@@ -771,6 +783,14 @@ public class OrdenSalidaController implements Serializable {
 
 	public void setListaProducto(List<Producto> listaProducto) {
 		this.listaProducto = listaProducto;
+	}
+
+	public boolean isVerReport() {
+		return verReport;
+	}
+
+	public void setVerReport(boolean verReport) {
+		this.verReport = verReport;
 	}
 
 }

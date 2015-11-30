@@ -19,7 +19,7 @@ public class OrdenSalidaRepository {
 
 	@SuppressWarnings("unchecked")
 	public List<OrdenSalida> findAllOrderedByID() {
-		String query = "select ser from OrdenSalida ser where ser.estado='AC' or ser.estado='IN' order by ser.id desc";
+		String query = "select ser from OrdenSalida ser where ser.estado='AC' or ser.estado='PR' order by ser.id desc";
 		System.out.println("Query findAllOrderedByID: " + query);
 		return em.createQuery(query).getResultList();
 	}

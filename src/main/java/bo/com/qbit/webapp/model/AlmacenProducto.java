@@ -84,8 +84,6 @@ public class AlmacenProducto implements Serializable {
 		this.fechaRegistro = fechaRegistro;
 	}
 
-	
-
 	public double getStock() {
 		return this.stock;
 	}

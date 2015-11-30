@@ -59,7 +59,7 @@
 
 								<p:commandLink id="buttonVerModificar" value="&#160; Modificar"
 									styleClass="btn btn-primary ion-edit"
-									rendered="#{ordenIngresoController.selectedOrdenIngreso != null and ordenIngresoController.crear and ordenIngresoController.verProcesar }"
+									rendered="#{ordenIngresoController.selectedOrdenIngreso != null and ordenIngresoController.crear and ordenIngresoController.verProcesar and ! ordenIngresoController.verReport}"
 									style="height:31px; padding:center"
 									update="formTableOrdenIngreso, :formBotonesHeader"
 									action="#{ordenIngresoController.cambiarAspectoModificar()}">
@@ -83,7 +83,7 @@
 
 								<p:commandLink id="buttonProcesar" value="&#160; Procesar"
 									styleClass="btn btn-info ion-ios7-loop-strong"
-									rendered="#{ordenIngresoController.selectedOrdenIngreso != null and ordenIngresoController.crear and ordenIngresoController.verProcesar }"
+									rendered="#{ordenIngresoController.selectedOrdenIngreso != null and ordenIngresoController.crear and ordenIngresoController.verProcesar and ! ordenIngresoController.verReport}"
 									style="height:31px; padding:center"
 									update="formTableOrdenIngreso, :formBotonesHeader"
 									action="#{ordenIngresoController.procesarOrdenIngreso()}">
@@ -275,6 +275,7 @@
 																	value="#{ordenIngresoController.newOrdenIngreso.fechaDocumento}"
 																	onkeypress="return permiteKey(event, 'none')"
 																	style=" color: #555555; background-image: none;">
+																	<p:ajax event="dateSelect" />
 																</p:calendar>
 															</div>
 														</div>
@@ -381,7 +382,7 @@
 											</div>
 
 											<br />
-											
+
 											<div class="row">
 												<div class="col-sm-12">
 													<div class="form-group">
@@ -518,10 +519,10 @@
 							<ui:fragment rendered="#{ordenIngresoController.verReport}">
 								<div class="col-md-12">
 									<div class="panel panel-default">
-										<div class="panel-body">
-											<object type="application/pdf"
-												data="#{ordenIngresoController.urlOrdenIngreso}"
-												width="100%" height="1150px"></object>
+										<div class="panel-body" style="text-align:center;">
+											<p:media player="pdf" rendered="true" 
+												value="#{ordenIngresoController.urlOrdenIngreso}"
+												width="800px" height="1125px" />
 										</div>
 									</div>
 								</div>

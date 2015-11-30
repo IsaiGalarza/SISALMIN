@@ -45,7 +45,6 @@ public class TomaInventarioController implements Serializable {
 	Conversation conversation;
 
 	private @Inject AlmacenRepository almacenRepository;
-	private @Inject DetalleOrdenIngresoRepository detalleOrdenIngresoRepository;
 	private @Inject AlmacenProductoRepository almacenProductoRepository;
 	private @Inject DetalleTomaInventarioRepository detalleTomaInventarioRepository;
 	private @Inject TomaInventarioRepository tomaInventarioRepository;
@@ -64,10 +63,9 @@ public class TomaInventarioController implements Serializable {
 	private boolean modificar = false;
 	private boolean registrar = false;
 	private boolean crear = true;
-	private boolean verButtonDetalle = true;
-	private boolean editarOrdenIngreso = false;
 	private boolean verProcesar = true;
 	private boolean verReport = false;
+	private boolean verButtonReport = false;
 	private boolean revisarReport = false;
 	private boolean verGuardar = false;
 
@@ -107,16 +105,19 @@ public class TomaInventarioController implements Serializable {
 		modificar = false;
 		registrar = false;
 		crear = true;
-		atencionCliente=false;
 		verProcesar = true;
+		verReport = false;
 		revisarReport = false;
 		verGuardar = false;
-
+		verButtonReport = false;
+		
 		listTomaInventario = tomaInventarioRepository.findAllOrderedByID();
 
 		listDetalleTomaInventario = new ArrayList<DetalleTomaInventario>();
 		listaAlmacen = almacenRepository.findAllOrderedByID();
 
+		selectedTomaInventario = null;
+		
 		newTomaInventario = new TomaInventario();
 		//newTomaInventario.setCorrelativo(cargarCorrelativo(listaOrdenIngreso.size()+1));
 		newTomaInventario.setEstado("AC");
@@ -161,17 +162,6 @@ public class TomaInventarioController implements Serializable {
 		//String year = new SimpleDateFormat("yy").format(fecha);
 		//String mes = new SimpleDateFormat("MM").format(fecha);
 		return String.format("%06d", nroOrdenIngreso);
-	}
-
-	// SELECT ORDEN INGRESO CLICK
-	public void onRowSelectTomainvenarioClick(SelectEvent event) {
-		try {
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Error in onRowSelectOrdenIngresoClick: "
-					+ e.getMessage());
-		}
 	}
 
 	public void registrarTomaInventario() {
@@ -228,9 +218,6 @@ public class TomaInventarioController implements Serializable {
 				listDetalleTomaInventario.add(detalle);
 			}
 			verGuardar = listDetalleTomaInventario.size()>0?true:false;
-
-			//			FacesUtil.infoMessage("Toma Inventario Procesada!", "");
-			//			initNewTomaInventario();
 		} catch (Exception e) {
 			FacesUtil.errorMessage("Error al Procesar!");
 		}
@@ -239,11 +226,8 @@ public class TomaInventarioController implements Serializable {
 	public void cargarReporte(){
 		try {
 			urlTomaInventario = loadURL();
-			//RequestContext context = RequestContext.getCurrentInstance();
-			//context.execute("PF('dlgVistaPreviaOrdenIngreso').show();");
 			verReport = true;
-
-			//initNewOrdenIngreso();
+			//verButtonReport = false;
 		} catch (Exception e) {
 			FacesUtil.errorMessage("Proceso Incorrecto.");
 		}
@@ -254,19 +238,24 @@ public class TomaInventarioController implements Serializable {
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
 			String urlPath = request.getRequestURL().toString();
 			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
-			String urlPDFreporte = urlPath+"ReporteTomaInventario?pIdOrdenIngreso="+selectedTomaInventario.getId()+"&pIdEmpresa=1&pUsuario="+usuarioSession;
+			String urlPDFreporte = urlPath+"ReporteTomaInventario?pIdTomaInventario="+selectedTomaInventario.getId()+"&pIdEmpresa=1&pUsuario="+usuarioSession;
 			return urlPDFreporte;
 		}catch(Exception e){
 			return "error";
 		}
+	}
+	
+	public void onRowSelectTomaInventarioClick(SelectEvent event){
+		verButtonReport = true;
+		crear = false;
+		
 	}
 
 	public void modificarTomaInventario(){
 		System.out.println("modificarDetalleOrdenIngreso ");
 
 		FacesUtil.resetDataTable("formTableOrdenIngreso:itemsTable1");
-		verButtonDetalle = true;
-		editarOrdenIngreso = false;
+
 	}
 
 	// ONCOMPLETETEXT ALMACEN
@@ -359,28 +348,12 @@ public class TomaInventarioController implements Serializable {
 		this.listaProveedor = listaProveedor;
 	}
 
-	public boolean isVerButtonDetalle() {
-		return verButtonDetalle;
-	}
-
-	public void setVerButtonDetalle(boolean verButtonDetalle) {
-		this.verButtonDetalle = verButtonDetalle;
-	}
-
 	public boolean isVerProcesar() {
 		return verProcesar;
 	}
 
 	public void setVerProcesar(boolean verProcesar) {
 		this.verProcesar = verProcesar;
-	}
-
-	public boolean isEditarOrdenIngreso() {
-		return editarOrdenIngreso;
-	}
-
-	public void setEditarOrdenIngreso(boolean editarOrdenIngreso) {
-		this.editarOrdenIngreso = editarOrdenIngreso;
 	}
 
 	public boolean isVerReport() {
@@ -454,6 +427,14 @@ public class TomaInventarioController implements Serializable {
 
 	public void setVerGuardar(boolean verGuardar) {
 		this.verGuardar = verGuardar;
+	}
+
+	public boolean isVerButtonReport() {
+		return verButtonReport;
+	}
+
+	public void setVerButtonReport(boolean verButtonReport) {
+		this.verButtonReport = verButtonReport;
 	}
 
 }
