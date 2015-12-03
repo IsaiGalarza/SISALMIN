@@ -272,10 +272,10 @@ public class OrdenIngresoController implements Serializable {
 	public void eliminarOrdenIngreso() {
 		try {
 			System.out.println("Ingreso a eliminarOrdenIngreso: ");
-			ordenIngresoRegistration.remover(newOrdenIngreso);
-			for(DetalleOrdenIngreso d: listaDetalleOrdenIngreso){
-				detalleOrdenIngresoRegistration.remover(d);
-			}
+			ordenIngresoRegistration.remover(selectedOrdenIngreso);
+//			for(DetalleOrdenIngreso d: listaDetalleOrdenIngreso){
+//				detalleOrdenIngresoRegistration.remover(d);
+//			}
 			FacesUtil.infoMessage("Orden de Ingreso Eliminada!", ""+newOrdenIngreso.getCorrelativo());
 			initNewOrdenIngreso();
 		} catch (Exception e) {

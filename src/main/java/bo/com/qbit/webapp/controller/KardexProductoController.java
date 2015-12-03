@@ -11,6 +11,7 @@ import javax.enterprise.event.Event;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 
 import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
@@ -31,6 +32,9 @@ public class KardexProductoController implements Serializable {
 	private static final long serialVersionUID = 2039368857381714460L;
 
 	public static final String PUSH_CDI_TOPIC = "pushCdi";
+	
+	@Inject
+	private FacesContext facesContext;
 
 	@Inject
 	Conversation conversation;
@@ -43,6 +47,7 @@ public class KardexProductoController implements Serializable {
 	@Push(topic = PUSH_CDI_TOPIC)
 	Event<String> pushEventSucursal;
 
+	private boolean verReport = false;
 	private String nuevaGestion;
 
 	//OBJECT
@@ -57,19 +62,24 @@ public class KardexProductoController implements Serializable {
 	//SESSION
 	private @Inject SessionMain sessionMain; //variable del login
 	private Gestion gestionLogin;
+	
+
+	private String urlKardexProducto = "";
+	private String usuarioSession;
 
 	@PostConstruct
 	public void initNewKardexProducto() {
 
 		System.out.println("... initNewKardexProducto ...");
 		gestionLogin = sessionMain.getGestionLogin();
-
+		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
+		
+		verReport = false;
 		selectedProducto = new Producto();
 		listGestion = gesionRepository.findAll();
 		selectedGestion = listGestion.get(0);
+		listaKardexProducto = new ArrayList<KardexProducto>();
 		nuevaGestion =String.valueOf(selectedGestion.getGestion());
-
-
 	}
 
 	public void initConversation() {
@@ -116,6 +126,32 @@ public class KardexProductoController implements Serializable {
 		if(selectedProducto!= null ){
 			listaKardexProducto  = kardexProductoRepository.findByProductoAndGestion(selectedProducto,selectedGestion);
 			FacesUtil.resetDataTable("formTableProducto:productoTable");
+		}
+	}
+	
+	
+	public void cargarReporte(){
+		try {
+			urlKardexProducto = loadURL();
+			//RequestContext context = RequestContext.getCurrentInstance();
+			//context.execute("PF('dlgVistaPreviaOrdenIngreso').show();");
+			verReport = true;
+
+			//initNewOrdenIngreso();
+		} catch (Exception e) {
+			FacesUtil.errorMessage("Proceso Incorrecto.");
+		}
+	}
+	
+	public String loadURL(){
+		try{
+			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
+			String urlPath = request.getRequestURL().toString();
+			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
+			String urlPDFreporte = urlPath+"ReporteKardexProducto?pIdProducto="+selectedProducto.getId()+"&pIdGestion="+selectedGestion.getId()+"&pIdEmpresa=1&pUsuario="+usuarioSession;
+			return urlPDFreporte;
+		}catch(Exception e){
+			return "error";
 		}
 	}
 
@@ -167,5 +203,21 @@ public class KardexProductoController implements Serializable {
 	public void setNuevaGestion(String nuevaGestion) {
 		this.nuevaGestion = nuevaGestion;
 		setSelectedGestion( findGestionByLocal(nuevaGestion));
+	}
+
+	public boolean isVerReport() {
+		return verReport;
+	}
+
+	public void setVerReport(boolean verReport) {
+		this.verReport = verReport;
+	}
+
+	public String getUrlKardexProducto() {
+		return urlKardexProducto;
+	}
+
+	public void setUrlKardexProducto(String urlKardexProducto) {
+		this.urlKardexProducto = urlKardexProducto;
 	}
 }

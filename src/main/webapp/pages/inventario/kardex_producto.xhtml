@@ -23,11 +23,29 @@
 					<h:form id="formBotonesHeader" style="padding-left: 10px;">
 						<div class="btn-group-demo">
 							<div class="btn-group">
+
+								<p:commandLink id="buttonAtras" value="&#160; Atras"
+									styleClass="btn btn-warning ion-minus-circled"
+									update="formTableProducto, formBotonesHeader"
+									rendered="#{kardexProductoController.verReport}"
+									style="height:31px; padding:center"
+									action="#{kardexProductoController.initNewKardexProducto()}">
+								</p:commandLink>
+
 								<p:commandLink id="buttonProcesar" value="&#160; Procesar"
 									styleClass="btn btn-info ion-ios7-loop-strong"
 									style="height:31px; padding:center"
+									rendered="#{! kardexProductoController.verReport}"
 									update="formTableProducto ,formBotonesHeader"
 									action="#{kardexProductoController.procesarConsulta()}">
+								</p:commandLink>
+
+								<p:commandLink id="buttonVerReporte" value="&#160; Ver Reporte"
+									styleClass="btn btn-info ion-printer"
+									rendered="#{kardexProductoController.listaKardexProducto.size() > 0}"
+									style="height:31px; padding:center"
+									update="formTableProducto ,formBotonesHeader"
+									action="#{kardexProductoController.cargarReporte()}">
 								</p:commandLink>
 							</div>
 						</div>
@@ -50,139 +68,156 @@
 
 						<h:form id="formTableProducto" styleClass="form-horizontal">
 
+							<ui:fragment rendered="#{ ! kardexProductoController.verReport}">
 
-							<div class="col-md-4">
-								<div class="panel panel-default">
-									<div class="panel-heading">
-										<h3 class="panel-title">Filtro Kardex</h3>
-									</div>
-									<div class="panel-body">
-										<!-- start here register -->
-										<div class="row">
-											<div class="col-md-12 box-content form-horizontal">
+								<div class="col-md-4">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Filtro Kardex</h3>
+										</div>
+										<div class="panel-body">
+											<!-- start here register -->
+											<div class="row">
+												<div class="col-md-12 box-content form-horizontal">
 
-												<div class="form-group">
-													<div class="col-md-4">Gestion</div>
-													<div class="col-md-8">
+													<div class="form-group">
+														<div class="col-md-4">Gestion</div>
+														<div class="col-md-8">
 
-														<h:selectOneMenu id="gestionID"
-															styleClass="input-sm form-control"
-															style=" color: #555555; height:25px; font-size:11px;"
-															value="#{kardexProductoController.nuevaGestion}">
-															<f:ajax />
-															<f:selectItems
-																value="#{kardexProductoController.listGestion}" />
-														</h:selectOneMenu>
+															<h:selectOneMenu id="gestionID"
+																styleClass="input-sm form-control"
+																style=" color: #555555; height:25px; font-size:11px;"
+																value="#{kardexProductoController.nuevaGestion}">
+																<f:ajax />
+																<f:selectItems
+																	value="#{kardexProductoController.listGestion}" />
+															</h:selectOneMenu>
 
+														</div>
 													</div>
-												</div>
 
-												<div class="form-group ">
-													<div class="col-md-4">Producto</div>
-													<div class="col-md-8">
-														<p:autoComplete id="productoID"
-															value="#{kardexProductoController.selectedProducto.nombre}"
-															completeMethod="#{kardexProductoController.completeProducto}"
-															minQueryLength="3" dropdown="true" required="true"
-															requiredMessage="Producto Requerido."
-															forceSelection="true" var="_var" itemLabel="#{_var}"
-															itemValue="#{_var.nombre}"
-															placeholder="[Escriba Producto]" maxResults="10">
+													<div class="form-group ">
+														<div class="col-md-4">Producto</div>
+														<div class="col-md-8">
+															<p:autoComplete id="productoID"
+																value="#{kardexProductoController.selectedProducto.nombre}"
+																completeMethod="#{kardexProductoController.completeProducto}"
+																minQueryLength="3" dropdown="true" required="true"
+																requiredMessage="Producto Requerido."
+																forceSelection="true" var="_var" itemLabel="#{_var}"
+																itemValue="#{_var.nombre}"
+																placeholder="[Escriba Producto]" maxResults="10">
 
-															<p:ajax event="itemSelect"
-																update="formTableProducto:productoID"
-																listener="#{kardexProductoController.onRowSelectProductoClick}" />
+																<p:ajax event="itemSelect"
+																	update="formTableProducto:productoID"
+																	listener="#{kardexProductoController.onRowSelectProductoClick}" />
 
-															<p:column>
-																<h:outputText value="#{_var.nombre}" />
-															</p:column>
+																<p:column>
+																	<h:outputText value="#{_var.nombre}" />
+																</p:column>
 
-														</p:autoComplete>
+															</p:autoComplete>
+														</div>
 													</div>
-												</div>
 
+												</div>
 											</div>
 										</div>
 									</div>
 								</div>
-							</div>
 
 
-							<div class="col-md-8" align="left">
+								<div class="col-md-8" align="left">
 
-								<div class="panel panel-default">
-									<div class="panel-heading">
-										<h3 class="panel-title">Kardex de Producto</h3>
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Kardex de Producto</h3>
+										</div>
+										<!-- start here datatable -->
+										<div class="box-content no-padding">
+
+											<p:dataTable
+												style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+												rowKey="#{_var.id}" id="productoTable" var="_var"
+												value="#{kardexProductoController.listaKardexProducto}"
+												rendered="#{not empty listaProducto}"
+												emptyMessage="No se encontraron Registros.">
+
+												<p:column width="9%" headerText="Fecha"
+													filterBy="#{_var.fecha}" filterStyle="width: 100%;"
+													filterMatchMode="contains">
+													<h:outputText value="#{_var.fecha}">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</h:outputText>
+												</p:column>
+
+												<p:column width="15%" headerText="Nro. Solicitud"
+													filterBy="#{_var.numeroTransaccion}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_var.numeroTransaccion}" />
+												</p:column>
+
+												<p:column width="16%" headerText="Unidad Solicitante"
+													filterBy="#{_var.unidadSolicitante}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_var.unidadSolicitante}" />
+												</p:column>
+
+												<p:column width="20%" headerText="Nombre"
+													filterBy="#{_var.producto.nombre}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_var.producto.nombre}" />
+												</p:column>
+
+												<p:column width="8%" headerText="Precio"
+													filterBy="#{_var.producto.precioUnitario}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_var.producto.precioUnitario}">
+														<f:convertNumber pattern="#,##0.00" />
+													</h:outputText>
+												</p:column>
+
+												<p:column width="8%" headerText="Entrada"
+													filterBy="#{_var.stock}" filterStyle="width: 100%;"
+													filterMatchMode="contains">
+													<h:outputText value="#{_var.stock}" />
+												</p:column>
+
+												<p:column headerText="Salida" width="8%"
+													filterBy="#{_var.stockAnterior}"
+													filterStyle="width: 100%; " filterMatchMode="contains">
+													<h:outputText value="#{_var.stockAnterior}" />
+												</p:column>
+
+												<p:column headerText="Saldo" width="8%"
+													filterBy="#{_var.stockActual}" filterStyle="width: 100%; "
+													filterMatchMode="contains">
+													<h:outputText value="#{_var.stockActual}" />
+												</p:column>
+
+											</p:dataTable>
+										</div>
+										<!-- end here datatable -->
+										<div class="panel-body"></div>
+
 									</div>
-									<!-- start here datatable -->
-									<div class="box-content no-padding">
-
-										<p:dataTable
-											style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
-											rowKey="#{_var.id}" id="productoTable" var="_var"
-											value="#{kardexProductoController.listaKardexProducto}"
-											rendered="#{not empty listaProducto}"
-											emptyMessage="No se encontraron Registros.">
-
-											<p:column width="9%" headerText="Fecha"
-												filterBy="#{_var.fecha}" filterStyle="width: 100%;"
-												filterMatchMode="contains">
-												<h:outputText value="#{_var.fecha}">
-													<f:convertDateTime pattern="dd/MM/yyyy" />
-												</h:outputText>
-											</p:column>
-											
-											<p:column width="15%" headerText="Nro. Solicitud"
-												filterBy="#{_var.numeroTransaccion}" filterStyle="width: 100%;"
-												filterMatchMode="contains">
-												<h:outputText value="#{_var.numeroTransaccion}" />
-											</p:column>
-
-											<p:column width="16%" headerText="Unidad Solicitante"
-												filterBy="#{_var.unidadSolicitante}" filterStyle="width: 100%;"
-												filterMatchMode="contains">
-												<h:outputText value="#{_var.unidadSolicitante}" />
-											</p:column>
-											
-											<p:column width="20%" headerText="Nombre"
-												filterBy="#{_var.producto.nombre}"
-												filterStyle="width: 100%;" filterMatchMode="contains">
-												<h:outputText value="#{_var.producto.nombre}" />
-											</p:column>
-											
-											<p:column width="8%" headerText="Precio"
-												filterBy="#{_var.producto.precioUnitario}"
-												filterStyle="width: 100%;" filterMatchMode="contains">
-												<h:outputText value="#{_var.producto.precioUnitario}">
-													<f:convertNumber pattern="#,##0.00" />
-												</h:outputText>
-											</p:column>
-
-											<p:column width="8%" headerText="Entrada"
-												filterBy="#{_var.producto.nombre}"
-												filterStyle="width: 100%;" filterMatchMode="contains">
-												<h:outputText value="#{_var.stock}" />
-											</p:column>
-											
-											<p:column headerText="Salida" width="8%"
-												filterBy="#{_var.stock}" filterStyle="width: 100%; "
-												filterMatchMode="contains">
-												<h:outputText value="#{_var.stockAnterior}" />
-											</p:column>
-											
-											<p:column headerText="Saldo" width="8%"
-												filterBy="#{_var.stock}" filterStyle="width: 100%; "
-												filterMatchMode="contains">
-												<h:outputText value="#{_var.stockActual}" />
-											</p:column>
-
-										</p:dataTable>
-									</div>
-									<!-- end here datatable -->
-									<div class="panel-body"></div>
-
 								</div>
-							</div>
+
+							</ui:fragment>
+
+							<ui:fragment rendered="#{kardexProductoController.verReport}">
+
+								<div class="col-md-12">
+									<div class="panel panel-default">
+										<div class="panel-body" style="text-align: center;">
+											<p:media player="pdf" rendered="true"
+												value="#{kardexProductoController.urlKardexProducto}"
+												width="800px" height="1125px" />
+										</div>
+									</div>
+								</div>
+							</ui:fragment>
+
 						</h:form>
 					</div>
 				</section>

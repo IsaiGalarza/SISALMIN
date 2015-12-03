@@ -45,7 +45,7 @@
 									rendered="#{usuarioController.modificar}"
 									styleClass="btn btn-primary ion-edit" style="height:31px;">
 									<p:ajax
-										update="formReg,:formTableUsuario,formGrowl:msgs1,:formBotonesHeader"
+										update="formReg,formTableUsuario,formGrowl:msgs1,formBotonesHeader"
 										listener="#{usuarioController.modificarUsuario()}" />
 								</p:commandLink>
 								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
@@ -96,10 +96,10 @@
 													</div>
 												</div>
 												<div class="form-group ">
-													<label class="col-md-4 control-label">Login</label>
+													<label class="col-md-4 control-label">Email</label>
 													<div class="col-md-8">
-														<p:inputText id="inputTextLogin"
-															value="#{newUsuario.login}"
+														<p:inputText id="inputTextEmail1" type="email"
+															value="#{newUsuario.email}" autocomplete="off"
 															style=" color: #555555; background-image: none;"
 															styleClass="input-sm form-control">
 															<p:ajax event="change" />
@@ -107,10 +107,10 @@
 													</div>
 												</div>
 												<div class="form-group ">
-													<label class="col-md-4 control-label">Email</label>
+													<label class="col-md-4 control-label">Login</label>
 													<div class="col-md-8">
-														<p:inputText id="inputTextEmail1" type="email"
-															value="#{newUsuario.email}" autocomplete="off"
+														<p:inputText id="inputTextLogin"
+															value="#{newUsuario.login}"
 															style=" color: #555555; background-image: none;"
 															styleClass="input-sm form-control">
 															<p:ajax event="change" />
@@ -175,12 +175,12 @@
 										<!-- start here datatable -->
 										<div class="form-group">
 											<p:dataTable id="dataTableUser" var="item" rendered="true"
-												value="#{usuarioController.listUsuario}" reflow="true"
+												value="#{usuarioController.listUsuarioRol}" reflow="true"
 												style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
 												selectionMode="single"
-												selection="#{usuarioController.selectedUsuario}"
+												selection="#{usuarioController.selectedUsuarioRol}"
 												rowKey="#{item.id}"
-												filteredValue="#{usuarioController.listFilterUsuario}">
+												filteredValue="#{usuarioController.listFilterUsuarioRol}">
 												<p:ajax event="rowSelect"
 													listener="#{usuarioController.onRowSelect}"
 													update="formReg,formBotonesHeader,formTableUsuario" />
@@ -192,40 +192,45 @@
 												</p:column>
 												<p:column headerText="Nombre" width="30%"
 													filterStyle="width: 100%; height:25px;"
-													filterMatchMode="contains" filterBy="#{item.nombre}">
-													<h:outputText value="#{item.nombre}" />
+													filterMatchMode="contains" filterBy="#{item.usuario.nombre}">
+													<h:outputText value="#{item.usuario.nombre}" />
 												</p:column>
 												<p:column headerText="Login" width="12%"
 													filterStyle="width: 100%; height:25px;"
-													filterMatchMode="contains" filterBy="#{item.login}">
-													<h:outputText value="#{item.login}" />
+													filterMatchMode="contains" filterBy="#{item.usuario.login}">
+													<h:outputText value="#{item.usuario.login}" />
 												</p:column>
 												<p:column headerText="Email" width="15%"
 													filterStyle="width: 100%; height:25px;"
-													filterMatchMode="contains" filterBy="#{item.email}">
-													<h:outputText value="#{item.email}" />
+													filterMatchMode="contains" filterBy="#{item.usuario.email}">
+													<h:outputText value="#{item.usuario.email}" />
+												</p:column>
+												<p:column headerText="Rol" width="15%"
+													filterStyle="width: 100%; height:25px;"
+													filterMatchMode="contains" filterBy="#{item.usuario.email}">
+													<h:outputText value="#{item.rol.nombre}" />
 												</p:column>
 												<p:column width="9%" headerText="Estado"
 													filterStyle="width: 100%; height:25px;"
-													style="text-align:center;" filterBy="#{item.state}">
+													style="text-align:center;" filterBy="#{item.usuario.state}">
 													<span class="label label-success"><h:outputText
-															rendered="#{item.state=='AC'}" value="Activo" /></span>
+															rendered="#{item.usuario.state=='AC'}" value="Activo" /></span>
 													<span class="label label-danger"><h:outputText
-															rendered="#{item.state=='IN'}" value="Inactivo" /></span>
+															rendered="#{item.usuario.state=='IN'}" value="Inactivo" /></span>
 													<span class="label label-success"><h:outputText
-															rendered="#{item.state=='SU'}" value="SUPER" /></span>
+															rendered="#{item.usuario.state=='SU'}" value="SUPER" /></span>
 												</p:column>
 												<p:column width="9%" headerText="Usuario Reg."
 													filterStyle="width: 100%; height:25px;"
 													style="text-align:center;"
-													filterBy="#{item.usuarioRegistro}">
+													filterBy="#{item.usuario.usuarioRegistro}">
 													<h:outputText value="#{item.usuarioRegistro}">
 													</h:outputText>
 												</p:column>
 												<p:column width="8%" headerText="Fecha Reg."
 													filterStyle="width: 100%; height:25px;"
 													style="text-align:center;" filterBy="#{item.fechaRegistro}">
-													<h:outputText value="#{item.fechaRegistro}">
+													<h:outputText value="#{item.usuario.fechaRegistro}">
 														<f:convertDateTime pattern="dd/MM/yyyy" />
 													</h:outputText>
 												</p:column>

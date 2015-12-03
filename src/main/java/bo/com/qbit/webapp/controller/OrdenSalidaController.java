@@ -14,7 +14,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
 
@@ -301,10 +300,10 @@ public class OrdenSalidaController implements Serializable {
 	public void eliminarOrdenSalida() {
 		try {
 			System.out.println("Ingreso a eliminarOrdenSalida: ");
-			ordenSalidaRegistration.remover(newOrdenSalida);
-			for(DetalleOrdenSalida d: listaDetalleOrdenSalida){
-				detalleOrdenSalidaRegistration.remover(d);
-			}
+			ordenSalidaRegistration.remover(selectedOrdenSalida);
+//			for(DetalleOrdenSalida d: listaDetalleOrdenSalida){
+//				detalleOrdenSalidaRegistration.remover(d);
+//			}
 			FacesUtil.infoMessage("Orden de Salida Eliminada!", ""+newOrdenSalida.getId());
 			initNewOrdenSalida();
 

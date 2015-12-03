@@ -11,10 +11,12 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.event.Event;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.primefaces.event.NodeSelectEvent;
+import org.primefaces.event.NodeUnselectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import org.richfaces.cdi.push.Push;
@@ -83,10 +85,9 @@ public class PermisoController implements Serializable {
 	private TreeNode[] selectedNodes2;
 
 	@PostConstruct
-	public void initNewPrivilegio() {
+	public void initNewPermiso() {
 
-		System.out.println(" init new initNewPrivilegio");
-		beginConversation();
+		System.out.println(" init new initNewPermiso");
 		nombreUsuario = sessionMain.getUsuarioLogin().getLogin();
 		empresaLogin = sessionMain.getEmpresaLogin();
 		gestionLogin = sessionMain.getGestionLogin();
@@ -112,7 +113,7 @@ public class PermisoController implements Serializable {
 				return r;
 			}
 		}
-		return null;
+		return null; 
 	}
 
 	/**
@@ -149,7 +150,7 @@ public class PermisoController implements Serializable {
 
 	private List<Modulo> findModuloByLocal(){
 		List<Modulo> list = new ArrayList<Modulo>();
-		for(Permiso per : listPermisoV1){
+		for(Permiso per : listPermisoV1){//listPermisoV1
 			DetallePagina dp = per.getDetallePagina();
 			Modulo m = dp.getPagina().getModulo();
 			if(! list.contains(m)){
@@ -216,7 +217,7 @@ public class PermisoController implements Serializable {
 			}
 		}
 	}
-
+	
 	private boolean tienePermisoModulo(Modulo m){
 		for(Modulo modAux : listModulo){
 			if(modAux.equals(m)){
@@ -310,6 +311,61 @@ public class PermisoController implements Serializable {
 		}
 		cargarNodos();
 	}
+	
+	public void onNodeUnselect(NodeUnselectEvent event){
+		EDPermisoV1 e = (EDPermisoV1)event.getTreeNode().getData();
+		System.out.println("onNodeUnselect : "+e.getNombre() +" tipo : "+e.getTipo());
+//		switch (e.getTipo()) {
+//		case "MODULO":
+//			Modulo m = (Modulo)e.getObject();
+//			listModulo.remove(m);
+//			//obtener lista de paginas hijas de este modulo
+//			List<Pagina> listPaginasHijas = new ArrayList<Pagina>();
+//			
+//			//eliminar todas las paginas hijas
+//			for(Pagina p: listPagina){
+//				listPagina.remove(p);
+//			}
+//			
+//			// eliminar todas las acciones
+//			for(EDAccion eda : listAccion){
+//				if(listPaginasHijas.contains(eda.getPagina())){
+//					listAccion.remove(eda);
+//				}
+//			}
+//
+//			break;
+//		case "PAGINA":
+//			Pagina p = (Pagina)e.getObject();
+//			listPagina.remove(p);
+//			
+//			//eliminar las acciones asociadas a esta pagina
+//			for(EDAccion eda : listAccion){
+//				if(p.equals(eda.getPagina())){
+//					listAccion.remove(eda);
+//				}
+//			}
+//			
+//			//obtener moudulo padre de la pagina
+//			
+//			//verificar si el modulo que pertenece esta pagina tiene otros hijos, sino eliminar modulo
+//			
+//			
+////			agregarPermiso(p);
+//			break;
+//		case "ACCION":
+//			EDAccion eda = (EDAccion)e.getObject();
+////			if( ! listAccion.contains(eda)){
+////				listAccion.add(eda);
+////			}
+////			agregarPermiso(eda.getPagina());
+//			break;
+//
+//		default:
+//			break;
+//		}
+//		cargarNodos();
+	}
 
 	private void agregarPermiso(Pagina p){
 		if( ! listPagina.contains(p)){
@@ -322,18 +378,19 @@ public class PermisoController implements Serializable {
 
 	//------------------------------------------------------------------
 
-	public void beginConversation() {
-		if (conversation.isTransient()) {
-			System.out.println("beginning conversation : " + this.conversation);
+	public void initConversation() {
+		if (!FacesContext.getCurrentInstance().isPostback() && conversation.isTransient()) {
 			conversation.begin();
-			System.out.println("---> Init Conversation");
+			System.out.println(">>>>>>>>>> CONVERSACION INICIADA...");
 		}
 	}
 
-	public void endConversation() {
+	public String endConversation() {
 		if (!conversation.isTransient()) {
 			conversation.end();
+			System.out.println(">>>>>>>>>> CONVERSACION TERMINADA...");
 		}
+		return "orden_ingreso.xhtml?faces-redirect=true";
 	}
 
 	public void registrarPermisos() {
@@ -380,6 +437,7 @@ public class PermisoController implements Serializable {
 		selectedRol = obtenerRolByLocal( nombreRol);
 		listPermisoV1 = new ArrayList<Permiso>();
 		listPermisoV1 = permisoRepository.findByRol(selectedRol);
+		System.out.println("setNombreRol:"+nombreRol+" - listPermisoV1:"+listPermisoV1.size());
 		cargarPermiso();
 		cargarNodos();
 	}

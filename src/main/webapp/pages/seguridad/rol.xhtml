@@ -39,12 +39,12 @@
 									styleClass="btn btn-success ion-plus-round"
 									style="height:31px; padding:center"
 									rendered="#{rolController.registrar}"
-									update=":formReg,:formTableRoles,:formBotonesHeader,:formGrowl:msgs1"
+									update="formReg,formTableRoles,formBotonesHeader,:formGrowl:msgs1"
 									action="#{rolController.registrarRol()}">
 								</p:commandLink>
 								<p:commandLink id="buttonModificar"
 									value="&#160; #{label['button.modify']}"
-									update=":formReg,:formTableRoles,:formBotonesHeader,:formGrowl:msgs1"
+									update="formReg,formTableRoles,formBotonesHeader,formGrowl:msgs1"
 									styleClass="btn btn-primary ion-edit"
 									rendered="#{rolController.modificar}"
 									style="height:31px; padding:center"
@@ -54,8 +54,8 @@
 									styleClass="btn btn-danger ion-close"
 									style="height:31px; padding:center"
 									rendered="#{rolController.modificar}"
-									update=":formReg,:formTableRoles,:formBotonesHeader,:formGrowl:msgs1"
-									disabled="#{newRoles.state =='SU'}"
+									update=":formReg,:formTableRoles,formBotonesHeader,formGrowl:msgs1"
+									disabled="#{rolController.newRol.estado =='SU'}"
 									action="#{rolController.eliminarRol()}">
 								</p:commandLink>
 							</div>

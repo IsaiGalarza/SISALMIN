@@ -9,6 +9,9 @@
 	template="/WEB-INF/templates/template_main.xhtml">
 	<ui:define name="head">
 		<title>Permiso</title>
+		
+		<f:event listener="#{permisoController.initConversation}"
+			type="preRenderView"></f:event>
 	</ui:define>
 
 	<ui:define name="content">
@@ -38,7 +41,7 @@
 				</div>
 				<div class="pull-right">
 					<ol class="breadcrumb">
-						<li><a href="#{request.contextPath}/pages/dashboard.jsf"
+						<li><a href="#{request.contextPath}/pages/dashboard.xhtml"
 							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
 						<li><a
 							href="#{request.contextPath}/pages/seguridad/permiso.xhtml"
@@ -49,6 +52,12 @@
 			</section>
 			<section class="main-content">
 				<section class="main-content">
+				
+				
+				<h:form id="formTree">
+				
+				
+				
 					<div class="row">
 						<div class="col-md-4">
 							<div class="panel panel-default">
@@ -62,14 +71,14 @@
 											<div class="form-group">
 												<div class="col-md-6">Seleccione un Rol</div>
 												<div class="col-md-6">
-													<h:form>
+													
 														<h:selectOneMenu id="roles" styleClass="form-control"
 															immediate="true" value="#{permisoController.nombreRol}">
 															<!-- 	<f:ajax render=":formTablePermiso" /> -->
 															<f:selectItems value="#{permisoController.listRol}" />
-															<p:ajax update="formTree:docs,descripcionID" />
+															<p:ajax update="formTree:docs,formTree:descripcionID" />
 														</h:selectOneMenu>
-													</h:form>
+													
 												</div>
 											</div>
 											<br />
@@ -98,14 +107,17 @@
 								<div class="panel-body">
 									<!-- start here register -->
 									<div class="row">
-										<h:form id="formTree">
+										
 											<p:tree id="docs" value="#{permisoController.root}"
 												var="node" selectionMode="checkbox"
 												style="font-size: 13px !important; padding: 0 0 0 16px !important; width: 100%; font-family: sans-serif !important;"
 												selection="#{permisoController.selectedNodes2}">
-												<p:ajax event="select" update=":formTree"
+												<p:ajax event="select" update="formTree"
 													listener="#{permisoController.onNodeSelect}" />
-												<p:treeNode icon="ui-icon-star">
+												
+												<p:ajax event="unselect" update="formTree" listener="#{permisoController.onNodeUnselect}" />
+												
+												<p:treeNode icon="ui-icon-star" >
 													<h:outputText value="MODULO #{node.nombre}" />
 												</p:treeNode>
 												<p:treeNode type="1" icon="ui-icon-newwin">
@@ -122,12 +134,17 @@
 												</p:treeNode>
 											</p:tree>
 
-										</h:form>
+										
 									</div>
 								</div>
 							</div>
 						</div>
 					</div>
+					
+					
+					</h:form>
+					
+					
 				</section>
 			</section>
 		</div>

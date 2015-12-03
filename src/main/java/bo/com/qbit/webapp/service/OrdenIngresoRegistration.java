@@ -39,8 +39,8 @@ public class OrdenIngresoRegistration {
         PartidaEventSrc.fire(ordenIngreso);
     }
     
-    public void remover(OrdenIngreso ordenIngreso){
-    	log.info("Remover Partida ");
+    public void remover(OrdenIngreso ordenIngreso) throws Exception{
+    	log.info("Remover OrdenIngreso ");
     	ordenIngreso.setEstado("RM");
         em.merge(ordenIngreso);
         PartidaEventSrc.fire(ordenIngreso);

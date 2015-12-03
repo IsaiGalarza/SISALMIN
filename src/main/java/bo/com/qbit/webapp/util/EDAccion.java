@@ -1,6 +1,5 @@
 package bo.com.qbit.webapp.util;
 
-import bo.com.qbit.webapp.model.Cliente;
 import bo.com.qbit.webapp.model.security.Accion;
 import bo.com.qbit.webapp.model.security.Pagina;
 

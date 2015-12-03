@@ -22,9 +22,10 @@ import bo.com.qbit.webapp.model.Usuario;
  * 
  */
 @Entity
-@SuppressWarnings("serial")
 @Table(name="usuario_rol", catalog="public")
 public class UsuarioRol implements Serializable {
+
+	private static final long serialVersionUID = -1381801811631362656L;
 
 	@Id 
 	@GeneratedValue(strategy=GenerationType.IDENTITY)

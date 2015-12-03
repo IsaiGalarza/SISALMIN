@@ -36,4 +36,22 @@ public class OrdenIngresoRepository {
 		return (( List<OrdenIngreso>)em.createQuery(query).getResultList()).size() + 1;
 	}
 
+	public double contarOrdenesActivas(Gestion gestion){
+		String query = "select count(em) from OrdenIngreso em where em.estado='AC' and em.gestion.id="+gestion.getId();
+		System.out.println("Query contarOrdenesActivas: "+query);
+		return (Long)em.createQuery(query).getSingleResult();
+	}
+	
+	public double contarOrdenesProcesadas(Gestion gestion){
+		String query = "select count(em) from OrdenIngreso em where em.estado='PR' and em.gestion.id="+gestion.getId();
+		System.out.println("Query contarOrdenesProcesadas: "+query);
+		return (Long)em.createQuery(query).getSingleResult();
+	}
+
+	public double contarOrdenesTotales(Gestion gestion){
+		String query = "select count(em) from OrdenIngreso em where (em.estado='AC' or em.estado='PR') and em.gestion.id="+gestion.getId();
+		System.out.println("Query contarOrdenesTotales: "+query);
+		return (Long)em.createQuery(query).getSingleResult();
+	}
+
 }

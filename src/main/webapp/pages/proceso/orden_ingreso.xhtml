@@ -75,9 +75,9 @@
 
 								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
 									styleClass="btn btn-danger ion-close"
-									rendered="#{ordenIngresoController.modificar}"
+									rendered="#{ordenIngresoController.selectedOrdenIngreso != null and ordenIngresoController.crear and ordenIngresoController.verProcesar and ! ordenIngresoController.verReport}"
 									update="formTableOrdenIngreso, :formBotonesHeader"
-									onclick="dlgEliminar.show()"
+									onclick="PF('dlgEliminarOrdenIngreso').show()"
 									style="height:31px; padding:center">
 								</p:commandLink>
 
@@ -96,30 +96,6 @@
 									update="formTableOrdenIngreso, :formBotonesHeader,formModalVistaPrevia"
 									action="#{ordenIngresoController.cargarReporte()}">
 								</p:commandLink>
-
-								<p:dialog header="Desea Eliminar la Orden de ingreso"
-									widgetVar="dlgEliminar" minHeight="40" modal="true">
-
-									<h:panelGrid columns="2" cellpadding="5">
-										<p:outputLabel value="ID" />
-										<p:outputLabel value=" " style="text-transform: uppercase"
-											required="true" size="20">
-										</p:outputLabel>
-									</h:panelGrid>
-
-									<p:commandButton value="Si"
-										actionListener="#{ordenIngresoController.eliminarOrdenIngreso()}"
-										icon="ui-icon-trash" style="width: 90px; text-color: white;"
-										update="formTableOrdenIngreso"
-										oncomplete="PF('dlgEliminar').hide()"
-										styleClass="btn btn-default" immediate="true" />
-
-									<p:commandButton value="No"
-										style="width: 90px; text-color: white;"
-										update="formTableOrdenIngreso"
-										oncomplete="PF('dlgEliminar').hide()"
-										styleClass="btn btn-default" immediate="true" />
-								</p:dialog>
 
 							</div>
 						</div>
@@ -519,8 +495,8 @@
 							<ui:fragment rendered="#{ordenIngresoController.verReport}">
 								<div class="col-md-12">
 									<div class="panel panel-default">
-										<div class="panel-body" style="text-align:center;">
-											<p:media player="pdf" rendered="true" 
+										<div class="panel-body" style="text-align: center;">
+											<p:media player="pdf" rendered="true"
 												value="#{ordenIngresoController.urlOrdenIngreso}"
 												width="800px" height="1125px" />
 										</div>
@@ -704,6 +680,37 @@
 								<p:commandLink value="Aceptar"
 									styleClass="btn btn-primary btn-block"
 									onclick="PF('dlgVistaPreviaOrdenIngreso').hide();" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Desea Eliminar la Orden de ingreso" widgetVar="dlgEliminarOrdenIngreso"
+			modal="true" visible="#{not empty facesContext.maximumSeverity}"
+			resizable="false" position="center" width="500px">
+			<h:form id="formModalEliminarOrdenIngreso">
+
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="form-group">
+							<div class="col-md-4"></div>
+							<div class="col-md-4">
+								<p:commandLink value="&#160; NO"
+									styleClass="btn btn-warning ion-minus-circled btn-block"
+									onclick="PF('dlgEliminarOrdenIngreso').hide();"
+									immediate="true">
+								</p:commandLink>
+							</div>
+							<div class="col-md-4">
+								<p:commandLink value="&#160; SI"
+										styleClass="btn btn-success ion-checkmark btn-block"
+										onclick="PF('dlgEliminarOrdenIngreso').hide();">
+										<p:ajax
+											update="formTableOrdenIngreso,formBotonesHeader"
+											listener="#{ordenIngresoController.eliminarOrdenIngreso()}" />
+									</p:commandLink>
 							</div>
 						</div>
 					</div>

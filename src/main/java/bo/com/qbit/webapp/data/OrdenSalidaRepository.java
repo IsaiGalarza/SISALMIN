@@ -5,6 +5,8 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+
+import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.OrdenSalida;
 
 @ApplicationScoped
@@ -22,6 +24,24 @@ public class OrdenSalidaRepository {
 		String query = "select ser from OrdenSalida ser where ser.estado='AC' or ser.estado='PR' order by ser.id desc";
 		System.out.println("Query findAllOrderedByID: " + query);
 		return em.createQuery(query).getResultList();
+	}
+	
+	public double contarOrdenesActivas(Gestion gestion){
+		String query = "select count(em) from OrdenSalida em where em.estado='AC' and em.gestion.id="+gestion.getId();
+		System.out.println("Query contarOrdenesActivas: "+query);
+		return (Long)em.createQuery(query).getSingleResult();
+	}
+
+	public double contarOrdenesProcesadas(Gestion gestion){
+		String query = "select count(em) from OrdenSalida em where em.estado='PR' and em.gestion.id="+gestion.getId();
+		System.out.println("Query contarOrdenesProcesadas: "+query);
+		return (Long)em.createQuery(query).getSingleResult();
+	}
+	
+	public double contarOrdenesTotales(Gestion gestion){
+		String query = "select count(em) from OrdenSalida em where (em.estado='AC' or em.estado='PR') and em.gestion.id="+gestion.getId();
+		System.out.println("Query contarOrdenesTotales: "+query);
+		return (Long)em.createQuery(query).getSingleResult();
 	}
 
 }

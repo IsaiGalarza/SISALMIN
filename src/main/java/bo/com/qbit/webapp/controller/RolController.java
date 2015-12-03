@@ -89,6 +89,7 @@ public class RolController implements Serializable {
 	private void loadDefault(){
 		tipoColumnTable = "col-md-12";
 		newRol = new Roles();
+		selectedRol = new Roles();
 		listRol = rolesRepository.findAllOrderByAsc();
 		modificar = false;
 		crear = true;
@@ -125,7 +126,7 @@ public class RolController implements Serializable {
 			}
 			rolRegistration.create(newRol);
 			FacesUtil.showDialog("Rol registrado "+newRol.getNombre());
-			resetearFitrosTabla("formTableRoles:dataTableRoles");
+			resetearFitrosTabla("formTableRoles:dataTableRoles");//formTableRoles:dataTableRoles
 			loadDefault();
 		} catch (Exception e) {
 			log.error("registrarRoles error: "+e.getMessage());
@@ -151,7 +152,7 @@ public class RolController implements Serializable {
 			newRol.setEstado("RM");
 			rolRegistration.update(newRol);
 			FacesUtil.showDialog("Rol Eliminado"+newRol.getNombre());
-			resetearFitrosTabla("formTableRoles:dataTableRoles");
+			FacesUtil.resetDataTable("formTableRoles:dataTableRoles");
 			loadDefault();
 		} catch (Exception e) {
 			log.error("eliminarRoles error: "+e.getMessage());

@@ -199,12 +199,12 @@ public class Usuario extends Validator implements Serializable {
 			facesContext.addMessage(null, m);
 			return false;
 		}
-		if(isValidateEmail(email)){
-			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
-					"email no válido!", "Ej: email@dominio.com");
-			facesContext.addMessage(null, m);
-			return false;
-		}
+//		if(isValidateEmail(email)){
+//			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
+//					"email no válido!", "Ej: email@dominio.com");
+//			facesContext.addMessage(null, m);
+//			return false;
+//		}
 		return true;
 	}
 

@@ -87,12 +87,16 @@ public class UsuarioController implements Serializable {
 	@Named
 	private Usuario newUsuario;
 	private Usuario selectedUsuario;
+	private UsuarioRol selectedUsuarioRol;
 	private Roles selectedRol;
 
 	private List<Usuario> listUsuario = new ArrayList<Usuario>();
 	private List<Usuario> listFilterUsuario = new ArrayList<Usuario>();
 	private List<Roles> listRol = new ArrayList<Roles>();
-	private String[] listEstado = {"ACTIVO","INACTIVO"};	
+	private String[] listEstado = {"ACTIVO","INACTIVO"};
+	
+	private List<UsuarioRol> listUsuarioRol = new ArrayList<UsuarioRol>();
+	private List<UsuarioRol> listFilterUsuarioRol = new ArrayList<UsuarioRol>();
 
 	//estados
 	private boolean crear = true;
@@ -120,9 +124,19 @@ public class UsuarioController implements Serializable {
 	}
 
 	private void loadDefault(){
+		
+		tipoColumnRegistro= "col-md-4";
+		tipoColumnTable = "col-md-12";
+		
+		crear = true;
+		registrar = false;
+		modificar = false;
+		stateInicial = true;
 		newUsuario = new Usuario();
 		selectedUsuario = new Usuario();
 		listUsuario = usuarioRepository.findAllOrderedByID();
+		
+		listUsuarioRol = usuarioRolRepository.findAllOrderedByNombre();
 
 		nombreRol = listRol.get(0).getNombre();
 		selectedRol = listRol.get(0);
@@ -171,6 +185,7 @@ public class UsuarioController implements Serializable {
 			usuarioRol.setUsuario(newUsuario);
 			usuarioRol.setEstado("AC");
 			usuarioRol.setFechaRegistro(fechaActual);
+			usuarioRol.setUsuarioRegistro(nombreUsuario);
 			usuarioRolRegistration.create(usuarioRol);
 
 			resetearFitrosTabla("formTableUsuario:dataTableUser");
@@ -201,10 +216,6 @@ public class UsuarioController implements Serializable {
 			usuarioRolRegistration.update(usuarioRol);
 			
 			FacesUtil.infoMessage("Usuario Modificado", ""+newUsuario.getLogin());
-			crear = false;
-			registrar = true;
-			modificar = false;
-			tipoColumnTable = "col-md-8";
 			resetearFitrosTabla("formTableUsuario:dataTableUser");			
 			loadDefault();
 		} catch (Exception e) {
@@ -214,17 +225,19 @@ public class UsuarioController implements Serializable {
 
 	public void eliminarUsuario() {
 		try {
+			Date fechaActual = new Date();
 			log.info("Ingreso a eliminarUsuario "
 					+ newUsuario.getId());
 			newUsuario.setState("RM");
-			newUsuario.setFechaModificacion(new Date());
+			newUsuario.setFechaModificacion(fechaActual);
 			usuarioRegistration.update(newUsuario);
+			
+			//eliminar usuariorol
+			selectedUsuarioRol.setEstado("RM");
+			selectedUsuarioRol.setFechaModificacion(fechaActual);
+			usuarioRolRegistration.update(selectedUsuarioRol);
 
 			FacesUtil.infoMessage("Usuario Eliminado", ""+newUsuario.getLogin());
-			crear = false;
-			registrar = true;
-			modificar = false;
-			tipoColumnTable = "col-md-8";
 			resetearFitrosTabla("formTableUsuario:dataTableUser");
 			loadDefault();
 		} catch (Exception e) {
@@ -233,9 +246,11 @@ public class UsuarioController implements Serializable {
 	}
 
 	public void onRowSelect(SelectEvent event) {
-		selectedRol = usuarioRolesRepository.findByUsuario(selectedUsuario).getRol();
+		//selectedRol = usuarioRolesRepository.findByUsuario(selectedUsuario).getRol();
+		selectedRol = selectedUsuarioRol.getRol();
 		nombreRol = selectedRol.getNombre();
-		newUsuario = selectedUsuario;
+		//newUsuario = selectedUsuario;
+		newUsuario = selectedUsuarioRol.getUsuario();
 		nombreEstado = newUsuario.getState().equals("AC")?"ACTIVO":"INACTIVO";
 		crear = false;
 		registrar = false;
@@ -402,6 +417,30 @@ public class UsuarioController implements Serializable {
 
 	public void setListRol(List<Roles> listRol) {
 		this.listRol = listRol;
+	}
+
+	public List<UsuarioRol> getListUsuarioRol() {
+		return listUsuarioRol;
+	}
+
+	public void setListUsuarioRol(List<UsuarioRol> listUsuarioRol) {
+		this.listUsuarioRol = listUsuarioRol;
+	}
+
+	public UsuarioRol getSelectedUsuarioRol() {
+		return selectedUsuarioRol;
+	}
+
+	public void setSelectedUsuarioRol(UsuarioRol selectedUsuarioRol) {
+		this.selectedUsuarioRol = selectedUsuarioRol;
+	}
+
+	public List<UsuarioRol> getListFilterUsuarioRol() {
+		return listFilterUsuarioRol;
+	}
+
+	public void setListFilterUsuarioRol(List<UsuarioRol> listFilterUsuarioRol) {
+		this.listFilterUsuarioRol = listFilterUsuarioRol;
 	}
 
 }

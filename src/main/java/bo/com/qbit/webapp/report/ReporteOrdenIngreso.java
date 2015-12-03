@@ -29,9 +29,10 @@ import org.apache.log4j.Logger;
 
 
 @WebServlet("/ReporteOrdenIngreso")
-@SuppressWarnings("serial")
 public class ReporteOrdenIngreso  extends HttpServlet{
 
+	private static final long serialVersionUID = -4749080310745237615L;
+	
 	private Logger log = Logger.getLogger(this.getClass());
 
 	@SuppressWarnings({ "unchecked", "deprecation" })

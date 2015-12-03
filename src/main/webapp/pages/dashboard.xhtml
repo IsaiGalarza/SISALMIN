@@ -15,104 +15,188 @@
 	<ui:define name="content">
 		<!--BEGIN CONTENT-->
 		<div class="content">
-			
+
 			<section class="content-header">
-				<h1 class="pull-left">Dashboard<small>Resumen de actividad de inventario y almacen...</small></h1>
+				<h1 class="pull-left">
+					Dashboard<small>Resumen de actividad de inventario y
+						almacen...</small>
+				</h1>
 				<div class="pull-right">
 					<ol class="breadcrumb">
-                        <li><a href="#{request.contextPath}/pages/dashboard.xhtml" style="color: #0090FF; font-size: 12px;">Inicio</a></li>
-<!--                         <li><a href="#">Dashboard</a></li> -->
-                    	<li class="active">Dashboard</li>
-                    </ol>
+						<li><a href="#{request.contextPath}/pages/dashboard.xhtml"
+							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
+						<!--                         <li><a href="#">Dashboard</a></li> -->
+						<li class="active">Dashboard</li>
+					</ol>
 				</div>
 			</section>
-			
+
 			<section class="main-content">
-				
+
 				<h:form id="form0">
-					
+
 
 					<section class="main-content" style="background-color: #f9fafa;">
 						<div class="row">
-							<div class="col-md-3 col-sm-6">
-                                <div class="panel panel-stat stat-warning">
-                                    <div class="panel-body">
-                                        <div class="row mbxl">
-                                            <div class="col-xs-8"><span class="stat-title">Solicitudes</span>
-                                                <h2 class="man">0,00</h2></div>
-                                            <div class="col-xs-4"><i class="glyphicon glyphicon-paperclip"></i></div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-xs-6"><span class="stat-title">Nuevos</span>
-                                                <h4 class="man">0,00</h4></div>
-                                            <div class="col-xs-6"><span class="stat-title">Procesados</span>
-                                                <h4 class="man">0,00</h4></div>
-                                        </div>
-                                    </div>
-                                </div>
-                        	</div>
-                            <div class="col-md-3 col-sm-6">
-                                <div class="panel panel-stat stat-primary">
-                                    <div class="panel-body">
-                                        <div class="row mbxl">
-                                            <div class="col-xs-8"><span class="stat-title">Orden de Ingreso</span>
-                                                <h2 class="man">0,00</h2></div>
-                                            <div class="col-xs-4"><i class="glyphicon glyphicon-save"></i></div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-xs-6"><span class="stat-title">Nuevos</span>
-                                                <h4 class="man">0,00</h4></div>
-                                            <div class="col-xs-6"><span class="stat-title">Procesados</span>
-                                                <h4 class="man">0,00</h4></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-sm-6">
-                                <div class="panel panel-stat stat-success">
-                                    <div class="panel-body">
-                                        <div class="row mbxl">
-                                            <div class="col-xs-8"><span class="stat-title">Acta de Entrega</span>
-                                                <h2 class="man">0,00</h2></div>
-                                            <div class="col-xs-4"><i class="icon-logout"></i></div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-xs-6"><span class="stat-title">Nuevos</span>
-                                                <h4 class="man">0,00</h4></div>
-                                            <div class="col-xs-6"><span class="stat-title">Procesados</span>
-                                                <h4 class="man">0,00</h4></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-sm-6">
-                                <div class="panel panel-stat stat-pink">
-                                    <div class="panel-body">
-                                        <div class="row mbxl">
-                                            <div class="col-xs-8"><span class="stat-title">Acta de Transpaso</span>
-                                                <h2 class="man">0,00</h2></div>
-                                            <div class="col-xs-4"><i class="icon-size-fullscreen"></i></div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-xs-6"><span class="stat-title">Nuevos</span>
-                                                <h4 class="man">0,00</h4></div>
-                                            <div class="col-xs-6"><span class="stat-title">Procesados</span>
-                                                <h4 class="man">0,00</h4></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                        </div>
-                        <div class="row">
-                        	<div class="col-md-12">
-                        		<p:chart type="bar" model="#{dashboardController.combinedModel}" style="height:300px" responsive="true" />
-                        	</div>
-                        </div>
-                       
+							<ui:fragment rendered="false">
+								<div class="col-md-3 col-sm-6">
+									<div class="panel panel-stat stat-warning">
+										<div class="panel-body">
+											<div class="row mbxl">
+												<div class="col-xs-8">
+													<span class="stat-title">Solicitudes</span>
+													<h2 class="man">0,00</h2>
+												</div>
+												<div class="col-xs-4">
+													<i class="glyphicon glyphicon-paperclip"></i>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-xs-6">
+													<span class="stat-title">Nuevos</span>
+													<h4 class="man">0,00</h4>
+												</div>
+												<div class="col-xs-6">
+													<span class="stat-title">Procesados</span>
+													<h4 class="man">0,00</h4>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</ui:fragment>
+							<div class="col-md-4 col-sm-6">
+								<div class="panel panel-stat stat-primary">
+									<div class="panel-body">
+										<div class="row mbxl">
+											<div class="col-xs-8">
+												<span class="stat-title">Orden de Ingreso</span>
+												<h2 class="man">
+													<h:outputText
+														value="#{dashboardController.countOrdenIngresoTotal}">
+														<f:convertNumber pattern="#,##0.00" />
+													</h:outputText>
+												</h2>
+											</div>
+											<div class="col-xs-4">
+												<i class="glyphicon glyphicon-save"></i>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-xs-6">
+												<span class="stat-title">Nuevos</span>
+												<h4 class="man">
+													<h:outputText
+														value="#{dashboardController.countOrdenIngresoNuevos}">
+														<f:convertNumber pattern="#,##0.00" />
+													</h:outputText>
+												</h4>
+											</div>
+											<div class="col-xs-6">
+												<span class="stat-title">Procesados</span>
+												<h4 class="man">
+													<h:outputText
+														value="#{dashboardController.countOrdenIngresoProcesados}">
+														<f:convertNumber pattern="#,##0.00" />
+													</h:outputText>
+												</h4>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-4 col-sm-6">
+								<div class="panel panel-stat stat-success">
+									<div class="panel-body">
+										<div class="row mbxl">
+											<div class="col-xs-8">
+												<span class="stat-title">Orden de Salida</span>
+												<h2 class="man">
+													<h:outputText
+														value="#{dashboardController.countOrdenSalidaTotal}">
+														<f:convertNumber pattern="#,##0.00" />
+													</h:outputText>
+												</h2>
+											</div>
+											<div class="col-xs-4">
+												<i class="icon-logout"></i>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-xs-6">
+												<span class="stat-title">Nuevos</span>
+												<h4 class="man">
+													<h:outputText
+														value="#{dashboardController.countOrdenSalidaNuevos}">
+														<f:convertNumber pattern="#,##0.00" />
+													</h:outputText>
+												</h4>
+											</div>
+											<div class="col-xs-6">
+												<span class="stat-title">Procesados</span>
+												<h4 class="man">
+													<h:outputText
+														value="#{dashboardController.countOrdenSalidaProcesados}">
+														<f:convertNumber pattern="#,##0.00" />
+													</h:outputText>
+												</h4>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-4 col-sm-6">
+								<div class="panel panel-stat stat-pink">
+									<div class="panel-body">
+										<div class="row mbxl">
+											<div class="col-xs-8">
+												<span class="stat-title">Acta de Transpaso</span>
+												<h2 class="man">
+													<h:outputText
+														value="#{dashboardController.countOrdenTraspasoTotal}">
+														<f:convertNumber pattern="#,##0.00" />
+													</h:outputText>
+												</h2>
+											</div>
+											<div class="col-xs-4">
+												<i class="icon-size-fullscreen"></i>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-xs-6">
+												<span class="stat-title">Nuevos</span>
+												<h4 class="man">
+													<h:outputText
+														value="#{dashboardController.countOrdenTraspasoNuevos}">
+														<f:convertNumber pattern="#,##0.00" />
+													</h:outputText>
+												</h4>
+											</div>
+											<div class="col-xs-6">
+												<span class="stat-title">Procesados</span>
+												<h4 class="man">
+													<h:outputText
+														value="#{dashboardController.countOrdenTraspasoProcesados}">
+														<f:convertNumber pattern="#,##0.00" />
+													</h:outputText>
+												</h4>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<div class="row">
+							<div class="col-md-12">
+								<p:chart type="bar" model="#{dashboardController.combinedModel}"
+									style="height:300px" responsive="true" />
+							</div>
+						</div>
+
 					</section>
 				</h:form>
-				
+
 			</section>
 		</div>
 

@@ -28,10 +28,11 @@ import javax.naming.InitialContext;
 import org.apache.log4j.Logger;
 
 
-@WebServlet("/ReporteLibroMayor")
-@SuppressWarnings("serial")
-public class ReporteLibroMayor  extends HttpServlet{
+@WebServlet("/ReporteKardexProducto")
+public class ReporteKardexProducto  extends HttpServlet{
 
+	private static final long serialVersionUID = 1031215904122053423L;
+	
 	private Logger log = Logger.getLogger(this.getClass());
 
 	@SuppressWarnings({ "unchecked", "deprecation" })
@@ -47,7 +48,7 @@ public class ReporteLibroMayor  extends HttpServlet{
 			//---conn datasource-------------------------------
 
 			Context ctx = new InitialContext();
-			DataSource ds = (DataSource) ctx.lookup("java:jboss/datasources/WebAppContabilidadDS");
+			DataSource ds = (DataSource) ctx.lookup("java:jboss/datasources/WebAppInventarioDS");
 			conn = ds.getConnection();
 
 			//---------------------------------------------
@@ -63,12 +64,10 @@ public class ReporteLibroMayor  extends HttpServlet{
 			log.error("Error al conectar JDBC: "+e.getMessage());
 		}
 		try {
-			String pFechaInicio =  request.getParameter("pFechaInicio");
-			String pFechaFin = request.getParameter("pFechaFin");
-			Integer pIdGestion = Integer.parseInt(request.getParameter("pIdGestion"));
 			Integer pIdEmpresa = Integer.parseInt(request.getParameter("pIdEmpresa"));
-			Integer pIdPlanCuenta = Integer.parseInt(request.getParameter("pIdPlanCuenta"));
-			String pUsuario = request.getParameter("pUsuario");
+			Integer pIdProducto = Integer.parseInt(request.getParameter("pIdProducto"));
+			Integer pIdGestion = Integer.parseInt(request.getParameter("pIdGestion"));
+			String  pUsuario = request.getParameter("pUsuario");
 
 			String realPath = request.getRealPath("/");
 			log.info("Real Path: "+realPath);
@@ -77,21 +76,16 @@ public class ReporteLibroMayor  extends HttpServlet{
 			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
 			log.info("URL ::::: "+urlPath);
 
-			String rutaReporte = urlPath+"resources/report/libro_mayor.jasper";
+			String rutaReporte = urlPath+"resources/report/kardex_producto.jasper";
 			log.info("rutaReporte: "+rutaReporte);
-
-			String SUBREPORT_DIR = urlPath + "resources/report/";
-			log.info("SUBREPORT_DIR: " + SUBREPORT_DIR);
+			
 			// create a map of parameters to pass to the report.   
 			@SuppressWarnings("rawtypes")
 			Map parameters = new HashMap();
-			parameters.put("pFechaInicio", pFechaInicio);
-			parameters.put("pFechaFin", pFechaFin);
+			parameters.put("pIdProducto", pIdProducto);
 			parameters.put("pIdGestion", pIdGestion);
 			parameters.put("pIdEmpresa", pIdEmpresa);
 			parameters.put("pUsuario", pUsuario);
-			parameters.put("pIdPlanCuenta", pIdPlanCuenta);
-			parameters.put("SUBREPORT_DIR", SUBREPORT_DIR);
 
 			log.info("parameters "+parameters.toString());
 
@@ -113,7 +107,7 @@ public class ReporteLibroMayor  extends HttpServlet{
 
 			//save report to path
 			//JasperExportManager.exportReportToPdfFile(jasperPrint,"C:/etiquetas/Etiqueta+"+pCodigoPre+"-"+pNombreElaborado+".pdf");
-			response.setContentType("application/pdf");
+			response.setContentType("application/pdf");// text/html  application/pdf   application/html
 			JasperExportManager.exportReportToPdfStream(jasperPrint2,servletOutputStream);
 
 			servletOutputStream.flush();
@@ -122,7 +116,7 @@ public class ReporteLibroMayor  extends HttpServlet{
 		} catch (Exception e) {
 			// display stack trace in the browser
 			e.printStackTrace();
-			log.info("Error en reporte LibroDiario: " + e.getMessage());
+			log.info("Error en reporte OrdenIngreso: " + e.getMessage());
 			StringWriter stringWriter = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(stringWriter);
 			e.printStackTrace(printWriter);
@@ -132,4 +126,3 @@ public class ReporteLibroMayor  extends HttpServlet{
 
 	}
 }
-

@@ -14,7 +14,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
 
@@ -300,10 +299,10 @@ public class OrdenTraspasoController implements Serializable {
 	public void eliminarOrdenTraspaso() {
 		try {
 			System.out.println("Traspaso a eliminarOrdenTraspaso: ");
-			ordenTraspasoRegistration.remover(newOrdenTraspaso);
-			for(DetalleOrdenTraspaso d: listaDetalleOrdenTraspaso){
-				detalleOrdenTraspasoRegistration.remover(d);
-			}
+			ordenTraspasoRegistration.remover(selectedOrdenTraspaso);
+//			for(DetalleOrdenTraspaso d: listaDetalleOrdenTraspaso){
+//				detalleOrdenTraspasoRegistration.remover(d);
+//			}
 			FacesUtil.infoMessage("Orden de Traspaso Eliminada!", ""+newOrdenTraspaso.getCorrelativo());
 			initNewOrdenTraspaso();
 		} catch (Exception e) {
