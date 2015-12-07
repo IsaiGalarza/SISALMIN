@@ -26,6 +26,7 @@ import bo.com.qbit.webapp.model.Almacen;
 import bo.com.qbit.webapp.model.Usuario;
 import bo.com.qbit.webapp.service.AlmacenRegistration;
 import bo.com.qbit.webapp.service.EstadoUsuarioLogin;
+import bo.com.qbit.webapp.util.FacesUtil;
 
 @Named(value = "almacenController")
 @ConversationScoped
@@ -127,18 +128,15 @@ public class AlmacenController implements Serializable {
 		modificar = false;
 		registrar = true;
 		crear = false;
-		
 	}
 	
 	public void cambiarAspectoModificar(){
 		modificar = true;
 		registrar = false;
 		crear = false;
-		
 	}
 	
 	public void beginConversation() {
-
 		if (conversation.isTransient()) {
 			System.out.println("beginning conversation : " + this.conversation);
 			conversation.begin();
@@ -172,7 +170,6 @@ public class AlmacenController implements Serializable {
 			modificar = false;
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 			System.out.println("Error in onRowSelectAlmacenClick: "
 					+ e.getMessage());
@@ -222,14 +219,10 @@ public class AlmacenController implements Serializable {
 
 	public void eliminarAlmacen() {
 		try {
-			System.out.println("Ingreso a eliminarAlmacen: "
-					+ newAlmacen.getId());
+			System.out.println("Ingreso a eliminarAlmacen: " + newAlmacen.getId());
 			almacenRegistration.remover(newAlmacen);
-			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
-					"Almacen Borrado!", newAlmacen.getNombre()+"!");
-			facesContext.addMessage(null, m);
+			FacesUtil.infoMessage("Almacen Borrado!", newAlmacen.getNombre()+"!");
 			initNewAlmacen();
-
 		} catch (Exception e) {
 			String errorMessage = getRootErrorMessage(e);
 			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_ERROR,

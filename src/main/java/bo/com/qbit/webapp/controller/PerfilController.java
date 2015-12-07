@@ -102,7 +102,6 @@ public class PerfilController implements Serializable {
 					"Empresa Modificada!", usuarioSession.getLogin()+"!");
 			facesContext.addMessage(null, m);
 			initNewPerfil();
-
 		} catch (Exception e) {
 			String errorMessage = getRootErrorMessage(e);
 			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_ERROR,
@@ -130,22 +129,6 @@ public class PerfilController implements Serializable {
 		urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
 		log.info("urlPath >> "+urlPath);
 		return urlPath;
-	}
-
-	public void upload() {
-		setModificar(true);
-		log.info("upload()  file:"+file);
-		if(file != null) {
-			try{
-				usuarioSession.setFotoPerfil(file.getContents());
-				usuarioRegistration.update(usuarioSession);
-				FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO, "Modificado!", "Modificado successful");
-				facesContext.addMessage(null, m);
-				pushEventSucursal.fire(String.format("Usuario Modificado: %s (id: %d)", usuarioSession.getLogin(), usuarioSession.getId()));
-			}catch(Exception e){
-
-			}
-		}
 	}
 
 	// ------------   get and set   -----------------------

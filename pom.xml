@@ -14,7 +14,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<groupId>bo.com.qbit.webapp</groupId>
 	<artifactId>webapp</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -47,8 +47,8 @@
 		<version.jboss.bom.eap>6.2.0.GA</version.jboss.bom.eap>
 		<version.jboss.bom.wfk>2.5.0-redhat-1</version.jboss.bom.wfk>
 		<!-- other plugin versions -->
-		
-		
+
+
 		<!-- here isai -->
 		<version.war.plugin>2.1.1</version.war.plugin>
 
@@ -151,7 +151,7 @@
 			<groupId>org.richfaces.ui</groupId>
 			<artifactId>richfaces-components-ui</artifactId>
 		</dependency>
-		
+
 		<!-- JSR-303 (Bean Validation) Implementation -->
 		<!-- Provides portable constraints such as @Email -->
 		<!-- Hibernate Validator is shipped in JBoss AS 7 -->
@@ -257,6 +257,19 @@
 			<version>1.2.15</version>
 		</dependency>
 
+		<!-- POI : Excel library -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.13</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>3.13</version>
+		</dependency>
+
+
 
 		<!-- ############################## fin dependencias necesitadas ############################## -->
 
@@ -335,12 +348,12 @@
 			</activation>
 			<build>
 				<plugins>
-					
-					
-					<!-- here isai-->
-					
-					
-					
+
+
+					<!-- here isai -->
+
+
+
 				</plugins>
 			</build>
 		</profile>
@@ -397,29 +410,29 @@
 				</plugins>
 			</build>
 		</profile>
-		
+
 		<!-- Activate JBoss Product Maven repository -->
-        <profile>
-            <id>jboss-product-repository</id>
-            <activation>
-                <property>
-                    <name>!jboss-product-repository</name>
-                </property>
-            </activation>
-            <repositories>
-                <repository>
-                    <id>jboss-products-ga-repo</id>
-                    <url>http://maven.repository.redhat.com/techpreview/all/</url>
-                </repository>
-                <repository>
+		<profile>
+			<id>jboss-product-repository</id>
+			<activation>
+				<property>
+					<name>!jboss-product-repository</name>
+				</property>
+			</activation>
+			<repositories>
+				<repository>
+					<id>jboss-products-ga-repo</id>
+					<url>http://maven.repository.redhat.com/techpreview/all/</url>
+				</repository>
+				<repository>
 					<id>prime-repo</id>
 					<name>Prime Repo</name>
 					<url>http://repository.primefaces.org</url>
 				</repository>
-            </repositories>
-        </profile>
+			</repositories>
+		</profile>
 
 	</profiles>
-	
-	
+
+
 </project>

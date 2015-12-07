@@ -134,6 +134,8 @@
 						 --> <span>#{sessionMain.usuarioLogin.nombre} </span>&nbsp;<b
 							class="caret"></b></a>
 						<ul class="dropdown-menu">
+							<li><a href="#{request.contextPath}/pages/profile.xhtml"><i
+									class="icon-user"></i>Perfil</a></li>
 							<li><a href="#{request.contextPath}/logoutServlet"><i
 									class="icon-logout"></i>Salir</a></li>
 						</ul></li>
@@ -292,18 +294,19 @@
 										<i class="icon-social-dropbox"></i><span class="sidebar-text">Orden
 											de Traspaso </span>
 								</a></li>
-								
+
 								<li
 									class="#{(view.viewId.equals('/pages/proceso/orden_salida.xhtml')) ? 'active' :'inactive'}"><a
 									href="#{request.contextPath}/pages/proceso/orden_salida.xhtml">
 										<i class="icon-social-dropbox"></i><span class="sidebar-text">Orden
 											de Salida </span>
 								</a></li>
-								
+
 								<li
 									class="#{(view.viewId.equals('/pages/proceso/toma_inventario.xhtml')) ? 'active' :'inactive'}"><a
 									href="#{request.contextPath}/pages/proceso/toma_inventario.xhtml">
-										<i class="icon-social-dropbox"></i><span class="sidebar-text">Toma de Inventario</span>
+										<i class="icon-social-dropbox"></i><span class="sidebar-text">Toma
+											de Inventario</span>
 								</a></li>
 							</ul>
 						</li>

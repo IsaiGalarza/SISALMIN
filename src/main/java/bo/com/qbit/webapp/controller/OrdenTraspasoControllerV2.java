@@ -1,9 +1,15 @@
 package bo.com.qbit.webapp.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -15,8 +21,19 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.model.UploadedFile;
 import org.richfaces.cdi.push.Push;
+
+import com.google.common.io.Files;
 
 import bo.com.qbit.webapp.data.AlmacenProductoRepository;
 import bo.com.qbit.webapp.data.AlmacenRepository;
@@ -40,11 +57,12 @@ import bo.com.qbit.webapp.service.DetalleOrdenTraspasoRegistration;
 import bo.com.qbit.webapp.service.KardexProductoRegistration;
 import bo.com.qbit.webapp.service.OrdenTraspasoRegistration;
 import bo.com.qbit.webapp.util.FacesUtil;
+import bo.com.qbit.webapp.util.ReadWriteExcelFile;
 import bo.com.qbit.webapp.util.SessionMain;
 
-@Named(value = "ordenTraspasoController")
+@Named(value = "ordenTraspasoControllerV2")
 @ConversationScoped
-public class OrdenTraspasoController implements Serializable {
+public class OrdenTraspasoControllerV2 implements Serializable {
 
 	private static final long serialVersionUID = 749163787421586877L;
 
@@ -224,16 +242,6 @@ public class OrdenTraspasoController implements Serializable {
 					+ e.getMessage());
 		}
 	}
-	
-	public void redireccionarPgina(){
-		FacesContext context = FacesContext.getCurrentInstance();
-		try {
-			//http://localhost:8080/webapp/pages/dashboard.xhtml
-			context.getExternalContext().redirect("http://localhost:8080/webapp/pages/dashboard.xhtml");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 
 	public void registrarOrdenTraspaso() {
 		try {
@@ -243,7 +251,7 @@ public class OrdenTraspasoController implements Serializable {
 			}
 			Date date = new Date();
 			calcularTotal();
-			System.out.println("paso a registrarOrdenTraspaso: ");
+			System.out.println("Traspaso a registrarOrdenTraspaso: ");
 			newOrdenTraspaso.setFechaRegistro(date);
 			newOrdenTraspaso.setProyecto(selectedProyecto);
 			newOrdenTraspaso.setFuncionario(selectedFuncionario);
@@ -257,20 +265,6 @@ public class OrdenTraspasoController implements Serializable {
 				detalleOrdenTraspasoRegistration.register(d);
 			}
 			FacesUtil.infoMessage("Orden de Traspaso Registrada!", ""+newOrdenTraspaso.getCorrelativo());
-			// Verificar si el almacen destino es offline
-			if( ! selectedAlmacen.isOnline()){
-				// Armar url para reporte excel
-				HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
-				String urlPath = request.getRequestURL().toString();
-				urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
-				String urlPDFreporte = urlPath+"ReporteOrdenTraspaso?pIdOrdenTraspaso="+newOrdenTraspaso.getId()+"&pIdEmpresa=1&pUsuario="+usuarioSession+"&pTypeExport=excel";
-				System.out.println("urlPDFreporte : "+urlPDFreporte);
-				FacesContext context = FacesContext.getCurrentInstance();
-				context.getExternalContext().redirect(urlPDFreporte);
-				
-				// Lanzar dialog de aviso de exportacion
-				FacesUtil.showDialog("dlgExportExcel");
-			}
 			initNewOrdenTraspaso();
 		} catch (Exception e) {
 			FacesUtil.errorMessage("Error al Registrar.");
@@ -325,9 +319,9 @@ public class OrdenTraspasoController implements Serializable {
 		try {
 			System.out.println("Traspaso a eliminarOrdenTraspaso: ");
 			ordenTraspasoRegistration.remover(selectedOrdenTraspaso);
-//			for(DetalleOrdenTraspaso d: listaDetalleOrdenTraspaso){
-//				detalleOrdenTraspasoRegistration.remover(d);
-//			}
+			//			for(DetalleOrdenTraspaso d: listaDetalleOrdenTraspaso){
+			//				detalleOrdenTraspasoRegistration.remover(d);
+			//			}
 			FacesUtil.infoMessage("Orden de Traspaso Eliminada!", ""+newOrdenTraspaso.getCorrelativo());
 			initNewOrdenTraspaso();
 		} catch (Exception e) {
@@ -478,7 +472,6 @@ public class OrdenTraspasoController implements Serializable {
 
 	public String loadURL(){
 		try{
-			//ReporteOrdenTraspaso?pIdOrdenTraspaso=7&pIdEmpresa=1&pUsuario=admin&pTypeExport=pdf
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
 			String urlPath = request.getRequestURL().toString();
 			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
@@ -638,6 +631,32 @@ public class OrdenTraspasoController implements Serializable {
 			}
 		}
 
+	}
+	
+	//IMPORT - EXPORT EXCEL
+
+	private UploadedFile uploadedFile;
+
+	public void handleFileUpload(FileUploadEvent event) {
+		uploadedFile = event.getFile();
+		FacesUtil.infoMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
+	}
+
+	public void convertJava() {
+		System.out.println("convertJava() ");
+		try{
+			InputStream input = uploadedFile.getInputstream();
+			String ext = FilenameUtils.getExtension(uploadedFile.getFileName());
+
+			if(ext.equals("xls")){// if XLS
+				ReadWriteExcelFile.readXLSFile(input);
+			}else if(ext.equals("xlsx")){// if XLSX
+				ReadWriteExcelFile.readXLSXFile(input);
+			}
+
+		}catch(Exception e){
+			System.out.println("ERROR "+e.getMessage());
+		}
 	}
 
 	// -------- get and set -------

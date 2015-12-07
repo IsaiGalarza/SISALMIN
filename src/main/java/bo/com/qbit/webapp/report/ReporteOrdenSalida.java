@@ -14,10 +14,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 import java.util.HashMap;
 import java.util.Map;
+
+
 
 
 //--datasource
@@ -63,6 +66,7 @@ public class ReporteOrdenSalida  extends HttpServlet{
 			Integer pIdEmpresa = Integer.parseInt(request.getParameter("pIdEmpresa"));
 			Integer pIdOrdenSalida = Integer.parseInt(request.getParameter("pIdOrdenSalida"));
 			String  pUsuario = request.getParameter("pUsuario");
+			String  pTypeExport = request.getParameter("pTypeExport");
 
 			String realPath = request.getRealPath("/");
 			System.out.println("Real Path: "+realPath);
@@ -98,11 +102,30 @@ public class ReporteOrdenSalida  extends HttpServlet{
 			}else{
 				System.out.println("jasperPrint null");
 			}
+			
+			if (pTypeExport.equals("pdf")) {
+				System.out.println("Entro a pdf");
+				response.setContentType("application/pdf");
+				//response.setHeader("Content-disposition", "attachment; filename=" + jasperPrint2.getName() + ".pdf");
+				JasperExportManager.exportReportToPdfStream(jasperPrint2, servletOutputStream);
+				//servletOutputStream.flush();
+				//servletOutputStream.close();
+			} else {
+				if (pTypeExport.equals("excel")) {
+					System.out.println("Entro a excel");
+					response.setContentType("application/xls");
+					response.setHeader("Content-disposition", "attachment; filename=" + jasperPrint2.getName() + ".xls");
+					JRXlsxExporter docxExporter = new JRXlsxExporter();
+					docxExporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint2);
+					docxExporter.setParameter(JRExporterParameter.OUTPUT_STREAM,servletOutputStream);
+					docxExporter.exportReport();
+				}
+			}
 
 			//save report to path
 			//JasperExportManager.exportReportToPdfFile(jasperPrint,"C:/etiquetas/Etiqueta+"+pCodigoPre+"-"+pNombreElaborado+".pdf");
-			response.setContentType("application/pdf");
-			JasperExportManager.exportReportToPdfStream(jasperPrint2,servletOutputStream);
+			//response.setContentType("application/pdf");
+			//JasperExportManager.exportReportToPdfStream(jasperPrint2,servletOutputStream);
 
 			servletOutputStream.flush();
 			servletOutputStream.close();

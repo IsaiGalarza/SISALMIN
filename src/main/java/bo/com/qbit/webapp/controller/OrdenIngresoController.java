@@ -1,5 +1,6 @@
 package bo.com.qbit.webapp.controller;
 
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,7 +15,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FilenameUtils;
+import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.model.UploadedFile;
 import org.richfaces.cdi.push.Push;
 
 import bo.com.qbit.webapp.data.AlmacenProductoRepository;
@@ -39,6 +43,7 @@ import bo.com.qbit.webapp.service.DetalleOrdenIngresoRegistration;
 import bo.com.qbit.webapp.service.KardexProductoRegistration;
 import bo.com.qbit.webapp.service.OrdenIngresoRegistration;
 import bo.com.qbit.webapp.util.FacesUtil;
+import bo.com.qbit.webapp.util.ReadWriteExcelFile;
 import bo.com.qbit.webapp.util.SessionMain;
 
 @Named(value = "ordenIngresoController")
@@ -112,9 +117,9 @@ public class OrdenIngresoController implements Serializable {
 
 	@PostConstruct
 	public void initNewOrdenIngreso() {
-		
+
 		System.out.println(" ... initNewOrdenIngreso ...");
-		
+
 		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
 		gestionSesion = sessionMain.getGestionLogin();
 		listUsuario = usuarioRepository.findAllOrderedByID();
@@ -273,9 +278,9 @@ public class OrdenIngresoController implements Serializable {
 		try {
 			System.out.println("Ingreso a eliminarOrdenIngreso: ");
 			ordenIngresoRegistration.remover(selectedOrdenIngreso);
-//			for(DetalleOrdenIngreso d: listaDetalleOrdenIngreso){
-//				detalleOrdenIngresoRegistration.remover(d);
-//			}
+			//			for(DetalleOrdenIngreso d: listaDetalleOrdenIngreso){
+			//				detalleOrdenIngresoRegistration.remover(d);
+			//			}
 			FacesUtil.infoMessage("Orden de Ingreso Eliminada!", ""+newOrdenIngreso.getCorrelativo());
 			initNewOrdenIngreso();
 		} catch (Exception e) {
@@ -334,7 +339,7 @@ public class OrdenIngresoController implements Serializable {
 		kardexProducto.setUsuarioRegistro(usuarioSession);
 		kardexProductoRegistration.register(kardexProducto);
 	}
-	
+
 	//registro en la tabla almacen_producto
 	private void actualizarStock(Producto prod ,int newStock,Date date) throws Exception {
 		//0 . verificar si existe el producto en el almacen
@@ -509,6 +514,32 @@ public class OrdenIngresoController implements Serializable {
 				calcular();
 				return;
 			}
+		}
+	}
+
+	//IMPORT - EXPORT EXCEL
+
+	private UploadedFile uploadedFile;
+
+	public void handleFileUpload(FileUploadEvent event) {
+		uploadedFile = event.getFile();
+		FacesUtil.infoMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
+	}
+
+	public void convertJava() {
+		System.out.println("convertJava() ");
+		try{
+			InputStream input = uploadedFile.getInputstream();
+			String ext = FilenameUtils.getExtension(uploadedFile.getFileName());
+
+			if(ext.equals("xls")){// if XLS
+				ReadWriteExcelFile.readXLSFile(input);
+			}else if(ext.equals("xlsx")){// if XLSX
+				ReadWriteExcelFile.readXLSXFile(input);
+			}
+
+		}catch(Exception e){
+			System.out.println("ERROR "+e.getMessage());
 		}
 	}
 

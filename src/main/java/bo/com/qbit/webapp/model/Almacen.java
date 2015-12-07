@@ -29,6 +29,9 @@ public class Almacen implements Serializable {
 
 	private String estado;
 	
+	@Column(name="online")
+	private boolean online;
+	
 	@Column(name="atencion_cliente")
 	private boolean atencionCliente= false;
 
@@ -59,7 +62,8 @@ public class Almacen implements Serializable {
 	public Almacen() {
 		encargado= new Usuario();
 		atencionCliente= false;
-		estado= "AC";		
+		estado= "AC";
+		online = true;
 	}
 
 	@Override
@@ -155,6 +159,14 @@ public class Almacen implements Serializable {
 
 	public void setAtencionCliente(boolean atencionCliente) {
 		this.atencionCliente = atencionCliente;
+	}
+
+	public boolean isOnline() {
+		return online;
+	}
+
+	public void setOnline(boolean online) {
+		this.online = online;
 	}
 
 }

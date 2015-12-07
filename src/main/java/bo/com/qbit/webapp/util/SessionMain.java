@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
+import org.primefaces.model.UploadedFile;
 
 import bo.com.qbit.webapp.data.EmpresaRepository;
 import bo.com.qbit.webapp.data.GestionRepository;
@@ -22,6 +23,7 @@ import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.Usuario;
 import bo.com.qbit.webapp.model.security.Permiso;
 import bo.com.qbit.webapp.model.security.Roles;
+import bo.com.qbit.webapp.service.UsuarioRegistration;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -29,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -37,6 +40,7 @@ import java.util.List;
  *
  */
 
+//sessionMain.usuarioLogin
 @Named
 @SuppressWarnings("serial")
 @SessionScoped
@@ -50,12 +54,17 @@ public class SessionMain implements Serializable {
 	private @Inject UsuarioRepository usuarioRepository;
 	private @Inject EmpresaRepository empresaRepository;
 	private @Inject GestionRepository gestionRepository;
+	
+	private @Inject UsuarioRegistration usuarioRegistration;
 
 	//Object
 	private Usuario usuarioLogin;
 	private Empresa empresaLogin;
 	private Gestion gestionLogin;
 	private Almacen almacenLogin;
+	private UploadedFile file;
+	
+	private boolean modificar = false;
 
 	private StreamedContent fotoPerfil;
 
@@ -94,7 +103,7 @@ public class SessionMain implements Serializable {
 	 * @return boolean
 	 */
 	public boolean tienePermisoPagina(String pagina){
-		if( pagina.equals("profile.xhtml")  || pagina.equals("dashboard.xhtml") ){
+		if( pagina.equals("profile.xhtml")  || pagina.equals("dashboard.xhtml") || pagina.equals("orden_traspasoV2.xhtml") ){
 			return true;
 		}
 		for(Permiso p: listPermiso){
@@ -112,7 +121,7 @@ public class SessionMain implements Serializable {
 		try{
 			System.out.println("----- setImageUserSession() --------");
 			if(getUsuarioLogin().getPesoFoto() == 0){
-				this.usuarioLogin.setFotoPerfil(toByteArrayUsingJava(getImageDefaul().getStream()));
+				this.usuarioLogin.setFotoPerfil(toByteArrayUsingJava(getImageDefault().getStream()));
 				this.usuarioLogin.setPesoFoto(32);
 			}
 		}catch(Exception e){
@@ -120,11 +129,9 @@ public class SessionMain implements Serializable {
 		}
 	}
 
-	private StreamedContent getImageDefaul() {
-		ClassLoader classLoader = Thread.currentThread()
-				.getContextClassLoader();
-		InputStream stream = classLoader
-				.getResourceAsStream("avatar.jpg");
+	private StreamedContent getImageDefault() {
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		InputStream stream = classLoader.getResourceAsStream("avatar.jpg");
 		return new DefaultStreamedContent(stream, "image/jpeg");
 	}
 
@@ -170,6 +177,26 @@ public class SessionMain implements Serializable {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
+		}
+	}
+	
+	public void upload() {
+		setModificar(false);
+		System.out.println("upload()  file:" + file);
+		if ( file != null ) {
+			usuarioLogin.setFotoPerfil(file.getContents());
+			usuarioLogin.setPesoFoto(file.getContents().length);
+			usuarioLogin.setFechaRegistro(new Date());
+			usuarioRegistration.update(usuarioLogin);
+			InputStream is = null;
+			String mimeType = "image/jpg";
+			try{
+				is = new ByteArrayInputStream(usuarioLogin.getFotoPerfil());
+				fotoPerfil = new DefaultStreamedContent(new ByteArrayInputStream(toByteArrayUsingJava(is)), mimeType);
+			}catch(Exception e){
+				log.error("setImageUserSession() -> error : "+e.getMessage());
+			}
+			FacesUtil.infoMessage("Foto perfil Cargada", "");
 		}
 	}
 
@@ -254,6 +281,24 @@ public class SessionMain implements Serializable {
 
 	public void setAlmacenLogin(Almacen almacenLogin) {
 		this.almacenLogin = almacenLogin;
+	}
+
+	public UploadedFile getFile() {
+		System.out.println("getFile "+file);
+		return file;
+	}
+
+	public void setFile(UploadedFile file) {
+		this.file = file;
+		System.out.println("setFile "+file);
+	}
+
+	public boolean isModificar() {
+		return modificar;
+	}
+
+	public void setModificar(boolean modificar) {
+		this.modificar = modificar;
 	}
 
 }

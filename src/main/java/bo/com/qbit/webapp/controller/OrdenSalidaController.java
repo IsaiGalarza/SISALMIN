@@ -256,6 +256,20 @@ public class OrdenSalidaController implements Serializable {
 				detalleOrdenSalidaRegistration.register(d);
 			}
 			FacesUtil.infoMessage("Orden de Salida Registrada!", ""+newOrdenSalida.getCorrelativo());
+			// Verificar si el almacen destino es offline
+			if( ! selectedAlmacen.isOnline()){
+				// Armar url para reporte excel
+				HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
+				String urlPath = request.getRequestURL().toString();
+				urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
+				String urlPDFreporte = urlPath+"ReporteOrdenSalida?pIdOrdenSalida="+newOrdenSalida.getId()+"&pIdEmpresa=1&pUsuario="+usuarioSession+"&pTypeExport=excel";
+				System.out.println("urlPDFreporte : "+urlPDFreporte);
+				FacesContext context = FacesContext.getCurrentInstance();
+				context.getExternalContext().redirect(urlPDFreporte);
+
+				// Lanzar dialog de aviso de exportacion
+				FacesUtil.showDialog("dlgExportExcel");
+			}
 			initNewOrdenSalida();
 		} catch (Exception e) {
 			FacesUtil.errorMessage("Error al Registrar.");
@@ -301,9 +315,9 @@ public class OrdenSalidaController implements Serializable {
 		try {
 			System.out.println("Ingreso a eliminarOrdenSalida: ");
 			ordenSalidaRegistration.remover(selectedOrdenSalida);
-//			for(DetalleOrdenSalida d: listaDetalleOrdenSalida){
-//				detalleOrdenSalidaRegistration.remover(d);
-//			}
+			//			for(DetalleOrdenSalida d: listaDetalleOrdenSalida){
+			//				detalleOrdenSalidaRegistration.remover(d);
+			//			}
 			FacesUtil.infoMessage("Orden de Salida Eliminada!", ""+newOrdenSalida.getId());
 			initNewOrdenSalida();
 
@@ -407,7 +421,7 @@ public class OrdenSalidaController implements Serializable {
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
 			String urlPath = request.getRequestURL().toString();
 			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
-			String urlPDFreporte = urlPath+"ReporteOrdenSalida?pIdOrdenSalida="+selectedOrdenSalida.getId()+"&pIdEmpresa=1&pUsuario="+usuarioSession;
+			String urlPDFreporte = urlPath+"ReporteOrdenSalida?pIdOrdenSalida="+selectedOrdenSalida.getId()+"&pIdEmpresa=1&pUsuario="+usuarioSession+"&pTypeExport=pdf";
 			return urlPDFreporte;
 		}catch(Exception e){
 			return "error";
