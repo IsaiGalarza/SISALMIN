@@ -7,6 +7,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
+import bo.com.qbit.webapp.model.OrdenIngreso;
 import bo.com.qbit.webapp.model.Producto;
 
 //The @Stateless annotation eliminates the need for manual transaction demarcation
@@ -22,10 +23,13 @@ public class ProductoRegistration {
     @Inject
     private Event<Producto> ProductoEventSrc;
     
-    public void register(Producto Producto) throws Exception {
-        log.info("Registering Producto: " + Producto.getNombre());
-        em.persist(Producto);
-        ProductoEventSrc.fire(Producto);
+    public Producto register(Producto producto) throws Exception {
+        log.info("Registering Producto: " + producto.getNombre());
+        this.em.persist(producto);
+        this.em.flush();
+        this.em.refresh(producto);
+        ProductoEventSrc.fire(producto);
+        return producto;
     }
     
     public void updated(Producto Producto) throws Exception {

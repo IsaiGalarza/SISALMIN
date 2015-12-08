@@ -528,149 +528,282 @@
 		<!-- END GROWL -->
 
 		<!--   MODAL PRODUCTO -->
-		<h:form id="formDialogProducto">
-			<p:dialog widgetVar="dlgProducto" resizable="false"
-				header="#{ordenIngresoController.tituloProducto}" showHeader="true"
-				modal="false" closeOnEscape="true" draggable="true"
-				position="center" style="padding: 0px 0px 0px 0px;" width="600"
-				visible="#{partidaController.diagloProducto}" id="modalProductoID">
-				<ui:fragment rendered="true">
+
+		<p:dialog widgetVar="dlgProducto" resizable="false"
+			header="#{ordenIngresoController.tituloProducto}" showHeader="true"
+			modal="false" closeOnEscape="true" draggable="true" position="center"
+			style="padding: 0px 0px 0px 0px;" width="600"
+			visible="#{partidaController.diagloProducto}" id="modalProductoID">
+			<h:form id="formDialogProducto">
+				<ui:fragment rendered="#{ ! ordenIngresoController.nuevoProducto}">
 					<!-- ocultar si se va a creaer producto -->
-					<div class="modal-body">
-						<div class="row">
+
+					<div class="row">
+						<div class="form-group">
+							<div class="col-md-3">Producto</div>
+							<div class="col-md-9">
+								<p:autoComplete id="productoID"
+									value="#{ordenIngresoController.selectedProducto.nombre}"
+									completeMethod="#{ordenIngresoController.completeProducto}"
+									minQueryLength="3" size="30" dropdown="true" required="true"
+									requiredMessage="Producto Requerido." forceSelection="true"
+									var="_var" itemLabel="#{_var}" itemValue="#{_var.nombre}"
+									placeholder="[Escriba Producto]" maxResults="10">
+
+									<p:ajax event="itemSelect" update="totalID,precioID"
+										listener="#{ordenIngresoController.onRowSelectProductoClick}" />
+
+									<p:column>
+										<h:outputText value="#{_var.nombre}" />
+									</p:column>
+
+								</p:autoComplete>
+								<p:commandLink value="+"
+									style="padding-left: 50px; height: 30px;"
+									styleClass="btn btn-success">
+									<p:ajax immediate="true" update="formDialogProducto"
+										listener="#{ordenIngresoController.setNuevoProducto(true)}" />
+								</p:commandLink>
+							</div>
+
+						</div>
+					</div>
+					<br />
+
+					<div class="row">
+						<div class="form-group">
+							<label for="descripcionID" class="col-sm-3 control-label">Observacion</label>
+							<div class="col-sm-9">
+								<p:inputTextarea id="descripcionID" required="true"
+									requiredMessage="Observacion Requerido."
+									value="#{ordenIngresoController.selectedDetalleOrdenIngreso.observacion}"
+									size="20" rows="2" cols="39">
+									<p:ajax event="change" update="precioID,totalID" />
+								</p:inputTextarea>
+							</div>
+						</div>
+					</div>
+
+					<br />
+					<div class="row">
+						<div class="form-group">
+							<label for="precioID" class="col-sm-3 control-label">Precio
+								Unitario</label>
+							<div class="col-sm-9">
+								<p:inputText id="precioID" required="true"
+									requiredMessage="Precio Requerido."
+									value="#{ordenIngresoController.selectedProducto.precioUnitario}"
+									size="40">
+									<p:ajax event="change" update="totalID"
+										listener="#{ordenIngresoController.calcular()}" />
+									<f:convertNumber pattern="#,##0.000" locale="en" />
+								</p:inputText>
+							</div>
+						</div>
+					</div>
+
+					<br />
+					<div class="row">
+						<div class="form-group">
+							<label for="cantidadID" class="col-sm-3 control-label">Cantidad</label>
+							<div class="col-sm-9">
+								<p:inputText id="cantidadID" required="true"
+									requiredMessage="Cantidad Requerido."
+									value="#{ordenIngresoController.selectedDetalleOrdenIngreso.cantidad}"
+									size="40">
+									<p:ajax event="change" update="totalID"
+										listener="#{ordenIngresoController.calcular()}" />
+								</p:inputText>
+							</div>
+						</div>
+					</div>
+
+					<br />
+					<div class="row">
+						<div class="form-group">
+							<label for="totalID" class="col-sm-3 control-label">Total</label>
+							<div class="col-sm-9">
+								<p:inputText id="totalID" required="true"
+									requiredMessage="Total Requerido."
+									value="#{ordenIngresoController.selectedDetalleOrdenIngreso.total}"
+									size="40">
+									<p:ajax event="change" />
+									<f:convertNumber pattern="#,##0.000" locale="en" />
+								</p:inputText>
+							</div>
+						</div>
+					</div>
+
+					<br />
+					<div class="row">
+						<div class="col-sm-12">
 							<div class="form-group">
-								<label for="codigoID" class="col-sm-3 control-label">Producto</label>
-								<div class="col-sm-9">
+								<div class="col-md-4"></div>
+								<div class="col-md-4">
+									<p:commandLink value="&#160; Cerrar"
+										styleClass="btn btn-warning ion-minus-circled btn-block"
+										onclick="PF('dlgProducto').hide();"
+										action="#{ordenIngresoController.limpiarDatosProducto()}"
+										update="formTableOrdenIngreso:itemsTable1,formTableOrdenIngreso:editarDetalleOrdenIngreso,formTableOrdenIngreso:eliminarDetalleOrdenIngreso"
+										immediate="true">
+									</p:commandLink>
+								</div>
+								<div class="col-md-4">
+									<p:commandLink value="&#160; Aceptar"
+										styleClass="btn btn-success ion-checkmark btn-block"
+										onclick="PF('dlgProducto').hide();"
+										rendered="#{ ! ordenIngresoController.editarOrdenIngreso}">
+										<p:ajax
+											update="formTableOrdenIngreso:itemsTable1,formTableOrdenIngreso:editarDetalleOrdenIngreso,formTableOrdenIngreso:eliminarDetalleOrdenIngreso"
+											listener="#{ordenIngresoController.agregarDetalleOrdenIngreso()}" />
+									</p:commandLink>
 
-									<p:autoComplete id="productoID"
-										value="#{ordenIngresoController.selectedProducto.nombre}"
-										completeMethod="#{ordenIngresoController.completeProducto}"
-										minQueryLength="3" size="35" dropdown="true" required="true"
-										requiredMessage="Producto Requerido." forceSelection="true"
+									<p:commandLink value="&#160; Modificar"
+										styleClass="btn btn-success ion-checkmark btn-block"
+										onclick="PF('dlgProducto').hide();"
+										rendered="#{ordenIngresoController.editarOrdenIngreso}">
+										<p:ajax
+											update="formTableOrdenIngreso:itemsTable1,formTableOrdenIngreso:editarDetalleOrdenIngreso,formTableOrdenIngreso:eliminarDetalleOrdenIngreso"
+											listener="#{ordenIngresoController.modificarDetalleOrdenIngreso()}" />
+									</p:commandLink>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</ui:fragment>
+				<ui:fragment rendered="#{ordenIngresoController.nuevoProducto}">
+					<!-- mostrar si se va a crear producto -->
+					<div class="row">
+						<div class="col-md-12 box-content form-horizontal">
+
+							<div class="form-group ">
+								<div class="col-md-4">Partida</div>
+								<div class="col-md-8">
+
+									<p:autoComplete id="partidaID" style="width: 93%"
+										inputStyle="width: 93%; color: #555555; background-image: none;"
+										value="#{ordenIngresoController.newProducto.partida.nombre}"
+										completeMethod="#{ordenIngresoController.completePartida}"
+										minQueryLength="3" dropdown="true" required="true"
+										requiredMessage="Partida Requerido." forceSelection="true"
 										var="_var" itemLabel="#{_var}" itemValue="#{_var.nombre}"
-										placeholder="[Escriba Producto]" maxResults="10">
+										placeholder="[Escriba Partida]" maxResults="10">
 
-										<p:ajax event="itemSelect" update="totalID,precioID"
-											listener="#{ordenIngresoController.onRowSelectProductoClick}" />
-
+										<p:ajax event="itemSelect"
+											listener="#{ordenIngresoController.onRowSelectPartidaClick}"
+											update="formDialogProducto:partidaID" />
 										<p:column>
 											<h:outputText value="#{_var.nombre}" />
 										</p:column>
-
 									</p:autoComplete>
+
 								</div>
 							</div>
-						</div>
-						<br />
 
-						<div class="row">
-							<div class="form-group">
-								<label for="descripcionID" class="col-sm-3 control-label">Observacion</label>
-								<div class="col-sm-9">
-									<p:inputTextarea id="descripcionID" required="true"
-										requiredMessage="Observacion Requerido."
-										value="#{ordenIngresoController.selectedDetalleOrdenIngreso.observacion}"
-										size="20" rows="2" cols="39">
-										<p:ajax event="change" update="precioID,totalID" />
-									</p:inputTextarea>
-								</div>
-							</div>
-						</div>
-
-						<br />
-						<div class="row">
-							<div class="form-group">
-								<label for="precioID" class="col-sm-3 control-label">Precio
-									Unitario</label>
-								<div class="col-sm-9">
-									<p:inputText id="precioID" required="true"
-										requiredMessage="Precio Requerido." disabled="true"
-										value="#{ordenIngresoController.selectedProducto.precioUnitario}"
-										size="40">
-										<p:ajax event="change" update="totalID"
-											listener="#{ordenIngresoController.calcular()}" />
-										<f:convertNumber pattern="#,##0.000" locale="en" />
+							<div class="form-group ">
+								<div class="col-md-4">Nombre Producto</div>
+								<div class="col-md-8">
+									<p:inputText id="nuevoNombreID"
+										style=" color: #555555; background-image: none;"
+										styleClass="input-sm form-control" size="40"
+										value="#{ordenIngresoController.newProducto.nombre}"
+										required="true" requiredMessage="Requerido.">
+										<p:ajax event="change" />
 									</p:inputText>
 								</div>
 							</div>
-						</div>
-
-						<br />
-						<div class="row">
-							<div class="form-group">
-								<label for="cantidadID" class="col-sm-3 control-label">Cantidad</label>
-								<div class="col-sm-9">
-									<p:inputText id="cantidadID" required="true"
-										requiredMessage="Cantidad Requerido."
-										value="#{ordenIngresoController.selectedDetalleOrdenIngreso.cantidad}"
-										size="40">
-										<p:ajax event="change" update="totalID"
-											listener="#{ordenIngresoController.calcular()}" />
+							<div class="form-group ">
+								<div class="col-md-4">Descripción</div>
+								<div class="col-md-8">
+									<p:inputText id="nuevoDescripcionID"
+										style=" color: #555555; background-image: none;"
+										styleClass="input-sm form-control" size="40"
+										value="#{ordenIngresoController.newProducto.descripcion}"
+										required="true" requiredMessage="Requerido.">
+										<p:ajax event="change" />
 									</p:inputText>
 								</div>
 							</div>
-						</div>
 
-						<br />
-						<div class="row">
-							<div class="form-group">
-								<label for="totalID" class="col-sm-3 control-label">Total</label>
-								<div class="col-sm-9">
-									<p:inputText id="totalID" required="true"
-										requiredMessage="Total Requerido."
-										value="#{ordenIngresoController.selectedDetalleOrdenIngreso.total}"
+							<div class="form-group ">
+								<div class="col-md-4">Precio Unitario</div>
+								<div class="col-md-8">
+									<p:inputText id="nuevoPrecioID"
+										style=" color: #555555; background-image: none;"
+										styleClass="input-sm form-control" required="true"
+										requiredMessage="Precio Requerido."
+										value="#{ordenIngresoController.newProducto.precioUnitario}"
 										size="40">
 										<p:ajax event="change" />
 										<f:convertNumber pattern="#,##0.000" locale="en" />
 									</p:inputText>
 								</div>
 							</div>
+
+							<div class="form-group ">
+								<div class="col-md-4">Tipo Producto</div>
+								<div class="col-md-8">
+									<h:selectOneMenu id="nuevoTipoID"
+										style=" color: #555555; background-image: none; width:100%;"
+										styleClass="input-sm form-control" required="true"
+										requiredMessage="Tipo Requerido."
+										value="#{ordenIngresoController.newProducto.tipoProducto}">
+										<f:selectItem itemLabel="SELECCIONE" itemValue="" />
+										<f:selectItem itemLabel="INSUMOS" itemValue="INSUMOS" />
+										<f:selectItem itemLabel="MATERIALES" itemValue="MATERIALES" />
+										<f:selectItem itemLabel="SUMINISTRO" itemValue="SUMINISTRO" />
+										<p:ajax event="change" />
+									</h:selectOneMenu>
+								</div>
+							</div>
+
+							<div class="form-group ">
+								<div class="col-md-4">Unidad Medida</div>
+								<div class="col-md-8">
+									<h:selectOneMenu id="nuevoMdidaID"
+										style=" color: #555555; background-image: none; width:100%;"
+										styleClass="input-sm form-control" required="true"
+										requiredMessage="Medida Requerido."
+										value="#{ordenIngresoController.newProducto.unidadMedida}">
+										<f:selectItem itemLabel="SELECCIONE" itemValue="" />
+										<f:selectItem itemLabel="PIEZA" itemValue="PIEZA" />
+										<f:selectItem itemLabel="GRAMO" itemValue="GRAMO" />
+										<f:selectItem itemLabel="METRO" itemValue="METRO" />
+										<f:selectItem itemLabel="LITRO" itemValue="LITRO" />
+										<f:selectItem itemLabel="KILO" itemValue="KILO" />
+										<p:ajax event="change" />
+									</h:selectOneMenu>
+								</div>
+							</div>
+
 						</div>
+					</div>
 
-						<br />
-						<div class="row">
-							<div class="col-sm-12">
-								<div class="form-group">
-									<div class="col-md-4"></div>
-									<div class="col-md-4">
-										<p:commandLink value="&#160; Cerrar"
-											styleClass="btn btn-warning ion-minus-circled btn-block"
-											onclick="PF('dlgProducto').hide();"
-											action="#{ordenIngresoController.limpiarDatosProducto()}"
-											update="formTableOrdenIngreso:itemsTable1,formTableOrdenIngreso:editarDetalleOrdenIngreso,formTableOrdenIngreso:eliminarDetalleOrdenIngreso"
-											immediate="true">
-										</p:commandLink>
-									</div>
-									<div class="col-md-4">
-										<p:commandLink value="&#160; Aceptar"
-											styleClass="btn btn-success ion-checkmark btn-block"
-											onclick="PF('dlgProducto').hide();"
-											rendered="#{ ! ordenIngresoController.editarOrdenIngreso}">
-											<p:ajax
-												update="formTableOrdenIngreso:itemsTable1,formTableOrdenIngreso:editarDetalleOrdenIngreso,formTableOrdenIngreso:eliminarDetalleOrdenIngreso"
-												listener="#{ordenIngresoController.agregarDetalleOrdenIngreso()}" />
-										</p:commandLink>
-
-										<p:commandLink value="&#160; Modificar"
-											styleClass="btn btn-success ion-checkmark btn-block"
-											onclick="PF('dlgProducto').hide();"
-											rendered="#{ordenIngresoController.editarOrdenIngreso}">
-											<p:ajax
-												update="formTableOrdenIngreso:itemsTable1,formTableOrdenIngreso:editarDetalleOrdenIngreso,formTableOrdenIngreso:eliminarDetalleOrdenIngreso"
-												listener="#{ordenIngresoController.modificarDetalleOrdenIngreso()}" />
-										</p:commandLink>
-									</div>
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="form-group">
+								<div class="col-md-4"></div>
+								<div class="col-md-4">
+									<p:commandLink value="&#160; Cancelar"
+										styleClass="btn btn-warning ion-minus-circled btn-block">
+										<p:ajax immediate="true" update="formDialogProducto"
+											listener="#{ordenIngresoController.setNuevoProducto(false)}" />
+									</p:commandLink>
+								</div>
+								<div class="col-md-4">
+									<p:commandLink value="&#160; Registrar"
+										styleClass="btn btn-success ion-checkmark btn-block">
+										<p:ajax update="formDialogProducto,formGrowl:msgs1" listener="#{ordenIngresoController.registrarProducto()}"/>
+									</p:commandLink>
 								</div>
 							</div>
 						</div>
 					</div>
 				</ui:fragment>
-				<ui:fragment rendered="false">
-					<!-- mostrar si se va a crear producto -->
+			</h:form>
+		</p:dialog>
 
-				</ui:fragment>
-			</p:dialog>
-		</h:form>
 
 		<!-- VISTA PREVIA REPORTE -->
 		<p:dialog header="ORDEN INGRESO"

@@ -10,6 +10,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.event.Event;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -26,6 +27,7 @@ import bo.com.qbit.webapp.data.AlmacenRepository;
 import bo.com.qbit.webapp.data.DetalleOrdenIngresoRepository;
 import bo.com.qbit.webapp.data.KardexProductoRepository;
 import bo.com.qbit.webapp.data.OrdenIngresoRepository;
+import bo.com.qbit.webapp.data.PartidaRepository;
 import bo.com.qbit.webapp.data.ProductoRepository;
 import bo.com.qbit.webapp.data.ProveedorRepository;
 import bo.com.qbit.webapp.data.UsuarioRepository;
@@ -35,6 +37,7 @@ import bo.com.qbit.webapp.model.DetalleOrdenIngreso;
 import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.KardexProducto;
 import bo.com.qbit.webapp.model.OrdenIngreso;
+import bo.com.qbit.webapp.model.Partida;
 import bo.com.qbit.webapp.model.Producto;
 import bo.com.qbit.webapp.model.Proveedor;
 import bo.com.qbit.webapp.model.Usuario;
@@ -42,6 +45,7 @@ import bo.com.qbit.webapp.service.AlmacenProductoRegistration;
 import bo.com.qbit.webapp.service.DetalleOrdenIngresoRegistration;
 import bo.com.qbit.webapp.service.KardexProductoRegistration;
 import bo.com.qbit.webapp.service.OrdenIngresoRegistration;
+import bo.com.qbit.webapp.service.ProductoRegistration;
 import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.ReadWriteExcelFile;
 import bo.com.qbit.webapp.util.SessionMain;
@@ -65,11 +69,13 @@ public class OrdenIngresoController implements Serializable {
 	private @Inject DetalleOrdenIngresoRepository detalleOrdenIngresoRepository;
 	private @Inject AlmacenProductoRepository almacenProductoRepository;
 	private @Inject KardexProductoRepository kardexProductoRepository;
+	private @Inject PartidaRepository partidaRepository;
 
 	private @Inject OrdenIngresoRegistration ordenIngresoRegistration;
 	private @Inject DetalleOrdenIngresoRegistration detalleOrdenIngresoRegistration;
 	private @Inject AlmacenProductoRegistration almacenProductoRegistration;
 	private @Inject KardexProductoRegistration kardexProductoRegistration;
+	private @Inject ProductoRegistration productoRegistration;
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
@@ -86,6 +92,7 @@ public class OrdenIngresoController implements Serializable {
 	private boolean editarOrdenIngreso = false;
 	private boolean verProcesar = true;
 	private boolean verReport = false;
+	private boolean nuevoProducto = false;
 
 	private String tituloProducto = "Agregar Producto";
 	private String tituloPanel = "Registrar Almacen";
@@ -114,6 +121,9 @@ public class OrdenIngresoController implements Serializable {
 	private Gestion gestionSesion;
 
 	private boolean atencionCliente = false;
+	
+	//CREACION NUEVO PRODUCTO
+	private Producto newProducto= new Producto();
 
 	@PostConstruct
 	public void initNewOrdenIngreso() {
@@ -139,6 +149,7 @@ public class OrdenIngresoController implements Serializable {
 		crear = true;
 		atencionCliente=false;
 		verProcesar = true;
+		nuevoProducto = false;
 
 		listaDetalleOrdenIngreso = new ArrayList<DetalleOrdenIngreso>();
 		listaOrdenIngreso = ordenIngresoRepository.findAllOrderedByID();
@@ -151,6 +162,9 @@ public class OrdenIngresoController implements Serializable {
 		newOrdenIngreso.setGestion(gestionSesion);
 		newOrdenIngreso.setFechaRegistro(new Date());
 		newOrdenIngreso.setUsuarioRegistro(usuarioSession);
+		
+		//cuando agreguen un nuevo producto
+		newProducto = new Producto();
 
 	}
 
@@ -542,6 +556,42 @@ public class OrdenIngresoController implements Serializable {
 			System.out.println("ERROR "+e.getMessage());
 		}
 	}
+	
+	// SELECCIONAR AUTOCOMPLETES AREA PRODUCTO
+	public List<Partida> completePartida(String query) {
+		return partidaRepository.findAllPartidaForDescription(query);
+	}
+	
+	public void onRowSelectPartidaClick() {
+		System.out.println("Seleccionado onRowSelectPartidaClick: "
+				+ this.newProducto.getPartida().getNombre());
+		
+		List<Partida> listPartida = partidaRepository.traerPartidaActivas();
+		for (Partida row : listPartida) {
+			if (row.getNombre().equals(this.newProducto.getPartida().getNombre())) {
+				this.newProducto.setPartida(row);
+			}
+		}
+	}
+	
+	public void registrarProducto() {
+		try {
+			System.out.println("Ingreso a registrarProducto: ");
+			newProducto.setEstado("AC");
+			newProducto.setFechaRegistro(new Date());
+			newProducto.setUsuarioRegistro(usuarioSession);
+			newProducto.setUsuarioRegistro(usuarioSession);
+			newProducto.setFechaRegistro(new Date());
+			newProducto = productoRegistration.register(newProducto);
+			selectedProducto = newProducto;
+			calcular();
+			FacesUtil.infoMessage("Producto Registrado!",newProducto.getNombre());
+			setNuevoProducto(false);
+			newProducto = new Producto();
+		} catch (Exception e) {
+			FacesUtil.errorMessage("Error al registrar");
+		}
+	}
 
 	// -------- get and set -------
 	public String getTituloPanel() {
@@ -727,6 +777,22 @@ public class OrdenIngresoController implements Serializable {
 
 	public void setVerReport(boolean verReport) {
 		this.verReport = verReport;
+	}
+
+	public boolean isNuevoProducto() {
+		return nuevoProducto;
+	}
+
+	public void setNuevoProducto(boolean nuevoProducto) {
+		this.nuevoProducto = nuevoProducto;
+	}
+
+	public Producto getNewProducto() {
+		return newProducto;
+	}
+
+	public void setNewProducto(Producto newProducto) {
+		this.newProducto = newProducto;
 	}
 
 }
