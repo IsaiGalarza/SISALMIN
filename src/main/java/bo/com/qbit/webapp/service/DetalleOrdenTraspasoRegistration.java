@@ -22,10 +22,13 @@ public class DetalleOrdenTraspasoRegistration {
     @Inject
     private Event<DetalleOrdenTraspaso> PartidaEventSrc;
     
-    public void register(DetalleOrdenTraspaso detalleOrdenTraspaso) throws Exception {
+    public DetalleOrdenTraspaso register(DetalleOrdenTraspaso detalleOrdenTraspaso) throws Exception {
         log.info("Registering detalleOrdenTraspaso " );
         em.persist(detalleOrdenTraspaso);
+        this.em.flush();
+        this.em.refresh(detalleOrdenTraspaso);
         PartidaEventSrc.fire(detalleOrdenTraspaso);
+        return detalleOrdenTraspaso;
     }
     
     public void updated(DetalleOrdenTraspaso detalleOrdenTraspaso) throws Exception {

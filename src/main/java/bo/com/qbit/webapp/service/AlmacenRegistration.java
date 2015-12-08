@@ -22,10 +22,13 @@ public class AlmacenRegistration {
     @Inject
     private Event<Almacen> almacenEventSrc;
     
-    public void register(Almacen almacen) throws Exception {
+    public Almacen register(Almacen almacen) throws Exception {
         log.info("Registering Almacen: " + almacen.getNombre());
         em.persist(almacen);
+        this.em.flush();
+        this.em.refresh(almacen);
         almacenEventSrc.fire(almacen);
+        return almacen;
     }
     
     public void updated(Almacen almacen) throws Exception {

@@ -95,20 +95,7 @@
 									style="height:31px; padding:center"
 									update="formTableOrdenSalida, :formBotonesHeader,formModalVistaPrevia"
 									action="#{ordenSalidaController.cargarReporte()}">
-								</p:commandLink>
-								
-								<p:commandLink id="buttonV123e" value="&#160; EXPORT"
-									styleClass="btn btn-info ion-printer"
-									style="height:31px; padding:center"
-									oncomplete="PF('dlgExportExcel').show();">
-								</p:commandLink>
-								
-								<p:commandLink id="buttonV1238" value="&#160; CARGAR"
-									styleClass="btn btn-info ion-printer"
-									style="height:31px; padding:center"
-									action="#{ordenSalidaController.armarFileBackup()}">
-								</p:commandLink>
-								
+								</p:commandLink>					
 
 							</div>
 						</div>
@@ -754,39 +741,9 @@
 		</p:dialog>
 		<!-- END DIALOG -->
 
-		<!-- DIALOG EXPORT -->
-		<p:dialog header="DESCARGAR ARCHIVO" widgetVar="dlgExportExcel"
-			modal="true" visible="#{not empty facesContext.maximumSeverity}"
-			resizable="false" position="center" width="500px">
-			<h:form id="formDialogExport" enctype="multipart/form-data">
-			   Se genero un archivo excel para importacion de almacen.
-			   
-			   <br />
-			   <br />
-			  
-
-				<p:commandButton value="Descargar" ajax="false"
-					onclick="PrimeFaces.monitorDownload(start, stop);"
-					icon="ui-icon-arrowthick-1-s">
-					<p:fileDownload value="#{ordenSalidaController.dFile}" />
-				</p:commandButton>
-
-			</h:form>
-		</p:dialog>
-
 	</ui:define>
 
 	<ui:insert name="scripts">
-
-		<script type="text/javascript">
-function start() {
-    PF('statusDialog').show();
-}
- 
-function stop() {
-    PF('statusDialog').hide();
-}
-</script>
 
 	</ui:insert>
 </ui:composition>

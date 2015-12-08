@@ -24,19 +24,11 @@ public class Almacen implements Serializable {
 
 	private String direccion;
 
-	private String estado;
-	
 	@Column(name="codigo",nullable=true)
 	private String codigo;
 	
 	@Column(name="online")
 	private boolean online;
-	
-	@Column(name="atencion_cliente")
-	private boolean atencionCliente= false;
-
-	@Column(name="fecha_registro")
-	private Date fechaRegistro;
 
 	private String nombre;
 
@@ -47,8 +39,13 @@ public class Almacen implements Serializable {
 
 	private String tipoAlmacen;
 	
+	private String estado;
+	
 	@Column(name="usuario_registro")
 	private String usuarioRegistro;
+	
+	@Column(name="fecha_registro")
+	private Date fechaRegistro;
 
 	//bi-directional many-to-one association to AlmProducto
 //	@OneToMany(mappedBy="almacen")
@@ -61,7 +58,6 @@ public class Almacen implements Serializable {
 
 	public Almacen() {
 		encargado= new Usuario();
-		atencionCliente= false;
 		estado= "AC";
 		online = true;
 	}
@@ -150,15 +146,6 @@ public class Almacen implements Serializable {
 
 	public void setEncargado(Usuario encargado) {
 		this.encargado = encargado;
-	}
-
-	
-	public boolean isAtencionCliente() {
-		return atencionCliente;
-	}
-
-	public void setAtencionCliente(boolean atencionCliente) {
-		this.atencionCliente = atencionCliente;
 	}
 
 	public boolean isOnline() {

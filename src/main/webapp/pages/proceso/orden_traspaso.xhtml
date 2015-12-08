@@ -52,7 +52,7 @@
 								<p:commandLink id="buttonRegistrar" value="&#160; Registrar"
 									styleClass="btn btn-success ion-checkmark"
 									rendered="#{ordenTraspasoController.registrar}"
-									update="formTableOrdenTraspaso, formBotonesHeader,formModalValidacionStock"
+									update="formTableOrdenTraspaso, formBotonesHeader,formModalValidacionStock,formGrowl:msgs1,formDialogExport"
 									style="height:31px; padding:center"
 									action="#{ordenTraspasoController.registrarOrdenTraspaso()}">
 								</p:commandLink>
@@ -61,7 +61,7 @@
 									styleClass="btn btn-primary ion-edit"
 									rendered="#{ordenTraspasoController.selectedOrdenTraspaso != null and ordenTraspasoController.crear and ordenTraspasoController.verProcesar and ! ordenTraspasoController.verReport }"
 									style="height:31px; padding:center"
-									update="formTableOrdenTraspaso, :formBotonesHeader"
+									update="formTableOrdenTraspaso, :formBotonesHeader,"
 									action="#{ordenTraspasoController.cambiarAspectoModificar()}">
 								</p:commandLink>
 
@@ -69,14 +69,14 @@
 									styleClass="btn btn-primary ion-edit"
 									rendered="#{ordenTraspasoController.modificar and ordenTraspasoController.verProcesar}"
 									style="height:31px; padding:center"
-									update="formTableOrdenTraspaso, formBotonesHeader"
+									update="formTableOrdenTraspaso,formBotonesHeader"
 									action="#{ordenTraspasoController.modificarOrdenTraspaso()}">
 								</p:commandLink>
 
 								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
 									styleClass="btn btn-danger ion-close"
 									rendered="#{ordenTraspasoController.selectedOrdenTraspaso != null and ordenTraspasoController.crear and ordenTraspasoController.verProcesar and ! ordenTraspasoController.verReport }"
-									update="formTableOrdenTraspaso, :formBotonesHeader"
+									update="formTableOrdenTraspaso,formBotonesHeader,formGrowl:msgs1"
 									onclick="PF('dlgEliminarOrdenTraspaso').show()"
 									style="height:31px; padding:center">
 								</p:commandLink>
@@ -85,7 +85,7 @@
 									styleClass="btn btn-info ion-ios7-loop-strong"
 									rendered="#{ordenTraspasoController.selectedOrdenTraspaso != null and ordenTraspasoController.crear and ordenTraspasoController.verProcesar and ! ordenTraspasoController.verReport}"
 									style="height:31px; padding:center"
-									update="formTableOrdenTraspaso, :formBotonesHeader"
+									update="formTableOrdenTraspaso, :formBotonesHeader,formGrowl:msgs1"
 									action="#{ordenTraspasoController.procesarOrdenTraspaso()}">
 								</p:commandLink>
 
@@ -110,7 +110,7 @@
 									<p:commandButton value="Si"
 										actionListener="#{ordenTraspasoController.eliminarOrdenTraspaso()}"
 										icon="ui-icon-trash" style="width: 90px; text-color: white;"
-										update="formTableOrdenTraspaso"
+										update="formTableOrdenTraspaso,formGrowl:msgs1"
 										oncomplete="PF('dlgEliminar').hide()"
 										styleClass="btn btn-default" immediate="true" />
 
@@ -792,9 +792,10 @@
 			modal="true" visible="#{not empty facesContext.maximumSeverity}"
 			resizable="false" position="center" width="500px">
 			<h:form id="formDialogExport" enctype="multipart/form-data">
-			   Se genero un archivo excel para importacion de almacen.
-			   <p:commandButton value="Descargar" ajax="false">
-					<p:fileDownload value="#{ordenSalidaController.dFile}" />
+			   Se genero un archivo  para importacion de almacen.
+			   <br />
+			   <p:commandButton immediate="true" value="Descargar"  ajax="false" oncomplete="PF('dlgExportExcel').hide();">
+					<p:fileDownload value="#{ordenTraspasoController.dFile}" />
 				</p:commandButton>
 
 			</h:form>
@@ -804,6 +805,11 @@
 	</ui:define>
 
 	<ui:insert name="scripts">
+
+		<script type="text/javascript">
+			function start() { PF('statusDialog').show(); }
+			function stop() { PF('statusDialog').hide(); }
+		</script>
 
 	</ui:insert>
 </ui:composition>

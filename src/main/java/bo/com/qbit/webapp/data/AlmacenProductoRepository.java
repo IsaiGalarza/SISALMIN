@@ -36,7 +36,7 @@ public class AlmacenProductoRepository {
 		}catch(Exception e){
 			return null;
 		}
-	}
+	}	
 
 	public AlmacenProducto findByProducto(Producto producto) {
 		try{

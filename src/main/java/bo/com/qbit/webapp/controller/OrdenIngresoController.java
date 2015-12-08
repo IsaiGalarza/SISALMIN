@@ -1,5 +1,8 @@
 package bo.com.qbit.webapp.controller;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -10,13 +13,12 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.event.Event;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.io.FilenameUtils;
+
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.UploadedFile;
@@ -42,13 +44,16 @@ import bo.com.qbit.webapp.model.Producto;
 import bo.com.qbit.webapp.model.Proveedor;
 import bo.com.qbit.webapp.model.Usuario;
 import bo.com.qbit.webapp.service.AlmacenProductoRegistration;
+import bo.com.qbit.webapp.service.AlmacenRegistration;
 import bo.com.qbit.webapp.service.DetalleOrdenIngresoRegistration;
 import bo.com.qbit.webapp.service.KardexProductoRegistration;
 import bo.com.qbit.webapp.service.OrdenIngresoRegistration;
+import bo.com.qbit.webapp.service.PartidaRegistration;
 import bo.com.qbit.webapp.service.ProductoRegistration;
+import bo.com.qbit.webapp.util.Cifrado;
 import bo.com.qbit.webapp.util.FacesUtil;
-import bo.com.qbit.webapp.util.ReadWriteExcelFile;
 import bo.com.qbit.webapp.util.SessionMain;
+import bo.com.qbit.webapp.util.StreamUtil;
 
 @Named(value = "ordenIngresoController")
 @ConversationScoped
@@ -76,6 +81,8 @@ public class OrdenIngresoController implements Serializable {
 	private @Inject AlmacenProductoRegistration almacenProductoRegistration;
 	private @Inject KardexProductoRegistration kardexProductoRegistration;
 	private @Inject ProductoRegistration productoRegistration;
+	private @Inject AlmacenRegistration almacenRegistration;
+	private @Inject PartidaRegistration partidaRegistration;
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
@@ -121,7 +128,7 @@ public class OrdenIngresoController implements Serializable {
 	private Gestion gestionSesion;
 
 	private boolean atencionCliente = false;
-	
+
 	//CREACION NUEVO PRODUCTO
 	private Producto newProducto= new Producto();
 
@@ -162,7 +169,7 @@ public class OrdenIngresoController implements Serializable {
 		newOrdenIngreso.setGestion(gestionSesion);
 		newOrdenIngreso.setFechaRegistro(new Date());
 		newOrdenIngreso.setUsuarioRegistro(usuarioSession);
-		
+
 		//cuando agreguen un nuevo producto
 		newProducto = new Producto();
 
@@ -537,35 +544,150 @@ public class OrdenIngresoController implements Serializable {
 
 	public void handleFileUpload(FileUploadEvent event) {
 		uploadedFile = event.getFile();
-		FacesUtil.infoMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
+		FacesUtil.infoMessage("Correcto", event.getFile().getFileName() + " , archivo cargado.");
 	}
 
 	public void convertJava() {
 		System.out.println("convertJava() ");
-		try{
+		listaDetalleOrdenIngreso = new ArrayList<DetalleOrdenIngreso>();
+		File archivo = null;
+		FileReader fr = null;
+		BufferedReader br = null;
+		try {
 			InputStream input = uploadedFile.getInputstream();
-			String ext = FilenameUtils.getExtension(uploadedFile.getFileName());
+			//String ext = FilenameUtils.getExtension(uploadedFile.getFileName());
 
-			if(ext.equals("xls")){// if XLS
-				ReadWriteExcelFile.readXLSFile(input);
-			}else if(ext.equals("xlsx")){// if XLSX
-				ReadWriteExcelFile.readXLSXFile(input);
+			// Apertura del fichero y creacion de BufferedReader para poder
+			// hacer una lectura comoda (disponer del metodo readLine()).
+			archivo = StreamUtil.stream2file(input);
+			fr = new FileReader (archivo);
+			br = new BufferedReader(fr);
+
+			// Lectura del fichero
+			//ALMACEN
+			//1 direccion
+			String direccion = Cifrado.Desencriptar( br.readLine(),12);
+			//2 codigo
+			String codigo = Cifrado.Desencriptar( br.readLine(),12);
+			//3 online
+			String online = Cifrado.Desencriptar( br.readLine(),12);
+			//4 nombre
+			String nombre = Cifrado.Desencriptar( br.readLine(),12);
+			//5 precioTotal
+			String precioTotal = Cifrado.Desencriptar( br.readLine(),12);
+			//6 telefono
+			String telefono = Cifrado.Desencriptar( br.readLine(),12);
+			//7 tipoAlmacen
+			String tipoAlmacen = Cifrado.Desencriptar( br.readLine(),12);
+			selectedAlmacen = almacenRepository.findByCodigo(codigo);
+			if(selectedAlmacen == null){
+				Almacen almacen = new Almacen();
+				almacen.setCodigo(codigo);
+				almacen.setDireccion(direccion);
+				almacen.setEstado("AC");
+				almacen.setFechaRegistro(new Date());
+				almacen.setNombre(nombre);
+				almacen.setOnline(online.equals("true")?false:true);//invertido
+				almacen.setPrecioTotal(Double.parseDouble(precioTotal));
+				almacen.setTelefono(telefono);
+				almacen.setTipoAlmacen(tipoAlmacen);
+				almacen.setUsuarioRegistro(usuarioSession);
+				selectedAlmacen = almacenRegistration.register(almacen);
 			}
-
-		}catch(Exception e){
-			System.out.println("ERROR "+e.getMessage());
+			String linea;
+			int contadorLinea = 7;
+			while((linea=br.readLine())!=null)
+				contadorLinea = contadorLinea + 1;
+			
+			//>>>>>>>>PARTIDA<<<<<<<<
+			//14 codigoPartida
+			String codigoPartida = Cifrado.Desencriptar( br.readLine(),12);
+			//15 nombre
+			String nombrePartida = Cifrado.Desencriptar( br.readLine(),12);
+			//16 descripcion
+			String descripcionPartida = Cifrado.Desencriptar( br.readLine(),12);
+			Partida partida = partidaRepository.findByCodigo(codigoPartida);
+			if(partida==null){
+				partida = new Partida();
+				partida.setCodigo(codigoPartida);
+				partida.setDescripcion(descripcionPartida);
+				partida.setEstado("AC");
+				partida.setFechaRegistro(new Date());
+				partida.setNombre(nombrePartida);
+				partida.setUsuarioRegistro(usuarioSession);
+				partida = partidaRegistration.register(partida);
+			}
+			//PRODUCTO
+			//8 codigo
+			String codigoProducto = Cifrado.Desencriptar(linea,12);
+			//9 nombre
+			String nombreProducto = Cifrado.Desencriptar( br.readLine(),12);
+			//10 descripcion
+			String descripcionProducto = Cifrado.Desencriptar( br.readLine(),12);
+			//11 precioUnitario
+			String precioUnitarioProducto = Cifrado.Desencriptar( br.readLine(),12);
+			//12 tipoProducto
+			String tipoProductoProducto = Cifrado.Desencriptar( br.readLine(),12);
+			//13 unidadMedida
+			String unidadMedidaProducto = Cifrado.Desencriptar( br.readLine(),12);
+			Producto producto = productoRepository.findByCodigo(codigo);
+			if(producto == null){
+				producto = new Producto();
+				producto.setCodigo(codigoProducto);
+				producto.setDescripcion(descripcionProducto);
+				producto.setEstado("AC");
+				producto.setFechaRegistro(new Date());
+				producto.setNombre(nombreProducto);
+				producto.setPartida(partida);
+				producto.setPrecioUnitario(Double.parseDouble(precioUnitarioProducto));
+				producto.setTipoProducto(tipoProductoProducto);
+				producto.setUnidadMedida(unidadMedidaProducto);
+				producto.setUsuarioRegistro(usuarioSession);
+				producto = productoRegistration.register(producto);
+			}
+			//>>>>>>>>DETALLE ORDEN INGRESO<<<<<<<<<
+			//17 cantidadDOI
+			String cantidadDOI = Cifrado.Desencriptar( br.readLine(),12);
+			//18 observacionDOI
+			String observacionDOI = Cifrado.Desencriptar( br.readLine(),12);
+			//19 totalDOI
+			String totalDOI = Cifrado.Desencriptar( br.readLine(),12);
+			DetalleOrdenIngreso detalle = new DetalleOrdenIngreso();
+			detalle.setCantidad(Integer.parseInt(cantidadDOI));
+			detalle.setEstado("AC");
+			detalle.setFechaRegistro(new Date());
+			detalle.setObservacion(observacionDOI);
+			detalle.setOrdenIngreso(newOrdenIngreso);
+			detalle.setProducto(producto);
+			detalle.setTotal(Double.parseDouble(totalDOI));
+			detalle.setUsuarioRegistro(usuarioSession);
+			listaDetalleOrdenIngreso.add(detalle);
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			// En el finally cerramos el fichero, para asegurarnos
+			// que se cierra tanto si todo va bien como si salta 
+			// una excepcion.
+			try{                    
+				if( null != fr ){   
+					fr.close();     
+				}                  
+			}catch (Exception e2){ 
+				e2.printStackTrace();
+			}
 		}
 	}
-	
+
 	// SELECCIONAR AUTOCOMPLETES AREA PRODUCTO
 	public List<Partida> completePartida(String query) {
 		return partidaRepository.findAllPartidaForDescription(query);
 	}
-	
+
 	public void onRowSelectPartidaClick() {
 		System.out.println("Seleccionado onRowSelectPartidaClick: "
 				+ this.newProducto.getPartida().getNombre());
-		
+
 		List<Partida> listPartida = partidaRepository.traerPartidaActivas();
 		for (Partida row : listPartida) {
 			if (row.getNombre().equals(this.newProducto.getPartida().getNombre())) {
@@ -573,7 +695,7 @@ public class OrdenIngresoController implements Serializable {
 			}
 		}
 	}
-	
+
 	public void registrarProducto() {
 		try {
 			System.out.println("Ingreso a registrarProducto: ");

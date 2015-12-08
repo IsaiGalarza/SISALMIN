@@ -169,6 +169,18 @@
 														</div>
 													</div>
 													<div class="form-group ">
+														<div class="col-md-4">Codigo</div>
+														<div class="col-md-8">
+															<p:inputText id="codigoID"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control" size="40"
+																value="#{productoController.newProducto.codigo}"
+																required="true" requiredMessage="Requerido.">
+																<p:ajax event="change" />
+															</p:inputText>
+														</div>
+													</div>
+													<div class="form-group ">
 														<div class="col-md-4">Descripción</div>
 														<div class="col-md-8">
 															<p:inputText id="descripcionID"
@@ -292,10 +304,10 @@
 													update=":formTableProducto, :formBotonesHeader"
 													listener="#{productoController.onRowSelectProductoClick}" />
 
-												<p:column width="5%" headerText="Id" filterBy="#{_var.id}"
+												<p:column width="6%" headerText="Codigo" filterBy="#{_var.codigo}"
 													style="text-align:center;" filterStyle="width: 100%;"
 													filterMatchMode="contains">
-													<h:outputText value="#{_var.id}" />
+													<h:outputText value="#{_var.codigo}" />
 												</p:column>
 
 												<p:column width="5%" headerText="Partida"

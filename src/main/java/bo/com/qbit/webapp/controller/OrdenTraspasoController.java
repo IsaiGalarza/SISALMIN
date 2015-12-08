@@ -1,6 +1,12 @@
 package bo.com.qbit.webapp.controller;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,6 +22,8 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.primefaces.event.SelectEvent;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 import org.richfaces.cdi.push.Push;
 
 import bo.com.qbit.webapp.data.AlmacenProductoRepository;
@@ -33,12 +41,14 @@ import bo.com.qbit.webapp.model.Funcionario;
 import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.KardexProducto;
 import bo.com.qbit.webapp.model.OrdenTraspaso;
+import bo.com.qbit.webapp.model.Partida;
 import bo.com.qbit.webapp.model.Producto;
 import bo.com.qbit.webapp.model.Proyecto;
 import bo.com.qbit.webapp.service.AlmacenProductoRegistration;
 import bo.com.qbit.webapp.service.DetalleOrdenTraspasoRegistration;
 import bo.com.qbit.webapp.service.KardexProductoRegistration;
 import bo.com.qbit.webapp.service.OrdenTraspasoRegistration;
+import bo.com.qbit.webapp.util.Cifrado;
 import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.SessionMain;
 
@@ -112,6 +122,9 @@ public class OrdenTraspasoController implements Serializable {
 	private Gestion gestionSesion;
 
 	private boolean atencionCliente=false;
+	
+	//archivo de exportacion
+	private StreamedContent dFile;
 
 	@PostConstruct
 	public void initNewOrdenTraspaso() {
@@ -254,19 +267,14 @@ public class OrdenTraspasoController implements Serializable {
 				d.setFechaRegistro(date);
 				d.setUsuarioRegistro(usuarioSession);
 				d.setOrdenTraspaso(newOrdenTraspaso);
-				detalleOrdenTraspasoRegistration.register(d);
+				d = detalleOrdenTraspasoRegistration.register(d);
 			}
 			FacesUtil.infoMessage("Orden de Traspaso Registrada!", ""+newOrdenTraspaso.getCorrelativo());
 			// Verificar si el almacen destino es offline
 			if( ! selectedAlmacen.isOnline()){
-				// Armar url para reporte excel
-				HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
-				String urlPath = request.getRequestURL().toString();
-				urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
-				String urlPDFreporte = urlPath+"ReporteOrdenTraspaso?pIdOrdenTraspaso="+newOrdenTraspaso.getId()+"&pIdEmpresa=1&pUsuario="+usuarioSession+"&pTypeExport=excel";
-				System.out.println("urlPDFreporte : "+urlPDFreporte);
-				FacesContext context = FacesContext.getCurrentInstance();
-				context.getExternalContext().redirect(urlPDFreporte);
+				
+				//armar archivo txt(backup)
+				armarFileBackup();
 				
 				// Lanzar dialog de aviso de exportacion
 				FacesUtil.showDialog("dlgExportExcel");
@@ -274,6 +282,83 @@ public class OrdenTraspasoController implements Serializable {
 			initNewOrdenTraspaso();
 		} catch (Exception e) {
 			FacesUtil.errorMessage("Error al Registrar.");
+		}
+	}
+	
+//	public void test(){
+//		System.out.println("paso a test() ");
+//		armarFileBackup();
+//		FacesUtil.showDialog("dlgExportExcel");
+//	}
+	
+	private void armarFileBackup(){
+		System.out.println("paso a armarFileBackup() ");
+		File file = new File("import.txt");
+		//Escritura
+		try{
+			FileWriter w = new FileWriter(file);
+			BufferedWriter bw = new BufferedWriter(w);
+			PrintWriter wr = new PrintWriter(bw);
+			
+			//test
+			//newOrdenTraspaso = ordenTraspasoRepository.findById(10);
+			//listaDetalleOrdenTraspaso = detalleOrdenTraspasoRepository.findAllByOrdenTraspaso(newOrdenTraspaso);
+
+			//>>>>>>>> ALMACEN <<<<<<<<<
+			//1 direccion
+			wr.write(Cifrado.Encriptar(newOrdenTraspaso.getAlmacenDestino().getDireccion(), 12)+"\r\n");
+			//2 codigo
+			wr.write( Cifrado.Encriptar(newOrdenTraspaso.getAlmacenDestino().getCodigo(), 12)+"\r\n");
+			//3 online
+			wr.write(Cifrado.Encriptar(newOrdenTraspaso.getAlmacenDestino().isOnline()?"TRUE":"FALSE", 12)+"\r\n");
+			//4 nombre
+			wr.write(Cifrado.Encriptar(newOrdenTraspaso.getAlmacenDestino().getNombre(), 12)+"\r\n");
+			//5 precioTotal
+			wr.write(Cifrado.Encriptar(String.valueOf(newOrdenTraspaso.getAlmacenDestino().getPrecioTotal()), 12)+"\r\n");
+			//6 telefono
+			wr.write(Cifrado.Encriptar(newOrdenTraspaso.getAlmacenDestino().getTelefono(), 12)+"\r\n");
+			//7 tipoAlmacen
+			wr.write(Cifrado.Encriptar(newOrdenTraspaso.getAlmacenDestino().getTipoAlmacen(), 12)+"\r\n");
+
+			for(DetalleOrdenTraspaso detalle: listaDetalleOrdenTraspaso){
+				//>>>>>>>>>PRODUCTO<<<<<<<
+				Producto producto = detalle.getProducto();
+				//8 codigo
+				wr.write(Cifrado.Encriptar(producto.getCodigo(), 12)+"\r\n");
+				//9 nombre
+				wr.write(Cifrado.Encriptar(producto.getNombre(), 12)+"\r\n");
+				//10 descripcion
+				wr.write(Cifrado.Encriptar(producto.getDescripcion(), 12)+"\r\n");
+				//11 precioUnitario
+				wr.write(Cifrado.Encriptar(String.valueOf(producto.getPrecioUnitario()), 12)+"\r\n");
+				//12 tipoProducto
+				wr.write(Cifrado.Encriptar(producto.getTipoProducto(), 12)+"\r\n");
+				//13 unidadMedida
+				wr.write(Cifrado.Encriptar(producto.getUnidadMedida(), 12)+"\r\n");
+				//>>>>>>>>PARTIDA<<<<<<<<
+				Partida partida = producto.getPartida();
+				//14 codigo
+				wr.write(Cifrado.Encriptar(partida.getCodigo(), 12)+"\r\n");
+				//15 nombre
+				wr.write(Cifrado.Encriptar(partida.getNombre(), 12)+"\r\n");
+				//16 descripcion
+				wr.write(Cifrado.Encriptar(partida.getDescripcion(), 12)+"\r\n");
+				//>>>>>>>>DETALLE ORDEN INGRESO<<<<<<<<<
+				//17 cantidad
+				wr.write(Cifrado.Encriptar(String.valueOf(detalle.getCantidad()), 12)+"\r\n");
+				//18 observacion
+				wr.write(Cifrado.Encriptar(detalle.getObservacion(), 12)+"\r\n");
+				//19 total
+				wr.write(Cifrado.Encriptar(String.valueOf(detalle.getTotal()), 12)+"\r\n");
+			}
+			wr.close();
+			bw.close();
+			InputStream stream = new FileInputStream(file);
+			Date fecha = new Date(); 
+			String s = String.format("%td%tm%ty", fecha,fecha,fecha);
+			dFile = new DefaultStreamedContent(stream, "text/plain", "import_"+s+newOrdenTraspaso.getCorrelativo()+".txt") ;
+			System.out.println("-FIN- dFile:"+dFile);
+		}catch(IOException e){
 		}
 	}
 
@@ -841,6 +926,16 @@ public class OrdenTraspasoController implements Serializable {
 
 	public void setVerReport(boolean verReport) {
 		this.verReport = verReport;
+	}
+
+	public StreamedContent getdFile() {
+		System.out.println("getdFile "+dFile);
+		return dFile;
+	}
+
+	public void setdFile(StreamedContent dFile) {
+		System.out.println("setdFile "+dFile);
+		this.dFile = dFile;
 	}
 
 }

@@ -8,7 +8,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+
 import bo.com.qbit.webapp.model.Partida;
+import bo.com.qbit.webapp.model.Producto;
 
 @ApplicationScoped
 public class PartidaRepository {
@@ -33,6 +35,13 @@ public class PartidaRepository {
 		String query = "select ser from Partida ser where ser.estado='AC' or ser.estado='IN' order by ser.id desc";
 		System.out.println("Query Partida: " + query);
 		return em.createQuery(query).getResultList();
+	}
+	
+	public Partida findByCodigo(String codigo) {
+		String query = "select ser from Partida ser where (ser.estado='AC' or ser.estado='IN') and ser.codigo='"
+				+ codigo+"'";
+		System.out.println("Query Partida: " + query);
+		return (Partida) em.createQuery(query).getSingleResult();
 	}
 
 

@@ -794,7 +794,8 @@
 								<div class="col-md-4">
 									<p:commandLink value="&#160; Registrar"
 										styleClass="btn btn-success ion-checkmark btn-block">
-										<p:ajax update="formDialogProducto,formGrowl:msgs1" listener="#{ordenIngresoController.registrarProducto()}"/>
+										<p:ajax update="formDialogProducto,formGrowl:msgs1"
+											listener="#{ordenIngresoController.registrarProducto()}" />
 									</p:commandLink>
 								</div>
 							</div>
@@ -869,7 +870,7 @@
 		<!-- END DIALOG -->
 
 		<!-- DIALOG IMPORT -->
-		<p:dialog header="IMPORTAR EXCEL" widgetVar="dlgImportExcel"
+		<p:dialog header="IMPORTAR ARCHIVO" widgetVar="dlgImportExcel"
 			modal="true" visible="#{not empty facesContext.maximumSeverity}"
 			resizable="false" position="center" width="500px">
 			<h:form id="formDialogImport" enctype="multipart/form-data">
@@ -877,11 +878,15 @@
 				<p:fileUpload
 					fileUploadListener="#{ordenIngresoController.handleFileUpload}"
 					mode="advanced" update="display" auto="true" sizeLimit="10000000"
-					allowTypes="/(\.|\/)(xls|xlsx)$/" />
+					allowTypes="/(\.|\/)(txt)$/" />
 
 				<p:growl id="display" showDetail="true" />
-				<h:commandButton action="#{ordenIngresoController.convertJava()}"
-					value="Excel Report" />
+
+				<p:commandButton immediate="true" value="Cargar Archivo"
+				 update="formTableOrdenIngreso"
+					actionListener="#{ordenIngresoController.convertJava()}"
+					ajax="false" oncomplete="PF('dlgImportExcel').hide();">
+				</p:commandButton>
 			</h:form>
 		</p:dialog>
 

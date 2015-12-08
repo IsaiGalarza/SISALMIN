@@ -9,6 +9,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import bo.com.qbit.webapp.model.Almacen;
 import bo.com.qbit.webapp.model.Partida;
 import bo.com.qbit.webapp.model.Producto;
 
@@ -69,6 +70,15 @@ public class ProductoRepository {
 			return null;
 		}
 	}
+	
+	
+	public Producto findByCodigo(String codigo) {
+		String query = "select ser from Producto ser where (ser.estado='AC' or ser.estado='IN') and ser.codigo="
+				+ codigo + "'";
+		System.out.println("Query Producto: " + query);
+		return (Producto) em.createQuery(query).getSingleResult();
+	}
+
 
 
 	public List<Producto> findAllProductoByFechaRegistro() {

@@ -22,10 +22,13 @@ public class PartidaRegistration {
     @Inject
     private Event<Partida> PartidaEventSrc;
     
-    public void register(Partida partida) throws Exception {
+    public Partida register(Partida partida) throws Exception {
         log.info("Registering Partida: " + partida.getNombre());
         em.persist(partida);
+        this.em.flush();
+        this.em.refresh(partida);
         PartidaEventSrc.fire(partida);
+        return partida;
     }
     
     public void updated(Partida partida) throws Exception {
