@@ -96,6 +96,19 @@
 									update="formTableOrdenSalida, :formBotonesHeader,formModalVistaPrevia"
 									action="#{ordenSalidaController.cargarReporte()}">
 								</p:commandLink>
+								
+								<p:commandLink id="buttonV123e" value="&#160; EXPORT"
+									styleClass="btn btn-info ion-printer"
+									style="height:31px; padding:center"
+									oncomplete="PF('dlgExportExcel').show();">
+								</p:commandLink>
+								
+								<p:commandLink id="buttonV1238" value="&#160; CARGAR"
+									styleClass="btn btn-info ion-printer"
+									style="height:31px; padding:center"
+									action="#{ordenSalidaController.armarFileBackup()}">
+								</p:commandLink>
+								
 
 							</div>
 						</div>
@@ -149,7 +162,8 @@
 															<div class="col-md-4">Unidad Solicitante</div>
 															<div class="col-md-8">
 
-																<p:autoComplete id="unidadID" style = "width: 93%" inputStyle = "width: 93%; color: #555555; background-image: none;"
+																<p:autoComplete id="unidadID" style="width: 93%"
+																	inputStyle="width: 93%; color: #555555; background-image: none;"
 																	value="#{ordenSalidaController.selectedDetalleUnidad.nombre}"
 																	completeMethod="#{ordenSalidaController.completeDetalleUnidad}"
 																	minQueryLength="3" dropdown="true" required="true"
@@ -173,7 +187,9 @@
 														<div class="form-group ">
 															<div class="col-md-4">Servidor Publico</div>
 															<div class="col-md-8">
-																<p:autoComplete id="servidorPublicoID" style = "width: 93%" inputStyle = "width: 93%; color: #555555; background-image: none;"
+																<p:autoComplete id="servidorPublicoID"
+																	style="width: 93%"
+																	inputStyle="width: 93%; color: #555555; background-image: none;"
 																	value="#{ordenSalidaController.selectedFuncionario.nombre}"
 																	completeMethod="#{ordenSalidaController.completeFuncionario}"
 																	minQueryLength="3" dropdown="true" required="true"
@@ -210,7 +226,8 @@
 															<div class="col-md-4">Proyecto</div>
 															<div class="col-md-8">
 
-																<p:autoComplete id="proyectoID" style = "width: 93%" inputStyle = "width: 93%; color: #555555; background-image: none;"
+																<p:autoComplete id="proyectoID" style="width: 93%"
+																	inputStyle="width: 93%; color: #555555; background-image: none;"
 																	value="#{ordenSalidaController.selectedProyecto.nombre}"
 																	completeMethod="#{ordenSalidaController.completeProyecto}"
 																	minQueryLength="3" dropdown="true" required="true"
@@ -271,7 +288,8 @@
 															<div class="col-md-4">Almacen</div>
 															<div class="col-md-8">
 
-																<p:autoComplete id="almacenID" style = "width: 93%" inputStyle = "width: 93%; color: #555555; background-image: none;"
+																<p:autoComplete id="almacenID" style="width: 93%"
+																	inputStyle="width: 93%; color: #555555; background-image: none;"
 																	value="#{ordenSalidaController.selectedAlmacen.nombre}"
 																	completeMethod="#{ordenSalidaController.completeAlmacen}"
 																	minQueryLength="3" dropdown="true" required="true"
@@ -510,19 +528,19 @@
 								</ui:fragment>
 
 							</ui:fragment>
-							
-							<ui:fragment rendered="#{ordenSalidaController.verReport}">								
+
+							<ui:fragment rendered="#{ordenSalidaController.verReport}">
 								<div class="col-md-12">
 									<div class="panel panel-default">
-										<div class="panel-body" style="text-align:center;">
-											<p:media player="pdf" rendered="true" 
+										<div class="panel-body" style="text-align: center;">
+											<p:media player="pdf" rendered="true"
 												value="#{ordenSalidaController.urlOrdenSalida}"
 												width="800px" height="1125px" />
 										</div>
 									</div>
 								</div>
 							</ui:fragment>
-							
+
 						</h:form>
 					</div>
 				</section>
@@ -550,7 +568,7 @@
 							<label for="codigoID" class="col-sm-3 control-label">Producto</label>
 							<div class="col-sm-9">
 
-								<p:autoComplete id="productoID" 
+								<p:autoComplete id="productoID"
 									value="#{ordenSalidaController.selectedProducto.nombre}"
 									completeMethod="#{ordenSalidaController.completeProducto}"
 									minQueryLength="3" size="35" dropdown="true" required="true"
@@ -704,10 +722,11 @@
 				</div>
 			</h:form>
 		</p:dialog>
-		
-		<p:dialog header="Desea Eliminar la Orden de Salida" widgetVar="dlgEliminarOrdenSalida"
-			modal="true" visible="#{not empty facesContext.maximumSeverity}"
-			resizable="false" position="center" width="500px">
+
+		<p:dialog header="Desea Eliminar la Orden de Salida"
+			widgetVar="dlgEliminarOrdenSalida" modal="true"
+			visible="#{not empty facesContext.maximumSeverity}" resizable="false"
+			position="center" width="500px">
 			<h:form id="formModalEliminarOrdenSalida">
 
 				<div class="row">
@@ -717,18 +736,16 @@
 							<div class="col-md-4">
 								<p:commandLink value="&#160; NO"
 									styleClass="btn btn-warning ion-minus-circled btn-block"
-									onclick="PF('dlgEliminarOrdenSalida').hide();"
-									immediate="true">
+									onclick="PF('dlgEliminarOrdenSalida').hide();" immediate="true">
 								</p:commandLink>
 							</div>
 							<div class="col-md-4">
 								<p:commandLink value="&#160; SI"
-										styleClass="btn btn-success ion-checkmark btn-block"
-										onclick="PF('dlgEliminarOrdenSalida').hide();">
-										<p:ajax
-											update="formTableOrdenSalida,formBotonesHeader"
-											listener="#{ordenSalidaController.eliminarOrdenSalida()}" />
-									</p:commandLink>
+									styleClass="btn btn-success ion-checkmark btn-block"
+									onclick="PF('dlgEliminarOrdenSalida').hide();">
+									<p:ajax update="formTableOrdenSalida,formBotonesHeader"
+										listener="#{ordenSalidaController.eliminarOrdenSalida()}" />
+								</p:commandLink>
 							</div>
 						</div>
 					</div>
@@ -737,9 +754,39 @@
 		</p:dialog>
 		<!-- END DIALOG -->
 
+		<!-- DIALOG EXPORT -->
+		<p:dialog header="DESCARGAR ARCHIVO" widgetVar="dlgExportExcel"
+			modal="true" visible="#{not empty facesContext.maximumSeverity}"
+			resizable="false" position="center" width="500px">
+			<h:form id="formDialogExport" enctype="multipart/form-data">
+			   Se genero un archivo excel para importacion de almacen.
+			   
+			   <br />
+			   <br />
+			  
+
+				<p:commandButton value="Descargar" ajax="false"
+					onclick="PrimeFaces.monitorDownload(start, stop);"
+					icon="ui-icon-arrowthick-1-s">
+					<p:fileDownload value="#{ordenSalidaController.dFile}" />
+				</p:commandButton>
+
+			</h:form>
+		</p:dialog>
+
 	</ui:define>
 
 	<ui:insert name="scripts">
+
+		<script type="text/javascript">
+function start() {
+    PF('statusDialog').show();
+}
+ 
+function stop() {
+    PF('statusDialog').hide();
+}
+</script>
 
 	</ui:insert>
 </ui:composition>

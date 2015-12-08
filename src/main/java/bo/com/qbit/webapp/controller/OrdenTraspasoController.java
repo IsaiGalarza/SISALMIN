@@ -109,7 +109,7 @@ public class OrdenTraspasoController implements Serializable {
 	//SESSION
 	private @Inject SessionMain sessionMain; //variable del login
 	private String usuarioSession;
-	private Gestion gestionSesion ;
+	private Gestion gestionSesion;
 
 	private boolean atencionCliente=false;
 

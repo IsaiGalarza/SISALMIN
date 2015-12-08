@@ -52,7 +52,7 @@
 								<p:commandLink id="buttonRegistrar" value="&#160; Registrar"
 									styleClass="btn btn-success ion-checkmark"
 									rendered="#{tomaInventarioController.verGuardar}"
-									update="formTableTomaInventario, formBotonesHeader"
+									update="formTableTomaInventario, formBotonesHeader,formGrowl:msgs1"
 									style="height:31px; padding:center"
 									action="#{tomaInventarioController.registrarTomaInventario()}">
 								</p:commandLink>
@@ -73,12 +73,20 @@
 									action="#{tomaInventarioController.cargarReporte()}">
 								</p:commandLink>
 
-								<p:commandLink id="buttonRevisar" value="&#160; Revisar"
+								<p:commandLink id="buttonRegistrar2" value="&#160; Registrar"
+									styleClass="btn btn-success ion-checkmark"
+									rendered="#{ tomaInventarioController.revisarReport and (tomaInventarioController.listDetalleTomaInventario.size()>0)}"
+									update="formTableTomaInventario, formBotonesHeader,formGrowl:msgs1"
+									style="height:31px; padding:center"
+									action="#{tomaInventarioController.verificacionTomaInventario()}">
+								</p:commandLink>
+
+								<p:commandLink id="buttonRevisar" value="&#160; Verificar"
 									styleClass="btn btn-info ion-ios7-loop-strong"
 									style="height:31px; padding:center"
-									rendered="#{ tomaInventarioController.revisarReport}"
+									rendered="#{ tomaInventarioController.revisarReport and (tomaInventarioController.listDetalleTomaInventario.size()==0)}"
 									update="formTableTomaInventario,formBotonesHeader"
-									action="#{tomaInventarioController.procesarConsulta()}">
+									action="#{tomaInventarioController.buttonRevisar()}">
 								</p:commandLink>
 							</div>
 						</div>
@@ -102,10 +110,8 @@
 
 						<h:form id="formTableTomaInventario" styleClass="form-horizontal">
 
-
 							<!-- TABLE -->
-							<ui:fragment
-								rendered="#{ ! tomaInventarioController.registrar and ! tomaInventarioController.verReport}">
+							<ui:fragment rendered="#{ tomaInventarioController.verLista}">
 								<div class="col-md-12">
 									<div class="panel panel-default">
 										<div class="panel-heading">
@@ -168,7 +174,7 @@
 													<span class="label label-danger"><h:outputText
 															rendered="#{_var.estado=='IN'}" value="Inactivo" /></span>
 													<span class="label label-success"><h:outputText
-															rendered="#{_var.estado=='PR'}" value="Procesado" /></span>
+															rendered="#{_var.estado=='RE'}" value="Revisado" /></span>
 												</p:column>
 
 												<p:column width="10%" headerText="Fecha"
@@ -199,7 +205,7 @@
 
 							<!-- FILTER -->
 							<ui:fragment
-								rendered="#{tomaInventarioController.registrar and ! tomaInventarioController.verReport}">
+								rendered="#{tomaInventarioController.registrar or tomaInventarioController.modificar}">
 								<div class="col-md-4">
 									<div class="panel panel-default">
 										<div class="panel-heading">
@@ -213,13 +219,15 @@
 													<div class="form-group ">
 														<div class="col-md-4">Almacén</div>
 														<div class="col-md-8">
-															<p:autoComplete id="almacenID"
+															<p:autoComplete id="almacenID" style="width: 93%"
+																inputStyle="width: 93%; color: #555555; background-image: none;"
 																value="#{tomaInventarioController.selectedAlmacen.nombre}"
 																completeMethod="#{tomaInventarioController.completeAlmacen}"
 																minQueryLength="3" dropdown="true" required="true"
 																requiredMessage="Producto Requerido."
 																forceSelection="true" var="_var" itemLabel="#{_var}"
 																itemValue="#{_var.nombre}"
+																disabled="#{tomaInventarioController.modificar}"
 																placeholder="[Escriba Almacen]" maxResults="10">
 
 																<p:ajax event="itemSelect"
@@ -231,6 +239,7 @@
 																</p:column>
 
 															</p:autoComplete>
+																
 														</div>
 													</div>
 
@@ -269,7 +278,8 @@
 																locale="es"
 																value="#{tomaInventarioController.newTomaInventario.fecha}"
 																onkeypress="return permiteKey(event, 'none')"
-																style=" color: #555555; background-image: none;">
+																style=" color: #555555; background-image: none;"
+																disabled="#{tomaInventarioController.modificar}">
 																<p:ajax event="dateSelect" />
 															</p:calendar>
 														</div>
@@ -320,7 +330,8 @@
 										</div>
 									</div>
 								</div>
-
+							</ui:fragment>
+							<ui:fragment rendered="#{tomaInventarioController.registrar}">
 
 								<div class="col-md-8" align="left">
 
@@ -387,6 +398,103 @@
 													filterBy="#{_var.observacion}" filterStyle="width: 100%; "
 													filterMatchMode="contains">
 													<h:outputText value="#{_var.observacion}" />
+												</p:column>
+
+											</p:dataTable>
+										</div>
+										<!-- end here datatable -->
+										<div class="panel-body"></div>
+
+									</div>
+								</div>
+							</ui:fragment>
+							<ui:fragment rendered="#{tomaInventarioController.modificar}">
+								<div class="col-md-8" align="left">
+
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Lista Producto</h3>
+										</div>
+										<!-- start here datatable -->
+										<div class="box-content no-padding">
+
+											<p:dataTable
+												style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+												rowKey="#{_var.id}" id="productoTable2" var="_var"
+												value="#{tomaInventarioController.listDetalleTomaInventario}"
+												rendered="#{not empty listaProducto}" editable="true"
+												editMode="cell" emptyMessage="No se encontraron Registros.">
+
+												<p:column width="5%" headerText="Codigo"
+													style="text-align:center;" filterBy="#{_var.producto.id}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_var.producto.id}">
+													</h:outputText>
+												</p:column>
+
+												<p:column width="15%" headerText="Detalle Item"
+													filterBy="#{_var.producto.nombre}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_var.producto.nombre}" />
+												</p:column>
+
+												<p:column width="8%" headerText="Unidad "
+													style="text-align:center;"
+													filterBy="#{_var.producto.unidadMedida}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_var.producto.unidadMedida}" />
+												</p:column>
+
+												<p:column width="8%" headerText="Cantidad registrada"
+													filterBy="#{_var.cantidadRegistrada}"
+													style="text-align:center;" filterStyle="width: 100%;"
+													filterMatchMode="contains">
+													<h:outputText value="#{_var.cantidadRegistrada}">
+														<f:convertNumber pattern="#,##0.00" />
+													</h:outputText>
+												</p:column>
+
+												<p:column width="8%" headerText="Cantidad verificada"
+													filterBy="#{_var.cantidadVerificada}"
+													style="text-align:center;" filterStyle="width: 100%;"
+													filterMatchMode="contains">
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{_var.cantidadVerificada}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText id="modelInput1"
+																value="#{_var.cantidadVerificada}" style="width:96%" />
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+												<p:column headerText="Diferencia" width="8%"
+													style="text-align:center;" filterBy="#{_var.diferencia}"
+													filterStyle="width: 100%; " filterMatchMode="contains">
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{_var.diferencia}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText id="modelInput2" value="#{_var.diferencia}"
+																style="width:96%" />
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+												<p:column headerText="Observacion" width="8%"
+													filterBy="#{_var.observacion}" filterStyle="width: 100%; "
+													filterMatchMode="contains">
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{_var.observacion}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText id="modelInput3" value="#{_var.observacion}"
+																style="width:96%" />
+														</f:facet>
+													</p:cellEditor>
 												</p:column>
 
 											</p:dataTable>

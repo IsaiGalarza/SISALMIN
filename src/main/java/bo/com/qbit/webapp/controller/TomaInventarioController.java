@@ -19,7 +19,6 @@ import org.richfaces.cdi.push.Push;
 
 import bo.com.qbit.webapp.data.AlmacenProductoRepository;
 import bo.com.qbit.webapp.data.AlmacenRepository;
-import bo.com.qbit.webapp.data.DetalleOrdenIngresoRepository;
 import bo.com.qbit.webapp.data.DetalleTomaInventarioRepository;
 import bo.com.qbit.webapp.data.TomaInventarioRepository;
 import bo.com.qbit.webapp.model.Almacen;
@@ -60,14 +59,17 @@ public class TomaInventarioController implements Serializable {
 	private FacesContext facesContext;
 
 	//ESTADOS
-	private boolean modificar = false;
-	private boolean registrar = false;
+
 	private boolean crear = true;
 	private boolean verProcesar = true;
 	private boolean verReport = false;
 	private boolean verButtonReport = false;
 	private boolean revisarReport = false;
 	private boolean verGuardar = false;
+
+	private boolean verLista = true;//mostrar lista de tomas de inventario
+	private boolean modificar = false;//verificar
+	private boolean registrar = false;//mostrar maestro detalle
 
 	private String tituloPanel = "Registrar Almacen";
 	private String urlTomaInventario = "";
@@ -100,24 +102,27 @@ public class TomaInventarioController implements Serializable {
 		selectedAlmacen = new Almacen();
 
 		// tituloPanel
-		tituloPanel = "Registrar Orden Ingreso";
+		tituloPanel = "Registrar Toma Inventario";
 
-		modificar = false;
-		registrar = false;
 		crear = true;
 		verProcesar = true;
 		verReport = false;
 		revisarReport = false;
 		verGuardar = false;
 		verButtonReport = false;
-		
+
+		//---
+		verLista = true;
+		modificar = false;
+		registrar = false;
+
 		listTomaInventario = tomaInventarioRepository.findAllOrderedByID();
 
 		listDetalleTomaInventario = new ArrayList<DetalleTomaInventario>();
 		listaAlmacen = almacenRepository.findAllOrderedByID();
 
 		selectedTomaInventario = null;
-		
+
 		newTomaInventario = new TomaInventario();
 		//newTomaInventario.setCorrelativo(cargarCorrelativo(listaOrdenIngreso.size()+1));
 		newTomaInventario.setEstado("AC");
@@ -127,8 +132,7 @@ public class TomaInventarioController implements Serializable {
 	}
 
 	public void cambiarAspecto(){
-		//verificar si el usuario logeado tiene almacen registrado
-
+		verLista = false;
 		modificar = false;
 		registrar = true;
 		crear = false;
@@ -205,10 +209,9 @@ public class TomaInventarioController implements Serializable {
 			FacesUtil.errorMessage("Error al Eliminar.");
 		}
 	}
-
+	
 	public void procesarConsulta(){
 		try {
-			Date fechaActual = new Date();
 			listAlmacenProducto = almacenProductoRepository.findByAlmacen(selectedAlmacen);
 			listDetalleTomaInventario = new ArrayList<DetalleTomaInventario>();
 			for(AlmacenProducto ap : listAlmacenProducto){
@@ -223,11 +226,46 @@ public class TomaInventarioController implements Serializable {
 		}
 	}
 
+	public void buttonRevisar(){
+		try {
+			newTomaInventario = selectedTomaInventario;
+			selectedAlmacen = selectedTomaInventario.getAlmacen();
+			listDetalleTomaInventario = new ArrayList<DetalleTomaInventario>();
+			listDetalleTomaInventario = detalleTomaInventarioRepository.findByTomaInventario(selectedTomaInventario);
+
+			verLista = false;
+			modificar = true;
+			registrar = false;
+			verButtonReport = false;
+		} catch (Exception e) {
+			System.out.println("ERROR "+e.getMessage());
+		}
+	}
+
+	public void verificacionTomaInventario(){
+		try{
+			newTomaInventario.setEstadoRevision("SI");
+			newTomaInventario.setEstado("RE");
+			newTomaInventario.setFechaRevision(new Date());
+			tomaInventarioRegistration.updated(newTomaInventario);
+			for(DetalleTomaInventario detalle : listDetalleTomaInventario){
+				detalleTomaInventarioRegistration.updated(detalle);
+			}
+			FacesUtil.infoMessage("Toma Inventario Revisada", "");
+			initNewTomaInventario();			
+		}catch(Exception e){
+			System.out.println("ERROR "+e.getMessage());
+		}
+	}
+
 	public void cargarReporte(){
 		try {
 			urlTomaInventario = loadURL();
 			verReport = true;
-			//verButtonReport = false;
+			verLista = false;
+			modificar = false;
+			registrar = false;
+			revisarReport = false;
 		} catch (Exception e) {
 			FacesUtil.errorMessage("Proceso Incorrecto.");
 		}
@@ -244,11 +282,13 @@ public class TomaInventarioController implements Serializable {
 			return "error";
 		}
 	}
-	
+
 	public void onRowSelectTomaInventarioClick(SelectEvent event){
 		verButtonReport = true;
 		crear = false;
-		
+		if(selectedTomaInventario.getEstadoRevision().equals("NO")){
+			revisarReport = true;
+		}
 	}
 
 	public void modificarTomaInventario(){
@@ -435,6 +475,14 @@ public class TomaInventarioController implements Serializable {
 
 	public void setVerButtonReport(boolean verButtonReport) {
 		this.verButtonReport = verButtonReport;
+	}
+
+	public boolean isVerLista() {
+		return verLista;
+	}
+
+	public void setVerLista(boolean verLista) {
+		this.verLista = verLista;
 	}
 
 }

@@ -27,14 +27,16 @@ public class DetalleTomaInventario implements Serializable{
 
 	private String estado;
 	
+	@Column(name="observacion",nullable=true)
 	private String observacion;
 	
 	@Column(name="cantidad_registrada")
 	private double cantidadRegistrada;
 	
-	@Column(name="cantidad_verificada")
+	@Column(name="cantidad_verificada",nullable=true)
 	private double cantidadVerificada;
 	
+	@Column(name="diferencia",nullable=true)
 	private double diferencia;
 
 	@Column(name="fecha_registro")
@@ -58,6 +60,7 @@ public class DetalleTomaInventario implements Serializable{
 		this.id = 0 ;
 		this.cantidad = 0;
 		this.setEstado("AC");
+		
 	}
 	
 	public int getCantidad() {

@@ -16,9 +16,6 @@ import java.util.Date;
 @NamedQuery(name="Almacen.findAll", query="SELECT a FROM Almacen a")
 public class Almacen implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 347357319180148125L;
 
 	@Id
@@ -28,6 +25,9 @@ public class Almacen implements Serializable {
 	private String direccion;
 
 	private String estado;
+	
+	@Column(name="codigo",nullable=true)
+	private String codigo;
 	
 	@Column(name="online")
 	private boolean online;
@@ -167,6 +167,14 @@ public class Almacen implements Serializable {
 
 	public void setOnline(boolean online) {
 		this.online = online;
+	}
+
+	public String getCodigo() {
+		return codigo;
+	}
+
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
 	}
 
 }

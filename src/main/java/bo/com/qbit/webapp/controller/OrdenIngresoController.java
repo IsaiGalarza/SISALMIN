@@ -113,7 +113,7 @@ public class OrdenIngresoController implements Serializable {
 	private String usuarioSession;
 	private Gestion gestionSesion;
 
-	private boolean atencionCliente=false;
+	private boolean atencionCliente = false;
 
 	@PostConstruct
 	public void initNewOrdenIngreso() {
@@ -300,7 +300,7 @@ public class OrdenIngresoController implements Serializable {
 			listaDetalleOrdenIngreso = detalleOrdenIngresoRepository.findAllByOrdenIngreso(selectedOrdenIngreso);
 			for(DetalleOrdenIngreso d: listaDetalleOrdenIngreso){
 				Producto prod = d.getProducto();
-				actualizarStock(prod, d.getCantidad(),fechaActual);
+				actualizarStock(selectedOrdenIngreso.getAlmacen(),prod, d.getCantidad(),fechaActual);
 				actualizarKardexProducto( prod,fechaActual, d.getCantidad());
 			}
 
@@ -341,10 +341,10 @@ public class OrdenIngresoController implements Serializable {
 	}
 
 	//registro en la tabla almacen_producto
-	private void actualizarStock(Producto prod ,int newStock,Date date) throws Exception {
+	private void actualizarStock(Almacen almacen,Producto prod ,int newStock,Date date) throws Exception {
 		//0 . verificar si existe el producto en el almacen
 		System.out.println("actualizarStock()");
-		AlmacenProducto almProd =  almacenProductoRepository.findByProducto(prod);
+		AlmacenProducto almProd =  almacenProductoRepository.findByAlmacenProducto(almacen,prod);
 		if(almProd != null){
 			// 1 .  si existe el producto
 			double oldStock = almProd.getStock();
@@ -354,7 +354,7 @@ public class OrdenIngresoController implements Serializable {
 		}
 		// 2 . no existe el producto
 		almProd = new AlmacenProducto();
-		almProd.setAlmacen(selectedOrdenIngreso.getAlmacen());
+		almProd.setAlmacen(almacen);
 		almProd.setProducto(prod);
 		almProd.setProveedor(selectedOrdenIngreso.getProveedor());
 		almProd.setStock(newStock);

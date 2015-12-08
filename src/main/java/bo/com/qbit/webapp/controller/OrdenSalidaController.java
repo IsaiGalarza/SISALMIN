@@ -1,5 +1,12 @@
 package bo.com.qbit.webapp.controller;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,9 +19,16 @@ import javax.enterprise.event.Event;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.servlet.http.HttpServletRequest;
 
 import org.primefaces.event.SelectEvent;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 import org.richfaces.cdi.push.Push;
 
 import bo.com.qbit.webapp.data.AlmacenProductoRepository;
@@ -29,19 +43,24 @@ import bo.com.qbit.webapp.data.ProyectoRepository;
 import bo.com.qbit.webapp.data.UsuarioRepository;
 import bo.com.qbit.webapp.model.Almacen;
 import bo.com.qbit.webapp.model.AlmacenProducto;
+import bo.com.qbit.webapp.model.DetalleOrdenIngreso;
 import bo.com.qbit.webapp.model.DetalleOrdenSalida;
 import bo.com.qbit.webapp.model.DetalleUnidad;
 import bo.com.qbit.webapp.model.Funcionario;
 import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.KardexProducto;
+import bo.com.qbit.webapp.model.OrdenIngreso;
 import bo.com.qbit.webapp.model.OrdenSalida;
+import bo.com.qbit.webapp.model.Partida;
 import bo.com.qbit.webapp.model.Producto;
+import bo.com.qbit.webapp.model.Proveedor;
 import bo.com.qbit.webapp.model.Proyecto;
 import bo.com.qbit.webapp.model.Usuario;
 import bo.com.qbit.webapp.service.AlmacenProductoRegistration;
 import bo.com.qbit.webapp.service.DetalleOrdenSalidaRegistration;
 import bo.com.qbit.webapp.service.KardexProductoRegistration;
 import bo.com.qbit.webapp.service.OrdenSalidaRegistration;
+import bo.com.qbit.webapp.util.Cifrado;
 import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.SessionMain;
 
@@ -122,6 +141,9 @@ public class OrdenSalidaController implements Serializable {
 	private Gestion gestionSesion;
 
 	private boolean atencionCliente=false;
+
+	//archivo de exportacion
+	private StreamedContent dFile;
 
 	@PostConstruct
 	public void initNewOrdenSalida() {
@@ -258,14 +280,9 @@ public class OrdenSalidaController implements Serializable {
 			FacesUtil.infoMessage("Orden de Salida Registrada!", ""+newOrdenSalida.getCorrelativo());
 			// Verificar si el almacen destino es offline
 			if( ! selectedAlmacen.isOnline()){
-				// Armar url para reporte excel
-				HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
-				String urlPath = request.getRequestURL().toString();
-				urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
-				String urlPDFreporte = urlPath+"ReporteOrdenSalida?pIdOrdenSalida="+newOrdenSalida.getId()+"&pIdEmpresa=1&pUsuario="+usuarioSession+"&pTypeExport=excel";
-				System.out.println("urlPDFreporte : "+urlPDFreporte);
-				FacesContext context = FacesContext.getCurrentInstance();
-				context.getExternalContext().redirect(urlPDFreporte);
+
+				//armar archivo txt(backup)
+				armarFileBackup();
 
 				// Lanzar dialog de aviso de exportacion
 				FacesUtil.showDialog("dlgExportExcel");
@@ -275,6 +292,114 @@ public class OrdenSalidaController implements Serializable {
 			FacesUtil.errorMessage("Error al Registrar.");
 		}
 	}
+
+	private void armarFileBackup(){
+		File file = new File("import.txt");
+		//Escritura
+		try{
+			FileWriter w = new FileWriter(file);
+			BufferedWriter bw = new BufferedWriter(w);
+			PrintWriter wr = new PrintWriter(bw);
+			String cryp = Cifrado.Encriptar("Esta es una linea de codigo", 12);
+			wr.write(cryp+" \r\n");
+			wr.write("Esta es otra linea de codigo\r\n");
+			wr.append(" - y aqui continua");
+
+			//CAMPOS ORDEN SALIDA
+			/**
+			Integer id;
+			String correlativo;
+			String numeroPedidoMateriales;
+			Date fechaPedido;
+			Date fechaAprobacion;
+			double totalImporte;
+			String estado;
+			Date fechaRegistro;
+			String usuarioRegistro;
+			Gestion gestion;
+			Almacen almacen;
+			DetalleUnidad unidadSolicitante;
+			Funcionario funcionario;
+			Proyecto proyecto;
+			 * 
+			 */
+
+			//CAMPOS ORDEN INGRESO
+			/**
+			 * private Integer id;
+				private String correlativo;
+				private String observacion;
+				private String motivoIngreso;
+				private Date fechaDocumento;
+				private String tipoDocumento;
+				private String numeroDocumento;
+				private Proveedor proveedor;
+				private Gestion gestion;
+				private String estado;
+				private Date fechaRegistro;
+				private double totalImporte;
+				private String usuarioRegistro;
+				private Date fechaAprobacion;
+				private Usuario usuarioAprobacion;
+				private Almacen almacen;
+			 **/
+
+			for(DetalleOrdenSalida detalle: listaDetalleOrdenSalida){
+				//CAMPOS DETALLEORDENSALIDA
+				/**
+				private Integer id;
+				private double cantidadSolicitada;
+				private double cantidadEntregada;
+				private String observacion;
+				private double total;
+				private String estado;
+				private Date fechaRegistro;
+				private String usuarioRegistro;
+				private OrdenSalida ordenSalida;
+				private Producto producto;
+				 **/
+				
+				//CAMPOS DETALLEORDENINGRESO
+				/**
+				private Integer id;
+				private int cantidad;
+				private String estado;
+				private String observacion;
+				private double total;
+				private Date fechaRegistro;
+				private String usuarioRegistro;
+				private OrdenIngreso ordenIngreso;
+				private Producto producto;
+				 **/
+				
+				//CAMPOS PRODUCTO
+				/**
+				private Integer id;
+				private String codigo;
+				private String nombre;
+				private String descripcion;
+				private double precioUnitario;
+				private String tipoProducto;
+				private String unidadMedida;
+				private String estado;
+				private Date fechaRegistro;
+				private String usuarioRegistro;
+				private Partida partida;
+				**/
+				
+				//CAMPOS PARTIDA
+			}
+			wr.close();
+			bw.close();
+
+			InputStream stream = new FileInputStream(file);
+			Date fecha = new Date(); 
+			String s = String.format("%td-%tm-%ty", fecha,fecha,fecha);
+			dFile =  new DefaultStreamedContent(stream, "text/plain", "import_o_i_"+s+".txt");
+		}catch(IOException e){
+		}
+	}
+
 
 	public void modificarOrdenSalida() {
 		try {
@@ -804,6 +929,14 @@ public class OrdenSalidaController implements Serializable {
 
 	public void setVerReport(boolean verReport) {
 		this.verReport = verReport;
+	}
+
+	public StreamedContent getdFile() {
+		return dFile;
+	}
+
+	public void setdFile(StreamedContent dFile) {
+		this.dFile = dFile;
 	}
 
 }

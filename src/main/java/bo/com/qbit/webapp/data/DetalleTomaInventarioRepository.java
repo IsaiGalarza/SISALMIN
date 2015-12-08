@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import bo.com.qbit.webapp.model.DetalleTomaInventario;
+import bo.com.qbit.webapp.model.TomaInventario;
 
 @ApplicationScoped
 public class DetalleTomaInventarioRepository {
@@ -24,5 +25,14 @@ public class DetalleTomaInventarioRepository {
 		System.out.println("Query DetalleTomaInventario: " + query);
 		return em.createQuery(query).getResultList();
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<DetalleTomaInventario> findByTomaInventario(TomaInventario tomaInventario) {
+		String query = "select ser from DetalleTomaInventario ser where ( ser.estado='AC' or ser.estado='IN') and ser.tomaInventario.id="+tomaInventario.getId()+" order by ser.id desc";
+		System.out.println("Query DetalleTomaInventario: " + query);
+		return em.createQuery(query).getResultList();
+	}
+	
+	
 
 }

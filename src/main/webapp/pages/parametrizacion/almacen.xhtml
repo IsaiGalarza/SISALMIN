@@ -161,6 +161,19 @@
 															</p:inputText>
 														</div>
 													</div>
+													
+													<div class="form-group ">
+														<div class="col-md-4">Codigo </div>
+														<div class="col-md-8">
+															<p:inputText id="codigoID"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control" size="40"
+																value="#{almacenController.newAlmacen.codigo}"
+																required="true" requiredMessage="Requerido.">
+																<p:ajax event="change" />
+															</p:inputText>
+														</div>
+													</div>
 													<div class="form-group ">
 														<div class="col-md-4">Encargado</div>
 														<div class="col-md-8">
@@ -286,11 +299,11 @@
 													update=":formTableProveedor, :formBotonesHeader"
 													listener="#{almacenController.onRowSelectAlmacenClick}" />
 
-												<p:column width="8%" headerText="Id"
-													filterBy="#{_almacen.id}" style="text-align:center;"
+												<p:column width="8%" headerText="Codigo"
+													filterBy="#{_almacen.codigo}" style="text-align:center;"
 													filterStyle="width: 100%; height:25px;"
 													filterMatchMode="contains">
-													<h:outputText value="#{_almacen.id}" />
+													<h:outputText value="#{_almacen.codigo}" />
 												</p:column>
 												<p:column headerText="Almacen" filterBy="#{_almacen.nombre}"
 													filterStyle="width: 100%; height:25px;"

@@ -32,6 +32,12 @@ public class TomaInventario implements Serializable{
 	
 	@Column(name = "nombre_inventariador")
 	private String nombreInventariador;
+	
+	@Column(name = "estado_revision",nullable=true)
+	private String estadoRevision;//si ya fue revisado
+	
+	@Column(name = "fecha_revision",nullable=true)
+	private Date fechaRevision;
 
 	@Column(name = "fecha")
 	private Date fecha;
@@ -58,6 +64,7 @@ public class TomaInventario implements Serializable{
 	public TomaInventario() {
 		super();
 		this.id = 0 ;
+		this.setEstadoRevision("NO");
 	}
 
 	public Integer getId() {
@@ -146,6 +153,22 @@ public class TomaInventario implements Serializable{
 
 	public void setNombreInventariador(String nombreInventariador) {
 		this.nombreInventariador = nombreInventariador;
+	}
+
+	public String getEstadoRevision() {
+		return estadoRevision;
+	}
+
+	public void setEstadoRevision(String estadoRevision) {
+		this.estadoRevision = estadoRevision;
+	}
+
+	public Date getFechaRevision() {
+		return fechaRevision;
+	}
+
+	public void setFechaRevision(Date fechaRevision) {
+		this.fechaRevision = fechaRevision;
 	}
 
 }
