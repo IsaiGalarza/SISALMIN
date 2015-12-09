@@ -282,8 +282,16 @@ public class OrdenIngresoController implements Serializable {
 	public void modificarOrdenIngreso() {
 		try {
 			System.out.println("Ingreso a modificarOrdenIngreso: ");
+			Date fechaActual = new Date();
 			double total = 0;
 			for(DetalleOrdenIngreso d: listaDetalleOrdenIngreso){
+				if(d.getId()==0){//si es un nuevo registro
+					d.setFechaRegistro(fechaActual);
+					d.setUsuarioRegistro(usuarioSession);
+					d.setEstado("AC");
+					d.setOrdenIngreso(newOrdenIngreso);
+					detalleOrdenIngresoRegistration.register(d);
+				}
 				total = total + d.getTotal();
 				detalleOrdenIngresoRegistration.updated(d);
 			}

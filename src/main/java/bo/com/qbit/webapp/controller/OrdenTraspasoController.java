@@ -383,8 +383,16 @@ public class OrdenTraspasoController implements Serializable {
 	public void modificarOrdenTraspaso() {
 		try {
 			System.out.println("Traspaso a modificarOrdenTraspaso: ");
+			Date fechaActual = new Date();
 			double total = 0;
 			for(DetalleOrdenTraspaso d: listaDetalleOrdenTraspaso){
+				if(d.getId()==0){//si es un nuevo registro
+					d.setFechaRegistro(fechaActual);
+					d.setUsuarioRegistro(usuarioSession);
+					d.setEstado("AC");
+					d.setOrdenTraspaso(newOrdenTraspaso);
+					detalleOrdenTraspasoRegistration.register(d);
+				}
 				total = total + d.getTotal();
 				detalleOrdenTraspasoRegistration.updated(d);
 			}
