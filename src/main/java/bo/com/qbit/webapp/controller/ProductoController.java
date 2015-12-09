@@ -205,6 +205,7 @@ public class ProductoController implements Serializable {
 	public void registrarProducto() {
 		try {
 			System.out.println("Ingreso a registrarProducto: ");
+			newProducto.setPrecioUnitario(0);//el precio mediante orden ingreso
 			newProducto.setUsuarioRegistro(usuarioSession);
 			newProducto.setFechaRegistro(new Date());
 			productoRegistration.register(newProducto);

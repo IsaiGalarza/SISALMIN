@@ -36,7 +36,7 @@ public class ProductoRepository {
 		System.out.println("Query Producto: " + query);
 		return em.createQuery(query).getResultList();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<Producto> findAllProductoForQueryNombre(String criterio) {
 		try {
@@ -51,14 +51,14 @@ public class ProductoRepository {
 			return null;
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<Producto> findAllProductoByID() {
 		String query = "select ser from Producto ser where ser.estado='AC' or ser.estado='IN' order by ser.id desc";
 		System.out.println("Query Producto: " + query);
 		return em.createQuery(query).getResultList();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<Producto> findAllProductoForPartidaID(int partidaID) {
 		try {
@@ -70,12 +70,17 @@ public class ProductoRepository {
 			return null;
 		}
 	}
-	
-	
+
+
 	public Producto findByCodigo(String codigo) {
-		String query = "select ser from Producto ser where (ser.estado='AC' or ser.estado='IN') and ser.codigo='"+ codigo + "'";
-		System.out.println("Query Producto: " + query);
-		return (Producto) em.createQuery(query).getSingleResult();
+		try{
+			String query = "select ser from Producto ser where (ser.estado='AC' or ser.estado='IN') and ser.codigo='"+ codigo + "'";
+			System.out.println("Query Producto: " + query);
+			return (Producto) em.createQuery(query).getSingleResult();
+		}catch(Exception e){
+			System.out.println("Error: " + e.getMessage());
+			return null;
+		}
 	}
 
 

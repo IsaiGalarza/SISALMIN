@@ -10,7 +10,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import bo.com.qbit.webapp.model.Partida;
-import bo.com.qbit.webapp.model.Producto;
 
 @ApplicationScoped
 public class PartidaRepository {
@@ -31,17 +30,23 @@ public class PartidaRepository {
 		return em.createQuery(criteria).getResultList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Partida> findAllPartidaByID() {
 		String query = "select ser from Partida ser where ser.estado='AC' or ser.estado='IN' order by ser.id desc";
 		System.out.println("Query Partida: " + query);
 		return em.createQuery(query).getResultList();
 	}
-	
+
 	public Partida findByCodigo(String codigo) {
-		String query = "select ser from Partida ser where (ser.estado='AC' or ser.estado='IN') and ser.codigo='"
-				+ codigo+"'";
-		System.out.println("Query Partida: " + query);
-		return (Partida) em.createQuery(query).getSingleResult();
+		try{
+			String query = "select ser from Partida ser where (ser.estado='AC' or ser.estado='IN') and ser.codigo='"
+					+ codigo+"'";
+			System.out.println("Query Partida: " + query);
+			return (Partida) em.createQuery(query).getSingleResult();
+		}catch(Exception e){
+			System.out.println("Error: " + e.getMessage());
+			return null;
+		}
 	}
 
 
@@ -54,6 +59,7 @@ public class PartidaRepository {
 		return em.createQuery(criteria).getResultList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Partida> findAllPartidaForDescription(String criterio) {
 		try {
 			String query = "select ser from Partida ser where ser.nombre like '%"
@@ -62,13 +68,13 @@ public class PartidaRepository {
 			List<Partida> listaPartida = em.createQuery(query).getResultList();
 			return listaPartida;
 		} catch (Exception e) {
-			// TODO: handle exception
 			System.out.println("Error en findAllPartidaForDescription: "
 					+ e.getMessage());
 			return null;
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Partida> traerPartidaActivas() {
 		try {
 			String query = "select ser from Partida ser where ser.estado='AC' order by ser.nombre asc";
@@ -76,13 +82,13 @@ public class PartidaRepository {
 			List<Partida> listaPartida = em.createQuery(query).getResultList();
 			return listaPartida;
 		} catch (Exception e) {
-			// TODO: handle exception
 			System.out.println("Error en traerPartidaActivas: "
 					+ e.getMessage());
 			return null;
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Partida> findAll100UltimosPartida() {
 		try {
 			String query = "select ser from Partida ser order by ser.fechaRegistro desc";
@@ -91,7 +97,6 @@ public class PartidaRepository {
 					.setMaxResults(100).getResultList();
 			return listaPartida;
 		} catch (Exception e) {
-			// TODO: handle exception
 			System.out.println("Error en findAll100UltimosPartida: "
 					+ e.getMessage());
 			return null;

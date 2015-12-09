@@ -151,10 +151,8 @@
 																	<h:outputText value="#{_var.nombre}" />
 																</p:column>
 															</p:autoComplete>
-
 														</div>
 													</div>
-
 
 													<div class="form-group ">
 														<div class="col-md-4">Nombre Producto</div>
@@ -192,21 +190,22 @@
 															</p:inputText>
 														</div>
 													</div>
-
-													<div class="form-group ">
-														<div class="col-md-4">Precio Unitario</div>
-														<div class="col-md-8">
-															<p:inputText id="precioID"
-																style=" color: #555555; background-image: none;"
-																styleClass="input-sm form-control" required="true"
-																requiredMessage="Precio Requerido."
-																value="#{productoController.newProducto.precioUnitario}"
-																size="40">
-																<p:ajax event="change" />
-																<f:convertNumber pattern="#,##0.000" locale="en" />
-															</p:inputText>
+													<ui:fragment rendered="#{productoController.modificar}">
+														<div class="form-group ">
+															<div class="col-md-4">Precio Unitario</div>
+															<div class="col-md-8">
+																<p:inputText id="precioID"
+																	style=" color: #555555; background-image: none;"
+																	styleClass="input-sm form-control" required="true"
+																	requiredMessage="Precio Requerido."
+																	value="#{productoController.newProducto.precioUnitario}"
+																	size="40">
+																	<p:ajax event="change" />
+																	<f:convertNumber pattern="#,##0.000" locale="en" />
+																</p:inputText>
+															</div>
 														</div>
-													</div>
+													</ui:fragment>
 
 													<div class="form-group ">
 														<div class="col-md-4">Tipo Producto</div>
@@ -304,9 +303,9 @@
 													update=":formTableProducto, :formBotonesHeader"
 													listener="#{productoController.onRowSelectProductoClick}" />
 
-												<p:column width="6%" headerText="Codigo" filterBy="#{_var.codigo}"
-													style="text-align:center;" filterStyle="width: 100%;"
-													filterMatchMode="contains">
+												<p:column width="6%" headerText="Codigo"
+													filterBy="#{_var.codigo}" style="text-align:center;"
+													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.codigo}" />
 												</p:column>
 

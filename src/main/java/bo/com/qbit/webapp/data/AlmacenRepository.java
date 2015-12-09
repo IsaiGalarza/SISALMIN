@@ -51,12 +51,17 @@ public class AlmacenRepository {
 			return almacen;
 		}
 	}
-	
+
 	public Almacen findByCodigo(String codigo) {
-		String query = "select ser from Almacen ser where (ser.estado='AC' or ser.estado='IN') and ser.codigo='"
-				+ codigo + "'";
-		System.out.println("Query Almacen: " + query);
-		return (Almacen) em.createQuery(query).getSingleResult();
+		try{
+			String query = "select ser from Almacen ser where (ser.estado='AC' or ser.estado='IN') and ser.codigo='"
+					+ codigo + "'";
+			System.out.println("Query Almacen: " + query);
+			return (Almacen) em.createQuery(query).getSingleResult();
+		}catch(Exception e){
+			System.out.println("Error : " + e.getMessage());
+			return null;
+		}
 	}
 
 

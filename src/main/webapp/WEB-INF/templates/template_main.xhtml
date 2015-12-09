@@ -314,7 +314,7 @@
 
 					<ui:insert name="page_active_reporte">
 						<li
-							class="#{(view.viewId.equals('/pages/reportes/libro_diario.xhtml')) ? 'active' : (view.viewId.equals('/pages/reportes/libro_mayor.xhtml')) ? 'active':(view.viewId.equals('/pages/reportes/sumas_saldos.xhtml')) ? 'active': (view.viewId.equals('/pages/reportes/balance_general.xhtml')) ? 'active': (view.viewId.equals('/pages/reportes/estado_resultado.xhtml')) ? 'active': 'inactive'}">
+							class="#{(view.viewId.equals('/pages/reportes/report_orden_ingreso.xhtml')) ? 'active' : (view.viewId.equals('/pages/reportes/report_orden_salida.xhtml')) ? 'active':(view.viewId.equals('/pages/reportes/sumas_saldos.xhtml')) ? 'active': (view.viewId.equals('/pages/reportes/report_orden_traspaso.xhtml')) ? 'active':'inactive'}">
 							<a href="#"><i class="icon-bar-chart"></i><span
 								class="sidebar-text">Reporte</span></a>
 							<ul class="nav nav-second-level">
@@ -332,13 +332,8 @@
 				</section> </aside>
 				<!--END SIDERBAR-->
 
-
-
 				<!--BEGIN CONTENT-->
 				<ui:insert name="content">
-
-
-
 				</ui:insert>
 				<!--END CONTENT-->
 			</div>

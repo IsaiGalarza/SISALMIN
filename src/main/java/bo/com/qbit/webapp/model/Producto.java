@@ -56,6 +56,7 @@ public class Producto implements Serializable {
 		this.id = 0;
 		this.nombre = "";
 		this.partida = new Partida();
+		this.precioUnitario = 0;
 	}
 	
 	@Override
