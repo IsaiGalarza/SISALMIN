@@ -12,7 +12,7 @@ import java.util.Date;
  * 
  */
 @Entity 
-@Table(name="almacen" ,schema="public")
+@Table(name="almacen" ,schema="public", uniqueConstraints = @UniqueConstraint(columnNames="codigo"))
 @NamedQuery(name="Almacen.findAll", query="SELECT a FROM Almacen a")
 public class Almacen implements Serializable {
 

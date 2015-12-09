@@ -9,8 +9,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import bo.com.qbit.webapp.model.Almacen;
-import bo.com.qbit.webapp.model.Partida;
 import bo.com.qbit.webapp.model.Producto;
 
 @ApplicationScoped
@@ -32,12 +30,14 @@ public class ProductoRepository {
 		return em.createQuery(criteria).getResultList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Producto> findAllProductoActivosByID() {
 		String query = "select ser from Producto ser where ser.estado='AC' order by ser.id desc";
 		System.out.println("Query Producto: " + query);
 		return em.createQuery(query).getResultList();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<Producto> findAllProductoForQueryNombre(String criterio) {
 		try {
 			String query = "select ser from Producto ser where ser.nombre like '%"
@@ -46,26 +46,26 @@ public class ProductoRepository {
 			List<Producto> listaProducto = em.createQuery(query).getResultList();
 			return listaProducto;
 		} catch (Exception e) {
-			// TODO: handle exception
 			System.out.println("Error en findAllPartidaForDescription: "
 					+ e.getMessage());
 			return null;
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<Producto> findAllProductoByID() {
 		String query = "select ser from Producto ser where ser.estado='AC' or ser.estado='IN' order by ser.id desc";
 		System.out.println("Query Producto: " + query);
 		return em.createQuery(query).getResultList();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<Producto> findAllProductoForPartidaID(int partidaID) {
 		try {
 			String query = "select pro from Producto pro where pro.estado='AC' and pro.partida.id="+partidaID+" order by pro.id desc";
 			System.out.println("Query findAllProductoForPartidaID: " + query);
 			return em.createQuery(query).getResultList();
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 			return null;
 		}
@@ -73,8 +73,7 @@ public class ProductoRepository {
 	
 	
 	public Producto findByCodigo(String codigo) {
-		String query = "select ser from Producto ser where (ser.estado='AC' or ser.estado='IN') and ser.codigo="
-				+ codigo + "'";
+		String query = "select ser from Producto ser where (ser.estado='AC' or ser.estado='IN') and ser.codigo='"+ codigo + "'";
 		System.out.println("Query Producto: " + query);
 		return (Producto) em.createQuery(query).getSingleResult();
 	}
@@ -90,6 +89,7 @@ public class ProductoRepository {
 		return em.createQuery(criteria).getResultList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Producto> findAllProductoForDescription(String criterio) {
 		try {
 			String query = "select ser from Producto ser where ser.nombre like '%"
@@ -98,13 +98,13 @@ public class ProductoRepository {
 			List<Producto> listaProducto = em.createQuery(query).getResultList();
 			return listaProducto;
 		} catch (Exception e) {
-			// TODO: handle exception
 			System.out.println("Error en findAllProductoForDescription: "
 					+ e.getMessage());
 			return null;
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Producto> traerProductoActivas() {
 		try {
 			String query = "select ser from Producto ser where ser.estado='AC' order by ser.id desc";
@@ -112,13 +112,13 @@ public class ProductoRepository {
 			List<Producto> listaProducto = em.createQuery(query).getResultList();
 			return listaProducto;
 		} catch (Exception e) {
-			// TODO: handle exception
 			System.out.println("Error en traerProductoActivas: "
 					+ e.getMessage());
 			return null;
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Producto> findAll100UltimosProducto() {
 		try {
 			String query = "select ser from Producto ser order by ser.fechaRegistro desc";
@@ -127,7 +127,6 @@ public class ProductoRepository {
 					.setMaxResults(100).getResultList();
 			return listaProducto;
 		} catch (Exception e) {
-			// TODO: handle exception
 			System.out.println("Error en findAll100UltimosProducto: "
 					+ e.getMessage());
 			return null;

@@ -596,72 +596,73 @@ public class OrdenIngresoController implements Serializable {
 			}
 			String linea;
 			int contadorLinea = 7;
-			while((linea=br.readLine())!=null)
+			while((linea=br.readLine())!=null){
 				contadorLinea = contadorLinea + 1;
-			
-			//>>>>>>>>PARTIDA<<<<<<<<
-			//14 codigoPartida
-			String codigoPartida = Cifrado.Desencriptar( br.readLine(),12);
-			//15 nombre
-			String nombrePartida = Cifrado.Desencriptar( br.readLine(),12);
-			//16 descripcion
-			String descripcionPartida = Cifrado.Desencriptar( br.readLine(),12);
-			Partida partida = partidaRepository.findByCodigo(codigoPartida);
-			if(partida==null){
-				partida = new Partida();
-				partida.setCodigo(codigoPartida);
-				partida.setDescripcion(descripcionPartida);
-				partida.setEstado("AC");
-				partida.setFechaRegistro(new Date());
-				partida.setNombre(nombrePartida);
-				partida.setUsuarioRegistro(usuarioSession);
-				partida = partidaRegistration.register(partida);
+				//PRODUCTO
+				//8 codigo
+				String codigoProducto = Cifrado.Desencriptar(linea,12);
+				//9 nombre
+				String nombreProducto = Cifrado.Desencriptar( br.readLine(),12);
+				//10 descripcion
+				String descripcionProducto = Cifrado.Desencriptar( br.readLine(),12);
+				//11 precioUnitario
+				String precioUnitarioProducto = Cifrado.Desencriptar( br.readLine(),12);
+				//12 tipoProducto
+				String tipoProductoProducto = Cifrado.Desencriptar( br.readLine(),12);
+				//13 unidadMedida
+				String unidadMedidaProducto = Cifrado.Desencriptar( br.readLine(),12);
+				//>>>>>>>>PARTIDA<<<<<<<<
+				//14 codigoPartida
+				String codigoPartida = Cifrado.Desencriptar( br.readLine(),12);
+				//15 nombre
+				String nombrePartida = Cifrado.Desencriptar( br.readLine(),12);
+				//16 descripcion
+				String descripcionPartida = Cifrado.Desencriptar( br.readLine(),12);
+				//>>>>>>>>DETALLE ORDEN INGRESO<<<<<<<<<
+				//17 cantidadDOI
+				String cantidadDOI = Cifrado.Desencriptar( br.readLine(),12);
+				//18 observacionDOI
+				String observacionDOI = Cifrado.Desencriptar( br.readLine(),12);
+				//19 totalDOI
+				String totalDOI = Cifrado.Desencriptar( br.readLine(),12);
+
+				Partida partida = partidaRepository.findByCodigo(codigoPartida);
+				if(partida==null){
+					partida = new Partida();
+					partida.setCodigo(codigoPartida);
+					partida.setDescripcion(descripcionPartida);
+					partida.setEstado("AC");
+					partida.setFechaRegistro(new Date());
+					partida.setNombre(nombrePartida);
+					partida.setUsuarioRegistro(usuarioSession);
+					partida = partidaRegistration.register(partida);
+				}
+				Producto producto = productoRepository.findByCodigo(codigoProducto);
+				if(producto == null){
+					producto = new Producto();
+					producto.setCodigo(codigoProducto);
+					producto.setDescripcion(descripcionProducto);
+					producto.setEstado("AC");
+					producto.setFechaRegistro(new Date());
+					producto.setNombre(nombreProducto);
+					producto.setPartida(partida);
+					producto.setPrecioUnitario(Double.parseDouble(precioUnitarioProducto));
+					producto.setTipoProducto(tipoProductoProducto);
+					producto.setUnidadMedida(unidadMedidaProducto);
+					producto.setUsuarioRegistro(usuarioSession);
+					producto = productoRegistration.register(producto);
+				}
+				DetalleOrdenIngreso detalle = new DetalleOrdenIngreso();
+				detalle.setCantidad(Integer.parseInt(cantidadDOI));
+				detalle.setEstado("AC");
+				detalle.setFechaRegistro(new Date());
+				detalle.setObservacion(observacionDOI);
+				detalle.setOrdenIngreso(newOrdenIngreso);
+				detalle.setProducto(producto);
+				detalle.setTotal(Double.parseDouble(totalDOI));
+				detalle.setUsuarioRegistro(usuarioSession);
+				listaDetalleOrdenIngreso.add(detalle);
 			}
-			//PRODUCTO
-			//8 codigo
-			String codigoProducto = Cifrado.Desencriptar(linea,12);
-			//9 nombre
-			String nombreProducto = Cifrado.Desencriptar( br.readLine(),12);
-			//10 descripcion
-			String descripcionProducto = Cifrado.Desencriptar( br.readLine(),12);
-			//11 precioUnitario
-			String precioUnitarioProducto = Cifrado.Desencriptar( br.readLine(),12);
-			//12 tipoProducto
-			String tipoProductoProducto = Cifrado.Desencriptar( br.readLine(),12);
-			//13 unidadMedida
-			String unidadMedidaProducto = Cifrado.Desencriptar( br.readLine(),12);
-			Producto producto = productoRepository.findByCodigo(codigo);
-			if(producto == null){
-				producto = new Producto();
-				producto.setCodigo(codigoProducto);
-				producto.setDescripcion(descripcionProducto);
-				producto.setEstado("AC");
-				producto.setFechaRegistro(new Date());
-				producto.setNombre(nombreProducto);
-				producto.setPartida(partida);
-				producto.setPrecioUnitario(Double.parseDouble(precioUnitarioProducto));
-				producto.setTipoProducto(tipoProductoProducto);
-				producto.setUnidadMedida(unidadMedidaProducto);
-				producto.setUsuarioRegistro(usuarioSession);
-				producto = productoRegistration.register(producto);
-			}
-			//>>>>>>>>DETALLE ORDEN INGRESO<<<<<<<<<
-			//17 cantidadDOI
-			String cantidadDOI = Cifrado.Desencriptar( br.readLine(),12);
-			//18 observacionDOI
-			String observacionDOI = Cifrado.Desencriptar( br.readLine(),12);
-			//19 totalDOI
-			String totalDOI = Cifrado.Desencriptar( br.readLine(),12);
-			DetalleOrdenIngreso detalle = new DetalleOrdenIngreso();
-			detalle.setCantidad(Integer.parseInt(cantidadDOI));
-			detalle.setEstado("AC");
-			detalle.setFechaRegistro(new Date());
-			detalle.setObservacion(observacionDOI);
-			detalle.setOrdenIngreso(newOrdenIngreso);
-			detalle.setProducto(producto);
-			detalle.setTotal(Double.parseDouble(totalDOI));
-			detalle.setUsuarioRegistro(usuarioSession);
-			listaDetalleOrdenIngreso.add(detalle);
 		}
 		catch(Exception e){
 			e.printStackTrace();
