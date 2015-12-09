@@ -63,7 +63,6 @@ public class KardexProductoController implements Serializable {
 	private @Inject SessionMain sessionMain; //variable del login
 	private Gestion gestionLogin;
 	
-
 	private String urlKardexProducto = "";
 	private String usuarioSession;
 
