@@ -100,7 +100,7 @@
 								<p:commandLink id="buttonImportar" value="&#160; Importar"
 									styleClass="btn btn-info ion-ios7-upload-outline"
 									style="height:31px; padding:center"
-									rendered="#{ordenIngresoController.registrar}"
+									rendered="#{ordenIngresoController.importarFile}"
 									update="formDialogImport" onclick="PF('dlgImportExcel').show()">
 								</p:commandLink>
 
@@ -161,8 +161,8 @@
 																	requiredMessage="Tipo Requerido.">
 																	<f:selectItem itemValue="COMPRA" itemLabel="COMPRA" />
 																	<f:selectItem itemValue="DONACION" itemLabel="DONACION" />
-																	<f:selectItem itemValue="BODEGA" itemLabel="DEVOLUCION" />
-																	<p:ajax event="change" update="formTableOrdenIngreso" />
+																	<f:selectItem itemValue="DEVOLUCION" itemLabel="DEVOLUCION" />
+																	<p:ajax event="change" update="formTableOrdenIngreso,formBotonesHeader" listener="#{ordenIngresoController.verificarEstadoImportacion()}" />
 																</h:selectOneMenu>
 															</div>
 														</div>

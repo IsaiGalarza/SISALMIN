@@ -100,6 +100,7 @@ public class OrdenIngresoController implements Serializable {
 	private boolean verProcesar = true;
 	private boolean verReport = false;
 	private boolean nuevoProducto = false;
+	private boolean importarFile = false;//para habilitar importacion
 
 	private String tituloProducto = "Agregar Producto";
 	private String tituloPanel = "Registrar Almacen";
@@ -157,6 +158,7 @@ public class OrdenIngresoController implements Serializable {
 		atencionCliente=false;
 		verProcesar = true;
 		nuevoProducto = false;
+		importarFile = false;
 
 		listaDetalleOrdenIngreso = new ArrayList<DetalleOrdenIngreso>();
 		listaOrdenIngreso = ordenIngresoRepository.findAllOrderedByID();
@@ -233,6 +235,14 @@ public class OrdenIngresoController implements Serializable {
 			e.printStackTrace();
 			System.out.println("Error in onRowSelectOrdenIngresoClick: "
 					+ e.getMessage());
+		}
+	}
+
+	public void verificarEstadoImportacion(){
+		if(newOrdenIngreso.getMotivoIngreso().equals("DEVOLUCION")){
+			importarFile = true;
+		}else{
+			importarFile = false;
 		}
 	}
 
@@ -916,6 +926,14 @@ public class OrdenIngresoController implements Serializable {
 
 	public void setNewProducto(Producto newProducto) {
 		this.newProducto = newProducto;
+	}
+
+	public boolean isImportarFile() {
+		return importarFile;
+	}
+
+	public void setImportarFile(boolean importarFile) {
+		this.importarFile = importarFile;
 	}
 
 }
