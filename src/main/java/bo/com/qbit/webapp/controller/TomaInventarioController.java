@@ -288,6 +288,8 @@ public class TomaInventarioController implements Serializable {
 		crear = false;
 		if(selectedTomaInventario.getEstadoRevision().equals("NO")){
 			revisarReport = true;
+		}else{
+			revisarReport = false;
 		}
 	}
 
