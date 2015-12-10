@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -54,7 +53,7 @@ public class SessionMain implements Serializable {
 	private @Inject UsuarioRepository usuarioRepository;
 	private @Inject EmpresaRepository empresaRepository;
 	private @Inject GestionRepository gestionRepository;
-	
+
 	private @Inject UsuarioRegistration usuarioRegistration;
 
 	//Object
@@ -63,7 +62,7 @@ public class SessionMain implements Serializable {
 	private Gestion gestionLogin;
 	private Almacen almacenLogin;
 	private UploadedFile file;
-	
+
 	private boolean modificar = false;
 
 	private StreamedContent fotoPerfil;
@@ -83,13 +82,6 @@ public class SessionMain implements Serializable {
 		almacenLogin = null;
 	}
 
-//	public Usuario validarUsuario(String username,String password){
-//		if(usuarioLogin == null){
-//			setUsuarioLogin(usuarioRepository.findByLogin(username, password));
-//		}
-//		return getUsuarioLogin();
-//	}
-	
 	public Usuario validarUsuario_(String username,String password){
 		//if(usuarioLoggin == null){
 		return	usuarioRepository.findByLogin(username, password);
@@ -103,7 +95,7 @@ public class SessionMain implements Serializable {
 	 * @return boolean
 	 */
 	public boolean tienePermisoPagina(String pagina){
-		if( pagina.equals("profile.xhtml")  || pagina.equals("dashboard.xhtml") || pagina.equals("orden_traspasoV2.xhtml") ){
+		if( pagina.equals("profile.xhtml")  || pagina.equals("dashboard.xhtml") ){
 			return true;
 		}
 		for(Permiso p: listPermiso){
@@ -127,6 +119,10 @@ public class SessionMain implements Serializable {
 		}catch(Exception e){
 			System.out.println("setImageUserSession() - Error: "+e.getMessage());
 		}
+	}
+
+	public StreamedContent getImagen(){
+		return getImageDefault();
 	}
 
 	private StreamedContent getImageDefault() {
@@ -179,26 +175,6 @@ public class SessionMain implements Serializable {
 			return false;
 		}
 	}
-	
-	public void upload() {
-		setModificar(false);
-		System.out.println("upload()  file:" + file);
-		if ( file != null ) {
-			usuarioLogin.setFotoPerfil(file.getContents());
-			usuarioLogin.setPesoFoto(file.getContents().length);
-			usuarioLogin.setFechaRegistro(new Date());
-			usuarioRegistration.update(usuarioLogin);
-			InputStream is = null;
-			String mimeType = "image/jpg";
-			try{
-				is = new ByteArrayInputStream(usuarioLogin.getFotoPerfil());
-				fotoPerfil = new DefaultStreamedContent(new ByteArrayInputStream(toByteArrayUsingJava(is)), mimeType);
-			}catch(Exception e){
-				log.error("setImageUserSession() -> error : "+e.getMessage());
-			}
-			FacesUtil.infoMessage("Foto perfil Cargada", "");
-		}
-	}
 
 	//----------------------------------------
 
@@ -220,6 +196,10 @@ public class SessionMain implements Serializable {
 
 	public void setUsuarioLogin(Usuario usuarioLogin) {
 		this.usuarioLogin = usuarioLogin;
+	}
+	
+	public void actualizarrUsuario(){
+		usuarioRegistration.update(usuarioLogin);
 	}
 
 	public Empresa getEmpresaLogin() {
@@ -245,7 +225,7 @@ public class SessionMain implements Serializable {
 	}
 
 	public StreamedContent getFotoPerfil() {
-		System.out.println("----- getFotoPerfil() --------");
+		System.out.println("----- getFotoPerfil() fotoPerfil="+fotoPerfil+" --------");
 		if(fotoPerfil == null){
 			System.out.println("----- fotoPerfil = null --------");
 			String mimeType = "image/jpg";
@@ -274,7 +254,7 @@ public class SessionMain implements Serializable {
 
 	public Almacen getAlmacenLogin() {
 		if(almacenLogin == null){
-			
+
 		}
 		return almacenLogin;
 	}
@@ -290,6 +270,7 @@ public class SessionMain implements Serializable {
 
 	public void setFile(UploadedFile file) {
 		this.file = file;
+
 		System.out.println("setFile "+file);
 	}
 
@@ -300,5 +281,4 @@ public class SessionMain implements Serializable {
 	public void setModificar(boolean modificar) {
 		this.modificar = modificar;
 	}
-
 }

@@ -35,7 +35,6 @@ public class OrdenTraspaso implements Serializable{
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_funcionario", nullable = true)
 	private Funcionario funcionario;
-	
 
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "id_proyecto", nullable = true)

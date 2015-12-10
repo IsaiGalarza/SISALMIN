@@ -251,6 +251,7 @@ public class OrdenSalidaController implements Serializable {
 			newOrdenSalida.setUsuarioRegistro(usuarioSession);
 			newOrdenSalida = ordenSalidaRegistration.register(newOrdenSalida);
 			for(DetalleOrdenSalida d: listaDetalleOrdenSalida){
+				d.setCantidadEntregada(d.getCantidadSolicitada());
 				d.setFechaRegistro(fechaActual);
 				d.setEstado("AC");
 				d.setUsuarioRegistro(usuarioSession);
@@ -271,6 +272,7 @@ public class OrdenSalidaController implements Serializable {
 			Date fechaActual = new Date();
 			double total = 0;
 			for(DetalleOrdenSalida d: listaDetalleOrdenSalida){
+				d.setCantidadEntregada(d.getCantidadSolicitada());
 				if(d.getId()==0){//si es un nuevo registro
 					d.setFechaRegistro(fechaActual);
 					d.setUsuarioRegistro(usuarioSession);

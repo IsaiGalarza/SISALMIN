@@ -1,9 +1,11 @@
 package bo.com.qbit.webapp.controller;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
-
-import org.apache.log4j.Logger;
+import java.util.Date;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -16,6 +18,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.primefaces.context.RequestContext;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
+import org.primefaces.model.UploadedFile;
 
 import bo.com.qbit.webapp.data.UsuarioRolRepository;
 import bo.com.qbit.webapp.model.Usuario;
@@ -35,7 +40,13 @@ public class LoginController implements Serializable {
 	private String username;
 	private String password;
 
-	//Logger log = Logger.getLogger(this.getClass());
+
+	//temporal
+	private StreamedContent fotoPerfilTemp;
+
+	private UploadedFile file;
+
+	private boolean modificar = false;
 
 	@PostConstruct
 	public void initNewLogin() {
@@ -51,7 +62,7 @@ public class LoginController implements Serializable {
 			FacesUtil.errorMessage("Ingrear Usuario y Contraseña.");
 			return; 
 		}
-		
+
 		FacesContext context = FacesContext.getCurrentInstance();
 		HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
 		Usuario usuarioSession = sessionMain.validarUsuario_(username, password);
@@ -83,7 +94,7 @@ public class LoginController implements Serializable {
 		sessionMain.cargarPermisos(usuarioRolV1.getRol());
 		sessionMain.setImageUserSession();
 	}
-	
+
 	public void logout() {
 		FacesContext context = FacesContext.getCurrentInstance();
 		HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
@@ -107,7 +118,40 @@ public class LoginController implements Serializable {
 			//RequestContext.getCurrentInstance().execute("stickyTipoCambio()");
 		}
 	}
-	
+
+	public void upload() {
+		setModificar(false);
+		System.out.println("upload()  file:" + file);
+		if ( file != null ) {
+			InputStream is = null;
+			String mimeType = "image/jpg";
+			try{
+				is = new ByteArrayInputStream(file.getContents());//file.getContents()
+				fotoPerfilTemp = null;
+				fotoPerfilTemp = new DefaultStreamedContent(new ByteArrayInputStream(toByteArrayUsingJava(is)), mimeType);
+				sessionMain.setFotoPerfil(fotoPerfilTemp);
+				Usuario user = sessionMain.getUsuarioLogin();
+				user.setFotoPerfil(file.getContents());
+				user.setPesoFoto(file.getContents().length);
+				user.setFechaRegistro(new Date());
+				sessionMain.setUsuarioLogin(user);
+				sessionMain.actualizarrUsuario();
+			}catch(Exception e){
+				System.out.println("upload() -> error : "+e.getMessage());
+			}
+			FacesUtil.infoMessage("Foto perfil Cargada", "");
+		}
+	}
+
+	private static byte[] toByteArrayUsingJava(InputStream is) throws IOException{ 
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		int reads = is.read();
+		while(reads != -1){
+			baos.write(reads); reads = is.read(); 
+		}
+		return baos.toByteArray();
+	}
+
 	// ----------- Getters and Setters ------------
 
 	public String getUsername() {
@@ -126,5 +170,29 @@ public class LoginController implements Serializable {
 	public void setPassword(String password) {
 		this.password = password;
 		System.out.println("password = "+password);
+	}
+
+	public StreamedContent getFotoPerfilTemp() {
+		return fotoPerfilTemp;
+	}
+
+	public void setFotoPerfilTemp(StreamedContent fotoPerfilTemp) {
+		this.fotoPerfilTemp = fotoPerfilTemp;
+	}
+
+	public UploadedFile getFile() {
+		return file;
+	}
+
+	public void setFile(UploadedFile file) {
+		this.file = file;
+	}
+
+	public boolean isModificar() {
+		return modificar;
+	}
+
+	public void setModificar(boolean modificar) {
+		this.modificar = modificar;
 	}
 }

@@ -1,134 +1,86 @@
 package bo.com.qbit.webapp.controller;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
+import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.Conversation;
-import javax.enterprise.context.ConversationScoped;
-import javax.enterprise.event.Event;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
 
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 import org.primefaces.model.UploadedFile;
-import org.richfaces.cdi.push.Push;
 
-import bo.com.qbit.webapp.data.UsuarioRepository;
+import bo.com.qbit.webapp.model.Empresa;
 import bo.com.qbit.webapp.model.Usuario;
-import bo.com.qbit.webapp.service.UsuarioRegistration;
+import bo.com.qbit.webapp.util.FacesUtil;
+import bo.com.qbit.webapp.util.SessionMain;
 
 
-@Named(value = "perfilController")
-@ConversationScoped
+@ManagedBean
 public class PerfilController implements Serializable {
 
 	
 	private static final long serialVersionUID = -2989737706810995315L;
 
-	public static final String PUSH_CDI_TOPIC = "pushCdi";
-
-	@Inject
-	private FacesContext facesContext;
-
-	@Inject
-	Conversation conversation;
-
-	@Inject
-	private UsuarioRepository usuarioRepository;
-
-	@Inject
-	private UsuarioRegistration usuarioRegistration;
-
 	private Usuario usuarioSession;
-	
-	@Inject
-	private Logger log;
-
-	@Inject
-	@Push(topic = PUSH_CDI_TOPIC)
-	Event<String> pushEventSucursal;
 
 	private boolean modificar = false;
 	private String tituloPanel = "Registrar Empresa";
 	private List<Usuario> listUsuario = new ArrayList<Usuario>();
 	private UploadedFile file;
+	
+	private String nombreUsuario; 
+	private @Inject SessionMain sessionMain; //variable del login
+	private Empresa empresaLogin;
+	
+	//temporal
+	private StreamedContent fotoPerfilTemp;
 
 	@PostConstruct
 	public void initNewPerfil() {
-
-		beginConversation();
-
-		HttpServletRequest request = (HttpServletRequest) facesContext
-				.getExternalContext().getRequest();
-		log.info("init new perfil*********************************");
-		log.info("request.getClass().getName():"
-				+ request.getClass().getName());
-		log.info("remoteUser:" + request.getRemoteUser());
-		log.info("userPrincipalName:"
-				+ (request.getUserPrincipal() == null ? "null" : request
-						.getUserPrincipal().getName()));
-
-		usuarioSession = usuarioRepository.findByLogin(request
-				.getUserPrincipal().getName());
+		System.out.println("initNewPerfil()");
+		setNombreUsuario(sessionMain.getUsuarioLogin().getLogin());
+		setEmpresaLogin(sessionMain.getEmpresaLogin());
 		// tituloPanel
 		tituloPanel = "Perfil";
 		modificar = false;
+		fotoPerfilTemp = null;
+	}
+
+	public void upload() {
+		setModificar(false);
+		System.out.println("upload()  file:" + file);
+		if ( file != null ) {
+			//usuarioLogin.setFotoPerfil(file.getContents());
+			//usuarioLogin.setPesoFoto(file.getContents().length);
+			//usuarioLogin.setFechaRegistro(new Date());
+			//usuarioRegistration.update(usuarioLogin);
+			InputStream is = null;
+			String mimeType = "image/jpg";
+			try{
+				is = new ByteArrayInputStream(file.getContents());//file.getContents()
+				fotoPerfilTemp = new DefaultStreamedContent(new ByteArrayInputStream(toByteArrayUsingJava(is)), mimeType);
+			}catch(Exception e){
+				System.out.println("upload() -> error : "+e.getMessage());
+			}
+			FacesUtil.infoMessage("Foto perfil Cargada", "");
+		}
 	}
 	
-	public void beginConversation() {
-		if (conversation.isTransient()) {
-			log.info("beginning conversation : " + this.conversation);
-			conversation.begin();
-			log.info("---> Init Conversation");
+	private static byte[] toByteArrayUsingJava(InputStream is) throws IOException{ 
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		int reads = is.read();
+		while(reads != -1){
+			baos.write(reads); reads = is.read(); 
 		}
-	}
-
-	public void endConversation() {
-		if (!conversation.isTransient()) {
-			conversation.end();
-		}
-	}
-
-	public void modificarEmpresa() {
-		try {
-			usuarioRegistration.update(usuarioSession);
-
-			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
-					"Empresa Modificada!", usuarioSession.getLogin()+"!");
-			facesContext.addMessage(null, m);
-			initNewPerfil();
-		} catch (Exception e) {
-			String errorMessage = getRootErrorMessage(e);
-			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-					errorMessage, "Modificado Incorrecto.");
-			facesContext.addMessage(null, m);
-		}
-	}
-
-	private String getRootErrorMessage(Exception e) {
-		String errorMessage = "Registration failed. See server log for more information";
-		if (e == null) {
-			return errorMessage;
-		}
-		Throwable t = e;
-		while (t != null) {
-			errorMessage = t.getLocalizedMessage();
-			t = t.getCause();
-		}
-		return errorMessage;
-	}
-
-	public String getURLServletImage(){
-		HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
-		String urlPath = request.getRequestURL().toString();
-		urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
-		log.info("urlPath >> "+urlPath);
-		return urlPath;
+		return baos.toByteArray();
 	}
 
 	// ------------   get and set   -----------------------
@@ -170,6 +122,14 @@ public class PerfilController implements Serializable {
 
 	public void setFile(UploadedFile file) {
 		this.file = file;
+		InputStream is = null;
+		String mimeType = "image/jpg";
+		try{
+			is = new ByteArrayInputStream(file.getContents());//file.getContents()
+			fotoPerfilTemp = new DefaultStreamedContent(new ByteArrayInputStream(toByteArrayUsingJava(is)), mimeType);
+		}catch(Exception e){
+			System.out.println("setImageUserSession() -> error : "+e.getMessage());
+		}
 	}
 	
 	public Usuario getUsuario() {
@@ -178,5 +138,31 @@ public class PerfilController implements Serializable {
 
 	public void setUsuario(Usuario usuarioSession) {
 		this.usuarioSession = usuarioSession;
+	}
+
+
+	public StreamedContent getFotoPerfilTemp() {
+		return fotoPerfilTemp;
+	}
+
+
+	public void setFotoPerfilTemp(StreamedContent fotoPerfilTemp) {
+		this.fotoPerfilTemp = fotoPerfilTemp;
+	}
+
+	public String getNombreUsuario() {
+		return nombreUsuario;
+	}
+
+	public void setNombreUsuario(String nombreUsuario) {
+		this.nombreUsuario = nombreUsuario;
+	}
+
+	public Empresa getEmpresaLogin() {
+		return empresaLogin;
+	}
+
+	public void setEmpresaLogin(Empresa empresaLogin) {
+		this.empresaLogin = empresaLogin;
 	}
 }

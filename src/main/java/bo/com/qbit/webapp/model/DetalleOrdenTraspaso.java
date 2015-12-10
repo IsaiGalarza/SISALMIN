@@ -23,7 +23,13 @@ public class DetalleOrdenTraspaso implements Serializable{
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
 
-	private int cantidad;
+	private int cantidad;//cantidad entregada
+	
+	@Column(name="cantidad_solicitada", nullable = true)
+	private double cantidadSolicitada;
+
+	@Column(name="cantidad_entregada", nullable = true)
+	private double cantidadEntregada;
 
 	private String estado;
 	
@@ -51,6 +57,8 @@ public class DetalleOrdenTraspaso implements Serializable{
 		super();
 		this.id = 0 ;
 		this.cantidad = 1;
+		this.cantidadSolicitada = 1;
+		this.cantidadEntregada = 0;
 		this.setEstado("AC");
 	}
 	
@@ -124,6 +132,22 @@ public class DetalleOrdenTraspaso implements Serializable{
 
 	public void setObservacion(String observacion) {
 		this.observacion = observacion;
+	}
+
+	public double getCantidadSolicitada() {
+		return cantidadSolicitada;
+	}
+
+	public void setCantidadSolicitada(double cantidadSolicitada) {
+		this.cantidadSolicitada = cantidadSolicitada;
+	}
+
+	public double getCantidadEntregada() {
+		return cantidadEntregada;
+	}
+
+	public void setCantidadEntregada(double cantidadEntregada) {
+		this.cantidadEntregada = cantidadEntregada;
 	}
 
 }

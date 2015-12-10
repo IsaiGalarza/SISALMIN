@@ -264,6 +264,7 @@ public class OrdenTraspasoController implements Serializable {
 			newOrdenTraspaso.setAlmacenDestino(selectedAlmacen);
 			newOrdenTraspaso = ordenTraspasoRegistration.register(newOrdenTraspaso);
 			for(DetalleOrdenTraspaso d: listaDetalleOrdenTraspaso){
+				d.setCantidadEntregada(d.getCantidadSolicitada());
 				d.setFechaRegistro(date);
 				d.setUsuarioRegistro(usuarioSession);
 				d.setOrdenTraspaso(newOrdenTraspaso);
@@ -386,6 +387,7 @@ public class OrdenTraspasoController implements Serializable {
 			Date fechaActual = new Date();
 			double total = 0;
 			for(DetalleOrdenTraspaso d: listaDetalleOrdenTraspaso){
+				d.setCantidadEntregada(d.getCantidadSolicitada());
 				if(d.getId()==0){//si es un nuevo registro
 					d.setFechaRegistro(fechaActual);
 					d.setUsuarioRegistro(usuarioSession);

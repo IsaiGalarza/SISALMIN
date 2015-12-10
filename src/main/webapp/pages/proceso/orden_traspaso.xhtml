@@ -130,7 +130,7 @@
 						<li><a href="#{request.contextPath}/pages/dashboard.xhtml"
 							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
 						<li><a
-							href="#{request.contextPath}/pages/proceso/orden_Traspaso.xhtml"
+							href="#{request.contextPath}/pages/proceso/orden_traspaso.xhtml"
 							style="color: #0090FF; font-size: 12px;">Proceso</a></li>
 						<li class="active" style="font-size: 12px;">Orden Traspaso</li>
 					</ol>
@@ -614,7 +614,7 @@
 							<div class="col-sm-9">
 								<p:inputText id="cantidadID" required="true"
 									requiredMessage="Cantidad Requerido."
-									value="#{ordenTraspasoController.selectedDetalleOrdenTraspaso.cantidad}"
+									value="#{ordenTraspasoController.selectedDetalleOrdenTraspaso.cantidadSolicitada}"
 									size="40">
 									<p:ajax event="change" update="totalID"
 										listener="#{ordenTraspasoController.calcular()}" />
@@ -754,7 +754,8 @@
 				</div>
 			</h:form>
 		</p:dialog>
-
+		
+		<!-- ELIMINAR ORDEN TRASPASO -->
 		<p:dialog header="Desea Eliminar la Orden de Traspaso"
 			widgetVar="dlgEliminarOrdenTraspaso" modal="true"
 			visible="#{not empty facesContext.maximumSeverity}" resizable="false"
