@@ -159,6 +159,7 @@ public class OrdenIngresoController implements Serializable {
 		verProcesar = true;
 		nuevoProducto = false;
 		importarFile = false;
+		verReport = false;
 
 		listaDetalleOrdenIngreso = new ArrayList<DetalleOrdenIngreso>();
 		listaOrdenIngreso = ordenIngresoRepository.findAllOrderedByID();
@@ -239,7 +240,7 @@ public class OrdenIngresoController implements Serializable {
 	}
 
 	public void verificarEstadoImportacion(){
-		if(newOrdenIngreso.getMotivoIngreso().equals("DEVOLUCION")){
+		if(newOrdenIngreso.getMotivoIngreso().equals("TRASPASO")){
 			importarFile = true;
 		}else{
 			importarFile = false;
@@ -341,12 +342,22 @@ public class OrdenIngresoController implements Serializable {
 				Producto prod = d.getProducto();
 				actualizarStock(selectedOrdenIngreso.getAlmacen(),prod, d.getCantidad(),fechaActual);
 				actualizarKardexProducto( prod,fechaActual, d.getCantidad());
+				cargarDetalleProducto(d.getProducto(), d.getCantidad(), d.getPrecioUnitario(), d.getFechaRegistro(), selectedOrdenIngreso.getCorrelativo());
 			}
 
 			FacesUtil.infoMessage("Orden de Ingreso Procesada!", "");
 			initNewOrdenIngreso();
 		} catch (Exception e) {
 			FacesUtil.errorMessage("Error al Procesar!");
+		}
+	}
+	
+	// cargar en la ttabla detalle_producto, reegistros de productos, para luego utilizar el metodo PEPS
+	private void cargarDetalleProducto(Producto producto,double cantidad, double precio, Date fecha, String correlativoTransaccion){
+		try{
+			
+		}catch(Exception e){
+			System.out.println("cargarDetalleProducto() ERROR: "+e.getMessage());
 		}
 	}
 
@@ -562,7 +573,7 @@ public class OrdenIngresoController implements Serializable {
 
 	public void handleFileUpload(FileUploadEvent event) {
 		uploadedFile = event.getFile();
-		FacesUtil.infoMessage("Correcto", event.getFile().getFileName() + " , archivo cargado.");
+		FacesUtil.infoMessage("Correcto", event.getFile().getFileName() + ", archivo cargado.");
 	}
 
 	public void convertJava() {
@@ -582,6 +593,11 @@ public class OrdenIngresoController implements Serializable {
 			br = new BufferedReader(fr);
 
 			// Lectura del fichero
+			//DATOS ORDENTRASPASO
+			//0 correlativo
+			String correlativoOrdenTraspaso = Cifrado.Desencriptar( br.readLine(),12);
+			newOrdenIngreso.setTipoDocumento("ACTA DE TRASPASO");
+			newOrdenIngreso.setNumeroDocumento(correlativoOrdenTraspaso);
 			//ALMACEN
 			//1 direccion
 			String direccion = Cifrado.Desencriptar( br.readLine(),12);
@@ -613,9 +629,7 @@ public class OrdenIngresoController implements Serializable {
 				selectedAlmacen = almacenRegistration.register(almacen);
 			}
 			String linea;
-			int contadorLinea = 7;
 			while((linea=br.readLine())!=null){
-				contadorLinea = contadorLinea + 1;
 				//PRODUCTO
 				//8 codigo
 				String codigoProducto = Cifrado.Desencriptar(linea,12);

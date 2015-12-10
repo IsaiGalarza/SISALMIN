@@ -27,7 +27,7 @@
 								<p:commandLink id="buttonAtras" value="&#160; Atras"
 									styleClass="btn btn-warning ion-minus-circled"
 									update="formTableOrdenTraspaso, formBotonesHeader"
-									rendered="#{ordenTraspasoController.verReport}"
+									rendered="false"
 									style="height:31px; padding:center"
 									action="#{ordenTraspasoController.setVerReport(false)}">
 								</p:commandLink>
@@ -35,7 +35,7 @@
 								<p:commandLink id="buttonCancelar" value="&#160; Cancelar"
 									styleClass="btn btn-warning ion-minus-circled"
 									update="formTableOrdenTraspaso, formBotonesHeader"
-									rendered="#{ordenTraspasoController.modificar or ordenTraspasoController.registrar}"
+									rendered="#{ordenTraspasoController.modificar or ordenTraspasoController.registrar or ordenTraspasoController.selectedOrdenTraspaso != null}"
 									style="height:31px; padding:center"
 									action="#{ordenTraspasoController.initNewOrdenTraspaso()}">
 								</p:commandLink>
@@ -43,7 +43,7 @@
 								<p:commandLink id="buttonCrear1"
 									value="&#160; Nueva Orden Traspaso"
 									styleClass="btn btn-success ion-plus-round"
-									rendered="#{ordenTraspasoController.crear and ! ordenTraspasoController.verReport}"
+									rendered="#{ordenTraspasoController.crear and ! ordenTraspasoController.verReport and ordenTraspasoController.selectedOrdenTraspaso == null}"
 									update="formTableOrdenTraspaso, formBotonesHeader"
 									action="#{ordenTraspasoController.cambiarAspecto()}"
 									style="height:31px;">
@@ -87,6 +87,14 @@
 									style="height:31px; padding:center"
 									update="formTableOrdenTraspaso, :formBotonesHeader,formGrowl:msgs1"
 									action="#{ordenTraspasoController.procesarOrdenTraspaso()}">
+								</p:commandLink>
+								
+								<p:commandLink id="buttonExportar" value="&#160; Exportar"
+									styleClass="btn orange ion-ios7-upload-outline"
+									rendered="#{ordenTraspasoController.selectedOrdenTraspaso != null and ordenTraspasoController.crear and ordenTraspasoController.verProcesar and ! ordenTraspasoController.verReport}"
+									style="height:31px; padding:center"
+									update="formTableOrdenTraspaso, :formBotonesHeader,formGrowl:msgs1"
+									action="#{ordenTraspasoController.exportar()}">
 								</p:commandLink>
 
 								<p:commandLink id="buttonVerReporte" value="&#160; Ver Reporte"
@@ -610,7 +618,7 @@
 					<br />
 					<div class="row">
 						<div class="form-group">
-							<label for="cantidadID" class="col-sm-3 control-label">Cantidad</label>
+							<label for="cantidadID" class="col-sm-3 control-label">Cantidad Solicitada</label>
 							<div class="col-sm-9">
 								<p:inputText id="cantidadID" required="true"
 									requiredMessage="Cantidad Requerido."
@@ -789,11 +797,11 @@
 		<!-- END DIALOG -->
 
 		<!-- DIALOG EXPORT -->
-		<p:dialog header="EXPORTAR EXCEL" widgetVar="dlgExportExcel"
+		<p:dialog header="EXPORTAR ARCHIVO" widgetVar="dlgExportExcel"
 			modal="true" visible="#{not empty facesContext.maximumSeverity}"
 			resizable="false" position="center" width="500px">
 			<h:form id="formDialogExport" enctype="multipart/form-data">
-			   Se genero un archivo  para importacion de almacen.
+			   Desea descargar el archivo  para importacion de almacen.
 			   <br />
 			   <p:commandButton immediate="true" value="Descargar"  ajax="false" oncomplete="PF('dlgExportExcel').hide();">
 					<p:fileDownload value="#{ordenTraspasoController.dFile}" />

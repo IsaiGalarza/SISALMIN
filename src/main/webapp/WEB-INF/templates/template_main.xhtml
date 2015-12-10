@@ -115,10 +115,10 @@
 					<!-- NOTIFICACIONES -->
 					<li class="dropdown dropdown-extra dropdown-messages"><a
 						href="#" data-toggle="dropdown" class="dropdown-toggle"> <i
-							class="icon-folder-alt"> </i><span class="badge badge-primary">4</span></a>
+							class="icon-folder-alt"> </i><span class="badge badge-primary">#{dashboardController.countOrdenIngresoNuevos}</span></a>
 						<ul class="dropdown-menu">
 							<li>
-								<p>Tiene 4 Ordenes de Ingreso</p>
+								<p>Tiene #{dashboardController.countOrdenIngresoNuevos} Ordenes de Ingreso</p>
 							</li>
 							<li></li>
 						</ul></li>
@@ -218,8 +218,7 @@
 								<li
 									class="#{(view.viewId.equals('/pages/parametrizacion/unidad.xhtml')) ? 'active' :'inactive'}"><a
 									href="#{request.contextPath}/pages/parametrizacion/unidad.xhtml">
-										<i class="icon-globe"></i><span class="sidebar-text">Detalle
-											Unidad</span>
+										<i class="icon-globe"></i><span class="sidebar-text">Area de Trabajo</span>
 								</a></li>
 
 								<li

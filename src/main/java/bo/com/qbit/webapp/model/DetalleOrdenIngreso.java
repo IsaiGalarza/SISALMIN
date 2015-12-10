@@ -30,6 +30,9 @@ public class DetalleOrdenIngreso implements Serializable{
 	private String observacion;
 	
 	private double total;
+	
+	@Column(name="precio_unitario", nullable = true)
+	private double precioUnitario;
 
 	@Column(name="fecha_registro")
 	private Date fechaRegistro;
@@ -52,6 +55,7 @@ public class DetalleOrdenIngreso implements Serializable{
 		this.id = 0 ;
 		this.cantidad = 1;
 		this.setEstado("AC");
+		precioUnitario = 0;
 	}
 	
 	public int getCantidad() {
@@ -124,6 +128,14 @@ public class DetalleOrdenIngreso implements Serializable{
 
 	public void setObservacion(String observacion) {
 		this.observacion = observacion;
+	}
+
+	public double getPrecioUnitario() {
+		return precioUnitario;
+	}
+
+	public void setPrecioUnitario(double precioUnitario) {
+		this.precioUnitario = precioUnitario;
 	}
 
 }

@@ -8,7 +8,7 @@
 	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
 	template="/WEB-INF/templates/template_main.xhtml">
 	<ui:define name="head">
-		<title>Unidad</title>
+		<title>Area de trabajo</title>
 	</ui:define>
 
 	<ui:define name="content">
@@ -27,7 +27,7 @@
 									style="height:31px; padding:center"
 									action="#{detalleUnidadController.initNewDetalleUnidad()}">
 								</p:commandLink>
-								<p:commandLink id="buttonCrear1" value="&#160; Nueva Unidad"
+								<p:commandLink id="buttonCrear1" value="&#160; Nueva Area Trabajo"
 									styleClass="btn btn-success ion-plus-round"
 									rendered="#{detalleUnidadController.crear}"
 									update=":formTableUnidad, :formBotonesHeader"
@@ -108,7 +108,7 @@
 						<li><a
 							href="#{request.contextPath}/pages/parametrizacion/unidad.xhtml"
 							style="color: #0090FF; font-size: 12px;">Parametrización</a></li>
-						<li class="active" style="font-size: 12px;">Detalle Unidad</li>
+						<li class="active" style="font-size: 12px;">Area de Trabajo</li>
 					</ol>
 				</div>
 			</section>
@@ -123,7 +123,7 @@
 								<div class="col-md-4">
 									<div class="panel panel-default">
 										<div class="panel-heading">
-											<h3 class="panel-title">Registro Datos Unidad</h3>
+											<h3 class="panel-title"> Datos Area Trabajo</h3>
 										</div>
 										<div class="panel-body">
 											<!-- start here register -->
@@ -145,7 +145,7 @@
 													</div>
 
 													<div class="form-group ">
-														<div class="col-md-4">Nombre Unidad</div>
+														<div class="col-md-4">Nombre </div>
 														<div class="col-md-8">
 															<p:inputText id="nombreID"
 																style=" color: #555555; background-image: none;"
@@ -211,7 +211,7 @@
 
 									<div class="panel panel-default">
 										<div class="panel-heading">
-											<h3 class="panel-title">Lista de Unidades</h3>
+											<h3 class="panel-title">Lista de Areas de Trabajo</h3>
 										</div>
 										<!-- start here datatable -->
 										<div class="box-content no-padding">
@@ -235,7 +235,7 @@
 													<h:outputText value="#{_DetalleUnidad.codigo}" />
 												</p:column>
 
-												<p:column headerText="Nombre DetalleUnidad"
+												<p:column headerText="Nombre "
 													filterBy="#{_DetalleUnidad.nombre}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_DetalleUnidad.nombre}" />

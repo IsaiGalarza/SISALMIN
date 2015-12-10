@@ -149,6 +149,7 @@ public class OrdenSalidaController implements Serializable {
 		crear = true;
 		atencionCliente=false;
 		verProcesar = true;
+		verReport = false;
 
 		listaDetalleOrdenSalida = new ArrayList<DetalleOrdenSalida>();
 		listaOrdenSalida = ordenSalidaRepository.findAllOrderedByID();

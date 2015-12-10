@@ -30,17 +30,17 @@ public class DashboardController implements Serializable {
 	private @Inject SessionMain sessionMain; //variable del login
 	
 	//contador orden de Ingreso
-	private double countOrdenIngresoNuevos;
-	private double countOrdenIngresoProcesados;
-	private double countOrdenIngresoTotal;
+	private int countOrdenIngresoNuevos;
+	private int countOrdenIngresoProcesados;
+	private int countOrdenIngresoTotal;
 	//contador orden de Salida
-	private double countOrdenSalidaNuevos;
-	private double countOrdenSalidaProcesados;
-	private double countOrdenSalidaTotal;
+	private int countOrdenSalidaNuevos;
+	private int countOrdenSalidaProcesados;
+	private int countOrdenSalidaTotal;
 	//contador orden de traspaso
-	private double countOrdenTraspasoNuevos;
-	private double countOrdenTraspasoProcesados;
-	private double countOrdenTraspasoTotal;
+	private int countOrdenTraspasoNuevos;
+	private int countOrdenTraspasoProcesados;
+	private int countOrdenTraspasoTotal;
 	
 	@PostConstruct
 	public void init() {
@@ -101,21 +101,21 @@ public class DashboardController implements Serializable {
     }
     
     private void actualizarContadoresOrdenIngreso(){
-    	countOrdenIngresoNuevos = ordenIngresoRepository.contarOrdenesActivas(sessionMain.getGestionLogin());
-    	countOrdenIngresoProcesados = ordenIngresoRepository.contarOrdenesProcesadas(sessionMain.getGestionLogin());
-    	countOrdenIngresoTotal = ordenIngresoRepository.contarOrdenesTotales(sessionMain.getGestionLogin());
+    	countOrdenIngresoNuevos = (int) ordenIngresoRepository.contarOrdenesActivas(sessionMain.getGestionLogin());
+    	countOrdenIngresoProcesados = (int) ordenIngresoRepository.contarOrdenesProcesadas(sessionMain.getGestionLogin());
+    	countOrdenIngresoTotal = (int) ordenIngresoRepository.contarOrdenesTotales(sessionMain.getGestionLogin());
     }
     
     private void actualizarContadoresOrdenSalida(){
-    	countOrdenSalidaNuevos = ordenSalidaRepository.contarOrdenesActivas(sessionMain.getGestionLogin());
-    	countOrdenSalidaProcesados = ordenSalidaRepository.contarOrdenesProcesadas(sessionMain.getGestionLogin());
-    	countOrdenSalidaTotal = ordenSalidaRepository.contarOrdenesTotales(sessionMain.getGestionLogin());
+    	countOrdenSalidaNuevos = (int) ordenSalidaRepository.contarOrdenesActivas(sessionMain.getGestionLogin());
+    	countOrdenSalidaProcesados = (int) ordenSalidaRepository.contarOrdenesProcesadas(sessionMain.getGestionLogin());
+    	countOrdenSalidaTotal = (int) ordenSalidaRepository.contarOrdenesTotales(sessionMain.getGestionLogin());
     }
     
     private void actualizarContadoresOrdenTraspaso(){
-    	countOrdenTraspasoNuevos =  ordenTraspasoRepository.contarOrdenesActivas(sessionMain.getGestionLogin());
-    	countOrdenTraspasoProcesados =  ordenTraspasoRepository.contarOrdenesProcesadas(sessionMain.getGestionLogin());
-    	countOrdenTraspasoTotal =  ordenTraspasoRepository.contarOrdenesTotales(sessionMain.getGestionLogin());
+    	countOrdenTraspasoNuevos =  (int) ordenTraspasoRepository.contarOrdenesActivas(sessionMain.getGestionLogin());
+    	countOrdenTraspasoProcesados = (int) ordenTraspasoRepository.contarOrdenesProcesadas(sessionMain.getGestionLogin());
+    	countOrdenTraspasoTotal = (int) ordenTraspasoRepository.contarOrdenesTotales(sessionMain.getGestionLogin());
     }
 
 	public OrdenIngresoRepository getOrdenIngresoRepository() {
@@ -144,7 +144,7 @@ public class DashboardController implements Serializable {
 		this.ordenTraspasoRepository = ordenTraspasoRepository;
 	}
 
-	public double getCountOrdenIngresoNuevos() {
+	public int getCountOrdenIngresoNuevos() {
 		return countOrdenIngresoNuevos;
 	}
 
@@ -152,67 +152,67 @@ public class DashboardController implements Serializable {
 		this.countOrdenIngresoNuevos = countOrdenIngresoNuevos;
 	}
 
-	public double getCountOrdenIngresoProcesados() {
+	public int getCountOrdenIngresoProcesados() {
 		return countOrdenIngresoProcesados;
 	}
 
-	public void setCountOrdenIngresoProcesados(double countOrdenIngresoProcesados) {
+	public void setCountOrdenIngresoProcesados(int countOrdenIngresoProcesados) {
 		this.countOrdenIngresoProcesados = countOrdenIngresoProcesados;
 	}
 
-	public double getCountOrdenIngresoTotal() {
+	public int getCountOrdenIngresoTotal() {
 		return countOrdenIngresoTotal;
 	}
 
-	public void setCountOrdenIngresoTotal(double countOrdenIngresoTotal) {
+	public void setCountOrdenIngresoTotal(int countOrdenIngresoTotal) {
 		this.countOrdenIngresoTotal = countOrdenIngresoTotal;
 	}
 
-	public double getCountOrdenSalidaNuevos() {
+	public int getCountOrdenSalidaNuevos() {
 		return countOrdenSalidaNuevos;
 	}
 
-	public void setCountOrdenSalidaNuevos(double countOrdenSalidaNuevos) {
+	public void setCountOrdenSalidaNuevos(int countOrdenSalidaNuevos) {
 		this.countOrdenSalidaNuevos = countOrdenSalidaNuevos;
 	}
 
-	public double getCountOrdenSalidaProcesados() {
+	public int getCountOrdenSalidaProcesados() {
 		return countOrdenSalidaProcesados;
 	}
 
-	public void setCountOrdenSalidaProcesados(double countOrdenSalidaProcesados) {
+	public void setCountOrdenSalidaProcesados(int countOrdenSalidaProcesados) {
 		this.countOrdenSalidaProcesados = countOrdenSalidaProcesados;
 	}
 
-	public double getCountOrdenSalidaTotal() {
+	public int getCountOrdenSalidaTotal() {
 		return countOrdenSalidaTotal;
 	}
 
-	public void setCountOrdenSalidaTotal(double countOdenSalidaTotal) {
+	public void setCountOrdenSalidaTotal(int countOdenSalidaTotal) {
 		this.countOrdenSalidaTotal = countOdenSalidaTotal;
 	}
 
-	public double getCountOrdenTraspasoNuevos() {
+	public int getCountOrdenTraspasoNuevos() {
 		return countOrdenTraspasoNuevos;
 	}
 
-	public void setCountOrdenTraspasoNuevos(double countOrdenTraspasoNuevos) {
+	public void setCountOrdenTraspasoNuevos(int countOrdenTraspasoNuevos) {
 		this.countOrdenTraspasoNuevos = countOrdenTraspasoNuevos;
 	}
 
-	public double getCountOrdenTraspasoProcesados() {
+	public int getCountOrdenTraspasoProcesados() {
 		return countOrdenTraspasoProcesados;
 	}
 
-	public void setCountOrdenTraspasoProcesados(double countOrdenTraspasoProcesados) {
+	public void setCountOrdenTraspasoProcesados(int countOrdenTraspasoProcesados) {
 		this.countOrdenTraspasoProcesados = countOrdenTraspasoProcesados;
 	}
 
-	public double getCountOrdenTraspasoTotal() {
+	public int getCountOrdenTraspasoTotal() {
 		return countOrdenTraspasoTotal;
 	}
 
-	public void setCountOrdenTraspasoTotal(double countOdenTraspasoTotal) {
+	public void setCountOrdenTraspasoTotal(int countOdenTraspasoTotal) {
 		this.countOrdenTraspasoTotal = countOdenTraspasoTotal;
 	}
 

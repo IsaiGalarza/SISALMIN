@@ -14,9 +14,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
- * The persistent class for the KardexProducto database table.
  * 
+ * @author mauriciobejaranorivera
+ * 
+ * @Descripcion: Se registraran todas las transacciones de un producto, es decir las entrasdas y salidas que tubo 
+ * un producto en los almacenes
+ *
  */
+
 @Entity
 @Table(name = "kardex_producto", schema = "public")
 public class KardexProducto implements Serializable {

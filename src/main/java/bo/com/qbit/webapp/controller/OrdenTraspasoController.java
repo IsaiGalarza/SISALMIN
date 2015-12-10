@@ -150,6 +150,7 @@ public class OrdenTraspasoController implements Serializable {
 		crear = true;
 		atencionCliente=false;
 		verProcesar = true;
+		verReport = false;
 
 		listaDetalleOrdenTraspaso = new ArrayList<DetalleOrdenTraspaso>();
 		listaOrdenTraspaso = ordenTraspasoRepository.findAllOrderedByID();
@@ -275,7 +276,7 @@ public class OrdenTraspasoController implements Serializable {
 			if( ! selectedAlmacen.isOnline()){
 				
 				//armar archivo txt(backup)
-				armarFileBackup();
+				armarFileBackup(this.newOrdenTraspaso,this.listaDetalleOrdenTraspaso);
 				
 				// Lanzar dialog de aviso de exportacion
 				FacesUtil.showDialog("dlgExportExcel");
@@ -286,13 +287,15 @@ public class OrdenTraspasoController implements Serializable {
 		}
 	}
 	
-//	public void test(){
-//		System.out.println("paso a test() ");
-//		armarFileBackup();
-//		FacesUtil.showDialog("dlgExportExcel");
-//	}
+	public void exportar(){
+		System.out.println("exportar() ");
+		listaDetalleOrdenTraspaso = detalleOrdenTraspasoRepository.findAllByOrdenTraspaso(selectedOrdenTraspaso);
+		armarFileBackup(selectedOrdenTraspaso,listaDetalleOrdenTraspaso);
+		// Lanzar dialog de aviso de exportacion
+		FacesUtil.showDialog("dlgExportExcel");
+	}
 	
-	private void armarFileBackup(){
+	private void armarFileBackup(OrdenTraspaso newOrdenTraspaso,List<DetalleOrdenTraspaso> listaDetalleOrdenTraspaso){
 		System.out.println("paso a armarFileBackup() ");
 		File file = new File("import.txt");
 		//Escritura
@@ -304,7 +307,9 @@ public class OrdenTraspasoController implements Serializable {
 			//test
 			//newOrdenTraspaso = ordenTraspasoRepository.findById(10);
 			//listaDetalleOrdenTraspaso = detalleOrdenTraspasoRepository.findAllByOrdenTraspaso(newOrdenTraspaso);
-
+			//>>>>>>>>DATOS ORDENTRASPASO<<<<<<<<<<<<<<<<
+			//0 correlativo
+			wr.write(Cifrado.Encriptar(newOrdenTraspaso.getCorrelativo(), 12)+"\r\n");
 			//>>>>>>>> ALMACEN <<<<<<<<<
 			//1 direccion
 			wr.write(Cifrado.Encriptar(newOrdenTraspaso.getAlmacenDestino().getDireccion(), 12)+"\r\n");
