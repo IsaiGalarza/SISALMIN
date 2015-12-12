@@ -9,10 +9,10 @@
 	template="/WEB-INF/templates/template_main.xhtml">
 	<ui:define name="head">
 		<title>Stock de Productos</title>
-		
+
 		<f:event listener="#{stockProductoController.initConversation}"
 			type="preRenderView"></f:event>
-			
+
 	</ui:define>
 
 	<ui:define name="content">
@@ -23,7 +23,7 @@
 					<h:form id="formBotonesHeader" style="padding-left: 10px;">
 						<div class="btn-group-demo">
 							<div class="btn-group">
-							<p:commandLink id="buttonProcesar" value="&#160; Procesar"
+								<p:commandLink id="buttonProcesar" value="&#160; Procesar"
 									styleClass="btn btn-info ion-ios7-loop-strong"
 									style="height:31px; padding:center"
 									update="formTableProducto ,formBotonesHeader"
@@ -81,7 +81,8 @@
 												<div class="form-group ">
 													<div class="col-md-4">Producto</div>
 													<div class="col-md-8">
-														<p:autoComplete id="productoID"
+														<p:autoComplete id="productoID" style="width: 93%"
+															inputStyle="width: 93%; color: #555555; background-image: none;"
 															value="#{stockProductoController.selectedProducto.nombre }"
 															completeMethod="#{stockProductoController.completeProducto}"
 															minQueryLength="3" dropdown="true" required="true"
@@ -141,7 +142,8 @@
 												rendered="#{not empty listaProducto}"
 												emptyMessage="No se encontraron Registros.">
 
-												<p:column headerText="Proveedor" filterBy="#{_var.proveedor.nombre}"
+												<p:column headerText="Proveedor"
+													filterBy="#{_var.proveedor.nombre}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.proveedor.nombre}" />
 												</p:column>
@@ -153,11 +155,11 @@
 												</p:column>
 
 												<p:column width="30%" headerText="Nombre"
-													filterBy="#{_var.producto.nombre}" filterStyle="width: 100%;"
-													filterMatchMode="contains">
+													filterBy="#{_var.producto.nombre}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.producto.nombre}" />
 												</p:column>
-												
+
 												<p:column headerText="Precio U."
 													filterBy="#{_var.precioUnitario}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
@@ -166,9 +168,8 @@
 													</h:outputText>
 												</p:column>
 
-												<p:column headerText="Stock"
-													filterBy="#{_var.stock}" filterStyle="width: 100%;"
-													filterMatchMode="contains">
+												<p:column headerText="Stock" filterBy="#{_var.stock}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.stock}" />
 												</p:column>
 
@@ -207,7 +208,7 @@
 														<div class="col-md-2">Precio</div>
 														<div class="col-md-6">
 															<p:outputLabel
-																value="#{stockProductoController.selectedProducto.precioUnitario}">
+																value="#{stockProductoController.precioUnificado}">
 															</p:outputLabel>
 														</div>
 														<div class="col-md-4"></div>

@@ -45,6 +45,7 @@ import bo.com.qbit.webapp.model.KardexProducto;
 import bo.com.qbit.webapp.model.OrdenTraspaso;
 import bo.com.qbit.webapp.model.Partida;
 import bo.com.qbit.webapp.model.Producto;
+import bo.com.qbit.webapp.model.Proveedor;
 import bo.com.qbit.webapp.model.Proyecto;
 import bo.com.qbit.webapp.service.AlmacenProductoRegistration;
 import bo.com.qbit.webapp.service.DetalleOrdenTraspasoRegistration;
@@ -486,6 +487,8 @@ public class OrdenTraspasoController implements Serializable {
 			//actualizar estado de orden Traspaso
 			selectedOrdenTraspaso.setEstado("PR");
 			selectedOrdenTraspaso.setFechaAprobacion(fechaActual);
+			double total = 0;
+			Proveedor proveedor = null;
 
 			//actualizar stock de AlmacenProducto
 			listaDetalleOrdenTraspaso = detalleOrdenTraspasoRepository.findAllByOrdenTraspaso(selectedOrdenTraspaso);
@@ -503,9 +506,11 @@ public class OrdenTraspasoController implements Serializable {
 				//2.- 
 				actualizarStockAlmacenOrigen(prod,almOrig, d.getCantidadSolicitada(),fechaActual,d.getPrecioUnitario());
 				//3.-
-				actualizarStockAlmacenDestino(prod,almDest, d.getCantidadSolicitada(),fechaActual,d.getPrecioUnitario());
+				actualizarStockAlmacenDestino(proveedor,prod,almDest, d.getCantidadSolicitada(),fechaActual,d.getPrecioUnitario());
 				//4.-
 				actualizarKardexProducto(almOrig,almDest,prod, fechaActual, d.getCantidadSolicitada(),d.getPrecioUnitario());
+				
+				total = total + d.getPrecioUnitario();
 			}
 			//cactualizar ordenTraspaso
 			ordenTraspasoRegistration.updated(selectedOrdenTraspaso);
@@ -563,8 +568,8 @@ public class OrdenTraspasoController implements Serializable {
 		}
 	}
 
-	//aumentar stock de almacen origen
-	private void actualizarStockAlmacenDestino(Producto prod ,Almacen almDest, double newStock,Date date,double precioUnitario) throws Exception {
+	//aumentar stock de almacen destino
+	private void actualizarStockAlmacenDestino(Proveedor proveedor,Producto prod ,Almacen almDest, double newStock,Date date,double precioUnitario) throws Exception {
 		try{
 			//0 . verificar si existe el producto en el almacen
 			System.out.println("actualizarStockAlmacenDestino()");
@@ -582,8 +587,9 @@ public class OrdenTraspasoController implements Serializable {
 			// 2 . no existe el producto
 			almProd = new AlmacenProducto();
 			almProd.setAlmacen(almDest);
+			almProd.setPrecioUnitario(precioUnitario);
 			almProd.setProducto(prod);
-			almProd.setProveedor(null);
+			almProd.setProveedor(proveedor);//proveedor = null (Ingreso or Orden Traspaso)
 			almProd.setStock(newStock);
 			almProd.setEstado("AC");
 			almProd.setFechaRegistro(date);
@@ -614,7 +620,7 @@ public class OrdenTraspasoController implements Serializable {
 		}
 	}
 
-	//registro en la tabla kardex_producto
+	//registro en la tabla kardex_producto, un ingreso y una salida 
 	private void actualizarKardexProducto(Almacen almOrig,Almacen almDest,Producto prod,Date fechaActual,double cantidad,double precioUnitario) throws Exception{
 		System.out.println("actualizarKardexProducto()");
 		try{

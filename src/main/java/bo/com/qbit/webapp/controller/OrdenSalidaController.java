@@ -332,7 +332,7 @@ public class OrdenSalidaController implements Serializable {
 			selectedOrdenSalida.setEstado("PR");
 			selectedOrdenSalida.setFechaAprobacion(fechaActual);
 			Almacen almacenOrigen = selectedOrdenSalida.getAlmacen();
-
+			double total = 0;
 			//actuaizar stock de AlmacenProducto
 			listaDetalleOrdenSalida = detalleOrdenSalidaRepository.findAllByOrdenSalida(selectedOrdenSalida);
 			for(DetalleOrdenSalida d: listaDetalleOrdenSalida){
@@ -348,8 +348,10 @@ public class OrdenSalidaController implements Serializable {
 				actualizarStock(prod, d.getCantidadSolicitada(),fechaActual,d.getPrecioUnitario());
 				//3
 				actualizarKardexProducto( prod,fechaActual, d.getCantidadSolicitada(),d.getPrecioUnitario());
+				total = total + d.getPrecioUnitario();
 			}
 			//cactualizar OrdenSalida
+			selectedOrdenSalida.setTotalImporte(total);
 			ordenSalidaRegistration.updated(selectedOrdenSalida);
 			FacesUtil.infoMessage("Orden de Ingreso Procesada!", "");
 			initNewOrdenSalida();
