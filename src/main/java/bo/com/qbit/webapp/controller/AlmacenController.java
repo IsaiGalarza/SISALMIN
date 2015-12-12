@@ -15,7 +15,6 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
-import javax.servlet.http.HttpServletRequest;
 
 import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
@@ -25,8 +24,8 @@ import bo.com.qbit.webapp.data.UsuarioRepository;
 import bo.com.qbit.webapp.model.Almacen;
 import bo.com.qbit.webapp.model.Usuario;
 import bo.com.qbit.webapp.service.AlmacenRegistration;
-import bo.com.qbit.webapp.service.EstadoUsuarioLogin;
 import bo.com.qbit.webapp.util.FacesUtil;
+import bo.com.qbit.webapp.util.SessionMain;
 
 @Named(value = "almacenController")
 @ConversationScoped
@@ -45,15 +44,11 @@ public class AlmacenController implements Serializable {
 	@Inject
 	Conversation conversation;
 
-	@Inject
-	private AlmacenRegistration almacenRegistration;
-
-	@Inject
-	private AlmacenRepository almacenRepository;
-
+	private @Inject AlmacenRepository almacenRepository;
 	private @Inject UsuarioRepository usuarioRepository;
-//	private Usuario usuarioSession;
-
+	
+	private @Inject AlmacenRegistration almacenRegistration;	
+	
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
 	Event<String> pushEventSucursal;
@@ -66,9 +61,7 @@ public class AlmacenController implements Serializable {
 	private Almacen selectedAlmacen;
 	private Almacen newAlmacen= new Almacen();
 	private List<Usuario> listUsuario = new ArrayList<Usuario>();
-
 	private List<Almacen> listaAlmacen;
-	private EstadoUsuarioLogin estadoUsuarioLogin;
 
 	
 	private boolean atencionCliente=false;
@@ -82,6 +75,8 @@ public class AlmacenController implements Serializable {
 		return listaAlmacen;
 	}
 	
+	//SESSION
+	private @Inject SessionMain sessionMain; //variable del login
 	private String usuarioSession;
 	
 	@PostConstruct
@@ -90,20 +85,7 @@ public class AlmacenController implements Serializable {
 		// initConversation();
 		beginConversation();
 
-		HttpServletRequest request = (HttpServletRequest) facesContext
-				.getExternalContext().getRequest();
-		System.out
-				.println("init New Almacen*********************************");
-		System.out.println("request.getClass().getName():"
-				+ request.getClass().getName());
-		System.out.println("isVentas:" + request.isUserInRole("ventas"));
-		System.out.println("remoteUser:" + request.getRemoteUser());
-		System.out.println("userPrincipalName:"
-				+ (request.getUserPrincipal() == null ? "null" : request
-						.getUserPrincipal().getName()));
-		
-		estadoUsuarioLogin = new EstadoUsuarioLogin(facesContext);
-		usuarioSession =  estadoUsuarioLogin.getNombreUsuarioSession();
+		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
 		listUsuario = usuarioRepository.findAllOrderedByID();
 
 		newAlmacen = new Almacen();
@@ -111,6 +93,7 @@ public class AlmacenController implements Serializable {
 		newAlmacen.setFechaRegistro(new Date());
 		newAlmacen.setUsuarioRegistro(usuarioSession);
 		
+		selectedAlmacen = null;
 
 		// tituloPanel
 		tituloPanel = "Registrar Almacen";
@@ -282,15 +265,7 @@ public class AlmacenController implements Serializable {
 	public void setNewAlmacen(Almacen newAlmacen) {
 		this.newAlmacen = newAlmacen;
 	}
-
-	public List<Usuario> getListUsuario() {
-		return listUsuario;
-	}
-
-	public void setListUsuario(List<Usuario> listUsuario) {
-		this.listUsuario = listUsuario;
-	}
-
+	
 	public boolean isAtencionCliente() {
 		return atencionCliente;
 	}
@@ -313,6 +288,14 @@ public class AlmacenController implements Serializable {
 
 	public void setRegistrar(boolean registrar) {
 		this.registrar = registrar;
+	}
+
+	public List<Usuario> getListUsuario() {
+		return listUsuario;
+	}
+
+	public void setListUsuario(List<Usuario> listUsuario) {
+		this.listUsuario = listUsuario;
 	}
 
 }

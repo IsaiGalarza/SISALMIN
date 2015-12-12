@@ -23,7 +23,7 @@
 								<p:commandLink id="buttonCancelar" value="&#160; Cancelar"
 									styleClass="btn btn-warning ion-minus-circled"
 									update=":formTableProducto, :formBotonesHeader"
-									rendered="#{productoController.modificar=='true'}"
+									rendered="#{productoController.modificar or productoController.registrar}"
 									style="height:31px; padding:center"
 									action="#{productoController.initNewProducto()}">
 								</p:commandLink>
@@ -243,6 +243,13 @@
 																<f:selectItem itemLabel="METRO" itemValue="METRO" />
 																<f:selectItem itemLabel="LITRO" itemValue="LITRO" />
 																<f:selectItem itemLabel="KILO" itemValue="KILO" />
+																<f:selectItem itemLabel="CAJA" itemValue="CAJA" />
+																<f:selectItem itemLabel="PAQUETE" itemValue="PAQUETE" />
+																<f:selectItem itemLabel="PLANCHA" itemValue="PLANCHA" />
+																<f:selectItem itemLabel="BOLSA" itemValue="BOLSA" />
+																<f:selectItem itemLabel="FRASCO" itemValue="FRASCO" />
+																<f:selectItem itemLabel="SACHET" itemValue="SACHET" />
+																<f:selectItem itemLabel="BLOCK" itemValue="BLOCK" />
 																<p:ajax event="change" />
 															</h:selectOneMenu>
 														</div>

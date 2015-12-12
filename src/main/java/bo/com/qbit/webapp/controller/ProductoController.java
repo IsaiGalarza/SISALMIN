@@ -15,7 +15,6 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
-import javax.servlet.http.HttpServletRequest;
 
 import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
@@ -24,8 +23,8 @@ import bo.com.qbit.webapp.data.ProductoRepository;
 import bo.com.qbit.webapp.data.PartidaRepository;
 import bo.com.qbit.webapp.model.Producto;
 import bo.com.qbit.webapp.model.Partida;
-import bo.com.qbit.webapp.service.EstadoUsuarioLogin;
 import bo.com.qbit.webapp.service.ProductoRegistration;
+import bo.com.qbit.webapp.util.SessionMain;
 
 @Named(value = "productoController")
 @ConversationScoped
@@ -51,7 +50,6 @@ public class ProductoController implements Serializable {
 	private ProductoRepository productoRepository;
 
 	private @Inject PartidaRepository partidaRepository;
-//	private Partida PartidaSession;
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
@@ -67,10 +65,6 @@ public class ProductoController implements Serializable {
 	private List<Partida> listPartida = new ArrayList<Partida>();
 
 	private List<Producto> listaProducto;
-	private EstadoUsuarioLogin estadoUsuarioLogin;
-	
-	
-	private boolean atencionCliente=false;
 
 	// @Named provides access the return value via the EL variable name
 	// "servicios" in the UI (e.g.
@@ -80,7 +74,8 @@ public class ProductoController implements Serializable {
 	public List<Producto> getListaProducto() {
 		return listaProducto;
 	}
-	
+	//SESSION
+	private @Inject SessionMain sessionMain; //variable del login
 	private String usuarioSession;
 	
 	@PostConstruct
@@ -89,20 +84,8 @@ public class ProductoController implements Serializable {
 		// initConversation();
 		beginConversation();
 
-		HttpServletRequest request = (HttpServletRequest) facesContext
-				.getExternalContext().getRequest();
-		System.out
-				.println("init Tipo Producto*********************************");
-		System.out.println("request.getClass().getName():"
-				+ request.getClass().getName());
-		System.out.println("isVentas:" + request.isUserInRole("ventas"));
-		System.out.println("remoteUser:" + request.getRemoteUser());
-		System.out.println("userPrincipalName:"
-				+ (request.getUserPrincipal() == null ? "null" : request
-						.getUserPrincipal().getName()));
+		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
 		
-		estadoUsuarioLogin = new EstadoUsuarioLogin(facesContext);
-		usuarioSession =  estadoUsuarioLogin.getNombreUsuarioSession();
 		listPartida = partidaRepository.findAllPartidaByID();
 
 		newProducto = new Producto();
@@ -110,6 +93,7 @@ public class ProductoController implements Serializable {
 		newProducto.setFechaRegistro(new Date());
 		newProducto.setUsuarioRegistro(usuarioSession);
 		
+		selectedProducto = null;
 
 		// tituloPanel
 		tituloPanel = "Registrar Producto";
@@ -120,7 +104,6 @@ public class ProductoController implements Serializable {
 		modificar = false;
 		registrar = false;
 		crear = true;
-		atencionCliente=false;
 	}
 	
 	public void cambiarAspecto(){
@@ -218,7 +201,7 @@ public class ProductoController implements Serializable {
 		} catch (Exception e) {
 			String errorMessage = getRootErrorMessage(e);
 			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-					errorMessage, "Registro Incorrecto.");
+					errorMessage, "Error al Registrar.");
 			facesContext.addMessage(null, m);
 		}
 	}
@@ -240,7 +223,7 @@ public class ProductoController implements Serializable {
 		} catch (Exception e) {
 			String errorMessage = getRootErrorMessage(e);
 			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-					errorMessage, "Modificado Incorrecto.");
+					errorMessage, "Erro al Modificar.");
 			facesContext.addMessage(null, m);
 		}
 	}
@@ -255,7 +238,7 @@ public class ProductoController implements Serializable {
 					+ newProducto.getId());
 			productoRegistration.remover(newProducto);
 			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
-					"Producto Borrado!", newProducto.getNombre()+"!");
+					"Producto Eliminado!", newProducto.getNombre()+"!");
 			facesContext.addMessage(null, m);
 			initNewProducto();
 
@@ -325,14 +308,6 @@ public class ProductoController implements Serializable {
 
 	public void setListPartida(List<Partida> listPartida) {
 		this.listPartida = listPartida;
-	}
-
-	public boolean isAtencionCliente() {
-		return atencionCliente;
-	}
-
-	public void setAtencionCliente(boolean atencionCliente) {
-		this.atencionCliente = atencionCliente;
 	}
 
 	public boolean isCrear() {

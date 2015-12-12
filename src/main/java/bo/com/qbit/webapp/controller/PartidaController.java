@@ -15,20 +15,17 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
-import javax.servlet.http.HttpServletRequest;
 
 import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
 
 import bo.com.qbit.webapp.data.PartidaRepository;
 import bo.com.qbit.webapp.data.ProductoRepository;
-import bo.com.qbit.webapp.data.UsuarioRepository;
 import bo.com.qbit.webapp.model.Partida;
 import bo.com.qbit.webapp.model.Producto;
-import bo.com.qbit.webapp.model.Usuario;
-import bo.com.qbit.webapp.service.EstadoUsuarioLogin;
 import bo.com.qbit.webapp.service.PartidaRegistration;
 import bo.com.qbit.webapp.service.ProductoRegistration;
+import bo.com.qbit.webapp.util.SessionMain;
 
 @Named(value = "partidaController")
 @ConversationScoped
@@ -52,13 +49,10 @@ public class PartidaController implements Serializable {
 
 	@Inject
 	private PartidaRepository partidaRepository;
-	
-	@Inject ProductoRegistration productoRegistration;
-	
-	@Inject ProductoRepository productoRepository;
 
-	private @Inject UsuarioRepository usuarioRepository;
-//	private Usuario usuarioSession;
+	@Inject ProductoRegistration productoRegistration;
+
+	@Inject ProductoRepository productoRepository;
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
@@ -67,22 +61,20 @@ public class PartidaController implements Serializable {
 	private boolean modificar = false;
 	private boolean registrar = false;
 	private boolean crear = true;
-	
+
 	private String tituloPanel = "Registrar Partida";
 	private Partida selectedPartida;
 	private Partida newPartida= new Partida();
-	private List<Usuario> listUsuario = new ArrayList<Usuario>();
 
 	private List<Partida> listaPartida;
-	private EstadoUsuarioLogin estadoUsuarioLogin;
-	
-	
+
+
 	private List<Producto> listaProductos = new ArrayList<Producto>(); // ITEMS
 	private String tituloProducto = "Agregar Producto";
 	private Producto newProducto;
 	private Producto selectedProducto;
 	private boolean diagloProducto;
-	
+
 	private boolean atencionCliente=false;
 
 	// @Named provides access the return value via the EL variable name
@@ -93,91 +85,80 @@ public class PartidaController implements Serializable {
 	public List<Partida> getListaPartida() {
 		return listaPartida;
 	}
-	
+
+	//SESSION
+	private @Inject SessionMain sessionMain; //variable del login
 	private String usuarioSession;
-	
+
 	@PostConstruct
 	public void initNewPartida() {
 
 		// initConversation();
 		beginConversation();
 
-		HttpServletRequest request = (HttpServletRequest) facesContext
-				.getExternalContext().getRequest();
-		System.out
-				.println("init Tipo Producto*********************************");
-		System.out.println("request.getClass().getName():"
-				+ request.getClass().getName());
-		System.out.println("isVentas:" + request.isUserInRole("ventas"));
-		System.out.println("remoteUser:" + request.getRemoteUser());
-		System.out.println("userPrincipalName:"
-				+ (request.getUserPrincipal() == null ? "null" : request
-						.getUserPrincipal().getName()));
-		
-		estadoUsuarioLogin = new EstadoUsuarioLogin(facesContext);
-		usuarioSession =  estadoUsuarioLogin.getNombreUsuarioSession();
-		listUsuario = usuarioRepository.findAllOrderedByID();
+		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
 
 		newPartida = new Partida();
 		newPartida.setEstado("AC");
 		newPartida.setFechaRegistro(new Date());
 		newPartida.setUsuarioRegistro(usuarioSession);
-		
+
+		selectedPartida = null;
 
 		// tituloPanel
 		tituloPanel = "Registrar Partida";
 
 		// traer todos las Partidaes ordenados por ID Desc
 		listaPartida = partidaRepository.traerPartidaActivas();
-		
+
 		modificar = false;
 		registrar = false;
 		crear = true;
 		atencionCliente=false;
-		
-		
+
+
 		listaProductos = new ArrayList<Producto>();
 		newProducto = new Producto();
 	}
-	
+
 	public void cambiarAspecto(){
 		modificar = false;
 		registrar = true;
 		crear = false;
-		
+
 		listaProductos = new ArrayList<Producto>();
 		newProducto = new Producto();
 	}
-	
+
 	public void cambiarAspectoModificar(){
 		modificar = true;
 		registrar = false;
 		crear = false;
-		
+
 		listaProductos = productoRepository.findAllProductoForPartidaID(newPartida.getId());
 		newProducto = new Producto();
 	}
-	
+
 	public void crearProducto(){
 		newProducto = new Producto();
 		tituloProducto = "Agregar Producto";
 	}
-	
+
 	public void modificarProducto(){
 		newProducto = selectedProducto;
 		tituloProducto = "Modificar Producto";
 	}
-	
+
 	public void borrarProducto(){
 		listaProductos.remove(selectedProducto);
 	}
-	
+
 	public void agregarProducto(){
 		listaProductos.add(0, newProducto);
 		newProducto = new Producto();
 		diagloProducto = false;
 	}
-	
+
 	public void beginConversation() {
 
 		if (conversation.isTransient()) {
@@ -213,38 +194,36 @@ public class PartidaController implements Serializable {
 			modificar = false;
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 			System.out.println("Error in onRowSelectPartidaClick: "
 					+ e.getMessage());
 		}
 	}
-	
-	
+
+
 	// SELECT PRODUCTO CLICK
 	public void onRowSelectProductoClick(SelectEvent event) {
-			try {
-				Producto producto = (Producto) event.getObject();
-				System.out.println("onRowSelectProductoClick  " + producto.getId());
-				selectedProducto = producto;
-				
-			} catch (Exception e) {
-				// TODO: handle exception
-				e.printStackTrace();
-				System.out.println("Error in onRowSelectProductoClick: "
-						+ e.getMessage());
-			}
+		try {
+			Producto producto = (Producto) event.getObject();
+			System.out.println("onRowSelectProductoClick  " + producto.getId());
+			selectedProducto = producto;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Error in onRowSelectProductoClick: "
+					+ e.getMessage());
+		}
 	}
 
 	public void registrarPartida() {
 		try {
 			System.out.println("Ingreso a registrarPartida: ");
 			partidaRegistration.register(newPartida);
-			
+
 			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
 					"Partida Registrado!", newPartida.getNombre()+"!");
 			facesContext.addMessage(null, m);
-			
+
 			initNewPartida();
 		} catch (Exception e) {
 			String errorMessage = getRootErrorMessage(e);
@@ -259,7 +238,7 @@ public class PartidaController implements Serializable {
 			System.out.println("Ingreso a modificarPartida: "
 					+ newPartida.getId());
 			partidaRegistration.updated(newPartida);
-			
+
 			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
 					"Partida Modificado!", newPartida.getNombre()+"!");
 			facesContext.addMessage(null, m);
@@ -272,7 +251,7 @@ public class PartidaController implements Serializable {
 			facesContext.addMessage(null, m);
 		}
 	}
-	
+
 	public void modificar(){
 		System.out.println("Ingreso a modificar");
 	}
@@ -346,15 +325,7 @@ public class PartidaController implements Serializable {
 	public void setNewPartida(Partida newPartida) {
 		this.newPartida = newPartida;
 	}
-
-	public List<Usuario> getListUsuario() {
-		return listUsuario;
-	}
-
-	public void setListUsuario(List<Usuario> listUsuario) {
-		this.listUsuario = listUsuario;
-	}
-
+	
 	public boolean isAtencionCliente() {
 		return atencionCliente;
 	}

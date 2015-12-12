@@ -18,22 +18,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.primefaces.component.datatable.DataTable;
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
 
-import bo.com.qbit.webapp.data.ClienteProveedorRepository;
-import bo.com.qbit.webapp.data.ContactoProveedorRepository;
-import bo.com.qbit.webapp.data.EmpresaRepository;
 import bo.com.qbit.webapp.data.ProveedorRepository;
-import bo.com.qbit.webapp.model.Cliente;
-import bo.com.qbit.webapp.model.ClienteProveedor;
-import bo.com.qbit.webapp.model.ContactoProveedor;
 import bo.com.qbit.webapp.model.Empresa;
 import bo.com.qbit.webapp.model.Proveedor;
-import bo.com.qbit.webapp.service.ClienteProveedorRegistration;
-import bo.com.qbit.webapp.service.ClienteRegistration;
-import bo.com.qbit.webapp.service.ContactoProveedorRegistration;
 import bo.com.qbit.webapp.service.EstadoUsuarioLogin;
 import bo.com.qbit.webapp.service.ProveedorRegistration;
 
@@ -50,28 +40,11 @@ public class ProveedorController implements Serializable {
 	@Inject
 	Conversation conversation;
 
-
-	@Inject
-	private ContactoProveedorRegistration contactoProveedorRegistration;
-
-
-	@Inject
-	private ContactoProveedorRepository contactoProveedorRepository;
-
 	@Inject
 	private ProveedorRegistration proveedorRegistration;
 
 	@Inject
 	private ProveedorRepository proveedorRepository;
-
-	@Inject
-	private ClienteProveedorRepository clienteProveedorRepository;
-
-	@Inject
-	private ClienteProveedorRegistration clienteProveedorRegistration;
-
-	@Inject
-	private ClienteRegistration clienteRegistration;
 
 	Logger log = Logger.getLogger(ProveedorController.class);
 
@@ -83,8 +56,6 @@ public class ProveedorController implements Serializable {
 	private boolean crear = true;
 	private boolean registrar = false;
 	private boolean modificar = false;
-	private boolean cliente  =false;
-	private boolean permitirCreditoCliente = false;
 
 	private String tituloPanel = "Registrar Proveedor";
 	private String nombreEstado="ACTIVO";
@@ -103,9 +74,6 @@ public class ProveedorController implements Serializable {
 	@Named
 	private Proveedor newProveedor;
 	private Proveedor selectedProveedor;
-	private ContactoProveedor newContactoProveedor;
-	private Cliente newCliente;
-	private ClienteProveedor newClienteProveedor;
 
 	//login
 	private String nombreUsuario;	
@@ -129,12 +97,9 @@ public class ProveedorController implements Serializable {
 
 	private void loadValuesDefaul(){
 		newProveedor = new Proveedor();
-		newContactoProveedor = new ContactoProveedor(); 
 		selectedProveedor = new Proveedor();
 		textoAutoCompleteCuenta = "";
 		textoAutoCompleteCuentaAnticipo = "";
-		cliente = false;
-		setPermitirCreditoCliente(false);
 		// tituloPanel
 		tituloPanel = "Registrar Sucursal";
 		// traer todos por Empresa ordenados por ID Desc
@@ -188,45 +153,8 @@ public class ProveedorController implements Serializable {
 			proveedorRegistration.update(newProveedor);
 			newProveedor.setUsuarioRegistro(nombreUsuario);
 			newProveedor.setFechaRegistro(new Date());
-			//contacto
-			if( ! newContactoProveedor.getNombre().isEmpty()){
-				if(newContactoProveedor.getId()==0){
-					newContactoProveedor.setFechaRegistro(new Date());
-					newContactoProveedor.setProveedor(newProveedor);
-					newContactoProveedor.setEstado("AC");
-					newContactoProveedor.setUsuarioRegistro(nombreUsuario);
-					contactoProveedorRegistration.create(newContactoProveedor);
-				}else{
-					newContactoProveedor.setFechaModificacion(new Date());
-					newContactoProveedor.setEstado("AC");
-					newContactoProveedor.setUsuarioRegistro(nombreUsuario);
-					contactoProveedorRegistration.update(newContactoProveedor);
-				}
+			
 
-			}
-			//cliente Proveedor
-			if(cliente){
-				if(newCliente.getId() == 0){
-					String credito = permitirCreditoCliente?"SI":"NO";
-					newCliente.setPermitirCredito(credito);
-					newCliente.setEmpresa(empresaLogin);
-					newCliente.setFechaRegistro(new Date());
-					newCliente.setUsuarioRegistro(nombreUsuario);
-					newCliente.setEstado("AC");
-					newCliente = clienteRegistration.create(newCliente);
-					newClienteProveedor.setEstado("AC");
-					newClienteProveedor.setFechaRegistro(new Date());
-					newClienteProveedor.setUsuarioRegistro(nombreUsuario);
-					newClienteProveedor.setProveedor(newProveedor);
-					newClienteProveedor.setCliente(newCliente);
-					clienteProveedorRegistration.create(newClienteProveedor);
-				}else{
-					String credito = permitirCreditoCliente?"SI":"NO";
-					newCliente.setPermitirCredito(credito);
-					newCliente.setFechaModificacion(new Date());
-					clienteRegistration.update(newCliente);
-				}
-			}
 			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
 					"Proveedor Modificado!", newProveedor.getNombre()+"!");
 			facesContext.addMessage(null, m);
@@ -249,14 +177,7 @@ public class ProveedorController implements Serializable {
 		try {
 			//proveedor
 			newProveedor.setEstado("RM");
-			proveedorRegistration.update(newProveedor);
-			//Contacto
-			if(! newContactoProveedor.getNombre().isEmpty()){
-				newContactoProveedor.setEstado("RM");
-				newContactoProveedor.setFechaModificacion(new Date());
-				contactoProveedorRegistration.update(newContactoProveedor);
-			}
-			
+			proveedorRegistration.update(newProveedor);			
 
 			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
 					"Proveedor Eliminado!", newProveedor.getNombre()+"!");
@@ -303,15 +224,6 @@ public class ProveedorController implements Serializable {
 		newProveedor = new Proveedor();
 		newProveedor = selectedProveedor;
 		nombreEstado = newProveedor.getEstado().equals("AC")?"ACTIVO":"INACTIVO";
-		
-		
-		newContactoProveedor = contactoProveedorRepository.findByProveedor(selectedProveedor);
-		newClienteProveedor = clienteProveedorRepository.findByProveedor(selectedProveedor);
-		if(newClienteProveedor.getId()!=0){
-			newCliente = newClienteProveedor.getCliente();
-			cliente = true;
-			permitirCreditoCliente = newCliente.getPermitirCredito().equals("SI")?true:false;
-		}
 	
 		crear = false;
 		registrar = false;
@@ -348,37 +260,7 @@ public class ProveedorController implements Serializable {
 		textoAutoCompleteCuenta = "";
 		textoAutoCompleteCuentaServicio = "";
 		textoAutoCompleteCuentaAnticipo = "";
-		cliente = false;
 		selectedProveedor = new Proveedor();
-		newContactoProveedor = new ContactoProveedor();
-		newCliente = new Cliente();
-	}
-
-	public void onItemSelectCuenta(SelectEvent event) {
-		String nombre =  event.getObject().toString();
-		
-	}
-
-	public void onItemSelectCuentaAnticipo(SelectEvent event) {
-		String nombre =  event.getObject().toString();
-		
-	}
-	
-	public void onItemSelectCuentaServicio(SelectEvent event) {
-		String nombre =  event.getObject().toString();
-		
-	}
-
-
-	
-
-	public void agregarCliente(){
-		try{
-			cliente = true ;
-
-		}catch(Exception e){
-			log.info("agregarCliente() ERROR "+e.getMessage());
-		}
 	}
 
 	//  ---- get and set -----
@@ -482,46 +364,6 @@ public class ProveedorController implements Serializable {
 
 	public void setListTipoProveedor(String[] listTipoProveedor) {
 		this.listTipoProveedor = listTipoProveedor;
-	}
-
-	public ContactoProveedor getNewContactoProveedor() {
-		return newContactoProveedor;
-	}
-
-	public void setNewContactoProveedor(ContactoProveedor newContactoProveedor) {
-		this.newContactoProveedor = newContactoProveedor;
-	}
-
-	public boolean isCliente() {
-		return cliente;
-	}
-
-	public void setCliente(boolean cliente) {
-		this.cliente = cliente;
-	}
-
-	public Cliente getNewCliente() {
-		return newCliente;
-	}
-
-	public void setNewCliente(Cliente newCliente) {
-		this.newCliente = newCliente;
-	}
-
-	public ClienteProveedor getNewClienteProveedor() {
-		return newClienteProveedor;
-	}
-
-	public void setNewClienteProveedor(ClienteProveedor newClienteProveedor) {
-		this.newClienteProveedor = newClienteProveedor;
-	}
-
-	public boolean isPermitirCreditoCliente() {
-		return permitirCreditoCliente;
-	}
-
-	public void setPermitirCreditoCliente(boolean permitirCreditoCliente) {
-		this.permitirCreditoCliente = permitirCreditoCliente;
 	}
 
 	public String getTextoAutoCompleteCuentaAnticipo() {

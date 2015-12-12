@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/WEB-INF/templates/template_main.xhtml">
+	<ui:define name="head">
+		<title>Usuario</title>
+	</ui:define>
+
+	<ui:define name="content">
+		<!--BEGIN CONTENT-->
+		<div class="content">
+			<section class="content-header">
+				<div class="pull-left" style="padding-top: 8px;">
+					<h:form id="formBotonesHeader" style="padding-left: 10px;">
+						<div class="btn-group-demo">
+							<div class="btn-group">
+								<p:commandLink id="buttonCancelar" value="&#160; Cancelar"
+									styleClass="btn btn-warning ion-minus-circled"
+									style="height:31px; padding:center"
+									rendered="#{usuarioController.modificar or usuarioController.registrar}"
+									update=":formReg,:formBotonesHeader,:formTableUsuario"
+									action="#{usuarioController.actualizarFormReg()}">
+								</p:commandLink>
+								<p:commandLink id="buttonCrear1" value="&#160; Nuevo Usuario"
+									styleClass="btn btn-success ion-plus-round"
+									rendered="#{usuarioController.crear}" style="height:31px;">
+									<p:ajax update="formTableUsuario,formReg,:formBotonesHeader"
+										listener="#{usuarioController.cambiarAspecto()}" />
+									<p:ajax
+										listener="#{usuarioController.resetearFitrosTabla('formTableUsuario:dataTableUser')}" />
+								</p:commandLink>
+								<p:commandLink id="buttonRegistrar" value="&#160; Registrar"
+									styleClass="btn btn-success ion-checkmark"
+									rendered="#{usuarioController.registrar}" style="height:31px;">
+									<p:ajax
+										update=":formTableUsuario,:formGrowl:msgs1,:formReg,:formBotonesHeader"
+										listener="#{usuarioController.registrarUsuario()}" />
+								</p:commandLink>
+								<p:commandLink id="buttonModificar" value="&#160; Modificar"
+									rendered="#{usuarioController.modificar}"
+									styleClass="btn btn-primary ion-edit" style="height:31px;">
+									<p:ajax
+										update="formReg,formTableUsuario,formGrowl:msgs1,formBotonesHeader"
+										listener="#{usuarioController.modificarUsuario()}" />
+								</p:commandLink>
+								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
+									styleClass="btn btn-danger ion-trash-b" style="height:31px;"
+									rendered="#{usuarioController.modificar}"
+									disabled="#{newUsuario.state.equals('SU')}"
+									update="formTableUsuario,formReg,formGrowl:msgs1,:formBotonesHeader"
+									action="#{usuarioController.eliminarUsuario()}">
+								</p:commandLink>
+							</div>
+						</div>
+					</h:form>
+				</div>
+				<div class="pull-right">
+					<ol class="breadcrumb">
+						<li><a href="#{request.contextPath}/pages/dashboard.xhtml"
+							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
+						<li><a
+							href="#{request.contextPath}/pages/seguridad/usuario.xhtml"
+							style="color: #0090FF; font-size: 12px;">Seguridad</a></li>
+						<li class="active" style="font-size: 12px;">Usuario</li>
+					</ol>
+				</div>
+			</section>
+			<section class="main-content">
+				<section class="main-content">
+					<div class="row">
+						<h:form id="formReg" autocomplete="off">
+							<ui:fragment
+								rendered="#{usuarioController.modificar or usuarioController.registrar}">
+								<div class="col-md-4">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Registro de Usuario</h3>
+										</div>
+										<div class="panel-body">
+											<!-- start here register -->
+											<div class="box-content form-horizontal">
+												<div class="form-group ">
+													<div class="col-md-4 control-label">Nombre</div>
+													<div class="col-md-8">
+														<h:inputText id="inputTextNombre"
+															value="#{newUsuario.nombre}"
+															style=" color: #555555; background-image: none;"
+															styleClass="input-sm form-control">
+															<p:ajax event="change" />
+														</h:inputText>
+													</div>
+												</div>
+												<div class="form-group ">
+													<label class="col-md-4 control-label">Email</label>
+													<div class="col-md-8">
+														<p:inputText id="inputTextEmail1" type="email"
+															value="#{newUsuario.email}" autocomplete="off"
+															style=" color: #555555; background-image: none;"
+															styleClass="input-sm form-control">
+															<p:ajax event="change" />
+														</p:inputText>
+													</div>
+												</div>
+												<div class="form-group ">
+													<label class="col-md-4 control-label">Login</label>
+													<div class="col-md-8">
+														<p:inputText id="inputTextLogin"
+															value="#{newUsuario.login}"
+															style=" color: #555555; background-image: none;"
+															styleClass="input-sm form-control">
+															<p:ajax event="change" />
+														</p:inputText>
+													</div>
+												</div>
+												<div class="form-group ">
+													<label class="col-md-4 control-label">Contraseña</label>
+													<div class="col-md-8">
+														<p:password id="passwordPass1" redisplay="true"
+															value="#{newUsuario.password}" autocomplete="off"
+															style=" color: #555555; background-image: none;"
+															styleClass="input-sm form-control">
+															<p:ajax event="change" />
+														</p:password>
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="col-md-4 control-label">Seleccione un
+														Rol</label>
+													<div class="col-md-8">
+														<h:selectOneMenu id="roles"
+															styleClass="input-sm form-control"
+															style=" color: #555555; height:25px; font-size:11px;"
+															disabled="#{newUsuario.state =='SU'}" immediate="true"
+															value="#{usuarioController.nombreRol}">
+															<p:ajax event="change" />
+															<f:selectItems value="#{usuarioController.listRol}" />
+														</h:selectOneMenu>
+													</div>
+												</div>
+												<div class="form-group">
+													<ui:fragment rendered="#{ newUsuario.state !='SUPER'}">
+														<label class="col-md-4 control-label">Estado</label>
+														<div class="col-md-8">
+															<h:selectOneMenu id="estado"
+																styleClass="input-sm form-control"
+																style=" color: #555555; height:25px; font-size:11px;"
+																disabled="#{newUsuario.state =='SU'}" immediate="true"
+																value="#{usuarioController.nombreEstado}">
+																<f:ajax />
+																<f:selectItems value="#{usuarioController.listEstado}" />
+															</h:selectOneMenu>
+														</div>
+													</ui:fragment>
+												</div>
+												<!-- aqui botones -->
+											</div>
+											<!-- end here register -->
+										</div>
+									</div>
+								</div>
+							</ui:fragment>
+						</h:form>
+						<h:form id="formTableUsuario">
+							<ui:fragment rendered="true">
+								<div class="#{usuarioController.tipoColumnTable}">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Lista de Usuarios</h3>
+										</div>
+										<!-- start here datatable -->
+										<div class="form-group">
+											<p:dataTable id="dataTableUser" var="item" rendered="true"
+												value="#{usuarioController.listUsuarioRol}" reflow="true"
+												style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+												selectionMode="single"
+												selection="#{usuarioController.selectedUsuarioRol}"
+												rowKey="#{item.id}"
+												filteredValue="#{usuarioController.listFilterUsuarioRol}">
+												<p:ajax event="rowSelect"
+													listener="#{usuarioController.onRowSelect}"
+													update="formReg,formBotonesHeader,formTableUsuario" />
+												<p:column headerText="Id" width="8%" style="text-align:center;"
+													filterMatchMode="contains"
+													filterStyle="width: 100%; height:25px;"
+													filterBy="#{item.id}">
+													<h:outputText value="#{item.id}" />
+												</p:column>
+												<p:column headerText="Nombre" width="30%"
+													filterStyle="width: 100%; height:25px;"
+													filterMatchMode="contains" filterBy="#{item.usuario.nombre}">
+													<h:outputText value="#{item.usuario.nombre}" />
+												</p:column>
+												<p:column headerText="Login" width="12%"
+													filterStyle="width: 100%; height:25px;"
+													filterMatchMode="contains" filterBy="#{item.usuario.login}">
+													<h:outputText value="#{item.usuario.login}" />
+												</p:column>
+												<p:column headerText="Email" width="15%"
+													filterStyle="width: 100%; height:25px;"
+													filterMatchMode="contains" filterBy="#{item.usuario.email}">
+													<h:outputText value="#{item.usuario.email}" />
+												</p:column>
+												<p:column headerText="Rol" width="15%"
+													filterStyle="width: 100%; height:25px;"
+													filterMatchMode="contains" filterBy="#{item.usuario.email}">
+													<h:outputText value="#{item.rol.nombre}" />
+												</p:column>
+												<p:column width="9%" headerText="Estado"
+													filterStyle="width: 100%; height:25px;"
+													style="text-align:center;" filterBy="#{item.usuario.state}">
+													<span class="label label-success"><h:outputText
+															rendered="#{item.usuario.state=='AC'}" value="Activo" /></span>
+													<span class="label label-danger"><h:outputText
+															rendered="#{item.usuario.state=='IN'}" value="Inactivo" /></span>
+													<span class="label label-success"><h:outputText
+															rendered="#{item.usuario.state=='SU'}" value="SUPER" /></span>
+												</p:column>
+												<p:column width="9%" headerText="Usuario Reg."
+													filterStyle="width: 100%; height:25px;"
+													style="text-align:center;"
+													filterBy="#{item.usuario.usuarioRegistro}">
+													<h:outputText value="#{item.usuarioRegistro}">
+													</h:outputText>
+												</p:column>
+												<p:column width="8%" headerText="Fecha Reg."
+													filterStyle="width: 100%; height:25px;"
+													style="text-align:center;" filterBy="#{item.fechaRegistro}">
+													<h:outputText value="#{item.usuario.fechaRegistro}">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</h:outputText>
+												</p:column>
+											</p:dataTable>
+										</div>
+
+										<!-- end here datatable -->
+										<div class="panel-body"></div>
+									</div>
+								</div>
+							</ui:fragment>
+						</h:form>
+					</div>
+				</section>
+			</section>
+		</div>
+		<!--END CONTENT-->
+
+		<!-- START GROWL -->
+		<h:form id="formGrowl">
+			<p:growl id="msgs1" showDetail="true" />
+		</h:form>
+		<!-- END GROWL -->
+
+		<!-- START DIALOG -->
+		<p:dialog header="DIALOG TEST" widgetVar="dlg1" modal="true"
+			height="100%">
+		</p:dialog>
+		<!-- END DIALOG -->
+
+	</ui:define>
+
+</ui:composition>

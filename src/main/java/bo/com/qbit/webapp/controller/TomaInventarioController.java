@@ -126,6 +126,7 @@ public class TomaInventarioController implements Serializable {
 		newTomaInventario = new TomaInventario();
 		//newTomaInventario.setCorrelativo(cargarCorrelativo(listaOrdenIngreso.size()+1));
 		newTomaInventario.setEstado("AC");
+		newTomaInventario.setFecha(new Date());
 		newTomaInventario.setFechaRegistro(new Date());
 		newTomaInventario.setUsuarioRegistro(usuarioSession);
 

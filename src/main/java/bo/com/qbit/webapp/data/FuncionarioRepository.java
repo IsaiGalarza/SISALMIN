@@ -9,7 +9,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import bo.com.qbit.webapp.model.DetalleUnidad;
 import bo.com.qbit.webapp.model.Funcionario;
 
 @ApplicationScoped
@@ -31,11 +30,20 @@ public class FuncionarioRepository {
 		return em.createQuery(criteria).getResultList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Funcionario> findAllOrderedByID() {
 		String query = "select ser from Funcionario ser where ser.estado='AC' or ser.estado='IN' order by ser.id desc";
 		System.out.println("Query Funcionario: " + query);
 		return em.createQuery(query).getResultList();
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Funcionario> findAllActivoOrderedByID() {
+		String query = "select ser from Funcionario ser where ser.estado='AC' order by ser.id desc";
+		System.out.println("Query Funcionario: " + query);
+		return em.createQuery(query).getResultList();
+	}
+
 
 
 	public List<Funcionario> findAllOrderedByFechaRegistro() {
@@ -47,6 +55,7 @@ public class FuncionarioRepository {
 		return em.createQuery(criteria).getResultList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Funcionario> findAllFuncionarioForNombre(String criterio) {
 		try {
 			String query = "select ser from Funcionario ser where ser.nombre like '%"
@@ -55,13 +64,13 @@ public class FuncionarioRepository {
 			List<Funcionario> listaFuncionario = em.createQuery(query).getResultList();
 			return listaFuncionario;
 		} catch (Exception e) {
-			// TODO: handle exception
 			System.out.println("Error en findAllFuncionarioForNombre: "
 					+ e.getMessage());
 			return null;
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Funcionario> traerFuncionarioActivas() {
 		try {
 			String query = "select ser from Funcionario ser where ser.estado='AC' order by ser.id desc";
@@ -69,13 +78,13 @@ public class FuncionarioRepository {
 			List<Funcionario> listaFuncionario = em.createQuery(query).getResultList();
 			return listaFuncionario;
 		} catch (Exception e) {
-			// TODO: handle exception
 			System.out.println("Error en traerFuncionarioActivas: "
 					+ e.getMessage());
 			return null;
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Funcionario> findAll100UltimosFuncionario() {
 		try {
 			String query = "select ser from Funcionario ser order by ser.fechaRegistro desc";

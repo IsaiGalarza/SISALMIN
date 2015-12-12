@@ -27,8 +27,7 @@
 								<p:commandLink id="buttonAtras" value="&#160; Atras"
 									styleClass="btn btn-warning ion-minus-circled"
 									update="formTableOrdenTraspaso, formBotonesHeader"
-									rendered="false"
-									style="height:31px; padding:center"
+									rendered="false" style="height:31px; padding:center"
 									action="#{ordenTraspasoController.setVerReport(false)}">
 								</p:commandLink>
 
@@ -88,10 +87,10 @@
 									update="formTableOrdenTraspaso, :formBotonesHeader,formGrowl:msgs1"
 									action="#{ordenTraspasoController.procesarOrdenTraspaso()}">
 								</p:commandLink>
-								
+
 								<p:commandLink id="buttonExportar" value="&#160; Exportar"
 									styleClass="btn orange ion-ios7-upload-outline"
-									rendered="#{ordenTraspasoController.selectedOrdenTraspaso != null and ordenTraspasoController.crear and ordenTraspasoController.verProcesar and ! ordenTraspasoController.verReport}"
+									rendered="#{ ordenTraspasoController.verExport}"
 									style="height:31px; padding:center"
 									update="formTableOrdenTraspaso, :formBotonesHeader,formGrowl:msgs1"
 									action="#{ordenTraspasoController.exportar()}">
@@ -178,7 +177,7 @@
 														</div>
 
 														<div class="form-group ">
-															<div class="col-md-4">Almacen</div>
+															<div class="col-md-4">Subalmacén Solicitante</div>
 															<div class="col-md-8">
 
 																<p:autoComplete id="almacenID" style="width: 93%"
@@ -371,11 +370,11 @@
 														</p:column>
 
 														<p:column headerText="Cantidad" width="10%">
-															<h:outputText value="#{_var.cantidad}" />
+															<h:outputText value="#{_var.cantidadSolicitada}" />
 														</p:column>
 
 														<p:column headerText="Precio U." width="12%">
-															<h:outputText value="#{_var.producto.precioUnitario}">
+															<h:outputText value="#{_var.precioUnitario}">
 																<f:convertNumber pattern="#,##0.00" />
 															</h:outputText>#{' '}
 														<h:outputText value="Bs.-" />
@@ -596,29 +595,31 @@
 							</div>
 						</div>
 					</div>
-
-					<br />
-					<div class="row">
-						<div class="form-group">
-							<label for="precioID" class="col-sm-3 control-label">Precio
-								Unitario</label>
-							<div class="col-sm-9">
-								<p:inputText id="precioID" required="true"
-									requiredMessage="Precio Requerido." disabled="true"
-									value="#{ordenTraspasoController.selectedProducto.precioUnitario}"
-									size="40">
-									<p:ajax event="change" update="totalID"
-										listener="#{ordenTraspasoController.calcular()}" />
-									<f:convertNumber pattern="#,##0.000" locale="en" />
-								</p:inputText>
+					<ui:fragment rendered="false">
+						<br />
+						<div class="row">
+							<div class="form-group">
+								<label for="precioID" class="col-sm-3 control-label">Precio
+									Unitario</label>
+								<div class="col-sm-9">
+									<p:inputText id="precioID" required="true"
+										requiredMessage="Precio Requerido." disabled="true"
+										value="#{ordenTraspasoController.selectedProducto.precioUnitario}"
+										size="40">
+										<p:ajax event="change" update="totalID"
+											listener="#{ordenTraspasoController.calcular()}" />
+										<f:convertNumber pattern="#,##0.000" locale="en" />
+									</p:inputText>
+								</div>
 							</div>
 						</div>
-					</div>
+					</ui:fragment>
 
 					<br />
 					<div class="row">
 						<div class="form-group">
-							<label for="cantidadID" class="col-sm-3 control-label">Cantidad Solicitada</label>
+							<label for="cantidadID" class="col-sm-3 control-label">Cantidad
+								Solicitada</label>
 							<div class="col-sm-9">
 								<p:inputText id="cantidadID" required="true"
 									requiredMessage="Cantidad Requerido."
@@ -630,7 +631,8 @@
 							</div>
 						</div>
 					</div>
-
+					
+					<ui:fragment rendered="false">
 					<br />
 					<div class="row">
 						<div class="form-group">
@@ -646,6 +648,7 @@
 							</div>
 						</div>
 					</div>
+					</ui:fragment>
 
 					<br />
 					<div class="row">
@@ -762,7 +765,7 @@
 				</div>
 			</h:form>
 		</p:dialog>
-		
+
 		<!-- ELIMINAR ORDEN TRASPASO -->
 		<p:dialog header="Desea Eliminar la Orden de Traspaso"
 			widgetVar="dlgEliminarOrdenTraspaso" modal="true"
@@ -803,11 +806,32 @@
 			<h:form id="formDialogExport" enctype="multipart/form-data">
 			   Desea descargar el archivo  para importacion de almacen.
 			   <br />
-			   <p:commandButton immediate="true" value="Descargar"  ajax="false" oncomplete="PF('dlgExportExcel').hide();">
+				<p:commandButton immediate="true" value="Descargar" ajax="false"
+					oncomplete="PF('dlgExportExcel').hide();">
 					<p:fileDownload value="#{ordenTraspasoController.dFile}" />
 				</p:commandButton>
 
 			</h:form>
+		</p:dialog>
+		
+		<p:dialog header="ALMACEN SIN EXISTENCIAS"
+			widgetVar="dlgAlmacenSinExistencias" modal="true"
+			visible="#{not empty facesContext.maximumSeverity}" resizable="false"
+			position="center" width="500px">
+			<div class="row">
+				<div class="form-group">
+					<div class="col-md-12">El Almacen seleccionado no tiene Existencias</div>
+				</div>
+			</div>
+			<br />
+			<div class="row">
+				<div class="form-group">
+					<div class="col-md-4"></div>
+					<div class="col-md-4"></div>
+					<div class="col-md-4"></div>
+				</div>
+			</div>
+
 		</p:dialog>
 
 

@@ -27,8 +27,7 @@
 								<p:commandLink id="buttonAtras" value="&#160; Atras"
 									styleClass="btn btn-warning ion-minus-circled"
 									update="formTableOrdenIngreso, formBotonesHeader"
-									rendered="false"
-									style="height:31px; padding:center"
+									rendered="false" style="height:31px; padding:center"
 									action="#{ordenIngresoController.setVerReport(false)}">
 								</p:commandLink>
 
@@ -161,9 +160,12 @@
 																	requiredMessage="Tipo Requerido.">
 																	<f:selectItem itemValue="COMPRA" itemLabel="COMPRA" />
 																	<f:selectItem itemValue="DONACION" itemLabel="DONACION" />
-																	<f:selectItem itemValue="DEVOLUCION" itemLabel="DEVOLUCION" />
+																	<f:selectItem itemValue="DEVOLUCION"
+																		itemLabel="DEVOLUCION" />
 																	<f:selectItem itemValue="TRASPASO" itemLabel="TRASPASO" />
-																	<p:ajax event="change" update="formTableOrdenIngreso,formBotonesHeader" listener="#{ordenIngresoController.verificarEstadoImportacion()}" />
+																	<p:ajax event="change"
+																		update="formTableOrdenIngreso,formBotonesHeader"
+																		listener="#{ordenIngresoController.verificarEstadoImportacion()}" />
 																</h:selectOneMenu>
 															</div>
 														</div>
@@ -347,7 +349,7 @@
 														</p:column>
 
 														<p:column headerText="Precio U." width="12%">
-															<h:outputText value="#{_var.producto.precioUnitario}">
+															<h:outputText value="#{_var.precioUnitario}">
 																<f:convertNumber pattern="#,##0.00" />
 															</h:outputText>#{' '}
 														<h:outputText value="Bs.-" />
@@ -374,11 +376,16 @@
 													<div class="form-group">
 														<div class="col-md-9"></div>
 														<div class="col-md-1">
-															<p:commandLink value="&#160;"
+															<p:commandLink id="buttonIconAgregarProducto"
+																value="&#160;"
 																styleClass="btn btn-success ion-plus-round "
 																update="formDialogProducto"
 																oncomplete="PF('dlgProducto').show();" immediate="true">
 															</p:commandLink>
+
+															<p:tooltip id="toolTipbuttonAddProducto"
+																for="buttonIconAgregarProducto"
+																value="Agregar nuevo producto" trackMouse="true" />
 
 														</div>
 														<div class="col-md-1">
@@ -390,6 +397,10 @@
 																action="#{ordenIngresoController.editarDetalleOrdenIngreso()}"
 																immediate="true">
 															</p:commandLink>
+															<p:tooltip id="toolTipbuttonEditarProducto"
+																for="editarDetalleOrdenIngreso"
+																value="Modificar producto seleccionado"
+																trackMouse="true" />
 														</div>
 														<div class="col-md-1">
 															<p:commandLink id="eliminarDetalleOrdenIngreso"
@@ -399,6 +410,9 @@
 																immediate="true"
 																action="#{ordenIngresoController.borrarDetalleOrdenIngreso()}">
 															</p:commandLink>
+															<p:tooltip id="toolTipbuttonDeleteProducto"
+																for="eliminarDetalleOrdenIngreso"
+																value="Eliminar producto seleccionado" trackMouse="true" />
 														</div>
 
 													</div>
@@ -593,7 +607,7 @@
 							<div class="col-sm-9">
 								<p:inputText id="precioID" required="true"
 									requiredMessage="Precio Requerido."
-									value="#{ordenIngresoController.selectedProducto.precioUnitario}"
+									value="#{ordenIngresoController.selectedDetalleOrdenIngreso.precioUnitario}"
 									size="40">
 									<p:ajax event="change" update="totalID"
 										listener="#{ordenIngresoController.calcular()}" />
@@ -606,7 +620,8 @@
 					<br />
 					<div class="row">
 						<div class="form-group">
-							<label for="cantidadID" class="col-sm-3 control-label">Cantidad Recibida</label>
+							<label for="cantidadID" class="col-sm-3 control-label">Cantidad
+								Recibida</label>
 							<div class="col-sm-9">
 								<p:inputText id="cantidadID" required="true"
 									requiredMessage="Cantidad Requerido."
@@ -726,21 +741,22 @@
 									</p:inputText>
 								</div>
 							</div>
-
-							<div class="form-group ">
-								<div class="col-md-4">Precio Unitario</div>
-								<div class="col-md-8">
-									<p:inputText id="nuevoPrecioID"
-										style=" color: #555555; background-image: none;"
-										styleClass="input-sm form-control" required="true"
-										requiredMessage="Precio Requerido."
-										value="#{ordenIngresoController.newProducto.precioUnitario}"
-										size="40">
-										<p:ajax event="change" />
-										<f:convertNumber pattern="#,##0.000" locale="en" />
-									</p:inputText>
+							<ui:fragment rendered="false">
+								<div class="form-group ">
+									<div class="col-md-4">Precio Unitario</div>
+									<div class="col-md-8">
+										<p:inputText id="nuevoPrecioID"
+											style=" color: #555555; background-image: none;"
+											styleClass="input-sm form-control" required="true"
+											requiredMessage="Precio Requerido."
+											value="#{ordenIngresoController.newProducto.precioUnitario}"
+											size="40">
+											<p:ajax event="change" />
+											<f:convertNumber pattern="#,##0.000" locale="en" />
+										</p:inputText>
+									</div>
 								</div>
-							</div>
+							</ui:fragment>
 
 							<div class="form-group ">
 								<div class="col-md-4">Tipo Producto</div>
@@ -884,7 +900,7 @@
 				<p:growl id="display" showDetail="true" />
 
 				<p:commandButton immediate="true" value="Cargar Archivo"
-				 update="formTableOrdenIngreso"
+					update="formTableOrdenIngreso"
 					actionListener="#{ordenIngresoController.convertJava()}"
 					ajax="false" oncomplete="PF('dlgImportExcel').hide();">
 				</p:commandButton>

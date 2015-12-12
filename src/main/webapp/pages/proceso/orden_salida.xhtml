@@ -27,8 +27,7 @@
 								<p:commandLink id="buttonAtras" value="&#160; Atras"
 									styleClass="btn btn-warning ion-minus-circled"
 									update="formTableOrdenSalida, formBotonesHeader"
-									rendered="false"
-									style="height:31px; padding:center"
+									rendered="false" style="height:31px; padding:center"
 									action="#{ordenSalidaController.setVerReport(false)}">
 								</p:commandLink>
 
@@ -95,7 +94,7 @@
 									style="height:31px; padding:center"
 									update="formTableOrdenSalida, :formBotonesHeader,formModalVistaPrevia"
 									action="#{ordenSalidaController.cargarReporte()}">
-								</p:commandLink>					
+								</p:commandLink>
 
 							</div>
 						</div>
@@ -366,7 +365,7 @@
 														</p:column>
 
 														<p:column headerText="Precio U." width="12%">
-															<h:outputText value="#{_var.producto.precioUnitario}">
+															<h:outputText value="#{_var.precioUnitario}">
 																<f:convertNumber pattern="#,##0.00" />
 															</h:outputText>#{' '}
 														<h:outputText value="Bs.-" />
@@ -590,28 +589,31 @@
 						</div>
 					</div>
 
-					<br />
-					<div class="row">
-						<div class="form-group">
-							<label for="precioID" class="col-sm-3 control-label">Precio
-								Unitario</label>
-							<div class="col-sm-9">
-								<p:inputText id="precioID" required="true"
-									requiredMessage="Precio Requerido." disabled="true"
-									value="#{ordenSalidaController.selectedProducto.precioUnitario}"
-									size="40">
-									<p:ajax event="change" update="totalID"
-										listener="#{ordenSalidaController.calcular()}" />
-									<f:convertNumber pattern="#,##0.000" locale="en" />
-								</p:inputText>
+					<ui:fragment rendered="false">
+						<br />
+						<div class="row">
+							<div class="form-group">
+								<label for="precioID" class="col-sm-3 control-label">Precio
+									Unitario</label>
+								<div class="col-sm-9">
+									<p:inputText id="precioID" required="true"
+										requiredMessage="Precio Requerido." disabled="true"
+										value="#{ordenSalidaController.selectedProducto.precioUnitario}"
+										size="40">
+										<p:ajax event="change" update="totalID"
+											listener="#{ordenSalidaController.calcular()}" />
+										<f:convertNumber pattern="#,##0.000" locale="en" />
+									</p:inputText>
+								</div>
 							</div>
 						</div>
-					</div>
+					</ui:fragment>
 
 					<br />
 					<div class="row">
 						<div class="form-group">
-							<label for="cantidadID" class="col-sm-3 control-label">Cantidad Solicitada</label>
+							<label for="cantidadID" class="col-sm-3 control-label">Cantidad
+								Solicitada</label>
 							<div class="col-sm-9">
 								<p:inputText id="cantidadID" required="true"
 									requiredMessage="Cantidad Requerido."
@@ -624,21 +626,23 @@
 						</div>
 					</div>
 
-					<br />
-					<div class="row">
-						<div class="form-group">
-							<label for="totalID" class="col-sm-3 control-label">Total</label>
-							<div class="col-sm-9">
-								<p:inputText id="totalID" required="true"
-									requiredMessage="Total Requerido."
-									value="#{ordenSalidaController.selectedDetalleOrdenSalida.total}"
-									size="40">
-									<p:ajax event="change" />
-									<f:convertNumber pattern="#,##0.000" locale="en" />
-								</p:inputText>
+					<ui:fragment rendered="false">
+						<br />
+						<div class="row">
+							<div class="form-group">
+								<label for="totalID" class="col-sm-3 control-label">Total</label>
+								<div class="col-sm-9">
+									<p:inputText id="totalID" required="true"
+										requiredMessage="Total Requerido."
+										value="#{ordenSalidaController.selectedDetalleOrdenSalida.total}"
+										size="40">
+										<p:ajax event="change" />
+										<f:convertNumber pattern="#,##0.000" locale="en" />
+									</p:inputText>
+								</div>
 							</div>
 						</div>
-					</div>
+					</ui:fragment>
 
 					<br />
 					<div class="row">
@@ -740,6 +744,27 @@
 			</h:form>
 		</p:dialog>
 		<!-- END DIALOG -->
+
+		<p:dialog header="ALMACEN SIN EXISTENCIAS"
+			widgetVar="dlgAlmacenSinExistencias" modal="true"
+			visible="#{not empty facesContext.maximumSeverity}" resizable="false"
+			position="center" width="500px">
+			<div class="row">
+				<div class="form-group">
+					<div class="col-md-12">El Almacen seleccionado no tiene Existencias</div>
+				</div>
+			</div>
+			<br />
+			<div class="row">
+				<div class="form-group">
+					<div class="col-md-4"></div>
+					<div class="col-md-4"></div>
+					<div class="col-md-4"></div>
+				</div>
+			</div>
+
+		</p:dialog>
+
 
 	</ui:define>
 

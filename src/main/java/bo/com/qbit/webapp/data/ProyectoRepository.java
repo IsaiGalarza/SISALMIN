@@ -9,7 +9,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import bo.com.qbit.webapp.model.Almacen;
 import bo.com.qbit.webapp.model.Proyecto;
 import bo.com.qbit.webapp.model.Usuario;
 
@@ -32,12 +31,21 @@ public class ProyectoRepository {
 		return em.createQuery(criteria).getResultList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Proyecto> findAllOrderedByID() {
 		String query = "select ser from Proyecto ser where ser.estado='AC' or ser.estado='IN' order by ser.id desc";
 		System.out.println("Query Proyecto: " + query);
 		return em.createQuery(query).getResultList();
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Proyecto> findAllActivosOrderedByID() {
+		String query = "select ser from Proyecto ser where ser.estado='AC' order by ser.id desc";
+		System.out.println("Query Proyecto: " + query);
+		return em.createQuery(query).getResultList();
+	}
 
+	@SuppressWarnings("unchecked")
 	public Proyecto findProyectoForUser(Usuario user) {
 		String query = "select ser from Proyecto ser where (ser.estado='AC' or ser.estado='IN') and ser.encargado.id="
 				+ user.getId() + " order by ser.id desc";
@@ -62,6 +70,7 @@ public class ProyectoRepository {
 		return em.createQuery(criteria).getResultList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Proyecto> findAllProyectoForDescription(String criterio) {
 		try {
 			String query = "select ser from Proyecto ser where ser.nombre like '%"
@@ -70,13 +79,13 @@ public class ProyectoRepository {
 			List<Proyecto> listaProyecto = em.createQuery(query).getResultList();
 			return listaProyecto;
 		} catch (Exception e) {
-			// TODO: handle exception
 			System.out.println("Error en findAllProyectoForDescription: "
 					+ e.getMessage());
 			return null;
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Proyecto> traerProyectoActivas() {
 		try {
 			String query = "select ser from Proyecto ser where ser.estado='AC' order by ser.id desc";
@@ -84,13 +93,13 @@ public class ProyectoRepository {
 			List<Proyecto> listaProyecto = em.createQuery(query).getResultList();
 			return listaProyecto;
 		} catch (Exception e) {
-			// TODO: handle exception
 			System.out.println("Error en traerProyectoActivas: "
 					+ e.getMessage());
 			return null;
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Proyecto> findAll100UltimosProyecto() {
 		try {
 			String query = "select ser from Proyecto ser order by ser.fechaRegistro desc";

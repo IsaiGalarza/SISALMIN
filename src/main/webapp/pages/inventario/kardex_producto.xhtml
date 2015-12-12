@@ -170,9 +170,9 @@
 												</p:column>
 
 												<p:column width="8%" headerText="Precio"
-													filterBy="#{_var.producto.precioUnitario}"
+													filterBy="#{_var.precioUnitario}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.producto.precioUnitario}">
+													<h:outputText value="#{_var.precioUnitario}">
 														<f:convertNumber pattern="#,##0.00" />
 													</h:outputText>
 												</p:column>
@@ -184,15 +184,15 @@
 												</p:column>
 
 												<p:column headerText="Salida" width="8%"
-													filterBy="#{_var.stockAnterior}"
+													filterBy="#{_var.stockActual}"
 													filterStyle="width: 100%; " filterMatchMode="contains">
-													<h:outputText value="#{_var.stockAnterior}" />
+													<h:outputText value="#{_var.stockActual}" />
 												</p:column>
 
 												<p:column headerText="Saldo" width="8%"
-													filterBy="#{_var.stockActual}" filterStyle="width: 100%; "
+													filterBy="#{_var.stockAnterior}" filterStyle="width: 100%; "
 													filterMatchMode="contains">
-													<h:outputText value="#{_var.stockActual}" />
+													<h:outputText value="#{_var.stockAnterior}" />
 												</p:column>
 
 											</p:dataTable>

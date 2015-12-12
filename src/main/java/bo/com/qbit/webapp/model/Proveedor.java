@@ -15,7 +15,7 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @SuppressWarnings("serial")
-@Table(name = "proveedor", schema = "public", uniqueConstraints = @UniqueConstraint(columnNames = {"nombre","id_empresa"}))
+@Table(name = "proveedor", schema = "public", uniqueConstraints = @UniqueConstraint(columnNames = "nombre"))
 public class Proveedor implements Serializable {
 
 	@Id
@@ -23,17 +23,19 @@ public class Proveedor implements Serializable {
 	private Integer id;
 	
 	private String codigo;
+	
 	private String nombre;
 	
-	@Column(name="descripcion",nullable=true )
+	@Column(name="descripcion", nullable=true )
 	private String descripcion;
 	
-	@Column(name="telefono",nullable=true )
+	@Column(name="telefono", nullable=true )
 	private String telefono;
 	
 	private String direccion;
 	
 	private String pais;
+	
 	private String ciudad;
 	
 	private String nit;
@@ -41,18 +43,13 @@ public class Proveedor implements Serializable {
 	@Column(name="numero_autorizacion",nullable=true )
 	private String numeroAutorizacion;
 	
-	
 	@Size(max = 2) //AC , IN
 	private String estado;
-	
-	@ManyToOne(fetch=FetchType.LAZY, optional=true)
-    @JoinColumn(name="id_empresa", nullable=true)
-	private Empresa empresa;
 	
 	@Column(name="fecha_registro",nullable=false )
 	private Date fechaRegistro;
 	
-	@Column(name="Usuario_registro",nullable=false )
+	@Column(name="usuario_registro",nullable=false )
 	private String UsuarioRegistro;
 
 	public Proveedor() {
@@ -114,14 +111,6 @@ public class Proveedor implements Serializable {
 
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
-	}
-
-	public Empresa getEmpresa() {
-		return empresa;
-	}
-
-	public void setEmpresa(Empresa empresa) {
-		this.empresa = empresa;
 	}
 
 	public String getEstado() {

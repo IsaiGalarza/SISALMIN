@@ -39,11 +39,17 @@ public class KardexProducto implements Serializable {
 
 	private double cantidad;
 
-	@Column(name = "precio_compra")
-	private double precioCompra;
+	@Column(name = "precio_unitario")
+	private double precioUnitario;
 
-	@Column(name = "precio_venta")
-	private double precioVenta;
+	@Column(name = "total_entrada")
+	private double totalEntrada;
+	
+	@Column(name = "total_salida")
+	private double totalSalida;
+	
+	@Column(name = "total_saldo")
+	private double totalSaldo;
 	
 	@Column(name = "stock")//cantidad entrante
 	private double stock;
@@ -85,7 +91,10 @@ public class KardexProducto implements Serializable {
 	private Gestion gestion;
 	
 	public KardexProducto(){
-		
+		this.precioUnitario = 0;
+		this.totalEntrada = 0;
+		this.totalSalida = 0;
+		this.totalSaldo = 0;
 	}
 
 	public Integer getId() {
@@ -142,22 +151,6 @@ public class KardexProducto implements Serializable {
 
 	public void setTipoMovimiento(String tipoMovimiento) {
 		this.tipoMovimiento = tipoMovimiento;
-	}
-
-	public double getPrecioVenta() {
-		return precioVenta;
-	}
-
-	public void setPrecioVenta(double precioVenta) {
-		this.precioVenta = precioVenta;
-	}
-
-	public double getPrecioCompra() {
-		return precioCompra;
-	}
-
-	public void setPrecioCompra(double precioCompra) {
-		this.precioCompra = precioCompra;
 	}
 
 	public Producto getProducto() {
@@ -230,6 +223,38 @@ public class KardexProducto implements Serializable {
 
 	public void setUnidadSolicitante(String unidadSolicitante) {
 		this.unidadSolicitante = unidadSolicitante;
+	}
+
+	public double getPrecioUnitario() {
+		return precioUnitario;
+	}
+
+	public void setPrecioUnitario(double precioUnitario) {
+		this.precioUnitario = precioUnitario;
+	}
+
+	public double getTotalEntrada() {
+		return totalEntrada;
+	}
+
+	public void setTotalEntrada(double totalEntrada) {
+		this.totalEntrada = totalEntrada;
+	}
+
+	public double getTotalSalida() {
+		return totalSalida;
+	}
+
+	public void setTotalSalida(double totalSalida) {
+		this.totalSalida = totalSalida;
+	}
+
+	public double getTotalSaldo() {
+		return totalSaldo;
+	}
+
+	public void setTotalSaldo(double totalSaldo) {
+		this.totalSaldo = totalSaldo;
 	}
 
 }

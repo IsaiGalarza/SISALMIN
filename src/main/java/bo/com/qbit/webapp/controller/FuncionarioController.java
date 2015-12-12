@@ -21,10 +21,8 @@ import org.richfaces.cdi.push.Push;
 
 import bo.com.qbit.webapp.data.DetalleUnidadRepository;
 import bo.com.qbit.webapp.data.FuncionarioRepository;
-import bo.com.qbit.webapp.data.UsuarioRepository;
 import bo.com.qbit.webapp.model.DetalleUnidad;
 import bo.com.qbit.webapp.model.Funcionario;
-import bo.com.qbit.webapp.model.Usuario;
 import bo.com.qbit.webapp.service.FuncionarioRegistration;
 import bo.com.qbit.webapp.util.SessionMain;
 
@@ -54,9 +52,6 @@ public class FuncionarioController implements Serializable {
 	@Inject
 	private DetalleUnidadRepository detalleUnidadRepository;
 
-	private @Inject UsuarioRepository usuarioRepository;
-//	private Usuario usuarioSession;
-
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
 	Event<String> pushEventSucursal;
@@ -72,7 +67,6 @@ public class FuncionarioController implements Serializable {
 	private DetalleUnidad selectedDetalleUnidad = new DetalleUnidad();
 	
 	private List<DetalleUnidad> listDetalleUnidad = new ArrayList<DetalleUnidad>();
-	private List<Usuario> listUsuario = new ArrayList<Usuario>();
 	private List<Funcionario> listaFuncionario;
 
 	
@@ -97,7 +91,6 @@ public class FuncionarioController implements Serializable {
 		beginConversation();
 
 		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
-		listUsuario = usuarioRepository.findAllOrderedByID();
 
 		selectedFuncionario = null;
 		newFuncionario = new Funcionario();
@@ -306,14 +299,6 @@ public class FuncionarioController implements Serializable {
 
 	public void setNewFuncionario(Funcionario newFuncionario) {
 		this.newFuncionario = newFuncionario;
-	}
-
-	public List<Usuario> getListUsuario() {
-		return listUsuario;
-	}
-
-	public void setListUsuario(List<Usuario> listUsuario) {
-		this.listUsuario = listUsuario;
 	}
 
 	public boolean isAtencionCliente() {

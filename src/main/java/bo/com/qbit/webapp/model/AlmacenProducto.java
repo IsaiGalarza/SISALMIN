@@ -21,25 +21,28 @@ public class AlmacenProducto implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
 
-	private double stock=0;
-	
+	@Column(name="precio_unitario", nullable = true)
+	private double precioUnitario;
+
+	private double stock;
+
 	@Column(name="stock_min")
-	private double stock_min=1;
-	
+	private double stock_min;
+
 	@Column(name="stock_max")
-	private double stock_max=500;
+	private double stock_max;
 
 	private String estado;
 
 	@Column(name="fecha_registro")
 	private Date fechaRegistro;
-	
+
 	@Column(name="usuario_registro")
 	private String usuarioRegistro;
 
 	//bi-directional many-to-one association to Almacen
 
-    @ManyToOne(fetch=FetchType.EAGER, optional=false)
+	@ManyToOne(fetch=FetchType.EAGER, optional=false)
 	@JoinColumn(name="id_almacen", nullable=false)
 	private Almacen almacen;
 
@@ -47,17 +50,19 @@ public class AlmacenProducto implements Serializable {
 	@ManyToOne(fetch=FetchType.EAGER, optional=false)
 	@JoinColumn(name="id_producto", nullable=false)
 	private Producto producto;
-	
+
 	@ManyToOne(fetch=FetchType.EAGER, optional=false)
-	@JoinColumn(name="id_proveedor", nullable=false)
+	@JoinColumn(name="id_proveedor", nullable=true)
 	private Proveedor proveedor;
 
 	public AlmacenProducto() {
-		producto = new Producto();
-		proveedor= new Proveedor();
-		almacen= new Almacen();
-		stock_max=500;
-		stock_min=1;
+		this.producto = new Producto();
+		this.proveedor= new Proveedor();
+		this.almacen= new Almacen();
+		this.precioUnitario = 0;
+		this.stock = 0;
+		this.stock_max = 500;
+		this.stock_min = 1;
 	}
 
 	public Integer getId() {
@@ -117,7 +122,7 @@ public class AlmacenProducto implements Serializable {
 		this.producto = producto;
 	}
 
-	
+
 	public Proveedor getProveedor() {
 		return proveedor;
 	}
@@ -141,6 +146,14 @@ public class AlmacenProducto implements Serializable {
 
 	public void setStock_min(double stock_min) {
 		this.stock_min = stock_min;
+	}
+
+	public double getPrecioUnitario() {
+		return precioUnitario;
+	}
+
+	public void setPrecioUnitario(double precioUnitario) {
+		this.precioUnitario = precioUnitario;
 	}
 
 }

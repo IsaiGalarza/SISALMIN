@@ -29,6 +29,7 @@ import org.richfaces.cdi.push.Push;
 import bo.com.qbit.webapp.data.AlmacenProductoRepository;
 import bo.com.qbit.webapp.data.AlmacenRepository;
 import bo.com.qbit.webapp.data.DetalleOrdenTraspasoRepository;
+import bo.com.qbit.webapp.data.DetalleProductoRepository;
 import bo.com.qbit.webapp.data.FuncionarioRepository;
 import bo.com.qbit.webapp.data.KardexProductoRepository;
 import bo.com.qbit.webapp.data.OrdenTraspasoRepository;
@@ -37,6 +38,7 @@ import bo.com.qbit.webapp.data.ProyectoRepository;
 import bo.com.qbit.webapp.model.Almacen;
 import bo.com.qbit.webapp.model.AlmacenProducto;
 import bo.com.qbit.webapp.model.DetalleOrdenTraspaso;
+import bo.com.qbit.webapp.model.DetalleProducto;
 import bo.com.qbit.webapp.model.Funcionario;
 import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.KardexProducto;
@@ -46,6 +48,7 @@ import bo.com.qbit.webapp.model.Producto;
 import bo.com.qbit.webapp.model.Proyecto;
 import bo.com.qbit.webapp.service.AlmacenProductoRegistration;
 import bo.com.qbit.webapp.service.DetalleOrdenTraspasoRegistration;
+import bo.com.qbit.webapp.service.DetalleProductoRegistration;
 import bo.com.qbit.webapp.service.KardexProductoRegistration;
 import bo.com.qbit.webapp.service.OrdenTraspasoRegistration;
 import bo.com.qbit.webapp.util.Cifrado;
@@ -63,6 +66,7 @@ public class OrdenTraspasoController implements Serializable {
 	@Inject
 	Conversation conversation;
 
+	//Repository
 	private @Inject AlmacenRepository almacenRepository;
 	private @Inject OrdenTraspasoRepository ordenTraspasoRepository;
 	private @Inject ProyectoRepository proyectoRepository;
@@ -71,11 +75,14 @@ public class OrdenTraspasoController implements Serializable {
 	private @Inject AlmacenProductoRepository almacenProductoRepository;
 	private @Inject FuncionarioRepository funcionarioRepository;
 	private @Inject KardexProductoRepository kardexProductoRepository;
+	private @Inject DetalleProductoRepository detalleProductoRepository;
 
+	//Registration
 	private @Inject OrdenTraspasoRegistration ordenTraspasoRegistration;
 	private @Inject DetalleOrdenTraspasoRegistration detalleOrdenTraspasoRegistration;
 	private @Inject AlmacenProductoRegistration almacenProductoRegistration;
 	private @Inject KardexProductoRegistration kardexProductoRegistration;
+	private @Inject DetalleProductoRegistration detalleProductoRegistration;
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
@@ -92,6 +99,7 @@ public class OrdenTraspasoController implements Serializable {
 	private boolean editarOrdenTraspaso = false;
 	private boolean verProcesar = true;
 	private boolean verReport = false;
+	private boolean verExport = false;
 
 	private String tituloProducto = "Agregar Producto";
 	private String tituloPanel = "Registrar Almacen";
@@ -122,7 +130,7 @@ public class OrdenTraspasoController implements Serializable {
 	private Gestion gestionSesion;
 
 	private boolean atencionCliente=false;
-	
+
 	//archivo de exportacion
 	private StreamedContent dFile;
 
@@ -151,12 +159,13 @@ public class OrdenTraspasoController implements Serializable {
 		atencionCliente=false;
 		verProcesar = true;
 		verReport = false;
+		verExport = false;
 
 		listaDetalleOrdenTraspaso = new ArrayList<DetalleOrdenTraspaso>();
 		listaOrdenTraspaso = ordenTraspasoRepository.findAllOrderedByID();
-		listaAlmacen = almacenRepository.findAllOrderedByID();
-		listaProyecto = proyectoRepository.findAllOrderedByID();
-		listFuncionario = funcionarioRepository.findAllOrderedByID();
+		listaAlmacen = almacenRepository.findAllActivosOrderedByID();
+		listaProyecto = proyectoRepository.findAllActivosOrderedByID();
+		listFuncionario = funcionarioRepository.findAllActivoOrderedByID();
 
 		newOrdenTraspaso = new OrdenTraspaso();
 		newOrdenTraspaso.setCorrelativo(cargarCorrelativo(listaOrdenTraspaso.size()+1));
@@ -218,6 +227,12 @@ public class OrdenTraspasoController implements Serializable {
 		try {
 			if(selectedOrdenTraspaso.getEstado().equals("PR")){
 				verProcesar = false;
+				//solo se mmostrara el boton export si la orden de  traspaso esta procesada, porq al procesar una orden de traspaso,
+				//se actualizan los precios unitarios de los productos
+				//verifica la conexion del almacen
+				if(  selectedOrdenTraspaso.getAlmacenDestino().isOnline()){
+					verExport = false;
+				}else{verExport = true;}
 			}else{
 				verProcesar = true;
 			}
@@ -238,7 +253,7 @@ public class OrdenTraspasoController implements Serializable {
 					+ e.getMessage());
 		}
 	}
-	
+
 	public void redireccionarPgina(){
 		FacesContext context = FacesContext.getCurrentInstance();
 		try {
@@ -251,10 +266,10 @@ public class OrdenTraspasoController implements Serializable {
 
 	public void registrarOrdenTraspaso() {
 		try {
-			if(validarStock()){//valida el stock de los productos
-				FacesUtil.showDialog("dlgValidacionStock");
-				return ;
-			}
+			//if(validarStock()){//valida el stock de los productos
+			//	FacesUtil.showDialog("dlgValidacionStock");
+			//	return ;
+			//}
 			Date date = new Date();
 			calcularTotal();
 			System.out.println("paso a registrarOrdenTraspaso: ");
@@ -265,7 +280,7 @@ public class OrdenTraspasoController implements Serializable {
 			newOrdenTraspaso.setAlmacenDestino(selectedAlmacen);
 			newOrdenTraspaso = ordenTraspasoRegistration.register(newOrdenTraspaso);
 			for(DetalleOrdenTraspaso d: listaDetalleOrdenTraspaso){
-				d.setCantidadEntregada(d.getCantidadSolicitada());
+				d.setCantidadEntregada(0);
 				d.setFechaRegistro(date);
 				d.setUsuarioRegistro(usuarioSession);
 				d.setOrdenTraspaso(newOrdenTraspaso);
@@ -274,19 +289,22 @@ public class OrdenTraspasoController implements Serializable {
 			FacesUtil.infoMessage("Orden de Traspaso Registrada!", ""+newOrdenTraspaso.getCorrelativo());
 			// Verificar si el almacen destino es offline
 			if( ! selectedAlmacen.isOnline()){
-				
+
+				// lo comente para que solo se pueda exportar desde la grilla principal al seleccionar la orden de traspaso 
+
+
 				//armar archivo txt(backup)
-				armarFileBackup(this.newOrdenTraspaso,this.listaDetalleOrdenTraspaso);
-				
+				//armarFileBackup(this.newOrdenTraspaso,this.listaDetalleOrdenTraspaso);
+
 				// Lanzar dialog de aviso de exportacion
-				FacesUtil.showDialog("dlgExportExcel");
+				//FacesUtil.showDialog("dlgExportExcel");
 			}
 			initNewOrdenTraspaso();
 		} catch (Exception e) {
 			FacesUtil.errorMessage("Error al Registrar.");
 		}
 	}
-	
+
 	public void exportar(){
 		System.out.println("exportar() ");
 		listaDetalleOrdenTraspaso = detalleOrdenTraspasoRepository.findAllByOrdenTraspaso(selectedOrdenTraspaso);
@@ -294,7 +312,7 @@ public class OrdenTraspasoController implements Serializable {
 		// Lanzar dialog de aviso de exportacion
 		FacesUtil.showDialog("dlgExportExcel");
 	}
-	
+
 	private void armarFileBackup(OrdenTraspaso newOrdenTraspaso,List<DetalleOrdenTraspaso> listaDetalleOrdenTraspaso){
 		System.out.println("paso a armarFileBackup() ");
 		File file = new File("import.txt");
@@ -303,7 +321,7 @@ public class OrdenTraspasoController implements Serializable {
 			FileWriter w = new FileWriter(file);
 			BufferedWriter bw = new BufferedWriter(w);
 			PrintWriter wr = new PrintWriter(bw);
-			
+
 			//test
 			//newOrdenTraspaso = ordenTraspasoRepository.findById(10);
 			//listaDetalleOrdenTraspaso = detalleOrdenTraspasoRepository.findAllByOrdenTraspaso(newOrdenTraspaso);
@@ -319,43 +337,43 @@ public class OrdenTraspasoController implements Serializable {
 			wr.write(Cifrado.Encriptar(newOrdenTraspaso.getAlmacenDestino().isOnline()?"TRUE":"FALSE", 12)+"\r\n");
 			//4 nombre
 			wr.write(Cifrado.Encriptar(newOrdenTraspaso.getAlmacenDestino().getNombre(), 12)+"\r\n");
-			//5 precioTotal
-			wr.write(Cifrado.Encriptar(String.valueOf(newOrdenTraspaso.getAlmacenDestino().getPrecioTotal()), 12)+"\r\n");
-			//6 telefono
+			//5 telefono
 			wr.write(Cifrado.Encriptar(newOrdenTraspaso.getAlmacenDestino().getTelefono(), 12)+"\r\n");
-			//7 tipoAlmacen
+			//6 tipoAlmacen
 			wr.write(Cifrado.Encriptar(newOrdenTraspaso.getAlmacenDestino().getTipoAlmacen(), 12)+"\r\n");
 
 			for(DetalleOrdenTraspaso detalle: listaDetalleOrdenTraspaso){
 				//>>>>>>>>>PRODUCTO<<<<<<<
 				Producto producto = detalle.getProducto();
-				//8 codigo
+				//7 codigo
 				wr.write(Cifrado.Encriptar(producto.getCodigo(), 12)+"\r\n");
-				//9 nombre
+				//8 nombre
 				wr.write(Cifrado.Encriptar(producto.getNombre(), 12)+"\r\n");
-				//10 descripcion
+				//9 descripcion
 				wr.write(Cifrado.Encriptar(producto.getDescripcion(), 12)+"\r\n");
-				//11 precioUnitario
+				//10 precioUnitario
 				wr.write(Cifrado.Encriptar(String.valueOf(producto.getPrecioUnitario()), 12)+"\r\n");
-				//12 tipoProducto
+				//11 tipoProducto
 				wr.write(Cifrado.Encriptar(producto.getTipoProducto(), 12)+"\r\n");
-				//13 unidadMedida
+				//12 unidadMedida
 				wr.write(Cifrado.Encriptar(producto.getUnidadMedida(), 12)+"\r\n");
 				//>>>>>>>>PARTIDA<<<<<<<<
 				Partida partida = producto.getPartida();
-				//14 codigo
+				//13 codigo
 				wr.write(Cifrado.Encriptar(partida.getCodigo(), 12)+"\r\n");
-				//15 nombre
+				//14 nombre
 				wr.write(Cifrado.Encriptar(partida.getNombre(), 12)+"\r\n");
-				//16 descripcion
+				//15 descripcion
 				wr.write(Cifrado.Encriptar(partida.getDescripcion(), 12)+"\r\n");
 				//>>>>>>>>DETALLE ORDEN INGRESO<<<<<<<<<
-				//17 cantidad
-				wr.write(Cifrado.Encriptar(String.valueOf(detalle.getCantidad()), 12)+"\r\n");
-				//18 observacion
+				//16 cantidad
+				wr.write(Cifrado.Encriptar(String.valueOf(detalle.getCantidadSolicitada()), 12)+"\r\n");
+				//17 observacion
 				wr.write(Cifrado.Encriptar(detalle.getObservacion(), 12)+"\r\n");
-				//19 total
+				//18 total
 				wr.write(Cifrado.Encriptar(String.valueOf(detalle.getTotal()), 12)+"\r\n");
+				//19 precio unitario
+				wr.write(Cifrado.Encriptar(String.valueOf(detalle.getPrecioUnitario()), 12)+"\r\n");
 			}
 			wr.close();
 			bw.close();
@@ -368,23 +386,49 @@ public class OrdenTraspasoController implements Serializable {
 		}
 	}
 
-	/**
-	 * Validar el stock actual de los productos del detalle de Orden de Traspaso
-	 * @return
-	 */
-	private boolean validarStock(){
-		System.out.println("validarStock() ");
-		listDetalleOrdenTraspasoSinStock = new ArrayList<DetalleOrdenTraspaso>();
-		for(DetalleOrdenTraspaso d: listaDetalleOrdenTraspaso){
-			double stockAPedir = d.getCantidad();
-			Producto prod = d.getProducto();
-			AlmacenProducto almProd =  almacenProductoRepository.findByProducto(prod);
-			if(stockAPedir > almProd.getStock()){
-				listDetalleOrdenTraspasoSinStock.add(d);
-			}
-		}
-		return listDetalleOrdenTraspasoSinStock.size()>0?true:false;
-	}
+	//	/**
+	//	 * Validar el stock actual de los productos del detalle de Orden de Traspaso
+	//	 * @return
+	//	 */
+	//	private boolean validarStock(){
+	//		System.out.println("validarStock() ");
+	//		listDetalleOrdenTraspasoSinStock = new ArrayList<DetalleOrdenTraspaso>();
+	//		for(DetalleOrdenTraspaso d: listaDetalleOrdenTraspaso){
+	//			//double stockAPedir = d.getCantidadSolicitada();
+	//			Producto producto = d.getProducto();
+	//			//AlmacenProducto almProd =  almacenProductoRepository.findByProducto(prod);
+	//			//if(stockAPedir > almProd.getStock()){
+	//			//listDetalleOrdenTraspasoSinStock.add(d);
+	//			//}
+	//
+	//			//verificar en detalle_producto, si existen stock
+	//			double cantidadSolicitada = d.getCantidadSolicitada();
+	//			double precioPonderado = 0;
+	//			//obtener todos los detalles del producto, para poder descontar stock de acuerdo a la cantidad solicitada
+	//			List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoOrderByFecha(producto);
+	//			for(DetalleProducto detalle : listDetalleProducto){
+	//				double stockActual = detalle.getStockActual();
+	//				if(cantidadSolicitada > 0){// si la  cantidad Solicitada lo obtiene
+	//					precioPonderado = detalle.getPrecio();
+	//					double stockFinal = stockActual-cantidadSolicitada;
+	//					detalle.setStockActual( stockFinal < 0 ? 0 : stockFinal);
+	//					d.setEstado((stockActual-cantidadSolicitada)==0?"AC":"IN");
+	//					cantidadSolicitada = cantidadSolicitada - stockActual  ;//actualizar cantidad solicitada
+	//				}
+	//			}
+	//			//actualizar cantidad entregada, si no se obtuvo la cantidad solicitada
+	//			if(cantidadSolicitada > 0){
+	//				detalle.setCantidadEntregada(cantidadSolicitada);//registrar el resto
+	//			}
+	//			//actualizar el precio
+	//			precioPonderado = (listDetalleProducto.size()>0? (precioPonderado/listDetalleProducto.size()):0);
+	//			detalle.setPrecioUnitario(precioPonderado);
+	//			detalle.setTotal(precioPonderado*detalle.getCantidad());
+	//			detalleOrdenTraspasoRegistration.updated(detalle);
+	//			
+	//		}
+	//		return listDetalleOrdenTraspasoSinStock.size()>0?true:false;
+	//	}
 
 	public void modificarOrdenTraspaso() {
 		try {
@@ -392,7 +436,7 @@ public class OrdenTraspasoController implements Serializable {
 			Date fechaActual = new Date();
 			double total = 0;
 			for(DetalleOrdenTraspaso d: listaDetalleOrdenTraspaso){
-				d.setCantidadEntregada(d.getCantidadSolicitada());
+				d.setCantidadEntregada(0);
 				if(d.getId()==0){//si es un nuevo registro
 					d.setFechaRegistro(fechaActual);
 					d.setUsuarioRegistro(usuarioSession);
@@ -425,9 +469,9 @@ public class OrdenTraspasoController implements Serializable {
 		try {
 			System.out.println("Traspaso a eliminarOrdenTraspaso: ");
 			ordenTraspasoRegistration.remover(selectedOrdenTraspaso);
-//			for(DetalleOrdenTraspaso d: listaDetalleOrdenTraspaso){
-//				detalleOrdenTraspasoRegistration.remover(d);
-//			}
+			//			for(DetalleOrdenTraspaso d: listaDetalleOrdenTraspaso){
+			//				detalleOrdenTraspasoRegistration.remover(d);
+			//			}
 			FacesUtil.infoMessage("Orden de Traspaso Eliminada!", ""+newOrdenTraspaso.getCorrelativo());
 			initNewOrdenTraspaso();
 		} catch (Exception e) {
@@ -437,23 +481,34 @@ public class OrdenTraspasoController implements Serializable {
 
 	public void procesarOrdenTraspaso(){
 		try {
+			System.out.println("procesarOrdenTraspaso()");
 			Date fechaActual = new Date();
 			//actualizar estado de orden Traspaso
 			selectedOrdenTraspaso.setEstado("PR");
 			selectedOrdenTraspaso.setFechaAprobacion(fechaActual);
-			ordenTraspasoRegistration.updated(selectedOrdenTraspaso);
 
 			//actualizar stock de AlmacenProducto
 			listaDetalleOrdenTraspaso = detalleOrdenTraspasoRepository.findAllByOrdenTraspaso(selectedOrdenTraspaso);
 			Almacen almOrig = selectedOrdenTraspaso.getAlmacenOrigen();
 			Almacen almDest = selectedOrdenTraspaso.getAlmacenDestino();
-			Proyecto prov = selectedOrdenTraspaso.getProyecto();
 			for(DetalleOrdenTraspaso d: listaDetalleOrdenTraspaso){
 				Producto prod = d.getProducto();
-				actualizarStockAlmacenOrigen(prod,almOrig, d.getCantidad(),fechaActual);
-				actualizarStockAlmacenDestino(prod,almDest, prov, d.getCantidad(),fechaActual);
-				actualizarKardexProducto(almOrig,almDest,prod, fechaActual, d.getCantidad());
+				//1.- Actualizar detalle producto (PEPS) y tambiaen actualizar precio en detalleOrdenIngreso
+				if( ! actualizarDetalleProducto(almOrig,d)){
+					//mostrar mensaje
+					FacesUtil.showDialog("dlgAlmacenSinExistencias");
+					initNewOrdenTraspaso();
+					return;//no se econtro stock disponible
+				}
+				//2.- 
+				actualizarStockAlmacenOrigen(prod,almOrig, d.getCantidadSolicitada(),fechaActual,d.getPrecioUnitario());
+				//3.-
+				actualizarStockAlmacenDestino(prod,almDest, d.getCantidadSolicitada(),fechaActual,d.getPrecioUnitario());
+				//4.-
+				actualizarKardexProducto(almOrig,almDest,prod, fechaActual, d.getCantidadSolicitada(),d.getPrecioUnitario());
 			}
+			//cactualizar ordenTraspaso
+			ordenTraspasoRegistration.updated(selectedOrdenTraspaso);
 			FacesUtil.infoMessage("Orden de Traspaso Procesada!", "");
 			initNewOrdenTraspaso();
 		} catch (Exception e) {
@@ -462,17 +517,65 @@ public class OrdenTraspasoController implements Serializable {
 		}
 	}
 
+	/**
+	 * Actualiza el stock, verifica existencias de acuerdo al metodo PEPS
+	 * @param almacen De que almacen se sacara los productos
+	 * @param detalle
+	 * @return true si hay stock, false si no hay existncias
+	 */
+	private boolean actualizarDetalleProducto(Almacen almacen,DetalleOrdenTraspaso detalle){
+		try{
+			Producto producto = detalle.getProducto();
+			double cantidadSolicitada = detalle.getCantidadSolicitada();
+			double cantidaEntregada = detalle.getCantidadSolicitada();
+			double precioPonderado = 0;
+			int cantidadPrecios = 0;
+			//obtener todos los detalles del producto, para poder descontar stock de acuerdo a la cantidad solicitada
+			List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almacen,producto);
+			if(listDetalleProducto.size()>0){
+				for(DetalleProducto d : listDetalleProducto){
+					double stockActual = d.getStockActual();
+					if(cantidadSolicitada > 0){// si la  cantidad Solicitada lo obtiene
+						precioPonderado = precioPonderado + d.getPrecio();//acumulando precios para luego sacar promedio
+						cantidadPrecios = cantidadPrecios + 1;//1
+						double stockFinal = stockActual-cantidadSolicitada;
+						double cantidadRestada = stockFinal < 0 ? cantidadSolicitada - stockActual : cantidadSolicitada;
+						d.setStockActual( stockFinal <= 0 ? 0 : stockFinal);
+						d.setEstado(stockFinal<=0?"IN":"AC");
+						detalleProductoRegistration.updated(d);
+						cantidadSolicitada = cantidadSolicitada - cantidadRestada  ;//actualizar cantidad solicitada
+					}
+				}
+				cantidaEntregada = cantidaEntregada - cantidadSolicitada;
+				//actualizar cantidad entregada, si no se obtuvo la cantidad solicitada
+				detalle.setCantidadEntregada(cantidaEntregada );//registrar el resto
+				//actualizar el precio
+				precioPonderado = (cantidadPrecios>0? (precioPonderado/cantidadPrecios):0);
+				detalle.setPrecioUnitario(precioPonderado);
+				detalle.setTotal(precioPonderado*cantidaEntregada);
+				detalleOrdenTraspasoRegistration.updated(detalle);
+				return true;
+			}
+			return false;
+		}catch(Exception e){
+			System.out.println("actualizarDetalleProducto() ERROR: "+e.getMessage());
+			return false;
+		}
+	}
+
 	//aumentar stock de almacen origen
-	private void actualizarStockAlmacenDestino(Producto prod ,Almacen almDest,Proyecto prov, double newStock,Date date) throws Exception {
+	private void actualizarStockAlmacenDestino(Producto prod ,Almacen almDest, double newStock,Date date,double precioUnitario) throws Exception {
 		try{
 			//0 . verificar si existe el producto en el almacen
-			System.out.println("actualizarStock()");
+			System.out.println("actualizarStockAlmacenDestino()");
 			AlmacenProducto almProd =  almacenProductoRepository.findByAlmacenProducto(almDest,prod);
 			System.out.println("almProd = "+almProd);
 			if(almProd != null){
 				// 1 .  si existe el producto
 				double oldStock = almProd.getStock();
+				double oldPrecioUnitario = almProd.getPrecioUnitario();
 				almProd.setStock(oldStock + newStock);
+				almProd.setPrecioUnitario((oldPrecioUnitario+precioUnitario)/2);//precioPonderado
 				almacenProductoRegistration.updated(almProd);
 				return ;
 			}
@@ -480,6 +583,7 @@ public class OrdenTraspasoController implements Serializable {
 			almProd = new AlmacenProducto();
 			almProd.setAlmacen(almDest);
 			almProd.setProducto(prod);
+			almProd.setProveedor(null);
 			almProd.setStock(newStock);
 			almProd.setEstado("AC");
 			almProd.setFechaRegistro(date);
@@ -491,7 +595,7 @@ public class OrdenTraspasoController implements Serializable {
 	}
 
 	//disminuir stock de almacen origen
-	private void actualizarStockAlmacenOrigen(Producto prod ,Almacen almOrig,int newStock,Date date) throws Exception {
+	private void actualizarStockAlmacenOrigen(Producto prod ,Almacen almOrig,double newStock,Date date,double precioUnitario) throws Exception {
 		try{
 			//0 . verificar si existe el producto en el almacen
 			System.out.println("actualizarStockAlmacenOrigen()");
@@ -499,7 +603,9 @@ public class OrdenTraspasoController implements Serializable {
 			if(almProd != null){
 				// 1 .  si existe el producto
 				double oldStock = almProd.getStock();
+				double oldPrecioUnitario = almProd.getPrecioUnitario();
 				almProd.setStock(oldStock - newStock);
+				almProd.setPrecioUnitario((oldPrecioUnitario+precioUnitario)/2);//precioPonderado
 				almacenProductoRegistration.updated(almProd);
 				return ;
 			}
@@ -509,17 +615,24 @@ public class OrdenTraspasoController implements Serializable {
 	}
 
 	//registro en la tabla kardex_producto
-	private void actualizarKardexProducto(Almacen almOrig,Almacen almDest,Producto prod,Date fechaActual,double cantidad) throws Exception{
+	private void actualizarKardexProducto(Almacen almOrig,Almacen almDest,Producto prod,Date fechaActual,double cantidad,double precioUnitario) throws Exception{
+		System.out.println("actualizarKardexProducto()");
 		try{
 			//registrar Kardex
 			KardexProducto kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProducto(prod);
 			double stockAnterior = 0;
 			if(kardexProductoAnt != null){
 				//se obtiene el saldo anterior del producto
-				stockAnterior = kardexProductoAnt.getStockActual();
+				stockAnterior = kardexProductoAnt.getStockAnterior();
 			}
+
+			double entrada = cantidad;
+			double salida = 0;
+			double saldo = stockAnterior + cantidad;//(+) aumenta en el almacen de destino
+
+			//ingresando al almacen
 			KardexProducto kardexProducto = new KardexProducto();
-			kardexProducto.setUnidadSolicitante("ALMACEN "+selectedOrdenTraspaso.getAlmacenOrigen().getNombre());
+			kardexProducto.setUnidadSolicitante(selectedOrdenTraspaso.getAlmacenOrigen().getNombre());
 			kardexProducto.setFecha(fechaActual);
 			kardexProducto.setAlmacen(selectedOrdenTraspaso.getAlmacenDestino());
 			kardexProducto.setCantidad(cantidad);
@@ -527,33 +640,50 @@ public class OrdenTraspasoController implements Serializable {
 			kardexProducto.setFechaRegistro(fechaActual);
 			kardexProducto.setGestion(gestionSesion);
 			kardexProducto.setNumeroTransaccion(selectedOrdenTraspaso.getCorrelativo());
-			kardexProducto.setPrecioCompra(0);
-			kardexProducto.setPrecioVenta(0);
+
+			//EN BOLIVIANOS
+			kardexProducto.setPrecioUnitario(precioUnitario);
+			kardexProducto.setTotalEntrada(precioUnitario * entrada);
+			kardexProducto.setTotalSalida(precioUnitario * salida);
+			kardexProducto.setTotalSaldo(precioUnitario * saldo);
+
+			//CANTIDADES
+			kardexProducto.setStock(entrada);//ENTRADA
+			kardexProducto.setStockActual(salida);//SALIDA
+			kardexProducto.setStockAnterior(saldo);//SALDO
+
 			kardexProducto.setProducto(prod);
-			kardexProducto.setStock(cantidad);//estock que esta ingresando
-			kardexProducto.setStockActual(stockAnterior-cantidad);//anterior + cantidad
-			kardexProducto.setStockAnterior(stockAnterior);
 			kardexProducto.setTipoMovimiento("ORDEN TRASPASO");
 			kardexProducto.setUsuarioRegistro(usuarioSession);
-			//register orden traspaso - almacen de salida
+			//register orden traspaso - almacen de destino
 			kardexProductoRegistration.register(kardexProducto);
 
-			//register orden traspaso - almacen de ingreso
+			entrada = 0;
+			salida = cantidad;
+			saldo = stockAnterior -  cantidad;//(-) disminuye en el almacen origen
+			//register orden traspaso - almacen de origen
 			kardexProducto = new KardexProducto();
-			kardexProducto.setUnidadSolicitante("ALMACEN "+selectedOrdenTraspaso.getAlmacenDestino().getNombre());
+			kardexProducto.setUnidadSolicitante(selectedOrdenTraspaso.getAlmacenDestino().getNombre());
 			kardexProducto.setFecha(fechaActual);
-			kardexProducto.setAlmacen(selectedOrdenTraspaso.getAlmacenDestino());
+			kardexProducto.setAlmacen(selectedOrdenTraspaso.getAlmacenOrigen());
 			kardexProducto.setCantidad(cantidad);
 			kardexProducto.setEstado("AC");
 			kardexProducto.setFechaRegistro(fechaActual);
 			kardexProducto.setGestion(gestionSesion);
 			kardexProducto.setNumeroTransaccion(selectedOrdenTraspaso.getCorrelativo());
-			kardexProducto.setPrecioCompra(0);
-			kardexProducto.setPrecioVenta(0);
+
+			//EN BOLIVIANOS
+			kardexProducto.setPrecioUnitario(precioUnitario);
+			kardexProducto.setTotalEntrada(precioUnitario * entrada);
+			kardexProducto.setTotalSalida(precioUnitario * salida);
+			kardexProducto.setTotalSaldo(precioUnitario * saldo);
+
+			//CANTIDADES
+			kardexProducto.setStock(entrada);//ENTRADA
+			kardexProducto.setStockActual(salida);//SALIDA
+			kardexProducto.setStockAnterior(saldo);//SALDO
+
 			kardexProducto.setProducto(prod);
-			kardexProducto.setStock(cantidad);//estock que esta ingresando
-			kardexProducto.setStockActual(stockAnterior+cantidad);//anterior + cantidad
-			kardexProducto.setStockAnterior(stockAnterior);
 			kardexProducto.setTipoMovimiento("ORDEN TRASPASO");
 			kardexProducto.setUsuarioRegistro(usuarioSession);
 			kardexProductoRegistration.register(kardexProducto);
@@ -641,9 +771,9 @@ public class OrdenTraspasoController implements Serializable {
 	//calcular totales
 	public void calcular(){
 		System.out.println("calcular()");
-		double precio = selectedProducto.getPrecioUnitario();
-		double cantidad = selectedDetalleOrdenTraspaso.getCantidad();
-		selectedDetalleOrdenTraspaso.setTotal(precio * cantidad);
+		//double precio = selectedProducto.getPrecioUnitario();
+		//double cantidad = selectedDetalleOrdenTraspaso.getCantidadSolicitada();
+		//selectedDetalleOrdenTraspaso.setTotal(precio * cantidad);
 	}
 
 	public void calcularTotal(){
@@ -951,6 +1081,26 @@ public class OrdenTraspasoController implements Serializable {
 	public void setdFile(StreamedContent dFile) {
 		System.out.println("setdFile "+dFile);
 		this.dFile = dFile;
+	}
+
+	public boolean isVerExport() {
+		return verExport;
+	}
+
+	public void setVerExport(boolean verExport) {
+		this.verExport = verExport;
+	}
+	
+	public static void main(String[] args){
+		System.out.println("ingreso");
+		String[] arg = {"1","2","3","4","5","6"};
+		for(String s : arg){
+			System.out.println("s: "+s);
+			if(s.equals("4")){
+				return;
+			}
+		}
+		System.out.println("salida ");
 	}
 
 }

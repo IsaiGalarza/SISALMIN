@@ -18,7 +18,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
-
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.UploadedFile;
@@ -36,6 +35,7 @@ import bo.com.qbit.webapp.data.UsuarioRepository;
 import bo.com.qbit.webapp.model.Almacen;
 import bo.com.qbit.webapp.model.AlmacenProducto;
 import bo.com.qbit.webapp.model.DetalleOrdenIngreso;
+import bo.com.qbit.webapp.model.DetalleProducto;
 import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.KardexProducto;
 import bo.com.qbit.webapp.model.OrdenIngreso;
@@ -46,6 +46,7 @@ import bo.com.qbit.webapp.model.Usuario;
 import bo.com.qbit.webapp.service.AlmacenProductoRegistration;
 import bo.com.qbit.webapp.service.AlmacenRegistration;
 import bo.com.qbit.webapp.service.DetalleOrdenIngresoRegistration;
+import bo.com.qbit.webapp.service.DetalleProductoRegistration;
 import bo.com.qbit.webapp.service.KardexProductoRegistration;
 import bo.com.qbit.webapp.service.OrdenIngresoRegistration;
 import bo.com.qbit.webapp.service.PartidaRegistration;
@@ -83,6 +84,7 @@ public class OrdenIngresoController implements Serializable {
 	private @Inject ProductoRegistration productoRegistration;
 	private @Inject AlmacenRegistration almacenRegistration;
 	private @Inject PartidaRegistration partidaRegistration;
+	private @Inject DetalleProductoRegistration detalleProductoRegistration;
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
@@ -163,13 +165,16 @@ public class OrdenIngresoController implements Serializable {
 
 		listaDetalleOrdenIngreso = new ArrayList<DetalleOrdenIngreso>();
 		listaOrdenIngreso = ordenIngresoRepository.findAllOrderedByID();
-		listaAlmacen = almacenRepository.findAllOrderedByID();
-		listaProveedor = proveedorRepository.findAllOrderedByID();
+		listaAlmacen = almacenRepository.findAllActivosOrderedByID();
+		listaProveedor = proveedorRepository.findAllActivoOrderedByID();
 
+		int numeroCorrelativo = ordenIngresoRepository.obtenerNumeroOrdenIngreso(new Date(),gestionSesion);
 		newOrdenIngreso = new OrdenIngreso();
-		newOrdenIngreso.setCorrelativo(cargarCorrelativo(listaOrdenIngreso.size()+1));
+		//newOrdenIngreso.setCorrelativo(cargarCorrelativo(listaOrdenIngreso.size()+1));
+		newOrdenIngreso.setCorrelativo(cargarCorrelativo(numeroCorrelativo));
 		newOrdenIngreso.setEstado("AC");
 		newOrdenIngreso.setGestion(gestionSesion);
+		newOrdenIngreso.setFechaDocumento(new Date());
 		newOrdenIngreso.setFechaRegistro(new Date());
 		newOrdenIngreso.setUsuarioRegistro(usuarioSession);
 
@@ -331,18 +336,22 @@ public class OrdenIngresoController implements Serializable {
 	public void procesarOrdenIngreso(){
 		try {
 			Date fechaActual = new Date();
-			//actualizar estado de orden ingreso
+			// actualizar estado de orden ingreso
 			selectedOrdenIngreso.setEstado("PR");
 			selectedOrdenIngreso.setFechaAprobacion(fechaActual);
 			ordenIngresoRegistration.updated(selectedOrdenIngreso);
-
-			//actuaizar stock de AlmacenProducto
+			
+			Proveedor proveedor = selectedOrdenIngreso.getProveedor();
+			// actuaizar stock de AlmacenProducto
 			listaDetalleOrdenIngreso = detalleOrdenIngresoRepository.findAllByOrdenIngreso(selectedOrdenIngreso);
 			for(DetalleOrdenIngreso d: listaDetalleOrdenIngreso){
 				Producto prod = d.getProducto();
-				actualizarStock(selectedOrdenIngreso.getAlmacen(),prod, d.getCantidad(),fechaActual);
-				actualizarKardexProducto( prod,fechaActual, d.getCantidad());
-				cargarDetalleProducto(d.getProducto(), d.getCantidad(), d.getPrecioUnitario(), d.getFechaRegistro(), selectedOrdenIngreso.getCorrelativo());
+				//actualiza el esstock por producto almacen(teniendo en cuenta la agrupacion de productos)
+				actualizarStock(selectedOrdenIngreso.getAlmacen(),proveedor,prod, d.getCantidad(),fechaActual,d.getPrecioUnitario());
+				//registra la transaccion de entrada del producto
+				actualizarKardexProducto( prod,fechaActual, d.getCantidad(),d.getPrecioUnitario());
+				//registra los stock de los producto , para luego utilizar PEPS en ordenes de traspaso y salida
+				cargarDetalleProducto(selectedOrdenIngreso.getAlmacen(),d.getProducto(), d.getCantidad(), d.getPrecioUnitario(), d.getFechaRegistro(), selectedOrdenIngreso.getCorrelativo());
 			}
 
 			FacesUtil.infoMessage("Orden de Ingreso Procesada!", "");
@@ -351,25 +360,42 @@ public class OrdenIngresoController implements Serializable {
 			FacesUtil.errorMessage("Error al Procesar!");
 		}
 	}
-	
+
 	// cargar en la ttabla detalle_producto, reegistros de productos, para luego utilizar el metodo PEPS
-	private void cargarDetalleProducto(Producto producto,double cantidad, double precio, Date fecha, String correlativoTransaccion){
+	private void cargarDetalleProducto(Almacen almacen,Producto producto,double cantidad, double precio, Date fecha, String correlativoTransaccion){
 		try{
-			
+			Date fechaActual = new Date();
+			DetalleProducto detalleProducto = new DetalleProducto();
+			detalleProducto.setCodigo("OI"+correlativoTransaccion+fecha.toString());
+			detalleProducto.setAlmacen(almacen);
+			detalleProducto.setEstado("AC");
+			detalleProducto.setPrecio(precio);
+			detalleProducto.setStockActual(cantidad);
+			detalleProducto.setStockInicial(cantidad);
+			detalleProducto.setCorrelativoTransaccion(correlativoTransaccion);
+			detalleProducto.setFecha(fecha);
+			detalleProducto.setFechaRegistro(fechaActual);
+			detalleProducto.setProducto(producto);
+			detalleProducto.setUsuarioRegistro(usuarioSession);
+			detalleProductoRegistration.register(detalleProducto);
 		}catch(Exception e){
 			System.out.println("cargarDetalleProducto() ERROR: "+e.getMessage());
 		}
 	}
 
 	//registro en la tabla kardex_producto
-	private void actualizarKardexProducto(Producto prod,Date fechaActual,double cantidad) throws Exception{
+	private void actualizarKardexProducto(Producto prod,Date fechaActual,double cantidad,Double precioUnitario) throws Exception{
 		//registrar Kardex
 		KardexProducto kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProducto(prod);
 		double stockAnterior = 0;
 		if(kardexProductoAnt != null){
 			//se obtiene el saldo anterior del producto
-			stockAnterior = kardexProductoAnt.getStockActual();
+			stockAnterior = kardexProductoAnt.getStockAnterior();
 		}
+		double entrada = cantidad;
+		double salida = 0;
+		double saldo = stockAnterior + cantidad;
+		
 		KardexProducto kardexProducto = new KardexProducto();
 		kardexProducto.setUnidadSolicitante("ORDEN INGRESO");
 		kardexProducto.setFecha(fechaActual);
@@ -379,26 +405,37 @@ public class OrdenIngresoController implements Serializable {
 		kardexProducto.setFechaRegistro(fechaActual);
 		kardexProducto.setGestion(gestionSesion);
 		kardexProducto.setNumeroTransaccion(selectedOrdenIngreso.getCorrelativo());
-		kardexProducto.setPrecioCompra(0);
-		kardexProducto.setPrecioVenta(0);
+		
+		
+		//BOLIVIANOS
+		kardexProducto.setPrecioUnitario(precioUnitario);
+		kardexProducto.setTotalEntrada(precioUnitario * entrada);
+		kardexProducto.setTotalSalida(precioUnitario * salida);
+		kardexProducto.setTotalSaldo(precioUnitario * saldo);
+
+		//CANTIDADES
+		kardexProducto.setStock(entrada);//ENTRADA
+		kardexProducto.setStockActual(salida);//SALIDA
+		kardexProducto.setStockAnterior(saldo);//SALDO
+		
 		kardexProducto.setProducto(prod);
-		kardexProducto.setStock(cantidad);//estock que esta ingresando
-		kardexProducto.setStockActual(stockAnterior+cantidad);//anterior + cantidad
-		kardexProducto.setStockAnterior(stockAnterior);
+
 		kardexProducto.setTipoMovimiento("ORDEN INGRESO");
 		kardexProducto.setUsuarioRegistro(usuarioSession);
 		kardexProductoRegistration.register(kardexProducto);
 	}
 
-	//registro en la tabla almacen_producto
-	private void actualizarStock(Almacen almacen,Producto prod ,int newStock,Date date) throws Exception {
+	//registro en la tabla almacen_producto, actualiza el stock y el precio(promedio agrupando los productos)
+	private void actualizarStock(Almacen almacen,Proveedor proveedor,Producto prod ,double newStock,Date date,double precioUnitario) throws Exception {
 		//0 . verificar si existe el producto en el almacen
 		System.out.println("actualizarStock()");
 		AlmacenProducto almProd =  almacenProductoRepository.findByAlmacenProducto(almacen,prod);
 		if(almProd != null){
 			// 1 .  si existe el producto
 			double oldStock = almProd.getStock();
+			double oldPrecioUnitario = almProd.getPrecioUnitario();
 			almProd.setStock(oldStock + newStock);
+			almProd.setPrecioUnitario((( oldPrecioUnitario + precioUnitario)/2));//precio ponderado del producto
 			almacenProductoRegistration.updated(almProd);
 			return ;
 		}
@@ -406,9 +443,9 @@ public class OrdenIngresoController implements Serializable {
 		almProd = new AlmacenProducto();
 		almProd.setAlmacen(almacen);
 		almProd.setProducto(prod);
-		almProd.setProveedor(selectedOrdenIngreso.getProveedor());
+		almProd.setProveedor(proveedor);
 		almProd.setStock(newStock);
-
+		almProd.setPrecioUnitario(precioUnitario);
 		almProd.setEstado("AC");
 		almProd.setFechaRegistro(date);
 		almProd.setUsuarioRegistro(usuarioSession);
@@ -493,7 +530,7 @@ public class OrdenIngresoController implements Serializable {
 	//calcular totales
 	public void calcular(){
 		System.out.println("calcular()");
-		double precio = selectedProducto.getPrecioUnitario();
+		double precio = selectedDetalleOrdenIngreso.getPrecioUnitario();
 		double cantidad = selectedDetalleOrdenIngreso.getCantidad();
 		selectedDetalleOrdenIngreso.setTotal(precio * cantidad);
 	}
@@ -607,11 +644,9 @@ public class OrdenIngresoController implements Serializable {
 			String online = Cifrado.Desencriptar( br.readLine(),12);
 			//4 nombre
 			String nombre = Cifrado.Desencriptar( br.readLine(),12);
-			//5 precioTotal
-			String precioTotal = Cifrado.Desencriptar( br.readLine(),12);
-			//6 telefono
+			//5 telefono
 			String telefono = Cifrado.Desencriptar( br.readLine(),12);
-			//7 tipoAlmacen
+			//6 tipoAlmacen
 			String tipoAlmacen = Cifrado.Desencriptar( br.readLine(),12);
 			selectedAlmacen = almacenRepository.findByCodigo(codigo);
 			if(selectedAlmacen == null){
@@ -622,7 +657,6 @@ public class OrdenIngresoController implements Serializable {
 				almacen.setFechaRegistro(new Date());
 				almacen.setNombre(nombre);
 				almacen.setOnline(online.equals("true")?false:true);//invertido
-				almacen.setPrecioTotal(Double.parseDouble(precioTotal));
 				almacen.setTelefono(telefono);
 				almacen.setTipoAlmacen(tipoAlmacen);
 				almacen.setUsuarioRegistro(usuarioSession);
@@ -631,32 +665,34 @@ public class OrdenIngresoController implements Serializable {
 			String linea;
 			while((linea=br.readLine())!=null){
 				//PRODUCTO
-				//8 codigo
+				//7 codigo
 				String codigoProducto = Cifrado.Desencriptar(linea,12);
-				//9 nombre
+				//8 nombre
 				String nombreProducto = Cifrado.Desencriptar( br.readLine(),12);
-				//10 descripcion
+				//9 descripcion
 				String descripcionProducto = Cifrado.Desencriptar( br.readLine(),12);
-				//11 precioUnitario
+				//10 precioUnitario
 				String precioUnitarioProducto = Cifrado.Desencriptar( br.readLine(),12);
-				//12 tipoProducto
+				//11 tipoProducto
 				String tipoProductoProducto = Cifrado.Desencriptar( br.readLine(),12);
-				//13 unidadMedida
+				//12 unidadMedida
 				String unidadMedidaProducto = Cifrado.Desencriptar( br.readLine(),12);
 				//>>>>>>>>PARTIDA<<<<<<<<
-				//14 codigoPartida
+				//13 codigoPartida
 				String codigoPartida = Cifrado.Desencriptar( br.readLine(),12);
-				//15 nombre
+				//14 nombre
 				String nombrePartida = Cifrado.Desencriptar( br.readLine(),12);
-				//16 descripcion
+				//15 descripcion
 				String descripcionPartida = Cifrado.Desencriptar( br.readLine(),12);
 				//>>>>>>>>DETALLE ORDEN INGRESO<<<<<<<<<
-				//17 cantidadDOI
+				//16 cantidadDOI
 				String cantidadDOI = Cifrado.Desencriptar( br.readLine(),12);
-				//18 observacionDOI
+				//17 observacionDOI
 				String observacionDOI = Cifrado.Desencriptar( br.readLine(),12);
-				//19 totalDOI
+				//18 totalDOI
 				String totalDOI = Cifrado.Desencriptar( br.readLine(),12);
+				//19 precioUnitario
+				String precioUnitarioDOI = Cifrado.Desencriptar( br.readLine(),12);
 
 				Partida partida = partidaRepository.findByCodigo(codigoPartida);
 				if(partida==null){
@@ -685,13 +721,14 @@ public class OrdenIngresoController implements Serializable {
 					producto = productoRegistration.register(producto);
 				}
 				DetalleOrdenIngreso detalle = new DetalleOrdenIngreso();
-				detalle.setCantidad(Integer.parseInt(cantidadDOI));
+				detalle.setCantidad(Double.parseDouble(cantidadDOI));
 				detalle.setEstado("AC");
 				detalle.setFechaRegistro(new Date());
 				detalle.setObservacion(observacionDOI);
 				detalle.setOrdenIngreso(newOrdenIngreso);
 				detalle.setProducto(producto);
 				detalle.setTotal(Double.parseDouble(totalDOI));
+				detalle.setPrecioUnitario(Double.parseDouble(precioUnitarioDOI));
 				detalle.setUsuarioRegistro(usuarioSession);
 				listaDetalleOrdenIngreso.add(detalle);
 			}

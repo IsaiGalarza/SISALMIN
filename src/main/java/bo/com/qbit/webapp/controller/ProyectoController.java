@@ -1,7 +1,6 @@
 package bo.com.qbit.webapp.controller;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -15,17 +14,14 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
-import javax.servlet.http.HttpServletRequest;
 
 import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
 
 import bo.com.qbit.webapp.data.ProyectoRepository;
-import bo.com.qbit.webapp.data.UsuarioRepository;
 import bo.com.qbit.webapp.model.Proyecto;
-import bo.com.qbit.webapp.model.Usuario;
-import bo.com.qbit.webapp.service.EstadoUsuarioLogin;
 import bo.com.qbit.webapp.service.ProyectoRegistration;
+import bo.com.qbit.webapp.util.SessionMain;
 
 @Named(value = "proyectoController")
 @ConversationScoped
@@ -50,8 +46,6 @@ public class ProyectoController implements Serializable {
 	@Inject
 	private ProyectoRepository proyectoRepository;
 
-	private @Inject UsuarioRepository usuarioRepository;
-//	private Usuario usuarioSession;
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
@@ -64,10 +58,7 @@ public class ProyectoController implements Serializable {
 	private String tituloPanel = "Registrar Proyecto";
 	private Proyecto selectedProyecto;
 	private Proyecto newProyecto= new Proyecto();
-	private List<Usuario> listUsuario = new ArrayList<Usuario>();
-
 	private List<Proyecto> listaProyecto;
-	private EstadoUsuarioLogin estadoUsuarioLogin;
 
 	
 	private boolean atencionCliente=false;
@@ -81,6 +72,8 @@ public class ProyectoController implements Serializable {
 		return listaProyecto;
 	}
 	
+	//SESSION
+	private @Inject SessionMain sessionMain; //variable del login
 	private String usuarioSession;
 	
 	@PostConstruct
@@ -89,21 +82,7 @@ public class ProyectoController implements Serializable {
 		// initConversation();
 		beginConversation();
 
-		HttpServletRequest request = (HttpServletRequest) facesContext
-				.getExternalContext().getRequest();
-		System.out
-				.println("init Tipo Producto*********************************");
-		System.out.println("request.getClass().getName():"
-				+ request.getClass().getName());
-		System.out.println("isVentas:" + request.isUserInRole("ventas"));
-		System.out.println("remoteUser:" + request.getRemoteUser());
-		System.out.println("userPrincipalName:"
-				+ (request.getUserPrincipal() == null ? "null" : request
-						.getUserPrincipal().getName()));
-		
-		estadoUsuarioLogin = new EstadoUsuarioLogin(facesContext);
-		usuarioSession =  estadoUsuarioLogin.getNombreUsuarioSession();
-		listUsuario = usuarioRepository.findAllOrderedByID();
+		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
 
 		newProyecto = new Proyecto();
 		newProyecto.setEstado("AC");
@@ -111,6 +90,7 @@ public class ProyectoController implements Serializable {
 		newProyecto.setUsuarioRegistro(usuarioSession);
 		
 
+		selectedProyecto = null;
 		// tituloPanel
 		tituloPanel = "Registrar Proyecto";
 
@@ -172,7 +152,6 @@ public class ProyectoController implements Serializable {
 			modificar = false;
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 			System.out.println("Error in onRowSelectProyectoClick: "
 					+ e.getMessage());
@@ -288,14 +267,6 @@ public class ProyectoController implements Serializable {
 
 	public void setNewProyecto(Proyecto newProyecto) {
 		this.newProyecto = newProyecto;
-	}
-
-	public List<Usuario> getListUsuario() {
-		return listUsuario;
-	}
-
-	public void setListUsuario(List<Usuario> listUsuario) {
-		this.listUsuario = listUsuario;
 	}
 
 	public boolean isAtencionCliente() {

@@ -1,7 +1,6 @@
 package bo.com.qbit.webapp.controller;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -15,17 +14,14 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
-import javax.servlet.http.HttpServletRequest;
 
 import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
 
 import bo.com.qbit.webapp.data.DetalleUnidadRepository;
-import bo.com.qbit.webapp.data.UsuarioRepository;
 import bo.com.qbit.webapp.model.DetalleUnidad;
-import bo.com.qbit.webapp.model.Usuario;
 import bo.com.qbit.webapp.service.DetalleUnidadRegistration;
-import bo.com.qbit.webapp.service.EstadoUsuarioLogin;
+import bo.com.qbit.webapp.util.SessionMain;
 
 @Named(value = "detalleUnidadController")
 @ConversationScoped
@@ -50,9 +46,6 @@ public class DetalleUnidadController implements Serializable {
 	@Inject
 	private DetalleUnidadRepository detalleUnidadRepository;
 
-	private @Inject UsuarioRepository usuarioRepository;
-//	private Usuario usuarioSession;
-
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
 	Event<String> pushEventSucursal;
@@ -64,10 +57,7 @@ public class DetalleUnidadController implements Serializable {
 	private String tituloPanel = "Registrar Unidad";
 	private DetalleUnidad selectedDetalleUnidad;
 	private DetalleUnidad newDetalleUnidad= new DetalleUnidad();
-	private List<Usuario> listUsuario = new ArrayList<Usuario>();
-
 	private List<DetalleUnidad> listaDetalleUnidad;
-	private EstadoUsuarioLogin estadoUsuarioLogin;
 
 	
 	private boolean atencionCliente=false;
@@ -81,6 +71,8 @@ public class DetalleUnidadController implements Serializable {
 		return listaDetalleUnidad;
 	}
 	
+	//SESSION
+	private @Inject SessionMain sessionMain; //variable del login
 	private String usuarioSession;
 	
 	@PostConstruct
@@ -89,27 +81,14 @@ public class DetalleUnidadController implements Serializable {
 		// initConversation();
 		beginConversation();
 
-		HttpServletRequest request = (HttpServletRequest) facesContext
-				.getExternalContext().getRequest();
-		System.out
-				.println("init Tipo Producto*********************************");
-		System.out.println("request.getClass().getName():"
-				+ request.getClass().getName());
-		System.out.println("isVentas:" + request.isUserInRole("ventas"));
-		System.out.println("remoteUser:" + request.getRemoteUser());
-		System.out.println("userPrincipalName:"
-				+ (request.getUserPrincipal() == null ? "null" : request
-						.getUserPrincipal().getName()));
-		
-		estadoUsuarioLogin = new EstadoUsuarioLogin(facesContext);
-		usuarioSession =  estadoUsuarioLogin.getNombreUsuarioSession();
-		listUsuario = usuarioRepository.findAllOrderedByID();
+		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
 
 		newDetalleUnidad = new DetalleUnidad();
 		newDetalleUnidad.setEstado("AC");
 		newDetalleUnidad.setFechaRegistro(new Date());
 		newDetalleUnidad.setUsuarioRegistro(usuarioSession);
 		
+		selectedDetalleUnidad = null;
 
 		// tituloPanel
 		tituloPanel = "Registrar Unidad";
@@ -172,7 +151,6 @@ public class DetalleUnidadController implements Serializable {
 			modificar = false;
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 			System.out.println("Error in onRowSelectDetalleUnidadClick: "
 					+ e.getMessage());
@@ -288,14 +266,6 @@ public class DetalleUnidadController implements Serializable {
 
 	public void setNewDetalleUnidad(DetalleUnidad newDetalleUnidad) {
 		this.newDetalleUnidad = newDetalleUnidad;
-	}
-
-	public List<Usuario> getListUsuario() {
-		return listUsuario;
-	}
-
-	public void setListUsuario(List<Usuario> listUsuario) {
-		this.listUsuario = listUsuario;
 	}
 
 	public boolean isAtencionCliente() {

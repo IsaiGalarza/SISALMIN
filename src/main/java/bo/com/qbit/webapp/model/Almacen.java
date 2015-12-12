@@ -32,11 +32,9 @@ public class Almacen implements Serializable {
 
 	private String nombre;
 
-	@Column(name="precio_total")
-	private double precioTotal;
-
 	private String telefono;
 
+	@Column(name="tipo_almacen")
 	private String tipoAlmacen;
 	
 	private String estado;
@@ -47,19 +45,14 @@ public class Almacen implements Serializable {
 	@Column(name="fecha_registro")
 	private Date fechaRegistro;
 
-	//bi-directional many-to-one association to AlmProducto
-//	@OneToMany(mappedBy="almacen")
-//	private List<AlmProducto> almProductos;
-	
-
 	@ManyToOne(fetch=FetchType.EAGER, optional=false)
 	@JoinColumn(name="id_encargado",nullable= true)
 	private Usuario encargado;
 
 	public Almacen() {
+		this.id = 0 ;
 		encargado= new Usuario();
 		estado= "AC";
-		online = true;
 	}
 
 	@Override
@@ -105,14 +98,6 @@ public class Almacen implements Serializable {
 
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
-	}
-
-	public double getPrecioTotal() {
-		return this.precioTotal;
-	}
-
-	public void setPrecioTotal(double precioTotal) {
-		this.precioTotal = precioTotal;
 	}
 
 	public String getTelefono() {

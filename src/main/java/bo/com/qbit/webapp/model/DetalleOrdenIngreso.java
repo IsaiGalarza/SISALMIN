@@ -23,7 +23,7 @@ public class DetalleOrdenIngreso implements Serializable{
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
 
-	private int cantidad;
+	private double cantidad;
 
 	private String estado;
 	
@@ -58,11 +58,11 @@ public class DetalleOrdenIngreso implements Serializable{
 		precioUnitario = 0;
 	}
 	
-	public int getCantidad() {
+	public double getCantidad() {
 		return cantidad;
 	}
 	
-	public void setCantidad(int cantidad) {
+	public void setCantidad(double cantidad) {
 		this.cantidad = cantidad;
 	}
 

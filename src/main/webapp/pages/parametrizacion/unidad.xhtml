@@ -23,7 +23,7 @@
 								<p:commandLink id="buttonCancelar" value="&#160; Cancelar"
 									styleClass="btn btn-warning ion-minus-circled"
 									update=":formTableUnidad, :formBotonesHeader"
-									rendered="#{detalleUnidadController.modificar=='true'}"
+									rendered="#{detalleUnidadController.modificar or detalleUnidadController.registrar}"
 									style="height:31px; padding:center"
 									action="#{detalleUnidadController.initNewDetalleUnidad()}">
 								</p:commandLink>

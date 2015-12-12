@@ -35,7 +35,9 @@ public class DetalleProducto {
 	@JoinColumn(name="id_producto", nullable=false)
 	private Producto producto;
 	
-	private double cantidad;
+	private double stockInicial;// se registra la primera vez
+	
+	private double stockActual;//este campo se actualiza
 	
 	private double precio;
 	
@@ -43,6 +45,13 @@ public class DetalleProducto {
 	
 	@Column(name="correlativo_transaccion")
 	private String correlativoTransaccion;
+	
+	@Column(name="codigo", nullable=false)
+	private String codigo;
+	
+	@ManyToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name="id_almacen", nullable=false)
+	private Almacen almacen;
 	
 	@Size(max = 2) //AC , IN
 	private String estado;
@@ -59,6 +68,7 @@ public class DetalleProducto {
 	public DetalleProducto(){
 		super();
 		this.id = 0;
+		almacen = new Almacen();
 	}
 
 	@Override
@@ -105,13 +115,6 @@ public class DetalleProducto {
 		this.producto = producto;
 	}
 
-	public double getCantidad() {
-		return cantidad;
-	}
-
-	public void setCantidad(double cantidad) {
-		this.cantidad = cantidad;
-	}
 
 	public double getPrecio() {
 		return precio;
@@ -159,6 +162,38 @@ public class DetalleProducto {
 
 	public void setCorrelativoTransaccion(String correlativoTransaccion) {
 		this.correlativoTransaccion = correlativoTransaccion;
+	}
+
+	public double getStockInicial() {
+		return stockInicial;
+	}
+
+	public void setStockInicial(double stockInicial) {
+		this.stockInicial = stockInicial;
+	}
+
+	public double getStockActual() {
+		return stockActual;
+	}
+
+	public void setStockActual(double stockActual) {
+		this.stockActual = stockActual;
+	}
+
+	public String getCodigo() {
+		return codigo;
+	}
+
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
+	}
+
+	public Almacen getAlmacen() {
+		return almacen;
+	}
+
+	public void setAlmacen(Almacen almacen) {
+		this.almacen = almacen;
 	}
 
 }

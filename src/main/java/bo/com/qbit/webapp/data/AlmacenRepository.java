@@ -10,7 +10,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import bo.com.qbit.webapp.model.Almacen;
-import bo.com.qbit.webapp.model.DetalleUnidad;
 import bo.com.qbit.webapp.model.Usuario;
 
 @ApplicationScoped
@@ -32,12 +31,21 @@ public class AlmacenRepository {
 		return em.createQuery(criteria).getResultList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Almacen> findAllOrderedByID() {
 		String query = "select ser from Almacen ser where ser.estado='AC' or ser.estado='IN' order by ser.id desc";
 		System.out.println("Query Almacen: " + query);
 		return em.createQuery(query).getResultList();
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Almacen> findAllActivosOrderedByID() {
+		String query = "select ser from Almacen ser where ser.estado='AC' order by ser.id desc";
+		System.out.println("Query Almacen: " + query);
+		return em.createQuery(query).getResultList();
+	}
 
+	@SuppressWarnings("unchecked")
 	public Almacen findAlmacenForUser(Usuario user) {
 		String query = "select ser from Almacen ser where (ser.estado='AC' or ser.estado='IN') and ser.encargado.id="
 				+ user.getId() + " order by ser.id desc";

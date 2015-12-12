@@ -65,10 +65,10 @@ public class UsuarioController implements Serializable {
 	@Inject
 	private UsuarioRolRepository usuarioRolRepository;
 
-	@Inject
-	private UsuarioRolRepository usuarioRolesRepository;
+	//@Inject
+	//private UsuarioRolRepository usuarioRolesRepository;
 
-	private Logger log = Logger.getLogger(this.getClass());
+	//private Logger log = Logger.getLogger(this.getClass());
 
 	private @Inject SessionMain sessionMain; //variable del login
 	private String nombreUsuario;	
@@ -111,7 +111,8 @@ public class UsuarioController implements Serializable {
 	@PostConstruct
 	public void initNewUsuario() {
 
-		log.info(" init new initNewUsuario");
+		System.out.println(" init new initNewUsuario");
+		
 		beginConversation();
 		nombreUsuario = sessionMain.getUsuarioLogin().getLogin();
 		empresaLogin = sessionMain.getEmpresaLogin();
@@ -154,9 +155,9 @@ public class UsuarioController implements Serializable {
 
 	public void beginConversation() {
 		if (conversation.isTransient()) {
-			log.info("beginning conversation : " + this.conversation);
+			System.out.println("beginning conversation : " + this.conversation);
 			conversation.begin();
-			log.info("---> Init Conversation");
+			System.out.println("---> Init Conversation");
 		}
 	}
 
@@ -168,13 +169,13 @@ public class UsuarioController implements Serializable {
 
 	public void registrarUsuario() {
 		try {
-			log.info("Ingreso a registrarUsuario: ");
+			System.out.println("Ingreso a registrarUsuario: ");
 			Date fechaActual = new Date();
 			newUsuario.setFechaRegistro(new Date());
 			newUsuario.setUsuarioRegistro(nombreUsuario);
 			newUsuario.setState(nombreEstado.equals("ACTIVO")?"AC":"IN");
 			if(!newUsuario.validate(facesContext, empresaLogin, gestionLogin)){
-				log.info("registrarUsuario - > false ");
+				System.out.println("registrarUsuario - > false ");
 				resetearFitrosTabla("formTableUsuario:dataTableUser");
 				return;
 			}
@@ -192,20 +193,20 @@ public class UsuarioController implements Serializable {
 			FacesUtil.infoMessage("Registro", "Usuario Registrado! "+newUsuario.getLogin());
 			loadDefault();
 		} catch (Exception e) {
-			log.error("Error al registrar Usuario error: "+e.getMessage());
+			System.out.println("Error al registrar Usuario error: "+e.getMessage());
 			FacesUtil.errorMessage("Error al registrar Usuario");
 		}
 	}
 
 	public void modificarUsuario() {
 		try {
-			log.info("Ingreso a modificarUsuario: "
+			System.out.println("Ingreso a modificarUsuario: "
 					+ newUsuario.getId());
 			Date fechaActual = new Date();
 			newUsuario.setFechaModificacion(new Date());
 			newUsuario.setState(nombreEstado.equals("ACTIVO")?"AC":"IN");
 			if(!newUsuario.validate(facesContext, empresaLogin, gestionLogin)){
-				log.info("registrarUsuario - > false ");
+				System.out.println("registrarUsuario - > false ");
 				resetearFitrosTabla("formTableUsuario:dataTableUser");
 				return;
 			}
@@ -219,14 +220,14 @@ public class UsuarioController implements Serializable {
 			resetearFitrosTabla("formTableUsuario:dataTableUser");			
 			loadDefault();
 		} catch (Exception e) {
-			log.error("Error al Modificar. Usuario error: "+e.getMessage());
+			System.out.println("Error al Modificar. Usuario error: "+e.getMessage());
 		}
 	}
 
 	public void eliminarUsuario() {
 		try {
 			Date fechaActual = new Date();
-			log.info("Ingreso a eliminarUsuario "
+			System.out.println("Ingreso a eliminarUsuario "
 					+ newUsuario.getId());
 			newUsuario.setState("RM");
 			newUsuario.setFechaModificacion(fechaActual);
@@ -241,7 +242,7 @@ public class UsuarioController implements Serializable {
 			resetearFitrosTabla("formTableUsuario:dataTableUser");
 			loadDefault();
 		} catch (Exception e) {
-			log.error("Error al Eliminar. Usuario error: "+e.getMessage());
+			System.out.println("Error al Eliminar. Usuario error: "+e.getMessage());
 		}
 	}
 

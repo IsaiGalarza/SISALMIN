@@ -28,6 +28,9 @@ public class DetalleOrdenSalida implements Serializable {
 
 	private String observacion;
 
+	@Column(name="precio_unitario", nullable = false)
+	private double precioUnitario;
+	
 	private double total;
 
 	private String estado;
@@ -55,6 +58,8 @@ public class DetalleOrdenSalida implements Serializable {
 		this.cantidadEntregada = 0;
 		this.setEstado("AC");
 		this.fechaRegistro = new Date();
+		this.total = 0;
+		this.precioUnitario = 0;
 	}
 
 
@@ -136,6 +141,16 @@ public class DetalleOrdenSalida implements Serializable {
 
 	public void setCantidadEntregada(double cantidadEntregada) {
 		this.cantidadEntregada = cantidadEntregada;
+	}
+
+
+	public double getPrecioUnitario() {
+		return precioUnitario;
+	}
+
+
+	public void setPrecioUnitario(double precioUnitario) {
+		this.precioUnitario = precioUnitario;
 	}
 
 }
