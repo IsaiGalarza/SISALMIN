@@ -239,7 +239,7 @@
 													</p:column>
 
 													<p:column headerText="Unidad">
-														<h:outputText value="#{_var.unidadMedida}" />
+														<h:outputText value="#{_var.unidadMedidas.nombre}" />
 													</p:column>
 
 													<p:column headerText="Tipo">
@@ -327,19 +327,22 @@
 												</p:column>
 
 												<p:column width="30%" headerText="Nombre Partida"
-													filterBy="#{_Partida.nombre}" filterStyle="width: 100%; height:25px;"
+													filterBy="#{_Partida.nombre}"
+													filterStyle="width: 100%; height:25px;"
 													filterMatchMode="contains">
 													<h:outputText value="#{_Partida.nombre}" />
 												</p:column>
 
 												<p:column width="30%" headerText="Descripcion"
 													filterBy="#{_Partida.descripcion}"
-													filterStyle="width: 100%; height:25px;" filterMatchMode="contains">
+													filterStyle="width: 100%; height:25px;"
+													filterMatchMode="contains">
 													<h:outputText value="#{_Partida.descripcion}" />
 												</p:column>
 
-												<p:column width="5%" headerText="Estado"  style="text-align:center;"
-													filterBy="#{_Partida.estado}" filterStyle="width: 100%; height:25px;"
+												<p:column width="5%" headerText="Estado"
+													style="text-align:center;" filterBy="#{_Partida.estado}"
+													filterStyle="width: 100%; height:25px;"
 													filterMatchMode="contains">
 													<span class="label label-success"><h:outputText
 															rendered="#{_Partida.estado=='AC'}" value="Activo" /></span>
@@ -347,16 +350,20 @@
 															rendered="#{_Partida.estado=='IN'}" value="Inactivo" /></span>
 												</p:column>
 
-												<p:column width="5%" headerText="Fecha"  style="text-align:center;"
+												<p:column width="5%" headerText="Fecha"
+													style="text-align:center;"
 													filterBy="#{_Partida.fechaRegistro}"
-													filterStyle="width: 100%; height:25px;" filterMatchMode="contains">
+													filterStyle="width: 100%; height:25px;"
+													filterMatchMode="contains">
 													<h:outputText value="#{_Partida.fechaRegistro}">
 														<f:convertDateTime pattern="dd/MM/yyyy" />
 													</h:outputText>
 												</p:column>
-												<p:column width="5%" headerText="Registro"  style="text-align:center;"
+												<p:column width="5%" headerText="Registro"
+													style="text-align:center;"
 													filterBy="#{_Partida.usuarioRegistro}"
-													filterStyle="width: 100%; height:25px;" filterMatchMode="contains">
+													filterStyle="width: 100%; height:25px;"
+													filterMatchMode="contains">
 													<h:outputText value="#{_Partida.usuarioRegistro}" />
 												</p:column>
 
@@ -477,18 +484,24 @@
 							<label for="medidaID" class="col-sm-3 control-label">Unidad
 								Medida</label>
 							<div class="col-sm-9">
-								<h:selectOneMenu id="medidaID" required="true"
-									requiredMessage="Medida Requerido."
-									value="#{partidaController.newProducto.unidadMedida}"
-									style="width:100%;">
-									<f:selectItem itemLabel="--Seleccione--" itemValue="" />
-									<f:selectItem itemLabel="PIEZA" itemValue="PIEZA" />
-									<f:selectItem itemLabel="GRAMO" itemValue="GRAMO" />
-									<f:selectItem itemLabel="METRO" itemValue="METRO" />
-									<f:selectItem itemLabel="LITRO" itemValue="LITRO" />
-									<f:selectItem itemLabel="KILO" itemValue="KILO" />
-									<p:ajax event="change" />
-								</h:selectOneMenu>
+								<p:autoComplete id="unidadMedidasID" style="width: 93%"
+									inputStyle="width: 93%; color: #555555; background-image: none;"
+									value="#{partidaController.selectedUnidadMedida.nombre}"
+									completeMethod="#{partidaController.completeUnidadMedida}"
+									minQueryLength="3" dropdown="true" required="true"
+									requiredMessage="Unidad Medida Requerido."
+									forceSelection="true" var="_var" itemLabel="#{_var}"
+									itemValue="#{_var.nombre}"
+									placeholder="[Escriba Unidad Medida]" maxResults="10">
+
+									<p:ajax event="itemSelect"
+										listener="#{partidaController.onRowSelectUnidadMedidaClick}"
+										update=":formDialogProducto:unidadMedidasID" />
+
+									<p:column>
+										<h:outputText value="#{_var.nombre}" />
+									</p:column>
+								</p:autoComplete>
 							</div>
 						</div>
 					</div>

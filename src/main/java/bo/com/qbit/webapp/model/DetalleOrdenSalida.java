@@ -60,6 +60,7 @@ public class DetalleOrdenSalida implements Serializable {
 		this.fechaRegistro = new Date();
 		this.total = 0;
 		this.precioUnitario = 0;
+		this.observacion = "ninguna";
 	}
 
 

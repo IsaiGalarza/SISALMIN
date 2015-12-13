@@ -13,10 +13,9 @@ import java.util.Date;
  */
 @Entity 
 @Table(name="producto" ,schema="public", uniqueConstraints = @UniqueConstraint(columnNames="codigo"))
-@NamedQuery(name="Producto.findAll", query="SELECT p FROM Producto p")
 public class Producto implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 5047606646242681208L;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -34,8 +33,9 @@ public class Producto implements Serializable {
 	@Column(name="tipo_producto", nullable= false)
 	private String tipoProducto;
 	
-	@Column(name="unidad_medida", nullable= false)
-	private String unidadMedida;
+	@ManyToOne(fetch=FetchType.EAGER, optional=true)
+	@JoinColumn(name="id_unidad_medida", nullable=false)
+	private UnidadMedida unidadMedidas;
 
 	private String estado;
 	
@@ -57,6 +57,7 @@ public class Producto implements Serializable {
 		this.nombre = "";
 		this.partida = new Partida();
 		this.precioUnitario = 0;
+		this.unidadMedidas = new UnidadMedida();
 	}
 	
 	@Override
@@ -136,20 +137,20 @@ public class Producto implements Serializable {
 		this.tipoProducto = tipoProducto;
 	}
 	
-	public String getUnidadMedida() {
-		return unidadMedida;
-	}
-
-	public void setUnidadMedida(String unidadMedida) {
-		this.unidadMedida = unidadMedida;
-	}
-	
 	public double getPrecioUnitario() {
 		return precioUnitario;
 	}
 
 	public void setPrecioUnitario(double precioUnitario) {
 		this.precioUnitario = precioUnitario;
+	}
+
+	public UnidadMedida getUnidadMedidas() {
+		return unidadMedidas;
+	}
+
+	public void setUnidadMedidas(UnidadMedida unidadMedidas) {
+		this.unidadMedidas = unidadMedidas;
 	}
 
 }

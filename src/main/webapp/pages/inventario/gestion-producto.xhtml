@@ -193,7 +193,7 @@
 															</p:inputText>
 														</div>
 													</div>
-													<ui:fragment rendered="#{productoController.modificar}">
+													<ui:fragment rendered="false">
 														<div class="form-group ">
 															<div class="col-md-4">Precio Unitario</div>
 															<div class="col-md-8">
@@ -232,28 +232,28 @@
 													<div class="form-group ">
 														<div class="col-md-4">Unidad Medida</div>
 														<div class="col-md-8">
-															<h:selectOneMenu id="medidaID"
-																style=" color: #555555; background-image: none; width:100%;"
-																styleClass="input-sm form-control" required="true"
-																requiredMessage="Medida Requerido."
-																value="#{productoController.newProducto.unidadMedida}">
-																<f:selectItem itemLabel="SELECCIONE" itemValue="" />
-																<f:selectItem itemLabel="PIEZA" itemValue="PIEZA" />
-																<f:selectItem itemLabel="GRAMO" itemValue="GRAMO" />
-																<f:selectItem itemLabel="METRO" itemValue="METRO" />
-																<f:selectItem itemLabel="LITRO" itemValue="LITRO" />
-																<f:selectItem itemLabel="KILO" itemValue="KILO" />
-																<f:selectItem itemLabel="CAJA" itemValue="CAJA" />
-																<f:selectItem itemLabel="PAQUETE" itemValue="PAQUETE" />
-																<f:selectItem itemLabel="PLANCHA" itemValue="PLANCHA" />
-																<f:selectItem itemLabel="BOLSA" itemValue="BOLSA" />
-																<f:selectItem itemLabel="FRASCO" itemValue="FRASCO" />
-																<f:selectItem itemLabel="SACHET" itemValue="SACHET" />
-																<f:selectItem itemLabel="BLOCK" itemValue="BLOCK" />
-																<p:ajax event="change" />
-															</h:selectOneMenu>
+															<p:autoComplete id="unidadMedidasID" style="width: 93%"
+																inputStyle="width: 93%; color: #555555; background-image: none;"
+																value="#{productoController.selectedUnidadMedida.nombre}"
+																completeMethod="#{productoController.completeUnidadMedida}"
+																minQueryLength="3" dropdown="true" required="true"
+																requiredMessage="Unidad Medida Requerido."
+																forceSelection="true" var="_var" itemLabel="#{_var}"
+																itemValue="#{_var.nombre}"
+																placeholder="[Escriba Unidad Medida]" maxResults="10">
+
+																<p:ajax event="itemSelect"
+																	listener="#{productoController.onRowSelectUnidadMedidaClick}"
+																	update=":formTableProducto:unidadMedidasID" />
+
+																<p:column>
+																	<h:outputText value="#{_var.nombre}" />
+																</p:column>
+															</p:autoComplete>
 														</div>
 													</div>
+
+
 
 													<div class="form-group ">
 														<div class="col-md-4">Fecha</div>
@@ -330,7 +330,7 @@
 													filterMatchMode="contains">
 													<h:outputText value="#{_var.nombre}" />
 												</p:column>
-												<p:column headerText="Precio U."
+												<p:column headerText="Precio U." rendered="false"
 													filterBy="#{_var.precioUnitario}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.precioUnitario}">
@@ -343,9 +343,9 @@
 												</p:column>
 
 												<p:column headerText="Unidad Medida"
-													filterBy="#{_var.unidadMedida}" filterStyle="width: 100%;"
+													filterBy="#{_var.unidadMedidas.nombre}" filterStyle="width: 100%;"
 													filterMatchMode="contains">
-													<h:outputText value="#{_var.unidadMedida}" />
+													<h:outputText value="#{_var.unidadMedidas.nombre}" />
 												</p:column>
 
 												<p:column width="10%" headerText="Estado"

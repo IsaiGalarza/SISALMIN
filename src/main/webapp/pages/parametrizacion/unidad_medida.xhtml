@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/WEB-INF/templates/template_main.xhtml">
+	<ui:define name="head">
+		<title>Unidad de Medida</title>
+	</ui:define>
+
+	<ui:define name="content">
+		<!--BEGIN CONTENT-->
+		<div class="content">
+			<section class="content-header">
+				<div class="pull-left" style="padding-top: 8px;">
+					<h:form id="formBotonesHeader" style="padding-left: 10px;">
+						<div class="btn-group-demo">
+							<div class="btn-group">
+
+								<p:commandLink id="buttonCancelar" value="&#160; Cancelar"
+									styleClass="btn btn-warning ion-minus-circled"
+									update=":formTableUnidadMedida, :formBotonesHeader"
+									rendered="#{unidadMedidaController.modificar or unidadMedidaController.registrar}"
+									style="height:31px; padding:center"
+									action="#{unidadMedidaController.initNewUnidadMedida()}">
+								</p:commandLink>
+
+								<p:commandLink id="buttonCrear1"
+									value="&#160; Nuevo Unidad de Medida"
+									styleClass="btn btn-success ion-plus-round"
+									rendered="#{unidadMedidaController.crear}"
+									update=":formTableUnidadMedida, :formBotonesHeader"
+									action="#{unidadMedidaController.cambiarAspecto()}"
+									style="height:31px;">
+								</p:commandLink>
+
+								<p:commandLink id="buttonRegistrar" value="&#160; Registrar"
+									styleClass="btn btn-success ion-checkmark"
+									rendered="#{unidadMedidaController.registrar}"
+									update=":formTableUnidadMedida, :formBotonesHeader"
+									style="height:31px; padding:center"
+									action="#{unidadMedidaController.registrarUnidadMedida()}">
+								</p:commandLink>
+
+								<p:commandLink id="buttonVerModificar" value="&#160; Modificar"
+									styleClass="btn btn-primary ion-edit"
+									rendered="#{unidadMedidaController.selectedUnidadMedida!=null and unidadMedidaController.crear}"
+									style="height:31px; padding:center"
+									update=":formTableUnidadMedida, :formBotonesHeader"
+									action="#{unidadMedidaController.cambiarAspectoModificar()}">
+								</p:commandLink>
+
+								<p:commandLink id="buttonModificar" value="&#160; Modificar"
+									styleClass="btn btn-primary ion-edit"
+									rendered="#{unidadMedidaController.modificar=='true'}"
+									style="height:31px; padding:center"
+									update=":formTableUnidadMedida, :formBotonesHeader"
+									action="#{unidadMedidaController.modificarUnidadMedida()}">
+								</p:commandLink>
+
+								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
+									styleClass="btn btn-danger ion-close"
+									rendered="#{unidadMedidaController.modificar=='true'}"
+									update=":formTableUnidadMedida, :formBotonesHeader"
+									onclick="dlgEliminar.show()"
+									style="height:31px; padding:center">
+								</p:commandLink>
+
+
+								<p:dialog header="Desea Eliminar la Unidad Medida?"
+									widgetVar="dlgEliminar" minHeight="40" modal="true">
+									<h:panelGrid columns="2" cellpadding="5">
+
+										<p:outputLabel value="ID" />
+										<p:outputLabel
+											value="#{unidadMedidaController.newUnidadMedida.id}"
+											style="text-transform: uppercase" required="true" size="20">
+										</p:outputLabel>
+
+										<p:outputLabel value="Nombre" />
+										<p:outputLabel style="text-transform: uppercase" size="20"
+											value="#{unidadMedidaController.newUnidadMedida.nombre}"
+											required="true" requiredMessage="Requerido.">
+										</p:outputLabel>
+
+									</h:panelGrid>
+									<p:commandButton value="Si"
+										actionListener="#{unidadMedidaController.eliminarUnidadMedida()}"
+										icon="ui-icon-trash" style="width: 90px; text-color: white;"
+										update=":formTableUnidadMedida" oncomplete="dlgEliminar.hide()"
+										styleClass="btn btn-default" immediate="true" />
+									<p:commandButton value="No"
+										style="width: 90px; text-color: white;"
+										update=":formTableUnidadMedida" oncomplete="dlgEliminar.hide()"
+										styleClass="btn btn-default" immediate="true" />
+								</p:dialog>
+
+
+							</div>
+						</div>
+					</h:form>
+				</div>
+				<div class="pull-right">
+					<ol class="breadcrumb">
+						<li><a href="#{request.contextPath}/pages/dashboard.xhtml"
+							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
+						<li><a
+							href="#{request.contextPath}/pages/parametrizacion/unidad_medidad.xhtml"
+							style="color: #0090FF; font-size: 12px;">Parametrización</a></li>
+						<li class="active" style="font-size: 12px;">Unidad Medida</li>
+					</ol>
+				</div>
+			</section>
+			<section class="main-content">
+				<section class="main-content">
+					<div class="row">
+
+						<h:form id="formTableUnidadMedida" styleClass="form-horizontal">
+
+							<ui:fragment
+								rendered="#{unidadMedidaController.modificar or unidadMedidaController.registrar}">
+								<div class="col-md-4">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Datos Unidad de Medida</h3>
+										</div>
+										<div class="panel-body">
+											<!-- start here register -->
+											<div class="row">
+												<div class="col-md-12 box-content form-horizontal">
+
+													<div class="form-group ">
+														<div class="col-md-4">Nombre</div>
+														<div class="col-md-8">
+															<p:inputText id="nombreID"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control" size="40"
+																value="#{unidadMedidaController.newUnidadMedida.nombre}"
+																required="true" requiredMessage="Requerido.">
+																<p:ajax event="change" />
+															</p:inputText>
+														</div>
+													</div>
+
+													<div class="form-group ">
+														<div class="col-md-4">Descripcion</div>
+														<div class="col-md-8">
+															<p:inputTextarea id="descripcionID"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control" size="40"
+																value="#{unidadMedidaController.newUnidadMedida.descripcion}"
+																required="true" requiredMessage="Requerido." rows="5">
+																<p:ajax event="change" />
+															</p:inputTextarea>
+														</div>
+													</div>
+
+													<div class="form-group ">
+														<div class="col-md-4">Registro</div>
+														<div class="col-md-8">
+															<p:inputText id="usuarioRegistroID"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control" size="40"
+																value="#{unidadMedidaController.newUnidadMedida.usuarioRegistro}"
+																disabled="true" required="true"
+																requiredMessage="Usuario Registro Requerido." />
+														</div>
+													</div>
+
+													<div class="form-group ">
+														<div class="col-md-4">Fecha</div>
+														<div class="col-md-8">
+															<p:inputText id="fechaRegistroID"
+																style=" color: #555555; background-image: none;"
+																styleClass="input-sm form-control" size="40"
+																value="#{unidadMedidaController.newUnidadMedida.fechaRegistro}"
+																disabled="true" required="true"
+																requiredMessage="Requerido.">
+																<f:convertDateTime pattern="dd/MM/yyyy H:mm" />
+															</p:inputText>
+														</div>
+													</div>
+
+
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</ui:fragment>
+
+
+							<ui:fragment rendered="#{unidadMedidaController.crear}">
+
+								<div class="col-md-12" align="left">
+
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Lista de Unidad de Medida</h3>
+										</div>
+										<!-- start here datatable -->
+										<div class="box-content no-padding">
+
+											<p:dataTable
+												style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+												selection="#{unidadMedidaController.selectedUnidadMedida}"
+												selectionMode="single" rowKey="#{_UnidadMedida.id}"
+												id="FuncionarioTable" var="_UnidadMedida"
+												value="#{listaUnidadMedida}"
+												rendered="#{not empty listaFuncionario}"
+												emptyMessage="No se encontraron Registros.">
+
+												<p:ajax event="rowSelect"
+													update=":formTableUnidadMedida, :formBotonesHeader"
+													listener="#{unidadMedidaController.onRowSelectUnidadMedidaClick}" />
+
+												<p:column width="8%" headerText="Id"
+													filterBy="#{_UnidadMedida.id}" style="text-align:center;"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_UnidadMedida.id}" />
+												</p:column>
+
+												<p:column width="30%" headerText="Nombre "
+													filterBy="#{_UnidadMedida.nombre}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText
+														value="#{_UnidadMedida.nombre}" />
+												</p:column>
+
+												<p:column width="30%" headerText="Descripcion"
+													filterBy="#{_UnidadMedida.descripcion}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_UnidadMedida.descripcion}" />
+												</p:column>
+
+												<p:column width="10%" headerText="Estado"
+													style="text-align:center;"
+													filterBy="#{_UnidadMedida.estado}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<span class="label label-success"><h:outputText
+															rendered="#{_UnidadMedida.estado=='AC'}" value="Activo" /></span>
+													<span class="label label-danger"><h:outputText
+															rendered="#{_UnidadMedida.estado=='IN'}" value="Inactivo" /></span>
+												</p:column>
+
+												<p:column width="10%" headerText="Fecha"
+													style="text-align:center;"
+													filterBy="#{_UnidadMedida.fechaRegistro}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_UnidadMedida.fechaRegistro}">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</h:outputText>
+												</p:column>
+												<p:column width="10%" headerText="Registro"
+													style="text-align:center;"
+													filterBy="#{_UnidadMedida.usuarioRegistro}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_UnidadMedida.usuarioRegistro}" />
+												</p:column>
+
+											</p:dataTable>
+
+										</div>
+
+										<!-- end here datatable -->
+										<div class="panel-body"></div>
+
+									</div>
+								</div>
+
+							</ui:fragment>
+
+
+						</h:form>
+
+
+					</div>
+				</section>
+			</section>
+		</div>
+
+		<!--END CONTENT-->
+
+		<!-- START GROWL formGrowl:msgs1 -->
+		<h:form id="formGrowl">
+			<p:growl id="msgs1" showDetail="true" />
+		</h:form>
+		<!-- END GROWL -->
+
+
+
+	</ui:define>
+
+	<ui:insert name="scripts">
+
+	</ui:insert>
+</ui:composition>

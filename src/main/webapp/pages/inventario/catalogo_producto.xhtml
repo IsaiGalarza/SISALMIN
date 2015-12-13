@@ -86,9 +86,9 @@
 											</p:column>
 
 											<p:column headerText="Unidad Medida"
-												filterBy="#{_var.producto.unidadMedida}"
+												filterBy="#{_var.producto.unidadMedidas.nombre}"
 												filterStyle="width: 100%;" filterMatchMode="contains">
-												<h:outputText value="#{_var.producto.unidadMedida}" />
+												<h:outputText value="#{_var.producto.unidadMedidas.nombre}" />
 											</p:column>
 
 											<p:column headerText="Stock" width="8%"

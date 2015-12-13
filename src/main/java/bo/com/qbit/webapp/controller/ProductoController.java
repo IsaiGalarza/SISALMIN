@@ -21,8 +21,10 @@ import org.richfaces.cdi.push.Push;
 
 import bo.com.qbit.webapp.data.ProductoRepository;
 import bo.com.qbit.webapp.data.PartidaRepository;
+import bo.com.qbit.webapp.data.UnidadMedidaRepository;
 import bo.com.qbit.webapp.model.Producto;
 import bo.com.qbit.webapp.model.Partida;
+import bo.com.qbit.webapp.model.UnidadMedida;
 import bo.com.qbit.webapp.service.ProductoRegistration;
 import bo.com.qbit.webapp.util.SessionMain;
 
@@ -42,14 +44,12 @@ public class ProductoController implements Serializable {
 
 	@Inject
 	Conversation conversation;
-
-	@Inject
-	private ProductoRegistration productoRegistration;
-
-	@Inject
-	private ProductoRepository productoRepository;
-
+	
+	private @Inject ProductoRegistration productoRegistration;
+	
+	private @Inject ProductoRepository productoRepository;
 	private @Inject PartidaRepository partidaRepository;
+	private @Inject UnidadMedidaRepository unidadMedidaRepository;
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
@@ -62,7 +62,11 @@ public class ProductoController implements Serializable {
 	private String tituloPanel = "Registrar Producto";
 	private Producto selectedProducto;
 	private Producto newProducto= new Producto();
+	private UnidadMedida selectedUnidadMedida;
+	
 	private List<Partida> listPartida = new ArrayList<Partida>();
+	private List<UnidadMedida> listUnidadMedida = new ArrayList<UnidadMedida>();
+	
 
 	private List<Producto> listaProducto;
 
@@ -92,6 +96,7 @@ public class ProductoController implements Serializable {
 		newProducto.setEstado("AC");
 		newProducto.setFechaRegistro(new Date());
 		newProducto.setUsuarioRegistro(usuarioSession);
+		selectedUnidadMedida = new UnidadMedida();
 		
 		selectedProducto = null;
 
@@ -158,8 +163,28 @@ public class ProductoController implements Serializable {
 			}
 		}
 	}
+	
+	
+	// SELECCIONAR AUTOCOMPLETE UNIDAD DE MEDIDA
+	public List<UnidadMedida> completeUnidadMedida(String query) {
+		String upperQuery = query.toUpperCase();
+		listUnidadMedida = unidadMedidaRepository.findAllUnidadMedidaForDescription(upperQuery);
+		System.out.println("listUnidadMedida.size(): "+listUnidadMedida.size());
+		return listUnidadMedida;
+	}
+	
+	public void onRowSelectUnidadMedidaClick(SelectEvent event) {
+		String nombre = event.getObject().toString();
+		System.out.println("Seleccionado onRowSelectUnidadMedidaClick: selectedMedida.getNombre():"+selectedUnidadMedida.getNombre());
+		for(UnidadMedida um: listUnidadMedida){
+			if(um.getNombre().equals(nombre)){
+				selectedUnidadMedida = um;
+			}
+		}
+		 
+	}
 
-	public void updatedCantidad() {
+	public void updatedCantidad() { 
 		/*
 		 * if(!newProducto.isShowCantidad()){ newProducto.setCantidadCaja(0); }
 		 */
@@ -168,12 +193,14 @@ public class ProductoController implements Serializable {
 	// SELECT PRESENTACION CLICK
 	public void onRowSelectProductoClick(SelectEvent event) {
 		try {
-			Producto Producto = (Producto) event.getObject();
-			System.out.println("onRowSelectProductoClick  " + Producto.getId());
-			selectedProducto = Producto;
-			newProducto = em.find(Producto.class, Producto.getId());
-			newProducto.setFechaRegistro(new Date());
-			newProducto.setUsuarioRegistro(usuarioSession);
+			//Producto Producto = (Producto) event.getObject();
+			//System.out.println("onRowSelectProductoClick  " + Producto.getId());
+			//selectedProducto = Producto;
+			//newProducto = em.find(Producto.class, selectedProducto.getId());
+			//newProducto.setFechaRegistro(new Date());
+			//newProducto.setUsuarioRegistro(usuarioSession);
+			newProducto = selectedProducto;
+			selectedUnidadMedida = selectedProducto.getUnidadMedidas();
 
 			tituloPanel = "Modificar Producto";
 			modificar = false;
@@ -188,7 +215,17 @@ public class ProductoController implements Serializable {
 	public void registrarProducto() {
 		try {
 			System.out.println("Ingreso a registrarProducto: ");
-			newProducto.setPrecioUnitario(0);//el precio mediante orden ingreso
+			
+			System.out.println("id: "+newProducto.getUnidadMedidas().getId());
+			System.out.println("nombre: "+newProducto.getNombre());
+			System.out.println("descripcion: "+newProducto.getDescripcion());
+			System.out.println("estado: "+newProducto.getEstado());
+			System.out.println("fechaRegistro: "+newProducto.getUnidadMedidas().getFechaRegistro());
+			System.out.println("UsuarioRegistro: "+newProducto.getUnidadMedidas().getUsuarioRegistro());
+			System.out.println("fechaRegistro: "+newProducto.getUnidadMedidas().getFechaRegistro());
+			
+			newProducto.setPrecioUnitario(0);//el precio se define mediante orden ingreso
+			newProducto.setUnidadMedidas(selectedUnidadMedida);
 			newProducto.setUsuarioRegistro(usuarioSession);
 			newProducto.setFechaRegistro(new Date());
 			productoRegistration.register(newProducto);
@@ -209,10 +246,8 @@ public class ProductoController implements Serializable {
 	public void modificarProducto() {
 		try {
 			System.out.println("Ingreso a modificarProducto: "
-					+ newProducto.getId());
-			
-			newProducto.setUsuarioRegistro(usuarioSession);
-			newProducto.setFechaRegistro(new Date());
+					+ newProducto.getUnidadMedidas().getNombre());
+			newProducto.setUnidadMedidas(selectedUnidadMedida);
 			productoRegistration.updated(newProducto);
 			
 			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
@@ -324,6 +359,14 @@ public class ProductoController implements Serializable {
 
 	public void setRegistrar(boolean registrar) {
 		this.registrar = registrar;
+	}
+
+	public UnidadMedida getSelectedUnidadMedida() {
+		return selectedUnidadMedida;
+	}
+
+	public void setSelectedUnidadMedida(UnidadMedida selectedUnidadMedida) {
+		this.selectedUnidadMedida = selectedUnidadMedida;
 	}
 
 }

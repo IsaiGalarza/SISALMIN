@@ -21,8 +21,10 @@ import org.richfaces.cdi.push.Push;
 
 import bo.com.qbit.webapp.data.PartidaRepository;
 import bo.com.qbit.webapp.data.ProductoRepository;
+import bo.com.qbit.webapp.data.UnidadMedidaRepository;
 import bo.com.qbit.webapp.model.Partida;
 import bo.com.qbit.webapp.model.Producto;
+import bo.com.qbit.webapp.model.UnidadMedida;
 import bo.com.qbit.webapp.service.PartidaRegistration;
 import bo.com.qbit.webapp.service.ProductoRegistration;
 import bo.com.qbit.webapp.util.SessionMain;
@@ -44,15 +46,13 @@ public class PartidaController implements Serializable {
 	@Inject
 	Conversation conversation;
 
-	@Inject
-	private PartidaRegistration partidaRegistration;
+	private @Inject PartidaRepository partidaRepository;
+	private @Inject ProductoRepository productoRepository;
+	private @Inject UnidadMedidaRepository unidadMedidaRepository;
 
-	@Inject
-	private PartidaRepository partidaRepository;
 
-	@Inject ProductoRegistration productoRegistration;
-
-	@Inject ProductoRepository productoRepository;
+	private @Inject PartidaRegistration partidaRegistration;
+	private @Inject ProductoRegistration productoRegistration;
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
@@ -67,14 +67,15 @@ public class PartidaController implements Serializable {
 	private Partida newPartida= new Partida();
 
 	private List<Partida> listaPartida;
-
-
 	private List<Producto> listaProductos = new ArrayList<Producto>(); // ITEMS
+	private List<UnidadMedida> listUnidadMedida = new ArrayList<UnidadMedida>();
+
 	private String tituloProducto = "Agregar Producto";
 	private Producto newProducto;
 	private Producto selectedProducto;
-	private boolean diagloProducto;
+	private UnidadMedida selectedUnidadMedida;
 
+	private boolean diagloProducto;
 	private boolean atencionCliente=false;
 
 	// @Named provides access the return value via the EL variable name
@@ -154,6 +155,7 @@ public class PartidaController implements Serializable {
 	}
 
 	public void agregarProducto(){
+		newProducto.setUnidadMedidas(selectedUnidadMedida);
 		listaProductos.add(0, newProducto);
 		newProducto = new Producto();
 		diagloProducto = false;
@@ -293,6 +295,25 @@ public class PartidaController implements Serializable {
 		return errorMessage;
 	}
 
+	// SELECCIONAR AUTOCOMPLETE UNIDAD DE MEDIDA
+	public List<UnidadMedida> completeUnidadMedida(String query) {
+		String upperQuery = query.toUpperCase();
+		listUnidadMedida = unidadMedidaRepository.findAllUnidadMedidaForDescription(upperQuery);
+		System.out.println("listUnidadMedida.size(): "+listUnidadMedida.size());
+		return listUnidadMedida;
+	}
+
+	public void onRowSelectUnidadMedidaClick(SelectEvent event) {
+		String nombre = event.getObject().toString();
+		System.out.println("Seleccionado onRowSelectUnidadMedidaClick: selectedMedida.getNombre():"+selectedUnidadMedida.getNombre());
+		for(UnidadMedida um: listUnidadMedida){
+			if(um.getNombre().equals(nombre)){
+				selectedUnidadMedida = um;
+			}
+		}
+
+	}
+
 	// get and set
 	public String getTituloPanel() {
 		return tituloPanel;
@@ -325,7 +346,7 @@ public class PartidaController implements Serializable {
 	public void setNewPartida(Partida newPartida) {
 		this.newPartida = newPartida;
 	}
-	
+
 	public boolean isAtencionCliente() {
 		return atencionCliente;
 	}
@@ -388,6 +409,22 @@ public class PartidaController implements Serializable {
 
 	public void setDiagloProducto(boolean diagloProducto) {
 		this.diagloProducto = diagloProducto;
+	}
+
+	public UnidadMedida getSelectedUnidadMedida() {
+		return selectedUnidadMedida;
+	}
+
+	public void setSelectedUnidadMedida(UnidadMedida selectedUnidadMedida) {
+		this.selectedUnidadMedida = selectedUnidadMedida;
+	}
+
+	public List<UnidadMedida> getListUnidadMedida() {
+		return listUnidadMedida;
+	}
+
+	public void setListUnidadMedida(List<UnidadMedida> listUnidadMedida) {
+		this.listUnidadMedida = listUnidadMedida;
 	}
 
 }

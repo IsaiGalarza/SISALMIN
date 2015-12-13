@@ -62,6 +62,7 @@ public class DetalleOrdenTraspaso implements Serializable{
 		this.setEstado("AC");
 		this.total = 0;
 		this.precioUnitario = 0;
+		this.observacion = "ninguna";
 	}
 	
 	public Date getFechaRegistro() {

@@ -55,7 +55,8 @@ public class DetalleOrdenIngreso implements Serializable{
 		this.id = 0 ;
 		this.cantidad = 1;
 		this.setEstado("AC");
-		precioUnitario = 0;
+		this.precioUnitario = 0;
+		this.observacion = "ninguna";
 	}
 	
 	public double getCantidad() {

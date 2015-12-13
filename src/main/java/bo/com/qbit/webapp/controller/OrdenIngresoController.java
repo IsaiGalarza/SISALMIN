@@ -31,6 +31,7 @@ import bo.com.qbit.webapp.data.OrdenIngresoRepository;
 import bo.com.qbit.webapp.data.PartidaRepository;
 import bo.com.qbit.webapp.data.ProductoRepository;
 import bo.com.qbit.webapp.data.ProveedorRepository;
+import bo.com.qbit.webapp.data.UnidadMedidaRepository;
 import bo.com.qbit.webapp.data.UsuarioRepository;
 import bo.com.qbit.webapp.model.Almacen;
 import bo.com.qbit.webapp.model.AlmacenProducto;
@@ -42,6 +43,7 @@ import bo.com.qbit.webapp.model.OrdenIngreso;
 import bo.com.qbit.webapp.model.Partida;
 import bo.com.qbit.webapp.model.Producto;
 import bo.com.qbit.webapp.model.Proveedor;
+import bo.com.qbit.webapp.model.UnidadMedida;
 import bo.com.qbit.webapp.model.Usuario;
 import bo.com.qbit.webapp.service.AlmacenProductoRegistration;
 import bo.com.qbit.webapp.service.AlmacenRegistration;
@@ -51,6 +53,7 @@ import bo.com.qbit.webapp.service.KardexProductoRegistration;
 import bo.com.qbit.webapp.service.OrdenIngresoRegistration;
 import bo.com.qbit.webapp.service.PartidaRegistration;
 import bo.com.qbit.webapp.service.ProductoRegistration;
+import bo.com.qbit.webapp.service.UnidadMedidaRegistration;
 import bo.com.qbit.webapp.util.Cifrado;
 import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.SessionMain;
@@ -76,6 +79,7 @@ public class OrdenIngresoController implements Serializable {
 	private @Inject AlmacenProductoRepository almacenProductoRepository;
 	private @Inject KardexProductoRepository kardexProductoRepository;
 	private @Inject PartidaRepository partidaRepository;
+	private @Inject UnidadMedidaRepository unidadMedidaRepository;
 
 	private @Inject OrdenIngresoRegistration ordenIngresoRegistration;
 	private @Inject DetalleOrdenIngresoRegistration detalleOrdenIngresoRegistration;
@@ -85,6 +89,7 @@ public class OrdenIngresoController implements Serializable {
 	private @Inject AlmacenRegistration almacenRegistration;
 	private @Inject PartidaRegistration partidaRegistration;
 	private @Inject DetalleProductoRegistration detalleProductoRegistration;
+	private @Inject UnidadMedidaRegistration unidadMedidaRegistration;
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
@@ -116,6 +121,7 @@ public class OrdenIngresoController implements Serializable {
 	private OrdenIngreso selectedOrdenIngreso;
 	private OrdenIngreso newOrdenIngreso;
 	private DetalleOrdenIngreso selectedDetalleOrdenIngreso;
+	private UnidadMedida selectedUnidadMedida;
 
 	//LIST
 	private List<Usuario> listUsuario = new ArrayList<Usuario>();
@@ -124,6 +130,7 @@ public class OrdenIngresoController implements Serializable {
 	private List<Almacen> listaAlmacen = new ArrayList<Almacen>();
 	private List<Proveedor> listaProveedor = new ArrayList<Proveedor>();
 	private List<DetalleOrdenIngreso> listDetalleOrdenIngresoEliminados = new ArrayList<DetalleOrdenIngreso>();
+	private List<UnidadMedida> listUnidadMedida = new ArrayList<UnidadMedida>();
 
 	//SESSION
 	private @Inject SessionMain sessionMain; //variable del login
@@ -340,7 +347,7 @@ public class OrdenIngresoController implements Serializable {
 			selectedOrdenIngreso.setEstado("PR");
 			selectedOrdenIngreso.setFechaAprobacion(fechaActual);
 			ordenIngresoRegistration.updated(selectedOrdenIngreso);
-			
+
 			Proveedor proveedor = selectedOrdenIngreso.getProveedor();
 			// actuaizar stock de AlmacenProducto
 			listaDetalleOrdenIngreso = detalleOrdenIngresoRepository.findAllByOrdenIngreso(selectedOrdenIngreso);
@@ -395,7 +402,7 @@ public class OrdenIngresoController implements Serializable {
 		double entrada = cantidad;
 		double salida = 0;
 		double saldo = stockAnterior + cantidad;
-		
+
 		KardexProducto kardexProducto = new KardexProducto();
 		kardexProducto.setUnidadSolicitante("ORDEN INGRESO");
 		kardexProducto.setFecha(fechaActual);
@@ -405,8 +412,8 @@ public class OrdenIngresoController implements Serializable {
 		kardexProducto.setFechaRegistro(fechaActual);
 		kardexProducto.setGestion(gestionSesion);
 		kardexProducto.setNumeroTransaccion(selectedOrdenIngreso.getCorrelativo());
-		
-		
+
+
 		//BOLIVIANOS
 		kardexProducto.setPrecioUnitario(precioUnitario);
 		kardexProducto.setTotalEntrada(precioUnitario * entrada);
@@ -417,7 +424,7 @@ public class OrdenIngresoController implements Serializable {
 		kardexProducto.setStock(entrada);//ENTRADA
 		kardexProducto.setStockActual(salida);//SALIDA
 		kardexProducto.setStockAnterior(saldo);//SALDO
-		
+
 		kardexProducto.setProducto(prod);
 
 		kardexProducto.setTipoMovimiento("ORDEN INGRESO");
@@ -603,6 +610,25 @@ public class OrdenIngresoController implements Serializable {
 			}
 		}
 	}
+	
+	// SELECCIONAR AUTOCOMPLETE UNIDAD DE MEDIDA
+	public List<UnidadMedida> completeUnidadMedida(String query) {
+		String upperQuery = query.toUpperCase();
+		listUnidadMedida = unidadMedidaRepository.findAllUnidadMedidaForDescription(upperQuery);
+		System.out.println("listUnidadMedida.size(): "+listUnidadMedida.size());
+		return listUnidadMedida;
+	}
+	
+	public void onRowSelectUnidadMedidaClick(SelectEvent event) {
+		String nombre = event.getObject().toString();
+		System.out.println("Seleccionado onRowSelectUnidadMedidaClick: selectedMedida.getNombre():"+selectedUnidadMedida.getNombre());
+		for(UnidadMedida um: listUnidadMedida){
+			if(um.getNombre().equals(nombre)){
+				selectedUnidadMedida = um;
+			}
+		}
+		 
+	}
 
 	//IMPORT - EXPORT EXCEL
 
@@ -705,6 +731,15 @@ public class OrdenIngresoController implements Serializable {
 					partida.setUsuarioRegistro(usuarioSession);
 					partida = partidaRegistration.register(partida);
 				}
+				UnidadMedida unidadMedida =  unidadMedidaRepository.findByNombre(unidadMedidaProducto);
+				if(unidadMedida == null){
+					unidadMedida = new UnidadMedida();
+					unidadMedida.setNombre(unidadMedidaProducto);
+					unidadMedida.setDescripcion(unidadMedidaProducto);
+					unidadMedida.setEstado("AC");
+					unidadMedida.setUsuarioRegistro(usuarioSession);
+					unidadMedida.setFechaRegistro(new Date());
+				}
 				Producto producto = productoRepository.findByCodigo(codigoProducto);
 				if(producto == null){
 					producto = new Producto();
@@ -716,7 +751,7 @@ public class OrdenIngresoController implements Serializable {
 					producto.setPartida(partida);
 					producto.setPrecioUnitario(Double.parseDouble(precioUnitarioProducto));
 					producto.setTipoProducto(tipoProductoProducto);
-					producto.setUnidadMedida(unidadMedidaProducto);
+					producto.setUnidadMedidas(unidadMedida);
 					producto.setUsuarioRegistro(usuarioSession);
 					producto = productoRegistration.register(producto);
 				}
@@ -769,6 +804,7 @@ public class OrdenIngresoController implements Serializable {
 	public void registrarProducto() {
 		try {
 			System.out.println("Ingreso a registrarProducto: ");
+			newProducto.setUnidadMedidas(selectedUnidadMedida);
 			newProducto.setEstado("AC");
 			newProducto.setFechaRegistro(new Date());
 			newProducto.setUsuarioRegistro(usuarioSession);
@@ -993,6 +1029,14 @@ public class OrdenIngresoController implements Serializable {
 
 	public void setImportarFile(boolean importarFile) {
 		this.importarFile = importarFile;
+	}
+
+	public UnidadMedida getSelectedUnidadMedida() {
+		return selectedUnidadMedida;
+	}
+
+	public void setSelectedUnidadMedida(UnidadMedida selectedUnidadMedida) {
+		this.selectedUnidadMedida = selectedUnidadMedida;
 	}
 
 }

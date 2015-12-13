@@ -357,7 +357,7 @@ public class OrdenTraspasoController implements Serializable {
 				//11 tipoProducto
 				wr.write(Cifrado.Encriptar(producto.getTipoProducto(), 12)+"\r\n");
 				//12 unidadMedida
-				wr.write(Cifrado.Encriptar(producto.getUnidadMedida(), 12)+"\r\n");
+				wr.write(Cifrado.Encriptar(producto.getUnidadMedidas().getNombre(), 12)+"\r\n");
 				//>>>>>>>>PARTIDA<<<<<<<<
 				Partida partida = producto.getPartida();
 				//13 codigo

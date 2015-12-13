@@ -341,7 +341,8 @@
 														</p:column>
 
 														<p:column headerText="Unidad Medida" width="10%">
-															<h:outputText value="#{_var.producto.unidadMedida}" />
+															<h:outputText
+																value="#{_var.producto.unidadMedidas.nombre}" />
 														</p:column>
 
 														<p:column headerText="Cantidad" width="10%">
@@ -778,19 +779,24 @@
 							<div class="form-group ">
 								<div class="col-md-4">Unidad Medida</div>
 								<div class="col-md-8">
-									<h:selectOneMenu id="nuevoMdidaID"
-										style=" color: #555555; background-image: none; width:100%;"
-										styleClass="input-sm form-control" required="true"
-										requiredMessage="Medida Requerido."
-										value="#{ordenIngresoController.newProducto.unidadMedida}">
-										<f:selectItem itemLabel="SELECCIONE" itemValue="" />
-										<f:selectItem itemLabel="PIEZA" itemValue="PIEZA" />
-										<f:selectItem itemLabel="GRAMO" itemValue="GRAMO" />
-										<f:selectItem itemLabel="METRO" itemValue="METRO" />
-										<f:selectItem itemLabel="LITRO" itemValue="LITRO" />
-										<f:selectItem itemLabel="KILO" itemValue="KILO" />
-										<p:ajax event="change" />
-									</h:selectOneMenu>
+									<p:autoComplete id="unidadMedidasID" style="width: 93%"
+										inputStyle="width: 93%; color: #555555; background-image: none;"
+										value="#{ordenIngresoController.selectedUnidadMedida.nombre}"
+										completeMethod="#{ordenIngresoController.completeUnidadMedida}"
+										minQueryLength="3" dropdown="true" required="true"
+										requiredMessage="Unidad Medida Requerido."
+										forceSelection="true" var="_var" itemLabel="#{_var}"
+										itemValue="#{_var.nombre}"
+										placeholder="[Escriba Unidad Medida]" maxResults="10">
+
+										<p:ajax event="itemSelect"
+											listener="#{ordenIngresoController.onRowSelectUnidadMedidaClick}"
+											update=":formDialogProducto:unidadMedidasID" />
+
+										<p:column>
+											<h:outputText value="#{_var.nombre}" />
+										</p:column>
+									</p:autoComplete>
 								</div>
 							</div>
 
