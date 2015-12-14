@@ -717,6 +717,19 @@
 
 								</div>
 							</div>
+							
+							<div class="form-group ">
+								<div class="col-md-4">Codigo</div>
+								<div class="col-md-8">
+									<p:inputText id="nuevoCodigoID"
+										style=" color: #555555; background-image: none;"
+										styleClass="input-sm form-control" size="40"
+										value="#{ordenIngresoController.newProducto.codigo}"
+										required="true" requiredMessage="Requerido.">
+										<p:ajax event="change" />
+									</p:inputText>
+								</div>
+							</div>
 
 							<div class="form-group ">
 								<div class="col-md-4">Nombre Producto</div>
