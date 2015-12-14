@@ -203,7 +203,7 @@ public class TomaInventarioController implements Serializable {
 		selectedAlmacen = new Almacen();
 		//ORDEN INGRESO
 		newOrdenIngreso = new OrdenIngreso();
-		
+
 		//Verifica la gestion , sobre el levantamiento si ya se hizo el inicial
 		if(gestionSesion.isIniciada()){
 			newTomaInventario.setTipo("PARCIAL");
@@ -272,11 +272,13 @@ public class TomaInventarioController implements Serializable {
 				detalle.setUsuarioRegistro(usuarioSession);
 				detalleTomaInventarioRegistration.register(detalle);
 			}
-			//ACtualizar estado de gestion
-			gestionSesion.setIniciada(true);
-			gestionRegistration.update(gestionSesion);
 			//si es de Tipo INICIAL
 			if(newTomaInventario.getTipo().equals("INICIAL")){
+				//ACtualizar estado de gestion
+				gestionSesion.setIniciada(true);
+				sessionMain.getGestionLogin().setIniciada(true);//actualaizar la gestion
+				gestionRegistration.update(gestionSesion);
+				//registrar ordenIngreso
 				registrarOrdenIngreso();
 				DetalleTomaInventarioOrdenIngreso detalle = new DetalleTomaInventarioOrdenIngreso();
 				detalle.setEstado("AC");
@@ -291,10 +293,9 @@ public class TomaInventarioController implements Serializable {
 				newTomaInventario.setFechaRevision(fechaActual);
 				newTomaInventario.setEstado("PR");
 				tomaInventarioRegistration.updated(newTomaInventario);
-				
 			}
-			
-			
+
+
 			FacesUtil.infoMessage("Toma Inventario Registrada!", "");
 			initNewTomaInventario();
 		} catch (Exception e) {
@@ -346,7 +347,7 @@ public class TomaInventarioController implements Serializable {
 			newOrdenIngreso.setProveedor(selectedProveedor);
 			newOrdenIngreso = ordenIngresoRegistration.register(newOrdenIngreso);
 			for(DetalleOrdenIngreso d: listaDetalleOrdenIngreso){
-				
+
 				d.setFechaRegistro(fechaActual);
 				d.setUsuarioRegistro(usuarioSession);
 				d.setOrdenIngreso(newOrdenIngreso);
@@ -375,7 +376,7 @@ public class TomaInventarioController implements Serializable {
 		}
 		newOrdenIngreso.setTotalImporte(totalImporte);
 	}
-	
+
 	private void procesarOrdenIngreso(){
 		try {
 			Date fechaActual = new Date();
@@ -397,108 +398,112 @@ public class TomaInventarioController implements Serializable {
 				cargarDetalleProducto(newOrdenIngreso.getAlmacen(),d.getProducto(), d.getCantidad(), d.getPrecioUnitario(), d.getFechaRegistro(), newOrdenIngreso.getCorrelativo());
 			}
 
-			
+
 		} catch (Exception e) {
 		}
 	}
-	
+
 	// cargar en la ttabla detalle_producto, reegistros de productos, para luego utilizar el metodo PEPS
-		private void cargarDetalleProducto(Almacen almacen,Producto producto,double cantidad, double precio, Date fecha, String correlativoTransaccion){
-			try{
-				Date fechaActual = new Date();
-				DetalleProducto detalleProducto = new DetalleProducto();
-				detalleProducto.setCodigo("OI"+correlativoTransaccion+fecha.toString());
-				detalleProducto.setAlmacen(almacen);
-				detalleProducto.setEstado("AC");
-				detalleProducto.setPrecio(precio);
-				detalleProducto.setStockActual(cantidad);
-				detalleProducto.setStockInicial(cantidad);
-				detalleProducto.setCorrelativoTransaccion(correlativoTransaccion);
-				detalleProducto.setFecha(fecha);
-				detalleProducto.setFechaRegistro(fechaActual);
-				detalleProducto.setProducto(producto);
-				detalleProducto.setUsuarioRegistro(usuarioSession);
-				detalleProductoRegistration.register(detalleProducto);
-			}catch(Exception e){
-				System.out.println("cargarDetalleProducto() ERROR: "+e.getMessage());
-			}
+	private void cargarDetalleProducto(Almacen almacen,Producto producto,double cantidad, double precio, Date fecha, String correlativoTransaccion){
+		try{
+			Date fechaActual = new Date();
+			DetalleProducto detalleProducto = new DetalleProducto();
+			detalleProducto.setCodigo("OI"+correlativoTransaccion+fecha.toString());
+			detalleProducto.setAlmacen(almacen);
+			detalleProducto.setEstado("AC");
+			detalleProducto.setPrecio(precio);
+			detalleProducto.setStockActual(cantidad);
+			detalleProducto.setStockInicial(cantidad);
+			detalleProducto.setCorrelativoTransaccion(correlativoTransaccion);
+			detalleProducto.setFecha(fecha);
+			detalleProducto.setFechaRegistro(fechaActual);
+			detalleProducto.setProducto(producto);
+			detalleProducto.setUsuarioRegistro(usuarioSession);
+			detalleProductoRegistration.register(detalleProducto);
+		}catch(Exception e){
+			System.out.println("cargarDetalleProducto() ERROR: "+e.getMessage());
 		}
+	}
 
-		//registro en la tabla kardex_producto
-		private void actualizarKardexProducto(Producto prod,Date fechaActual,double cantidad,Double precioUnitario) throws Exception{
-			//registrar Kardex
-			KardexProducto kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProducto(prod);
-			double stockAnterior = 0;
-			if(kardexProductoAnt != null){
-				//se obtiene el saldo anterior del producto
-				stockAnterior = kardexProductoAnt.getStockAnterior();
-			}
-			double entrada = cantidad;
-			double salida = 0;
-			double saldo = stockAnterior + cantidad;
-
-			KardexProducto kardexProducto = new KardexProducto();
-			kardexProducto.setUnidadSolicitante("ORDEN INGRESO");
-			kardexProducto.setFecha(fechaActual);
-			kardexProducto.setAlmacen(newOrdenIngreso.getAlmacen());
-			kardexProducto.setCantidad(cantidad);
-			kardexProducto.setEstado("AC");
-			kardexProducto.setFechaRegistro(fechaActual);
-			kardexProducto.setGestion(gestionSesion);
-			kardexProducto.setNumeroTransaccion(newOrdenIngreso.getCorrelativo());
-
-
-			//BOLIVIANOS
-			kardexProducto.setPrecioUnitario(precioUnitario);
-			kardexProducto.setTotalEntrada(precioUnitario * entrada);
-			kardexProducto.setTotalSalida(precioUnitario * salida);
-			kardexProducto.setTotalSaldo(precioUnitario * saldo);
-
-			//CANTIDADES
-			kardexProducto.setStock(entrada);//ENTRADA
-			kardexProducto.setStockActual(salida);//SALIDA
-			kardexProducto.setStockAnterior(saldo);//SALDO
-
-			kardexProducto.setProducto(prod);
-
-			kardexProducto.setTipoMovimiento("ORDEN INGRESO");
-			kardexProducto.setUsuarioRegistro(usuarioSession);
-			kardexProductoRegistration.register(kardexProducto);
+	//registro en la tabla kardex_producto
+	private void actualizarKardexProducto(Producto prod,Date fechaActual,double cantidad,Double precioUnitario) throws Exception{
+		//registrar Kardex
+		KardexProducto kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProducto(prod);
+		double stockAnterior = 0;
+		if(kardexProductoAnt != null){
+			//se obtiene el saldo anterior del producto
+			stockAnterior = kardexProductoAnt.getStockAnterior();
 		}
+		double entrada = cantidad;
+		double salida = 0;
+		double saldo = stockAnterior + cantidad;
 
-		//registro en la tabla almacen_producto, actualiza el stock y el precio(promedio agrupando los productos)
-		private void actualizarStock(Almacen almacen,Proveedor proveedor,Producto prod ,double newStock,Date date,double precioUnitario) throws Exception {
-			//0 . verificar si existe el producto en el almacen
-			System.out.println("actualizarStock()");
-			AlmacenProducto almProd =  almacenProductoRepository.findByAlmacenProducto(almacen,prod);
-			if(almProd != null){
-				// 1 .  si existe el producto
-				double oldStock = almProd.getStock();
-				double oldPrecioUnitario = almProd.getPrecioUnitario();
-				almProd.setStock(oldStock + newStock);
-				almProd.setPrecioUnitario((( oldPrecioUnitario + precioUnitario)/2));//precio ponderado del producto
-				almacenProductoRegistration.updated(almProd);
-				return ;
-			}
-			// 2 . no existe el producto
-			almProd = new AlmacenProducto();
-			almProd.setAlmacen(almacen);
-			almProd.setProducto(prod);
-			almProd.setProveedor(proveedor);
-			almProd.setStock(newStock);
-			almProd.setPrecioUnitario(precioUnitario);
-			almProd.setEstado("AC");
-			almProd.setFechaRegistro(date);
-			almProd.setUsuarioRegistro(usuarioSession);
+		KardexProducto kardexProducto = new KardexProducto();
+		kardexProducto.setUnidadSolicitante("ORDEN INGRESO");
+		kardexProducto.setFecha(fechaActual);
+		kardexProducto.setAlmacen(newOrdenIngreso.getAlmacen());
+		kardexProducto.setCantidad(cantidad);
+		kardexProducto.setEstado("AC");
+		kardexProducto.setFechaRegistro(fechaActual);
+		kardexProducto.setGestion(gestionSesion);
+		kardexProducto.setNumeroTransaccion(newOrdenIngreso.getCorrelativo());
 
-			almacenProductoRegistration.register(almProd);
+
+		//BOLIVIANOS
+		kardexProducto.setPrecioUnitario(precioUnitario);
+		kardexProducto.setTotalEntrada(precioUnitario * entrada);
+		kardexProducto.setTotalSalida(precioUnitario * salida);
+		kardexProducto.setTotalSaldo(precioUnitario * saldo);
+
+		//CANTIDADES
+		kardexProducto.setStock(entrada);//ENTRADA
+		kardexProducto.setStockActual(salida);//SALIDA
+		kardexProducto.setStockAnterior(saldo);//SALDO
+
+		kardexProducto.setProducto(prod);
+
+		kardexProducto.setTipoMovimiento("ORDEN INGRESO");
+		kardexProducto.setUsuarioRegistro(usuarioSession);
+		kardexProductoRegistration.register(kardexProducto);
+	}
+
+	//registro en la tabla almacen_producto, actualiza el stock y el precio(promedio agrupando los productos)
+	private void actualizarStock(Almacen almacen,Proveedor proveedor,Producto prod ,double newStock,Date date,double precioUnitario) throws Exception {
+		//0 . verificar si existe el producto en el almacen
+		System.out.println("actualizarStock()");
+		AlmacenProducto almProd =  almacenProductoRepository.findByAlmacenProducto(almacen,prod);
+		if(almProd != null){
+			// 1 .  si existe el producto
+			double oldStock = almProd.getStock();
+			double oldPrecioUnitario = almProd.getPrecioUnitario();
+			almProd.setStock(oldStock + newStock);
+			almProd.setPrecioUnitario((( oldPrecioUnitario + precioUnitario)/2));//precio ponderado del producto
+			almacenProductoRegistration.updated(almProd);
+			return ;
 		}
+		// 2 . no existe el producto
+		almProd = new AlmacenProducto();
+		almProd.setAlmacen(almacen);
+		almProd.setProducto(prod);
+		almProd.setProveedor(proveedor);
+		almProd.setStock(newStock);
+		almProd.setPrecioUnitario(precioUnitario);
+		almProd.setEstado("AC");
+		almProd.setFechaRegistro(date);
+		almProd.setUsuarioRegistro(usuarioSession);
+
+		almacenProductoRegistration.register(almProd);
+	}
 
 	public void procesarConsulta(){
 		try {
 			listAlmacenProducto = almacenProductoRepository.findByAlmacen(selectedAlmacen);
 			if(listAlmacenProducto.size()==0){//validacion de almacen
-				FacesUtil.infoMessage("INFORMACION", "No se encontraron existencias en el almacen "+selectedAlmacen.getNombre());
+				if(selectedAlmacen==null){
+					FacesUtil.infoMessage("INFORMACION", "Seleccione un almacen ");
+				}else{
+					FacesUtil.infoMessage("INFORMACION", "No se encontraron existencias en el almacen "+selectedAlmacen.getNombre());
+				}
 				return ;
 			}
 			listDetalleTomaInventario = new ArrayList<DetalleTomaInventario>();

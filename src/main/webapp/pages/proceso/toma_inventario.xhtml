@@ -550,7 +550,7 @@
 													</p:cellEditor>
 												</p:column>
 
-												<p:column headerText="Observacion" width="8%"
+												<p:column headerText="Observacion" width="10%"
 													filterBy="#{_var.observacion}" filterStyle="width: 100%; "
 													filterMatchMode="contains">
 													<p:cellEditor>
@@ -650,6 +650,7 @@
 													</div>
 													<div class="col-md-1">
 														<p:commandLink id="editarDetalleOrdenIngreso"
+														    disabled="#{tomaInventarioController.verButtonDetalle}"
 															value="&#160;" styleClass="btn btn-primary ion-edit"
 															update="formTableTomaInventario"
 															oncomplete="PF('dlgProducto').show();" immediate="true"
