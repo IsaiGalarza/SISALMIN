@@ -25,6 +25,9 @@ public class TomaInventario implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
+	@Column(name = "tipo",nullable=true)
+	private String tipo;//INICIAL,PARCIAL,FINAL
+	
 	private String correlativo;
 	
 	@Column(name = "nombre_responsable")
@@ -64,7 +67,11 @@ public class TomaInventario implements Serializable{
 	public TomaInventario() {
 		super();
 		this.id = 0 ;
+		this.nombreInventariador = "";
+		this.nombreResponsable = "";
+		this.hoja = "";
 		this.setEstadoRevision("NO");
+		this.tipo = "PARCIAL";
 	}
 
 	public Integer getId() {
@@ -169,6 +176,14 @@ public class TomaInventario implements Serializable{
 
 	public void setFechaRevision(Date fechaRevision) {
 		this.fechaRevision = fechaRevision;
+	}
+
+	public String getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
 	}
 
 }

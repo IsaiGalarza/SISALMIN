@@ -60,6 +60,7 @@ public class EmpresaController implements Serializable {
 
 	private boolean modificar = false;
 	private Integer gestion;
+	private String gestionIniciada;
 
 	//login
 	private @Inject SessionMain sessionMain; //variable del login
@@ -87,6 +88,7 @@ public class EmpresaController implements Serializable {
 		listGestion = gesionRepository.findAll();
 		newGestion = new Gestion();
 		this.nuevaGestion = String.valueOf(obtenerGestionActiva().getGestion());
+		this.gestionIniciada = obtenerGestionActiva().isIniciada()?"SI":"NO";
 		newEmpresa = empresaRepository.findAll().size()>0?empresaRepository.findAll().get(0):null;
 
 		modificar = false;
@@ -220,5 +222,13 @@ public class EmpresaController implements Serializable {
 				g.setEstadoCierre("AC");
 			}
 		}
+	}
+
+	public String getGestionIniciada() {
+		return gestionIniciada;
+	}
+
+	public void setGestionIniciada(String gestionIniciada) {
+		this.gestionIniciada = gestionIniciada;
 	}
 }

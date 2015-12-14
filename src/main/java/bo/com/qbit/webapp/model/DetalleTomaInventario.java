@@ -34,11 +34,11 @@ public class DetalleTomaInventario implements Serializable{
 	private double cantidadRegistrada;
 	
 	@Column(name="cantidad_verificada",nullable=true)
-	private double cantidadVerificada;
+	private Double cantidadVerificada;
 	
 	@Column(name="diferencia",nullable=true)
-	private double diferencia;
-
+	private Double diferencia;
+	
 	@Column(name="fecha_registro")
 	private Date fechaRegistro;
 
@@ -60,7 +60,9 @@ public class DetalleTomaInventario implements Serializable{
 		this.id = 0 ;
 		this.cantidad = 0;
 		this.setEstado("AC");
-		
+		this.observacion = "";
+		this.cantidadVerificada = null;
+		this.diferencia = null;
 	}
 	
 	public int getCantidad() {
@@ -127,19 +129,19 @@ public class DetalleTomaInventario implements Serializable{
 		this.cantidadRegistrada = cantidadRegistrada;
 	}
 
-	public double getCantidadVerificada() {
+	public Double getCantidadVerificada() {
 		return cantidadVerificada;
 	}
 
-	public void setCantidadVerificada(double cantidadVerificada) {
+	public void setCantidadVerificada(Double cantidadVerificada) {
 		this.cantidadVerificada = cantidadVerificada;
 	}
 
-	public double getDiferencia() {
+	public Double getDiferencia() {
 		return diferencia;
 	}
 
-	public void setDiferencia(double diferencia) {
+	public void setDiferencia(Double diferencia) {
 		this.diferencia = diferencia;
 	}
 

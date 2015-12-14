@@ -60,7 +60,7 @@
 								<p:commandLink id="buttonProcesar" value="&#160; Procesar"
 									styleClass="btn btn-info ion-ios7-loop-strong"
 									style="height:31px; padding:center"
-									rendered="#{tomaInventarioController.registrar}"
+									rendered="#{tomaInventarioController.registrar and ! tomaInventarioController.newTomaInventario.tipo.equals('INICIAL')}"
 									update="formTableTomaInventario,formBotonesHeader"
 									action="#{tomaInventarioController.procesarConsulta()}">
 								</p:commandLink>
@@ -84,9 +84,24 @@
 								<p:commandLink id="buttonRevisar" value="&#160; Revisar"
 									styleClass="btn btn-info ion-ios7-loop-strong"
 									style="height:31px; padding:center"
-									rendered="#{ tomaInventarioController.revisarReport and (tomaInventarioController.listDetalleTomaInventario.size()==0)}"
+									rendered="#{ tomaInventarioController.revisarReport and (tomaInventarioController.listDetalleTomaInventario.size()==0) and !tomaInventarioController.selectedTomaInventario.tipo.equals('INICIAL')}"
 									update="formTableTomaInventario,formBotonesHeader"
 									action="#{tomaInventarioController.buttonRevisar()}">
+								</p:commandLink>
+
+								<p:commandLink id="buttonConciliar" value="&#160; Conciliar"
+									styleClass="btn btn-info ion-ios7-loop-strong"
+									style="height:31px; padding:center"
+									rendered="false"
+									update="formTableTomaInventario,formBotonesHeader">
+								</p:commandLink>
+
+								<p:commandLink id="buttonRegistrar3" value="&#160; Registrar"
+									styleClass="btn btn-success ion-checkmark"
+									rendered="#{tomaInventarioController.newTomaInventario.tipo.equals('INICIAL') and tomaInventarioController.registrar}"
+									update="formTableTomaInventario, formBotonesHeader,formGrowl:msgs1"
+									style="height:31px; padding:center"
+									action="#{tomaInventarioController.registrarTomaInventario()}">
 								</p:commandLink>
 							</div>
 						</div>
@@ -159,10 +174,17 @@
 													</h:outputText>
 												</p:column>
 
-												<p:column headerText="Hoja" width="15%"
+												<p:column headerText="Hoja" width="8%"
 													style="text-align:center;" filterBy="#{_var.hoja}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.hoja}">
+													</h:outputText>
+												</p:column>
+
+												<p:column headerText="Tipo" width="8%"
+													style="text-align:center;" filterBy="#{_var.tipo}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_var.tipo}">
 													</h:outputText>
 												</p:column>
 
@@ -175,6 +197,8 @@
 															rendered="#{_var.estado=='IN'}" value="Inactivo" /></span>
 													<span class="label label-success"><h:outputText
 															rendered="#{_var.estado=='RE'}" value="Revisado" /></span>
+													<span class="label label-success"><h:outputText
+															rendered="#{_var.estado=='PR'}" value="Procesado" /></span>
 												</p:column>
 
 												<p:column width="10%" headerText="Fecha"
@@ -215,6 +239,52 @@
 											<!-- start here register -->
 											<div class="row">
 												<div class="col-md-12 box-content form-horizontal">
+													<div class="form-group ">
+														<div class="col-md-4">Tipo</div>
+														<div class="col-md-8">
+															<h:selectOneMenu id="tipoID"
+																style=" color: #555555; background-image: none; width:100%;"
+																styleClass="input-sm form-control" required="true"
+																requiredMessage="Tipo Requerido."
+																disabled="#{tomaInventarioController.modificar}"
+																value="#{tomaInventarioController.newTomaInventario.tipo}">
+
+																<p:ajax event="change"
+																	update="formTableTomaInventario,formBotonesHeader" />
+																<f:selectItems
+																	value="#{tomaInventarioController.listTipo}" />
+															</h:selectOneMenu>
+														</div>
+													</div>
+													<ui:fragment
+														rendered="#{ tomaInventarioController.newTomaInventario.tipo.equals('INICIAL')}">
+														<div class="form-group ">
+															<div class="col-md-4">Proveedor</div>
+															<div class="col-md-8">
+
+																<p:autoComplete id="proveedorID" style="width: 93%"
+																	inputStyle="width: 93%; color: #555555; background-image: none;"
+																	value="#{tomaInventarioController.selectedProveedor.nombre}"
+																	completeMethod="#{tomaInventarioController.completeProveedor}"
+																	minQueryLength="3" dropdown="true" required="true"
+																	requiredMessage="Proveedor Requerido."
+																	forceSelection="true" var="_var" itemLabel="#{_var}"
+																	itemValue="#{_var.nombre}"
+																	placeholder="[Escriba Proveedor]" maxResults="10">
+																	<p:ajax event="itemSelect"
+																		update="formTableTomaInventario:proveedorID"
+																		listener="#{tomaInventarioController.onRowSelectProveedorClick}" />
+
+																	<p:column>
+																		<h:outputText value="#{_var.nombre}" />
+																	</p:column>
+
+																</p:autoComplete>
+
+															</div>
+														</div>
+													</ui:fragment>
+
 
 													<div class="form-group ">
 														<div class="col-md-4">Almacén</div>
@@ -239,7 +309,7 @@
 																</p:column>
 
 															</p:autoComplete>
-																
+
 														</div>
 													</div>
 
@@ -331,7 +401,8 @@
 									</div>
 								</div>
 							</ui:fragment>
-							<ui:fragment rendered="#{tomaInventarioController.registrar}">
+							<ui:fragment
+								rendered="#{tomaInventarioController.registrar  and tomaInventarioController.newTomaInventario.tipo.equals('PARCIAL')}">
 
 								<div class="col-md-8" align="left">
 
@@ -356,7 +427,7 @@
 													</h:outputText>
 												</p:column>
 
-												<p:column width="15%" headerText="Detalle Item"
+												<p:column width="15%" headerText="Nombre Item"
 													filterBy="#{_var.producto.nombre}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.producto.nombre}" />
@@ -365,33 +436,28 @@
 												<p:column width="16%" headerText="Unidad "
 													filterBy="#{_var.producto.unidadMedidas.nombre}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.producto.unidadMedida}" />
-												</p:column>
-
-												<p:column width="20%" headerText="Nombre"
-													filterBy="#{_var.producto.nombre}"
-													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.producto.nombre}" />
+													<h:outputText value="#{_var.producto.unidadMedidas.nombre}" />
 												</p:column>
 
 												<p:column width="8%" headerText="Cantidad registrada"
 													filterBy="#{_var.cantidadRegistrada}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.cantidadRegistrada}">
-														<f:convertNumber pattern="#,##0.00" />
 													</h:outputText>
 												</p:column>
 
 												<p:column width="8%" headerText="Cantidad verificada"
 													filterBy="#{_var.cantidadVerificada}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.cantidadVerificada}" />
+													<h:outputText
+														value="#{_var.cantidadVerificada == null? ' ' :_var.cantidadVerificada}" />
 												</p:column>
 
 												<p:column headerText="Diferencia" width="8%"
 													filterBy="#{_var.diferencia}" filterStyle="width: 100%; "
 													filterMatchMode="contains">
-													<h:outputText value="#{_var.diferencia}" />
+													<h:outputText
+														value="#{_var.diferencia == null? ' ' :_var.diferencia}" />
 												</p:column>
 
 												<p:column headerText="Observacion" width="8%"
@@ -432,7 +498,7 @@
 													</h:outputText>
 												</p:column>
 
-												<p:column width="15%" headerText="Detalle Item"
+												<p:column width="15%" headerText="Nombre Item"
 													filterBy="#{_var.producto.nombre}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.producto.nombre}" />
@@ -440,9 +506,9 @@
 
 												<p:column width="8%" headerText="Unidad "
 													style="text-align:center;"
-													filterBy="#{_var.producto.unidadMedida}"
+													filterBy="#{_var.producto.unidadMedidas.nombre}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.producto.unidadMedida}" />
+													<h:outputText value="#{_var.producto.unidadMedidas.nombre}" />
 												</p:column>
 
 												<p:column width="8%" headerText="Cantidad registrada"
@@ -450,7 +516,6 @@
 													style="text-align:center;" filterStyle="width: 100%;"
 													filterMatchMode="contains">
 													<h:outputText value="#{_var.cantidadRegistrada}">
-														<f:convertNumber pattern="#,##0.00" />
 													</h:outputText>
 												</p:column>
 
@@ -460,7 +525,8 @@
 													filterMatchMode="contains">
 													<p:cellEditor>
 														<f:facet name="output">
-															<h:outputText value="#{_var.cantidadVerificada}" />
+															<h:outputText
+																value="#{_var.cantidadVerificada == null? ' ' :_var.cantidadVerificada}" />
 														</f:facet>
 														<f:facet name="input">
 															<p:inputText id="modelInput1"
@@ -474,7 +540,8 @@
 													filterStyle="width: 100%; " filterMatchMode="contains">
 													<p:cellEditor>
 														<f:facet name="output">
-															<h:outputText value="#{_var.diferencia}" />
+															<h:outputText
+																value="#{_var.diferencia == null? ' ' :_var.diferencia}" />
 														</f:facet>
 														<f:facet name="input">
 															<p:inputText id="modelInput2" value="#{_var.diferencia}"
@@ -505,6 +572,112 @@
 									</div>
 								</div>
 							</ui:fragment>
+							<ui:fragment
+								rendered="#{(tomaInventarioController.registrar or tomaInventarioController.modificar) and tomaInventarioController.newTomaInventario.tipo.equals('INICIAL')}">
+								<div class="col-md-8" align="left">
+
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Lista Producto</h3>
+										</div>
+										<!-- start here datatable -->
+										<div class="box-content no-padding">
+
+											<p:dataTable id="itemsTable1"
+												style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+												selection="#{tomaInventarioController.selectedDetalleOrdenIngreso}"
+												selectionMode="single" rowKey="#{_var}" var="_var"
+												value="#{tomaInventarioController.listaDetalleOrdenIngreso}"
+												emptyMessage="No se encontraron Registros de ITEMS.">
+
+												<p:ajax event="rowSelect" update="formTableTomaInventario"
+													listener="#{tomaInventarioController.onRowSelectDetalleOrdenIngresoClick}" />
+
+												<p:column headerText="Partida">
+													<h:outputText value="#{_var.producto.partida.codigo}" />
+												</p:column>
+
+												<p:column headerText="Nombre ITEM">
+													<h:outputText value="#{_var.producto.nombre}" />
+												</p:column>
+
+												<p:column headerText="Unidad Medida" width="10%">
+													<h:outputText value="#{_var.producto.unidadMedidas.nombre}" />
+												</p:column>
+
+												<p:column headerText="Cantidad" width="10%">
+													<h:outputText value="#{_var.cantidad}" />
+												</p:column>
+
+												<p:column headerText="Precio U." width="12%">
+													<h:outputText value="#{_var.precioUnitario}">
+														<f:convertNumber pattern="#,##0.00" />
+													</h:outputText>#{' '}
+														<h:outputText value="Bs.-" />
+												</p:column>
+
+												<p:column headerText="Total" width="12%">
+													<h:outputText value="#{_var.total}">
+														<f:convertNumber pattern="#,##0.00" />
+													</h:outputText>
+												</p:column>
+
+												<p:column headerText="Obervacion">
+													<h:outputText value="#{_var.observacion}" />
+												</p:column>
+
+											</p:dataTable>
+										</div>
+
+										<br />
+
+										<div class="row">
+											<div class="col-sm-12">
+												<div class="form-group">
+													<div class="col-md-9"></div>
+													<div class="col-md-1">
+														<p:commandLink id="buttonIconAgregarProducto"
+															value="&#160;"
+															styleClass="btn btn-success ion-plus-round "
+															update="formTableTomaInventario"
+															oncomplete="PF('dlgProducto').show();" immediate="true">
+														</p:commandLink>
+
+														<p:tooltip id="toolTipbuttonAddProducto"
+															for="buttonIconAgregarProducto"
+															value="Agregar nuevo producto" trackMouse="true" />
+
+													</div>
+													<div class="col-md-1">
+														<p:commandLink id="editarDetalleOrdenIngreso"
+															value="&#160;" styleClass="btn btn-primary ion-edit"
+															update="formTableTomaInventario"
+															oncomplete="PF('dlgProducto').show();" immediate="true"
+															action="#{tomaInventarioController.editarDetalleOrdenIngreso()}">
+														</p:commandLink>
+														<p:tooltip id="toolTipbuttonEditarProducto"
+															for="editarDetalleOrdenIngreso"
+															value="Modificar producto seleccionado" trackMouse="true" />
+													</div>
+													<div class="col-md-1">
+														<p:commandLink id="eliminarDetalleOrdenIngreso"
+															value="&#160;" styleClass="btn btn-danger ion-close"
+															disabled="#{tomaInventarioController.verButtonDetalle}"
+															update="formTableTomaInventario" immediate="true"
+															action="#{tomaInventarioController.borrarDetalleOrdenIngreso()}">
+														</p:commandLink>
+														<p:tooltip id="toolTipbuttonDeleteProducto"
+															for="eliminarDetalleOrdenIngreso"
+															value="Eliminar producto seleccionado" trackMouse="true" />
+													</div>
+
+												</div>
+											</div>
+										</div>
+
+									</div>
+								</div>
+							</ui:fragment>
 
 							<!-- REPORTE -->
 							<ui:fragment rendered="#{tomaInventarioController.verReport}">
@@ -531,6 +704,287 @@
 			<p:growl id="msgs1" showDetail="true" />
 		</h:form>
 		<!-- END GROWL -->
+
+		<!-- DIALOG PRODUCTO -->
+		<p:dialog widgetVar="dlgProducto" resizable="false"
+			header="#{tomaInventarioController.tituloProducto}" showHeader="true"
+			modal="false" closeOnEscape="true" draggable="true" position="center"
+			style="padding: 0px 0px 0px 0px;" width="600"
+			visible="#{partidaController.diagloProducto}" id="modalProductoID">
+			<h:form id="formDialogProducto">
+				<ui:fragment rendered="#{ ! tomaInventarioController.nuevoProducto}">
+					<!-- ocultar si se va a creaer producto -->
+
+					<div class="row">
+						<div class="form-group">
+							<div class="col-md-3">Producto</div>
+							<div class="col-md-9">
+								<p:autoComplete id="productoID"
+									value="#{tomaInventarioController.selectedProducto.nombre}"
+									completeMethod="#{tomaInventarioController.completeProducto}"
+									minQueryLength="3" size="30" dropdown="true" required="true"
+									requiredMessage="Producto Requerido." forceSelection="true"
+									var="_var" itemLabel="#{_var}" itemValue="#{_var.nombre}"
+									placeholder="[Escriba Producto]" maxResults="10">
+
+									<p:ajax event="itemSelect" update="totalID,precioID"
+										listener="#{tomaInventarioController.onRowSelectProductoClick}" />
+
+									<p:column>
+										<h:outputText value="#{_var.nombre}" />
+									</p:column>
+
+								</p:autoComplete>
+								<p:commandLink value="+"
+									style="padding-left: 50px; height: 30px;"
+									styleClass="btn btn-success">
+									<p:ajax immediate="true" update="formDialogProducto"
+										listener="#{tomaInventarioController.setNuevoProducto(true)}" />
+								</p:commandLink>
+							</div>
+
+						</div>
+					</div>
+					<br />
+
+					<div class="row">
+						<div class="form-group">
+							<label for="descripcionID" class="col-sm-3 control-label">Observacion</label>
+							<div class="col-sm-9">
+								<p:inputTextarea id="descripcionID" required="true"
+									requiredMessage="Observacion Requerido."
+									value="#{tomaInventarioController.selectedDetalleOrdenIngreso.observacion}"
+									size="20" rows="2" cols="39">
+									<p:ajax event="change" update="precioID,totalID" />
+								</p:inputTextarea>
+							</div>
+						</div>
+					</div>
+
+					<br />
+					<div class="row">
+						<div class="form-group">
+							<label for="precioID" class="col-sm-3 control-label">Precio
+								Unitario</label>
+							<div class="col-sm-9">
+								<p:inputText id="precioID" required="true"
+									requiredMessage="Precio Requerido."
+									value="#{tomaInventarioController.selectedDetalleOrdenIngreso.precioUnitario}"
+									size="40">
+									<p:ajax event="change" update="totalID"
+										listener="#{tomaInventarioController.calcular()}" />
+									<f:convertNumber pattern="#,##0.000" locale="en" />
+								</p:inputText>
+							</div>
+						</div>
+					</div>
+
+					<br />
+					<div class="row">
+						<div class="form-group">
+							<label for="cantidadID" class="col-sm-3 control-label">Stock
+								Inicial</label>
+							<div class="col-sm-9">
+								<p:inputText id="cantidadID" required="true"
+									requiredMessage="Cantidad Requerido."
+									value="#{tomaInventarioController.selectedDetalleOrdenIngreso.cantidad}"
+									size="40">
+									<p:ajax event="change" update="totalID"
+										listener="#{tomaInventarioController.calcular()}" />
+								</p:inputText>
+							</div>
+						</div>
+					</div>
+
+					<br />
+					<div class="row">
+						<div class="form-group">
+							<label for="totalID" class="col-sm-3 control-label">Total</label>
+							<div class="col-sm-9">
+								<p:inputText id="totalID" required="true"
+									requiredMessage="Total Requerido."
+									value="#{tomaInventarioController.selectedDetalleOrdenIngreso.total}"
+									size="40">
+									<p:ajax event="change" />
+									<f:convertNumber pattern="#,##0.000" locale="en" />
+								</p:inputText>
+							</div>
+						</div>
+					</div>
+
+					<br />
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="form-group">
+								<div class="col-md-4"></div>
+								<div class="col-md-4">
+									<p:commandLink value="&#160; Cerrar"
+										styleClass="btn btn-warning ion-minus-circled btn-block"
+										onclick="PF('dlgProducto').hide();"
+										action="#{tomaInventarioController.limpiarDatosProducto()}"
+										update="formTableTomaInventario" immediate="true">
+									</p:commandLink>
+								</div>
+								<div class="col-md-4">
+									<p:commandLink value="&#160; Aceptar"
+										styleClass="btn btn-success ion-checkmark btn-block"
+										onclick="PF('dlgProducto').hide();"
+										rendered="#{ ! tomaInventarioController.editarOrdenIngreso}">
+										<p:ajax update="formTableTomaInventario"
+											listener="#{tomaInventarioController.agregarDetalleOrdenIngreso()}" />
+									</p:commandLink>
+
+									<p:commandLink value="&#160; Modificar"
+										styleClass="btn btn-success ion-checkmark btn-block"
+										onclick="PF('dlgProducto').hide();"
+										rendered="#{tomaInventarioController.editarOrdenIngreso}">
+										<p:ajax update="formTableTomaInventario"
+											listener="#{tomaInventarioController.modificarDetalleOrdenIngreso()}" />
+									</p:commandLink>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</ui:fragment>
+				<ui:fragment rendered="#{tomaInventarioController.nuevoProducto}">
+					<!-- mostrar si se va a crear producto -->
+					<div class="row">
+						<div class="col-md-12 box-content form-horizontal">
+
+							<div class="form-group ">
+								<div class="col-md-4">Partida</div>
+								<div class="col-md-8">
+
+									<p:autoComplete id="partidaID" style="width: 93%"
+										inputStyle="width: 93%; color: #555555; background-image: none;"
+										value="#{tomaInventarioController.newProducto.partida.nombre}"
+										completeMethod="#{tomaInventarioController.completePartida}"
+										minQueryLength="3" dropdown="true" required="true"
+										requiredMessage="Partida Requerido." forceSelection="true"
+										var="_var" itemLabel="#{_var}" itemValue="#{_var.nombre}"
+										placeholder="[Escriba Partida]" maxResults="10">
+
+										<p:ajax event="itemSelect"
+											listener="#{tomaInventarioController.onRowSelectPartidaClick}"
+											update="formDialogProducto:partidaID" />
+										<p:column>
+											<h:outputText value="#{_var.nombre}" />
+										</p:column>
+									</p:autoComplete>
+
+								</div>
+							</div>
+
+							<div class="form-group ">
+								<div class="col-md-4">Nombre Producto</div>
+								<div class="col-md-8">
+									<p:inputText id="nuevoNombreID"
+										style=" color: #555555; background-image: none;"
+										styleClass="input-sm form-control" size="40"
+										value="#{tomaInventarioController.newProducto.nombre}"
+										required="true" requiredMessage="Requerido.">
+										<p:ajax event="change" />
+									</p:inputText>
+								</div>
+							</div>
+							<div class="form-group ">
+								<div class="col-md-4">Descripción</div>
+								<div class="col-md-8">
+									<p:inputText id="nuevoDescripcionID"
+										style=" color: #555555; background-image: none;"
+										styleClass="input-sm form-control" size="40"
+										value="#{tomaInventarioController.newProducto.descripcion}"
+										required="true" requiredMessage="Requerido.">
+										<p:ajax event="change" />
+									</p:inputText>
+								</div>
+							</div>
+							<ui:fragment rendered="false">
+								<div class="form-group ">
+									<div class="col-md-4">Precio Unitario</div>
+									<div class="col-md-8">
+										<p:inputText id="nuevoPrecioID"
+											style=" color: #555555; background-image: none;"
+											styleClass="input-sm form-control" required="true"
+											requiredMessage="Precio Requerido."
+											value="#{tomaInventarioController.newProducto.precioUnitario}"
+											size="40">
+											<p:ajax event="change" />
+											<f:convertNumber pattern="#,##0.000" locale="en" />
+										</p:inputText>
+									</div>
+								</div>
+							</ui:fragment>
+
+							<div class="form-group ">
+								<div class="col-md-4">Tipo Producto</div>
+								<div class="col-md-8">
+									<h:selectOneMenu id="nuevoTipoID"
+										style=" color: #555555; background-image: none; width:100%;"
+										styleClass="input-sm form-control" required="true"
+										requiredMessage="Tipo Requerido."
+										value="#{tomaInventarioController.newProducto.tipoProducto}">
+										<f:selectItem itemLabel="SELECCIONE" itemValue="" />
+										<f:selectItem itemLabel="INSUMOS" itemValue="INSUMOS" />
+										<f:selectItem itemLabel="MATERIALES" itemValue="MATERIALES" />
+										<f:selectItem itemLabel="SUMINISTRO" itemValue="SUMINISTRO" />
+										<p:ajax event="change" />
+									</h:selectOneMenu>
+								</div>
+							</div>
+
+							<div class="form-group ">
+								<div class="col-md-4">Unidad Medida</div>
+								<div class="col-md-8">
+									<p:autoComplete id="unidadMedidasID" style="width: 93%"
+										inputStyle="width: 93%; color: #555555; background-image: none;"
+										value="#{tomaInventarioController.selectedUnidadMedida.nombre}"
+										completeMethod="#{tomaInventarioController.completeUnidadMedida}"
+										minQueryLength="3" dropdown="true" required="true"
+										requiredMessage="Unidad Medida Requerido."
+										forceSelection="true" var="_var" itemLabel="#{_var}"
+										itemValue="#{_var.nombre}"
+										placeholder="[Escriba Unidad Medida]" maxResults="10">
+
+										<p:ajax event="itemSelect"
+											listener="#{tomaInventarioController.onRowSelectUnidadMedidaClick}"
+											update="formDialogProducto:unidadMedidasID" />
+
+										<p:column>
+											<h:outputText value="#{_var.nombre}" />
+										</p:column>
+									</p:autoComplete>
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="form-group">
+								<div class="col-md-4"></div>
+								<div class="col-md-4">
+									<p:commandLink value="&#160; Cancelar"
+										styleClass="btn btn-warning ion-minus-circled btn-block">
+										<p:ajax immediate="true" update="formDialogProducto"
+											listener="#{tomaInventarioController.setNuevoProducto(false)}" />
+									</p:commandLink>
+								</div>
+								<div class="col-md-4">
+									<p:commandLink value="&#160; Registrar"
+										styleClass="btn btn-success ion-checkmark btn-block">
+										<p:ajax update="formDialogProducto,formGrowl:msgs1"
+											listener="#{tomaInventarioController.registrarProducto()}" />
+									</p:commandLink>
+								</div>
+							</div>
+						</div>
+					</div>
+				</ui:fragment>
+			</h:form>
+		</p:dialog>
 
 
 	</ui:define>

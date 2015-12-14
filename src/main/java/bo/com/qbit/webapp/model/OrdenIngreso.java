@@ -81,6 +81,7 @@ public class OrdenIngreso implements Serializable{
 		this.almacen = new Almacen();		
 		this.proveedor=new Proveedor();
 		this.gestion = new Gestion();
+		this.observacion = "Ninguna";
 	}
 
 	public Integer getId() {

@@ -80,6 +80,7 @@ public class OrdenTraspaso implements Serializable{
 		this.almacenDestino = new Almacen();	
 		this.proyecto =new Proyecto();
 		this.setGestion(new Gestion());
+		this.observacion = "Ninguna";
 	}
 
 	public Integer getId() {

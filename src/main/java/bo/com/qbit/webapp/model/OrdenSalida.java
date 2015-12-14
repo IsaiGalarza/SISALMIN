@@ -76,7 +76,7 @@ public class OrdenSalida implements Serializable{
 		this.unidadSolicitante = new DetalleUnidad();
 		this.funcionario = new Funcionario();
 		this.setProyecto(new Proyecto());
-		this.almacen = new Almacen();		
+		this.almacen = new Almacen();
 	}
 
 	public Integer getId() {

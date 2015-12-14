@@ -24,7 +24,10 @@ public class Gestion implements Serializable {
 	
 	private Integer gestion;
 	
-	@Column(name="estado_cierre",nullable=true )
+	@Column(name="iniciada",nullable=true )
+	private boolean iniciada;//al crear una toma de incentario inicial se pone en true
+	
+	@Column(name="estado_cierre" )
 	private String estadoCierre;
 	
 	@ManyToOne(fetch=FetchType.EAGER, optional=false)
@@ -47,6 +50,7 @@ public class Gestion implements Serializable {
 	public Gestion() {
 		super();
 		this.id = 0;
+		this.iniciada = false;
 	}
 	
 	@Override
@@ -140,6 +144,14 @@ public class Gestion implements Serializable {
 
 	public void setEstadoCierre(String estadoCierre) {
 		this.estadoCierre = estadoCierre;
+	}
+
+	public boolean isIniciada() {
+		return iniciada;
+	}
+
+	public void setIniciada(boolean iniciada) {
+		this.iniciada = iniciada;
 	}	
 
 }

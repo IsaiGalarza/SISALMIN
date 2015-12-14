@@ -19,15 +19,39 @@ import org.richfaces.cdi.push.Push;
 
 import bo.com.qbit.webapp.data.AlmacenProductoRepository;
 import bo.com.qbit.webapp.data.AlmacenRepository;
+import bo.com.qbit.webapp.data.DetalleOrdenIngresoRepository;
 import bo.com.qbit.webapp.data.DetalleTomaInventarioRepository;
+import bo.com.qbit.webapp.data.KardexProductoRepository;
+import bo.com.qbit.webapp.data.OrdenIngresoRepository;
+import bo.com.qbit.webapp.data.PartidaRepository;
+import bo.com.qbit.webapp.data.ProductoRepository;
+import bo.com.qbit.webapp.data.ProveedorRepository;
 import bo.com.qbit.webapp.data.TomaInventarioRepository;
+import bo.com.qbit.webapp.data.UnidadMedidaRepository;
 import bo.com.qbit.webapp.model.Almacen;
 import bo.com.qbit.webapp.model.AlmacenProducto;
+import bo.com.qbit.webapp.model.DetalleOrdenIngreso;
+import bo.com.qbit.webapp.model.DetalleProducto;
 import bo.com.qbit.webapp.model.DetalleTomaInventario;
+import bo.com.qbit.webapp.model.DetalleTomaInventarioOrdenIngreso;
+import bo.com.qbit.webapp.model.Gestion;
+import bo.com.qbit.webapp.model.KardexProducto;
+import bo.com.qbit.webapp.model.OrdenIngreso;
+import bo.com.qbit.webapp.model.Partida;
+import bo.com.qbit.webapp.model.Producto;
 import bo.com.qbit.webapp.model.Proveedor;
 import bo.com.qbit.webapp.model.TomaInventario;
+import bo.com.qbit.webapp.model.UnidadMedida;
 import bo.com.qbit.webapp.model.Usuario;
+import bo.com.qbit.webapp.service.AlmacenProductoRegistration;
+import bo.com.qbit.webapp.service.DetalleOrdenIngresoRegistration;
+import bo.com.qbit.webapp.service.DetalleProductoRegistration;
+import bo.com.qbit.webapp.service.DetalleTomaInventarioOrdenIngresoRegistration;
 import bo.com.qbit.webapp.service.DetalleTomaInventarioRegistration;
+import bo.com.qbit.webapp.service.GestionRegistration;
+import bo.com.qbit.webapp.service.KardexProductoRegistration;
+import bo.com.qbit.webapp.service.OrdenIngresoRegistration;
+import bo.com.qbit.webapp.service.ProductoRegistration;
 import bo.com.qbit.webapp.service.TomaInventarioRegistration;
 import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.SessionMain;
@@ -48,8 +72,24 @@ public class TomaInventarioController implements Serializable {
 	private @Inject DetalleTomaInventarioRepository detalleTomaInventarioRepository;
 	private @Inject TomaInventarioRepository tomaInventarioRepository;
 
+	private @Inject ProductoRepository productoRepository;
+	private @Inject DetalleOrdenIngresoRepository detalleOrdenIngresoRepository;
+	private @Inject KardexProductoRepository kardexProductoRepository;
+	private @Inject UnidadMedidaRepository unidadMedidaRepository;
+	private @Inject PartidaRepository partidaRepository;
+	private @Inject ProveedorRepository proveedorRepository;
+	private @Inject OrdenIngresoRepository ordenIngresoRepository;
+
 	private @Inject TomaInventarioRegistration tomaInventarioRegistration;
 	private @Inject DetalleTomaInventarioRegistration detalleTomaInventarioRegistration;
+	private @Inject ProductoRegistration productoRegistration;
+	private @Inject DetalleProductoRegistration detalleProductoRegistration;
+	private @Inject OrdenIngresoRegistration ordenIngresoRegistration;
+	private @Inject DetalleOrdenIngresoRegistration detalleOrdenIngresoRegistration;
+	private @Inject GestionRegistration gestionRegistration;
+	private @Inject DetalleTomaInventarioOrdenIngresoRegistration detalleTomaInventarioOrdenIngresoRegistration;
+	private @Inject KardexProductoRegistration kardexProductoRegistration;
+	private @Inject AlmacenProductoRegistration almacenProductoRegistration;
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
@@ -73,6 +113,7 @@ public class TomaInventarioController implements Serializable {
 
 	private String tituloPanel = "Registrar Almacen";
 	private String urlTomaInventario = "";
+	private String tipoTomaInventario;
 
 	//OBJECT
 	private Almacen selectedAlmacen;
@@ -86,11 +127,30 @@ public class TomaInventarioController implements Serializable {
 	private List<DetalleTomaInventario> listDetalleTomaInventario = new ArrayList<DetalleTomaInventario>();
 	private List<TomaInventario> listTomaInventario = new ArrayList<TomaInventario>();
 	private List<AlmacenProducto> listAlmacenProducto = new ArrayList<AlmacenProducto>();
+	private List<String> listTipo = new ArrayList<String>();//INICIAL,PARCIAL,FINAL
 
 	//SESSION
 	private @Inject SessionMain sessionMain; //variable del login
 	private String usuarioSession;
-	private boolean atencionCliente=false;
+	private Gestion gestionSesion;
+
+	//PRODUTO
+	private Producto newProducto ;
+	private Producto selectedProducto;
+	private UnidadMedida selectedUnidadMedida;
+	private DetalleOrdenIngreso selectedDetalleOrdenIngreso;
+	private boolean nuevoProducto = false;
+	private List<UnidadMedida> listUnidadMedida = new ArrayList<UnidadMedida>();
+	private List<Partida> listPartida = new ArrayList<Partida>();
+	private List<DetalleOrdenIngreso> listaDetalleOrdenIngreso = new ArrayList<DetalleOrdenIngreso>(); // ITEMS
+	private List<DetalleOrdenIngreso> listDetalleOrdenIngresoEliminados = new ArrayList<DetalleOrdenIngreso>();
+	private String tituloProducto = "Agregar Producto";
+	private boolean verButtonDetalle = true;
+	private boolean editarOrdenIngreso = false;
+	private List<Proveedor> listProveedor = new ArrayList<Proveedor>();
+	private Proveedor selectedProveedor;
+	//ORDEN INGRESO
+	private OrdenIngreso newOrdenIngreso;
 
 	@PostConstruct
 	public void initNewTomaInventario() {
@@ -98,8 +158,7 @@ public class TomaInventarioController implements Serializable {
 		System.out.println(" ... initNewTomaInventario ...");
 
 		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
-
-		selectedAlmacen = new Almacen();
+		gestionSesion = sessionMain.getGestionLogin();
 
 		// tituloPanel
 		tituloPanel = "Registrar Toma Inventario";
@@ -111,15 +170,17 @@ public class TomaInventarioController implements Serializable {
 		verGuardar = false;
 		verButtonReport = false;
 
+		tipoTomaInventario = "PARCIAL";
+
 		//---
 		verLista = true;
 		modificar = false;
 		registrar = false;
 
 		listTomaInventario = tomaInventarioRepository.findAllOrderedByID();
-
 		listDetalleTomaInventario = new ArrayList<DetalleTomaInventario>();
 		listaAlmacen = almacenRepository.findAllOrderedByID();
+		listTipo  = new ArrayList<String>();
 
 		selectedTomaInventario = null;
 
@@ -129,6 +190,30 @@ public class TomaInventarioController implements Serializable {
 		newTomaInventario.setFecha(new Date());
 		newTomaInventario.setFechaRegistro(new Date());
 		newTomaInventario.setUsuarioRegistro(usuarioSession);
+
+		//PROUDCTO
+		nuevoProducto = false;
+		selectedDetalleOrdenIngreso = new DetalleOrdenIngreso();
+		selectedProducto= new Producto();
+		newProducto= new Producto();
+		listaDetalleOrdenIngreso = new ArrayList<DetalleOrdenIngreso>();
+		selectedUnidadMedida = new UnidadMedida();
+		selectedProveedor = new Proveedor();
+		verButtonDetalle = true;
+		selectedAlmacen = new Almacen();
+		//ORDEN INGRESO
+		newOrdenIngreso = new OrdenIngreso();
+		
+		//Verifica la gestion , sobre el levantamiento si ya se hizo el inicial
+		if(gestionSesion.isIniciada()){
+			newTomaInventario.setTipo("PARCIAL");
+			listTipo.add("PARCIAL");
+			listTipo.add("FINAL");
+		}else{
+			newTomaInventario.setTipo("INICIAL");
+			listTipo.add("INICIAL");
+			//listTipo.add("PARCIAL");//test , luego eliminar esta linea
+		}
 
 	}
 
@@ -170,9 +255,15 @@ public class TomaInventarioController implements Serializable {
 	}
 
 	public void registrarTomaInventario() {
+		//validaciones
+		if(newTomaInventario.getNombreInventariador().isEmpty() || newTomaInventario.getNombreResponsable().isEmpty() || newTomaInventario.getHoja().isEmpty()){
+			FacesUtil.infoMessage("VALIDACION", "No pueden haber campos vacios");
+			return;
+		}
 		try {
 			Date fechaActual = new Date();
 			newTomaInventario.setAlmacen(selectedAlmacen);
+			newTomaInventario.setEstado("AC");
 			newTomaInventario.setFechaRegistro(fechaActual);
 			newTomaInventario = tomaInventarioRegistration.register(newTomaInventario);
 			for(DetalleTomaInventario detalle : listDetalleTomaInventario){
@@ -181,7 +272,29 @@ public class TomaInventarioController implements Serializable {
 				detalle.setUsuarioRegistro(usuarioSession);
 				detalleTomaInventarioRegistration.register(detalle);
 			}
-
+			//ACtualizar estado de gestion
+			gestionSesion.setIniciada(true);
+			gestionRegistration.update(gestionSesion);
+			//si es de Tipo INICIAL
+			if(newTomaInventario.getTipo().equals("INICIAL")){
+				registrarOrdenIngreso();
+				DetalleTomaInventarioOrdenIngreso detalle = new DetalleTomaInventarioOrdenIngreso();
+				detalle.setEstado("AC");
+				detalle.setFechaRegistro(fechaActual);
+				detalle.setOrdenIngreso(newOrdenIngreso);
+				detalle.setTomaInventario(newTomaInventario);
+				detalle.setUsuarioRegistro(usuarioSession);
+				detalleTomaInventarioOrdenIngresoRegistration.register(detalle);
+				//procesar OrdenIngreso
+				procesarOrdenIngreso();
+				//actualizar estado
+				newTomaInventario.setFechaRevision(fechaActual);
+				newTomaInventario.setEstado("PR");
+				tomaInventarioRegistration.updated(newTomaInventario);
+				
+			}
+			
+			
 			FacesUtil.infoMessage("Toma Inventario Registrada!", "");
 			initNewTomaInventario();
 		} catch (Exception e) {
@@ -210,10 +323,184 @@ public class TomaInventarioController implements Serializable {
 			FacesUtil.errorMessage("Error al Eliminar.");
 		}
 	}
+
+	//ABM producto
+	public void registrarOrdenIngreso() {
+		try {
+			Date fechaActual = new Date();
+			calcularTotal();
+			System.out.println("Ingreso a registrarOrdenIngreso: ");
+			int numeroCorrelativo = ordenIngresoRepository.obtenerNumeroOrdenIngreso(new Date(),gestionSesion);
+			newOrdenIngreso.setMotivoIngreso("TOMA INVENTARIO INICIAL");
+			newOrdenIngreso.setTipoDocumento("SIN DOCUMENTO");
+			newOrdenIngreso.setNumeroDocumento("0");
+			newOrdenIngreso.setFechaDocumento(fechaActual);
+			newOrdenIngreso.setObservacion("Generado a partir de la Toma de Inventario Numero:"+newTomaInventario.getId()+", Inventario Inicial");
+			newOrdenIngreso.setCorrelativo(cargarCorrelativo(numeroCorrelativo));
+			newOrdenIngreso.setGestion(gestionSesion);
+			newOrdenIngreso.setFechaDocumento(fechaActual);
+			newOrdenIngreso.setUsuarioRegistro(usuarioSession);
+			newOrdenIngreso.setEstado("IN");
+			newOrdenIngreso.setFechaRegistro(fechaActual);
+			newOrdenIngreso.setAlmacen(selectedAlmacen);
+			newOrdenIngreso.setProveedor(selectedProveedor);
+			newOrdenIngreso = ordenIngresoRegistration.register(newOrdenIngreso);
+			for(DetalleOrdenIngreso d: listaDetalleOrdenIngreso){
+				
+				d.setFechaRegistro(fechaActual);
+				d.setUsuarioRegistro(usuarioSession);
+				d.setOrdenIngreso(newOrdenIngreso);
+				detalleOrdenIngresoRegistration.register(d);
+				//Registrar detalle toma inventario
+				DetalleTomaInventario detalle = new DetalleTomaInventario();
+				detalle.setCantidadRegistrada(d.getCantidad());
+				detalle.setCantidadVerificada(d.getCantidad());
+				detalle.setDiferencia(0d);
+				detalle.setEstado("AC");
+				detalle.setFechaRegistro(fechaActual);
+				detalle.setObservacion("Ninguna");
+				detalle.setProducto(d.getProducto());
+				detalle.setTomaInventario(newTomaInventario);
+				detalle.setUsuarioRegistro(usuarioSession);
+				detalleTomaInventarioRegistration.register(detalle);
+			}
+		} catch (Exception e) {
+		}
+	}
+
+	public void calcularTotal(){
+		double totalImporte = 0;
+		for(DetalleOrdenIngreso d : listaDetalleOrdenIngreso){
+			totalImporte =totalImporte + d.getTotal();
+		}
+		newOrdenIngreso.setTotalImporte(totalImporte);
+	}
 	
+	private void procesarOrdenIngreso(){
+		try {
+			Date fechaActual = new Date();
+			// actualizar estado de orden ingreso
+			newOrdenIngreso.setEstado("PR");
+			newOrdenIngreso.setFechaAprobacion(fechaActual);
+			ordenIngresoRegistration.updated(newOrdenIngreso);
+
+			Proveedor proveedor = newOrdenIngreso.getProveedor();
+			// actuaizar stock de AlmacenProducto
+			listaDetalleOrdenIngreso = detalleOrdenIngresoRepository.findAllByOrdenIngreso(newOrdenIngreso);
+			for(DetalleOrdenIngreso d: listaDetalleOrdenIngreso){
+				Producto prod = d.getProducto();
+				//actualiza el esstock por producto almacen(teniendo en cuenta la agrupacion de productos)
+				actualizarStock(newOrdenIngreso.getAlmacen(),proveedor,prod, d.getCantidad(),fechaActual,d.getPrecioUnitario());
+				//registra la transaccion de entrada del producto
+				actualizarKardexProducto( prod,fechaActual, d.getCantidad(),d.getPrecioUnitario());
+				//registra los stock de los producto , para luego utilizar PEPS en ordenes de traspaso y salida
+				cargarDetalleProducto(newOrdenIngreso.getAlmacen(),d.getProducto(), d.getCantidad(), d.getPrecioUnitario(), d.getFechaRegistro(), newOrdenIngreso.getCorrelativo());
+			}
+
+			
+		} catch (Exception e) {
+		}
+	}
+	
+	// cargar en la ttabla detalle_producto, reegistros de productos, para luego utilizar el metodo PEPS
+		private void cargarDetalleProducto(Almacen almacen,Producto producto,double cantidad, double precio, Date fecha, String correlativoTransaccion){
+			try{
+				Date fechaActual = new Date();
+				DetalleProducto detalleProducto = new DetalleProducto();
+				detalleProducto.setCodigo("OI"+correlativoTransaccion+fecha.toString());
+				detalleProducto.setAlmacen(almacen);
+				detalleProducto.setEstado("AC");
+				detalleProducto.setPrecio(precio);
+				detalleProducto.setStockActual(cantidad);
+				detalleProducto.setStockInicial(cantidad);
+				detalleProducto.setCorrelativoTransaccion(correlativoTransaccion);
+				detalleProducto.setFecha(fecha);
+				detalleProducto.setFechaRegistro(fechaActual);
+				detalleProducto.setProducto(producto);
+				detalleProducto.setUsuarioRegistro(usuarioSession);
+				detalleProductoRegistration.register(detalleProducto);
+			}catch(Exception e){
+				System.out.println("cargarDetalleProducto() ERROR: "+e.getMessage());
+			}
+		}
+
+		//registro en la tabla kardex_producto
+		private void actualizarKardexProducto(Producto prod,Date fechaActual,double cantidad,Double precioUnitario) throws Exception{
+			//registrar Kardex
+			KardexProducto kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProducto(prod);
+			double stockAnterior = 0;
+			if(kardexProductoAnt != null){
+				//se obtiene el saldo anterior del producto
+				stockAnterior = kardexProductoAnt.getStockAnterior();
+			}
+			double entrada = cantidad;
+			double salida = 0;
+			double saldo = stockAnterior + cantidad;
+
+			KardexProducto kardexProducto = new KardexProducto();
+			kardexProducto.setUnidadSolicitante("ORDEN INGRESO");
+			kardexProducto.setFecha(fechaActual);
+			kardexProducto.setAlmacen(newOrdenIngreso.getAlmacen());
+			kardexProducto.setCantidad(cantidad);
+			kardexProducto.setEstado("AC");
+			kardexProducto.setFechaRegistro(fechaActual);
+			kardexProducto.setGestion(gestionSesion);
+			kardexProducto.setNumeroTransaccion(newOrdenIngreso.getCorrelativo());
+
+
+			//BOLIVIANOS
+			kardexProducto.setPrecioUnitario(precioUnitario);
+			kardexProducto.setTotalEntrada(precioUnitario * entrada);
+			kardexProducto.setTotalSalida(precioUnitario * salida);
+			kardexProducto.setTotalSaldo(precioUnitario * saldo);
+
+			//CANTIDADES
+			kardexProducto.setStock(entrada);//ENTRADA
+			kardexProducto.setStockActual(salida);//SALIDA
+			kardexProducto.setStockAnterior(saldo);//SALDO
+
+			kardexProducto.setProducto(prod);
+
+			kardexProducto.setTipoMovimiento("ORDEN INGRESO");
+			kardexProducto.setUsuarioRegistro(usuarioSession);
+			kardexProductoRegistration.register(kardexProducto);
+		}
+
+		//registro en la tabla almacen_producto, actualiza el stock y el precio(promedio agrupando los productos)
+		private void actualizarStock(Almacen almacen,Proveedor proveedor,Producto prod ,double newStock,Date date,double precioUnitario) throws Exception {
+			//0 . verificar si existe el producto en el almacen
+			System.out.println("actualizarStock()");
+			AlmacenProducto almProd =  almacenProductoRepository.findByAlmacenProducto(almacen,prod);
+			if(almProd != null){
+				// 1 .  si existe el producto
+				double oldStock = almProd.getStock();
+				double oldPrecioUnitario = almProd.getPrecioUnitario();
+				almProd.setStock(oldStock + newStock);
+				almProd.setPrecioUnitario((( oldPrecioUnitario + precioUnitario)/2));//precio ponderado del producto
+				almacenProductoRegistration.updated(almProd);
+				return ;
+			}
+			// 2 . no existe el producto
+			almProd = new AlmacenProducto();
+			almProd.setAlmacen(almacen);
+			almProd.setProducto(prod);
+			almProd.setProveedor(proveedor);
+			almProd.setStock(newStock);
+			almProd.setPrecioUnitario(precioUnitario);
+			almProd.setEstado("AC");
+			almProd.setFechaRegistro(date);
+			almProd.setUsuarioRegistro(usuarioSession);
+
+			almacenProductoRegistration.register(almProd);
+		}
+
 	public void procesarConsulta(){
 		try {
 			listAlmacenProducto = almacenProductoRepository.findByAlmacen(selectedAlmacen);
+			if(listAlmacenProducto.size()==0){//validacion de almacen
+				FacesUtil.infoMessage("INFORMACION", "No se encontraron existencias en el almacen "+selectedAlmacen.getNombre());
+				return ;
+			}
 			listDetalleTomaInventario = new ArrayList<DetalleTomaInventario>();
 			for(AlmacenProducto ap : listAlmacenProducto){
 				DetalleTomaInventario detalle = new DetalleTomaInventario();
@@ -296,8 +583,7 @@ public class TomaInventarioController implements Serializable {
 
 	public void modificarTomaInventario(){
 		System.out.println("modificarDetalleOrdenIngreso ");
-
-		FacesUtil.resetDataTable("formTableOrdenIngreso:itemsTable1");
+		FacesUtil.resetDataTable("formTableTomaInventario:itemsTable1");
 
 	}
 
@@ -315,6 +601,165 @@ public class TomaInventarioController implements Serializable {
 				selectedAlmacen = i;
 				return;
 			}
+		}
+	}
+
+	//PRODUCTO
+	public void registrarProducto() {
+		try {
+			System.out.println("Ingreso a registrarProducto: ");
+			newProducto.setUnidadMedidas(selectedUnidadMedida);
+			newProducto.setEstado("AC");
+			newProducto.setFechaRegistro(new Date());
+			newProducto.setUsuarioRegistro(usuarioSession);
+			newProducto.setUsuarioRegistro(usuarioSession);
+			newProducto.setFechaRegistro(new Date());
+			newProducto = productoRegistration.register(newProducto);
+			setSelectedProducto(newProducto);
+			calcular();
+			FacesUtil.infoMessage("Producto Registrado!",newProducto.getNombre());
+			setNuevoProducto(false);
+			newProducto = new Producto();
+		} catch (Exception e) {
+			FacesUtil.errorMessage("Error al registrar");
+		}
+	}
+
+	//calcular totales
+	public void calcular(){
+		System.out.println("calcular()");
+		double precio = selectedDetalleOrdenIngreso.getPrecioUnitario();
+		double cantidad = selectedDetalleOrdenIngreso.getCantidad();
+		selectedDetalleOrdenIngreso.setTotal(precio * cantidad);
+	}
+
+	// SELECCIONAR AUTOCOMPLETE UNIDAD DE MEDIDA
+	public List<UnidadMedida> completeUnidadMedida(String query) {
+		String upperQuery = query.toUpperCase();
+		listUnidadMedida = unidadMedidaRepository.findAllUnidadMedidaForDescription(upperQuery);
+		System.out.println("listUnidadMedida.size(): "+listUnidadMedida.size());
+		return listUnidadMedida;
+	}
+
+	public void onRowSelectUnidadMedidaClick(SelectEvent event) {
+		String nombre = event.getObject().toString();
+		System.out.println("Seleccionado onRowSelectUnidadMedidaClick: selectedMedida.getNombre():"+selectedUnidadMedida.getNombre());
+		for(UnidadMedida um: listUnidadMedida){
+			if(um.getNombre().equals(nombre)){
+				selectedUnidadMedida = um;
+				newProducto.setUnidadMedidas(selectedUnidadMedida);
+			}
+		}
+
+	}
+
+	// SELECCIONAR AUTOCOMPLETES AREA PRODUCTO
+	public List<Partida> completePartida(String query) {
+		listPartida =  partidaRepository.findAllPartidaForDescription(query);
+		return listPartida;
+	}
+
+	public void onRowSelectPartidaClick() {
+		System.out.println("Seleccionado onRowSelectPartidaClick: "
+				+ this.newProducto.getPartida().getNombre());
+		for (Partida row : listPartida) {
+			if (row.getNombre().equals(this.newProducto.getPartida().getNombre())) {
+				this.newProducto.setPartida(row);
+			}
+		}
+	}
+	private List<Producto> listProducto = new ArrayList<Producto>();
+	// ONCOMPLETETEXT PRODUCTO
+	public List<Producto> completeProducto(String query) {
+		listProducto =  productoRepository.findAllProductoForQueryNombre(query);
+		return listProducto;
+	}
+
+	public void onRowSelectProductoClick(SelectEvent event) {
+		String nombre =  event.getObject().toString();
+		for(Producto i : listProducto){
+			if(i.getNombre().equals(nombre)){
+				selectedProducto = i;
+				calcular();
+				return;
+			}
+		}
+	}
+
+	// ONCOMPLETETEXT PROVEEDOR
+	public List<Proveedor> completeProveedor(String query) {
+		String upperQuery = query.toUpperCase();
+		listProveedor = proveedorRepository.findAllProveedorForQueryNombre(upperQuery);
+		return listProveedor;
+	}
+
+	public void onRowSelectProveedorClick(SelectEvent event) {
+		String nombre =  event.getObject().toString();
+		for(Proveedor i : listProveedor){
+			if(i.getNombre().equals(nombre)){
+				setSelectedProveedor(i);
+				newOrdenIngreso.setProveedor(selectedProveedor);
+				return;
+			}
+		}
+	}
+
+	// DETALLE ORDEN INGRESO ITEMS
+	public void editarDetalleOrdenIngreso(){
+		setTituloProducto("Modificar Producto");
+		selectedProducto = selectedDetalleOrdenIngreso.getProducto();
+		setVerButtonDetalle(true);
+		setEditarOrdenIngreso(true);
+		calcular();
+	}
+
+	public void borrarDetalleOrdenIngreso(){
+		listaDetalleOrdenIngreso.remove(selectedDetalleOrdenIngreso);
+		listDetalleOrdenIngresoEliminados.add(selectedDetalleOrdenIngreso);
+		FacesUtil.resetDataTable("formTableTomaInventario:itemsTable1");
+		setVerButtonDetalle(true);
+	}
+
+	public void limpiarDatosProducto(){
+		selectedProducto = new Producto();
+		selectedDetalleOrdenIngreso = new DetalleOrdenIngreso();
+		FacesUtil.resetDataTable("formTableTomaInventario:itemsTable1");
+		setVerButtonDetalle(true);
+		setEditarOrdenIngreso(false);
+	}
+
+	public void agregarDetalleOrdenIngreso(){
+		System.out.println("agregarDetalleOrdenIngreso ");
+		selectedDetalleOrdenIngreso.setProducto(selectedProducto);
+		listaDetalleOrdenIngreso.add(0, selectedDetalleOrdenIngreso);
+		selectedProducto = new Producto();
+		selectedDetalleOrdenIngreso = new DetalleOrdenIngreso();
+		FacesUtil.resetDataTable("formTableTomaInventario:itemsTable1");
+		setVerButtonDetalle(true);
+	}
+
+	public void modificarDetalleOrdenIngreso(){
+		System.out.println("modificarDetalleOrdenIngreso ");
+		for(DetalleOrdenIngreso d: listaDetalleOrdenIngreso){
+			if(d.equals(selectedDetalleOrdenIngreso)){
+				d = selectedDetalleOrdenIngreso;
+			}
+		}
+		selectedProducto = new Producto();
+		selectedDetalleOrdenIngreso = new DetalleOrdenIngreso();
+		FacesUtil.resetDataTable("formTableTomaInventario:itemsTable1");
+		setVerButtonDetalle(true);
+		setEditarOrdenIngreso(false);
+	}
+
+	// SELECT DETALLE ORDEN INGRESO CLICK
+	public void onRowSelectDetalleOrdenIngresoClick(SelectEvent event) {
+		try {
+			verButtonDetalle = false;
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Error in onRowSelectOrdenIngresoClick: "
+					+ e.getMessage());
 		}
 	}
 
@@ -349,14 +794,6 @@ public class TomaInventarioController implements Serializable {
 
 	public void setListUsuario(List<Usuario> listUsuario) {
 		this.listUsuario = listUsuario;
-	}
-
-	public boolean isAtencionCliente() {
-		return atencionCliente;
-	}
-
-	public void setAtencionCliente(boolean atencionCliente) {
-		this.atencionCliente = atencionCliente;
 	}
 
 	public boolean isCrear() {
@@ -486,6 +923,143 @@ public class TomaInventarioController implements Serializable {
 
 	public void setVerLista(boolean verLista) {
 		this.verLista = verLista;
+	}
+
+	public String getTipoTomaInventario() {
+		return tipoTomaInventario;
+	}
+
+	public void setTipoTomaInventario(String tipoTomaInventario) {
+		this.tipoTomaInventario = tipoTomaInventario;
+	}
+
+	public boolean isNuevoProducto() {
+		return nuevoProducto;
+	}
+
+	public void setNuevoProducto(boolean nuevoProducto) {
+		this.nuevoProducto = nuevoProducto;
+	}
+
+	public UnidadMedida getSelectedUnidadMedida() {
+		return selectedUnidadMedida;
+	}
+
+	public void setSelectedUnidadMedida(UnidadMedida selectedUnidadMedida) {
+		this.selectedUnidadMedida = selectedUnidadMedida;
+	}
+
+	public Producto getSelectedProducto() {
+		return selectedProducto;
+	}
+
+	public void setSelectedProducto(Producto selectedProducto) {
+		this.selectedProducto = selectedProducto;
+	}
+
+	public DetalleOrdenIngreso getSelectedDetalleOrdenIngreso() {
+		return selectedDetalleOrdenIngreso;
+	}
+
+	public void setSelectedDetalleOrdenIngreso(
+			DetalleOrdenIngreso selectedDetalleOrdenIngreso) {
+		this.selectedDetalleOrdenIngreso = selectedDetalleOrdenIngreso;
+	}
+
+	public List<Partida> getListPartida() {
+		return listPartida;
+	}
+
+	public void setListPartida(List<Partida> listPartida) {
+		this.listPartida = listPartida;
+	}
+
+	public List<Producto> getListProducto() {
+		return listProducto;
+	}
+
+	public void setListProducto(List<Producto> listProducto) {
+		this.listProducto = listProducto;
+	}
+
+	public List<DetalleOrdenIngreso> getListaDetalleOrdenIngreso() {
+		return listaDetalleOrdenIngreso;
+	}
+
+	public void setListaDetalleOrdenIngreso(List<DetalleOrdenIngreso> listaDetalleOrdenIngreso) {
+		this.listaDetalleOrdenIngreso = listaDetalleOrdenIngreso;
+	}
+
+	public String getTituloProducto() {
+		return tituloProducto;
+	}
+
+	public void setTituloProducto(String tituloProducto) {
+		this.tituloProducto = tituloProducto;
+	}
+
+	public boolean isVerButtonDetalle() {
+		return verButtonDetalle;
+	}
+
+	public void setVerButtonDetalle(boolean verButtonDetalle) {
+		this.verButtonDetalle = verButtonDetalle;
+	}
+
+	public boolean isEditarOrdenIngreso() {
+		return editarOrdenIngreso;
+	}
+
+	public void setEditarOrdenIngreso(boolean editarOrdenIngreso) {
+		this.editarOrdenIngreso = editarOrdenIngreso;
+	}
+
+	public Producto getNewProducto() {
+		return newProducto;
+	}
+
+	public void setNewProducto(Producto newProducto) {
+		this.newProducto = newProducto;
+	}
+
+	public List<Proveedor> getListProveedor() {
+		return listProveedor;
+	}
+
+	public void setListProveedor(List<Proveedor> listProveedor) {
+		this.listProveedor = listProveedor;
+	}
+
+	public Proveedor getSelectedProveedor() {
+		return selectedProveedor;
+	}
+
+	public void setSelectedProveedor(Proveedor selectedProveedor) {
+		this.selectedProveedor = selectedProveedor;
+	}
+
+	public OrdenIngreso getNewOrdenIngreso() {
+		return newOrdenIngreso;
+	}
+
+	public void setNewOrdenIngreso(OrdenIngreso newOrdenIngreso) {
+		this.newOrdenIngreso = newOrdenIngreso;
+	}
+
+	public Gestion getGestionSesion() {
+		return gestionSesion;
+	}
+
+	public void setGestionSesion(Gestion gestionSesion) {
+		this.gestionSesion = gestionSesion;
+	}
+
+	public List<String> getListTipo() {
+		return listTipo;
+	}
+
+	public void setListTipo(List<String> listTipo) {
+		this.listTipo = listTipo;
 	}
 
 }

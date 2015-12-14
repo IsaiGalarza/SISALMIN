@@ -53,7 +53,6 @@ import bo.com.qbit.webapp.service.KardexProductoRegistration;
 import bo.com.qbit.webapp.service.OrdenIngresoRegistration;
 import bo.com.qbit.webapp.service.PartidaRegistration;
 import bo.com.qbit.webapp.service.ProductoRegistration;
-import bo.com.qbit.webapp.service.UnidadMedidaRegistration;
 import bo.com.qbit.webapp.util.Cifrado;
 import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.SessionMain;
@@ -89,7 +88,6 @@ public class OrdenIngresoController implements Serializable {
 	private @Inject AlmacenRegistration almacenRegistration;
 	private @Inject PartidaRegistration partidaRegistration;
 	private @Inject DetalleProductoRegistration detalleProductoRegistration;
-	private @Inject UnidadMedidaRegistration unidadMedidaRegistration;
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
@@ -191,15 +189,22 @@ public class OrdenIngresoController implements Serializable {
 	}
 
 	public void cambiarAspecto(){
-		//verificar si el usuario logeado tiene almacen registrado
-		selectedAlmacenOrigen = almacenRepository.findAlmacenForUser(sessionMain.getUsuarioLogin());
-		if(selectedAlmacenOrigen.getId() == -1){
-			FacesUtil.infoMessage("Usuario "+usuarioSession, "No tiene asignado un almacen");
-			return;
+
+		//Verifica la gestion , sobre el levantamiento si ya se hizo el inicial
+		if(gestionSesion.isIniciada()){
+
+			//verificar si el usuario logeado tiene almacen registrado
+			selectedAlmacenOrigen = almacenRepository.findAlmacenForUser(sessionMain.getUsuarioLogin());
+			if(selectedAlmacenOrigen.getId() == -1){
+				FacesUtil.infoMessage("Usuario "+usuarioSession, "No tiene asignado un almacen");
+				return;
+			}
+			modificar = false;
+			registrar = true;
+			crear = false;
+		}else{
+			FacesUtil.infoMessage("INFORMACION", "Antes debe proceder a realizar una Toma de Inventario Inicial ");
 		}
-		modificar = false;
-		registrar = true;
-		crear = false;
 	}
 
 	public void cambiarAspectoModificar(){
@@ -610,7 +615,7 @@ public class OrdenIngresoController implements Serializable {
 			}
 		}
 	}
-	
+
 	// SELECCIONAR AUTOCOMPLETE UNIDAD DE MEDIDA
 	public List<UnidadMedida> completeUnidadMedida(String query) {
 		String upperQuery = query.toUpperCase();
@@ -618,7 +623,7 @@ public class OrdenIngresoController implements Serializable {
 		System.out.println("listUnidadMedida.size(): "+listUnidadMedida.size());
 		return listUnidadMedida;
 	}
-	
+
 	public void onRowSelectUnidadMedidaClick(SelectEvent event) {
 		String nombre = event.getObject().toString();
 		System.out.println("Seleccionado onRowSelectUnidadMedidaClick: selectedMedida.getNombre():"+selectedUnidadMedida.getNombre());
@@ -627,7 +632,7 @@ public class OrdenIngresoController implements Serializable {
 				selectedUnidadMedida = um;
 			}
 		}
-		 
+
 	}
 
 	//IMPORT - EXPORT EXCEL
