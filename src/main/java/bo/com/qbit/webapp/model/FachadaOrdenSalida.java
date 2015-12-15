@@ -70,34 +70,41 @@ public class FachadaOrdenSalida implements Serializable {
 	public boolean actualizarDetalleProductoByOrdenSalida(Almacen almacen,DetalleOrdenSalida detalle){
 		try{
 			Producto producto = detalle.getProducto();
-			double cantidadSolicitada = detalle.getCantidadSolicitada();
-			double cantidaEntregada = detalle.getCantidadSolicitada();
-			double precioPonderado = 0;
-			int cantidadPrecios = 0;
+			double cantidadAux = detalle.getCantidadSolicitada();
+			double cantidadSolicitada = detalle.getCantidadSolicitada();// 15
+			int cantidad = 1;
 			//obtener todos los detalles del producto, para poder descontar stock de acuerdo a la cantidad solicitada
 			List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almacen,producto);
+			//50 | 10
+			//52 | 10
 			if(listDetalleProducto.size()>0){
 				for(DetalleProducto d : listDetalleProducto){
-					double stockActual = d.getStockActual();
-					if(cantidadSolicitada > 0){// si la  cantidad Solicitada lo obtiene
-						cantidadPrecios = cantidadPrecios + 1;//1
-						precioPonderado = precioPonderado + d.getPrecio();
-						double stockFinal = stockActual- cantidadSolicitada; 
-						double cantidadRestada = stockFinal < 0 ? cantidadSolicitada - stockActual : cantidadSolicitada;
-						d.setStockActual( stockFinal <= 0 ? 0 : stockFinal);
-						d.setEstado(stockFinal<=0?"IN":"AC");
+					double stockActual = d.getStockActual();//10 |10
+					double precio = d.getPrecio(); // 50 | 52
+					if(cantidadSolicitada > 0){// 15 | 5
+						double stockFinal = stockActual- cantidadSolicitada; // 10-15=-5 | 10-5=5 |
+						double cantidadRestada = stockFinal < 0 ? cantidadSolicitada -(cantidadSolicitada - stockActual) : cantidadSolicitada; //15-(15-10)=10 | 5 |
+						d.setStockActual( stockFinal <= 0 ? 0 : stockFinal); // 0 | 5
+						d.setEstado(stockFinal<=0?"IN":"AC"); // IN | AC
 						detalleProductoRegistration.updated(d);
-						cantidadSolicitada = cantidadSolicitada - cantidadRestada  ;//actualizar cantidad solicitada
+						cantidadSolicitada = cantidadSolicitada - cantidadRestada  ;//actualizar cantidad solicitada // 15-10=5| 5-5=0|
+						if(cantidad == 1){
+							detalle.setCantidadEntregada(cantidadRestada);
+							detalle.setCantidadSolicitada(cantidadAux);
+							detalle.setPrecioUnitario(precio);
+							detalle.setTotal(precio*cantidadRestada);
+							detalleOrdenSalidaRegistration.updated(detalle);
+						}else{//nuevo DetalleOrdenSalida con otro precio
+							detalle.setId(0);
+							detalle.setCantidadEntregada(cantidadRestada );
+							detalle.setCantidadSolicitada(cantidadAux);
+							detalle.setPrecioUnitario(precio);
+							detalle.setTotal(precio*cantidadRestada);
+							detalleOrdenSalidaRegistration.register(detalle);
+						}
+						cantidad = cantidad + 1;
 					}
 				}
-				cantidaEntregada = cantidaEntregada - cantidadSolicitada;
-				//actualizar cantidad entregada, si no se obtuvo la cantidad solicitada
-				detalle.setCantidadEntregada(cantidaEntregada );//registrar el resto
-				//actualizar el precio
-				precioPonderado = (cantidadPrecios>0? (precioPonderado/cantidadPrecios):0);
-				detalle.setPrecioUnitario(precioPonderado);
-				detalle.setTotal(precioPonderado*cantidaEntregada);
-				detalleOrdenSalidaRegistration.updated(detalle);
 				return true;
 			}
 			return false;
@@ -182,7 +189,7 @@ public class FachadaOrdenSalida implements Serializable {
 				double oldStock = almProd.getStock();
 				double oldPrecioUnitario = almProd.getPrecioUnitario();
 				almProd.setStock(oldStock - newStock); //quitar (-)
-				almProd.setPrecioUnitario(precioUnitario==-1?oldPrecioUnitario:(oldPrecioUnitario+precioUnitario)/2);//precioPonderado
+				almProd.setPrecioUnitario(precioUnitario==-1?oldPrecioUnitario:((oldPrecioUnitario+precioUnitario)/2));//precioPonderado
 				almacenProductoRegistration.updated(almProd);
 				return ;
 			}

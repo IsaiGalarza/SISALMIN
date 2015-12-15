@@ -21,6 +21,7 @@ import bo.com.qbit.webapp.data.ProductoRepository;
 import bo.com.qbit.webapp.model.AlmacenProducto;
 import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.Producto;
+import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.SessionMain;
 
 @Named(value = "stockProductoController")
@@ -134,7 +135,10 @@ public class StockProductoController implements Serializable {
 
 	public void procesarConsulta(){
 		listaAlmacenProducto = new ArrayList<AlmacenProducto>();
-		if(selectedProducto != null){
+		if(selectedProducto.getId() == 0){
+			FacesUtil.infoMessage("ADVERTENCIA", "Seleccione un producto");
+			return;
+		}else{
 			if(tipoConsulta.equals("PRODUCTO")){
 				calcularStockAndPrecioUnificados(selectedProducto);
 			}else if(tipoConsulta.equals("PROVEEDOR")){

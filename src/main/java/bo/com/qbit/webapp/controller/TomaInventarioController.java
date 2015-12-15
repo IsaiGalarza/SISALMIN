@@ -264,8 +264,15 @@ public class TomaInventarioController implements Serializable {
 
 	public void registrarTomaInventario() {
 		//validaciones
-		if(newTomaInventario.getNombreInventariador().isEmpty() || newTomaInventario.getNombreResponsable().isEmpty() || newTomaInventario.getHoja().isEmpty()){
+		if(selectedProveedor.getId()==0 || selectedAlmacen.getId()==0 || newTomaInventario.getNombreInventariador().isEmpty() || newTomaInventario.getNombreResponsable().isEmpty() || newTomaInventario.getHoja().isEmpty()){
 			FacesUtil.infoMessage("VALIDACION", "No pueden haber campos vacios");
+			return;
+		}
+		if(newTomaInventario.getTipo().equals("INICIAL") && listaDetalleOrdenIngreso.size()==0){
+			FacesUtil.infoMessage("VALIDACION", "Debe Agregar items..");
+			return;
+		}else if(! newTomaInventario.getTipo().equals("INICIAL") && listDetalleTomaInventario.size()==0){
+			FacesUtil.infoMessage("VALIDACION", "Debe Agregar items.");
 			return;
 		}
 		try {
@@ -333,7 +340,7 @@ public class TomaInventarioController implements Serializable {
 		}
 	}
 
-	//ABM producto
+	//Agregar producto
 	public void registrarOrdenIngreso() {
 		try {
 			Date fechaActual = new Date();
@@ -472,7 +479,7 @@ public class TomaInventarioController implements Serializable {
 					baja.setStockActual(d.getCantidadVerificada());
 					baja.setStockAnterior(d.getCantidadRegistrada());
 					baja.setUsuarioRegistro(usuarioSession);
-					
+
 					//actualizar en AlmacenProducto
 					fachadaOrdenSalida.actualizarStock(d.getProducto(), d.getCantidadVerificada(), fechaActual, -1d);//-1 para que no actualize el precio
 					//actualizar en DetalleProducto
@@ -721,12 +728,26 @@ public class TomaInventarioController implements Serializable {
 
 	public void agregarDetalleOrdenIngreso(){
 		System.out.println("agregarDetalleOrdenIngreso ");
+		//verificar si el producto ya fue agregado
+		if(verificarProductoAgregado(selectedProducto)){
+			FacesUtil.infoMessage("OBSERVACION", "Este producto ya fue agregado.");
+			return ;
+		}
 		selectedDetalleOrdenIngreso.setProducto(selectedProducto);
 		listaDetalleOrdenIngreso.add(0, selectedDetalleOrdenIngreso);
 		selectedProducto = new Producto();
 		selectedDetalleOrdenIngreso = new DetalleOrdenIngreso();
 		FacesUtil.resetDataTable("formTableTomaInventario:itemsTable1");
 		setVerButtonDetalle(true);
+	}
+
+	private boolean verificarProductoAgregado(Producto selectedProducto){
+		for(DetalleOrdenIngreso detalle : listaDetalleOrdenIngreso){
+			if(detalle.getProducto().getId()==selectedProducto.getId()){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void modificarDetalleOrdenIngreso(){

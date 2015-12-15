@@ -102,6 +102,11 @@
 												filterStyle="width: 100%;" filterMatchMode="contains">
 												<h:outputText value="#{_var.proveedor.nombre}" />
 											</p:column>
+											
+											<f:facet name="footer">
+												<h:outputText
+													value="#{catalogoProductoController.listaAlmacenProducto.size()} Registros en Total" />
+											</f:facet>
 
 										</p:dataTable>
 

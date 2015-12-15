@@ -195,6 +195,11 @@
 													filterMatchMode="contains">
 													<h:outputText value="#{_var.stockAnterior}" />
 												</p:column>
+												
+												<f:facet name="footer">
+													<h:outputText
+														value="#{kardexProductoController.listaKardexProducto.size()} Registros en Total" />
+												</f:facet>
 
 											</p:dataTable>
 										</div>

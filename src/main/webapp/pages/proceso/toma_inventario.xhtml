@@ -744,7 +744,7 @@
 														<p:commandLink id="buttonIconAgregarProducto"
 															value="&#160;"
 															styleClass="btn btn-success ion-plus-round "
-															update="formTableTomaInventario"
+															update="formTableTomaInventario,formDialogProducto"
 															oncomplete="PF('dlgProducto').show();" immediate="true">
 														</p:commandLink>
 
@@ -757,7 +757,7 @@
 														<p:commandLink id="editarDetalleOrdenIngreso"
 															disabled="#{tomaInventarioController.verButtonDetalle}"
 															value="&#160;" styleClass="btn btn-primary ion-edit"
-															update="formTableTomaInventario"
+															update="formTableTomaInventario,formDialogProducto"
 															oncomplete="PF('dlgProducto').show();" immediate="true"
 															action="#{tomaInventarioController.editarDetalleOrdenIngreso()}">
 														</p:commandLink>
@@ -936,7 +936,7 @@
 										styleClass="btn btn-success ion-checkmark btn-block"
 										onclick="PF('dlgProducto').hide();"
 										rendered="#{ ! tomaInventarioController.editarOrdenIngreso}">
-										<p:ajax update="formTableTomaInventario"
+										<p:ajax update="formTableTomaInventario,formGrowl:msgs1" 
 											listener="#{tomaInventarioController.agregarDetalleOrdenIngreso()}" />
 									</p:commandLink>
 

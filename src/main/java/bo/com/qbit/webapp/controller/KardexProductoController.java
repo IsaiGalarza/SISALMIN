@@ -122,7 +122,10 @@ public class KardexProductoController implements Serializable {
 
 	public void procesarConsulta(){
 		listaKardexProducto = new ArrayList<KardexProducto>();
-		if(selectedProducto!= null ){
+		if(selectedProducto.getId() == 0){
+			FacesUtil.infoMessage("ADVERTENCIA", "Seleccione un producto");
+			return;
+		}else{
 			listaKardexProducto  = kardexProductoRepository.findByProductoAndGestion(selectedProducto,selectedGestion);
 			FacesUtil.resetDataTable("formTableProducto:productoTable");
 		}

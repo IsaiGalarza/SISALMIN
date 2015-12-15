@@ -63,11 +63,12 @@ public class DetalleProductoRepository {
 	public List<DetalleProducto> findAllByProductoAndAlmacenOrderByFecha(Almacen almacen,Producto producto) {
 		try{
 			String query = "select em from DetalleProducto em where em.estado='AC' and em.producto.id="
-					+ producto.getId() +" and em.almacen.id="+almacen.getId()+" order by em.fecha desc";
+					+ producto.getId() +" and em.almacen.id="+almacen.getId()+" order by em.fecha asc";
 			System.out.println("Query DetalleProducto: " + query);
 			return em.createQuery(query).getResultList();
 		}catch(Exception e){
 			return null;
 		}
 	}
+	//select em from DetalleProducto em where em.estado='AC' and em.producto.id=21 and em.almacen.id=3 order by em.fecha desc
 }

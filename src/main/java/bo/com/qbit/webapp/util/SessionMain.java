@@ -95,7 +95,7 @@ public class SessionMain implements Serializable {
 	 * @return boolean
 	 */
 	public boolean tienePermisoPagina(String pagina){
-		if( pagina.equals("profile.xhtml")  || pagina.equals("dashboard.xhtml") ){
+		if( pagina.equals("profile.xhtml")  || pagina.equals("dashboard.xhtml") || pagina.equals("manual_usuario.xhtml")){
 			return true;
 		}
 		for(Permiso p: listPermiso){

@@ -78,7 +78,7 @@ public class OrdenIngresoController implements Serializable {
 	private @Inject ProductoRegistration productoRegistration;
 	private @Inject AlmacenRegistration almacenRegistration;
 	private @Inject PartidaRegistration partidaRegistration;
-	
+
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
@@ -132,7 +132,7 @@ public class OrdenIngresoController implements Serializable {
 
 	//CREACION NUEVO PRODUCTO
 	private Producto newProducto= new Producto();
-	
+
 	//FACADE
 	private @Inject  FachadaOrdenIngreso fachadaOrdenIngreso;
 
@@ -144,7 +144,7 @@ public class OrdenIngresoController implements Serializable {
 		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
 		gestionSesion = sessionMain.getGestionLogin();
 		listUsuario = usuarioRepository.findAllOrderedByID();
-		
+
 		//inicializar fachadaOrdenIngreso
 		//fachadaOrdenIngreso = new FachadaOrdenIngreso();
 
@@ -282,6 +282,10 @@ public class OrdenIngresoController implements Serializable {
 	}
 
 	public void registrarOrdenIngreso() {
+		if(selectedAlmacen.getId()==0 || selectedProveedor.getId()==0){
+			FacesUtil.infoMessage("ADVERTENCIA", "No puede haber campos vacios.");
+			return;
+		}
 		try {
 			Date date = new Date();
 			calcularTotal();
@@ -448,7 +452,7 @@ public class OrdenIngresoController implements Serializable {
 		FacesUtil.resetDataTable("formTableOrdenIngreso:itemsTable1");
 		verButtonDetalle = true;
 	}
-	
+
 	private boolean verificarProductoAgregado(Producto selectedProducto){
 		for(DetalleOrdenIngreso detalle : listaDetalleOrdenIngreso){
 			if(detalle.getProducto().getId()==selectedProducto.getId()){
@@ -553,7 +557,7 @@ public class OrdenIngresoController implements Serializable {
 			}
 		}
 	}
-	
+
 	private void calcularPrecioPromedioForDevolucion(Producto producto){
 		precioPromedio = almacenProductoRepository.findPrecioPromedioByProducto(producto);
 		selectedDetalleOrdenIngreso.setPrecioUnitario(precioPromedio);
@@ -715,8 +719,10 @@ public class OrdenIngresoController implements Serializable {
 				detalle.setUsuarioRegistro(usuarioSession);
 				listaDetalleOrdenIngreso.add(detalle);
 			}
+			importarFile = false;//ocultar boton importar
 		}
 		catch(Exception e){
+			listaDetalleOrdenIngreso = new ArrayList<DetalleOrdenIngreso>();
 			e.printStackTrace();
 		}finally{
 			// En el finally cerramos el fichero, para asegurarnos
@@ -994,7 +1000,7 @@ public class OrdenIngresoController implements Serializable {
 	public void setPrecioPromedio(double precioPromedio) {
 		this.precioPromedio = precioPromedio;
 	}
-	
+
 	public boolean getDevolucion() {
 		return devolucion;
 	}
