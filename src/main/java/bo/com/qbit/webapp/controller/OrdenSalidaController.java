@@ -17,33 +17,25 @@ import javax.servlet.http.HttpServletRequest;
 import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
 
-import bo.com.qbit.webapp.data.AlmacenProductoRepository;
 import bo.com.qbit.webapp.data.AlmacenRepository;
 import bo.com.qbit.webapp.data.DetalleOrdenSalidaRepository;
-import bo.com.qbit.webapp.data.DetalleProductoRepository;
 import bo.com.qbit.webapp.data.DetalleUnidadRepository;
 import bo.com.qbit.webapp.data.FuncionarioRepository;
-import bo.com.qbit.webapp.data.KardexProductoRepository;
 import bo.com.qbit.webapp.data.OrdenSalidaRepository;
 import bo.com.qbit.webapp.data.ProductoRepository;
 import bo.com.qbit.webapp.data.ProyectoRepository;
 import bo.com.qbit.webapp.data.UsuarioRepository;
 import bo.com.qbit.webapp.model.Almacen;
-import bo.com.qbit.webapp.model.AlmacenProducto;
 import bo.com.qbit.webapp.model.DetalleOrdenSalida;
-import bo.com.qbit.webapp.model.DetalleProducto;
 import bo.com.qbit.webapp.model.DetalleUnidad;
+import bo.com.qbit.webapp.model.FachadaOrdenSalida;
 import bo.com.qbit.webapp.model.Funcionario;
 import bo.com.qbit.webapp.model.Gestion;
-import bo.com.qbit.webapp.model.KardexProducto;
 import bo.com.qbit.webapp.model.OrdenSalida;
 import bo.com.qbit.webapp.model.Producto;
 import bo.com.qbit.webapp.model.Proyecto;
 import bo.com.qbit.webapp.model.Usuario;
-import bo.com.qbit.webapp.service.AlmacenProductoRegistration;
 import bo.com.qbit.webapp.service.DetalleOrdenSalidaRegistration;
-import bo.com.qbit.webapp.service.DetalleProductoRegistration;
-import bo.com.qbit.webapp.service.KardexProductoRegistration;
 import bo.com.qbit.webapp.service.OrdenSalidaRegistration;
 import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.SessionMain;
@@ -65,20 +57,13 @@ public class OrdenSalidaController implements Serializable {
 	private @Inject OrdenSalidaRepository ordenSalidaRepository;
 	private @Inject ProductoRepository productoRepository;
 	private @Inject DetalleOrdenSalidaRepository detalleOrdenSalidaRepository;
-	private @Inject AlmacenProductoRepository almacenProductoRepository;
-	private @Inject KardexProductoRepository kardexProductoRepository;
 	private @Inject FuncionarioRepository funcionarioRepository;
 	private @Inject DetalleUnidadRepository detalleUnidadRepository;
 	private @Inject ProyectoRepository proyectoRepository;
-	private @Inject DetalleProductoRepository detalleProductoRepository;
 
 	//Registration
 	private @Inject OrdenSalidaRegistration ordenSalidaRegistration;
 	private @Inject DetalleOrdenSalidaRegistration detalleOrdenSalidaRegistration;
-	private @Inject AlmacenProductoRegistration almacenProductoRegistration;
-	private @Inject KardexProductoRegistration kardexProductoRegistration;
-	private @Inject DetalleProductoRegistration detalleProductoRegistration;
-
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
 	Event<String> pushEventSucursal;
@@ -127,8 +112,9 @@ public class OrdenSalidaController implements Serializable {
 	private Gestion gestionSesion;
 
 	private boolean atencionCliente=false;
-
-
+	
+	//Fachada
+	private @Inject FachadaOrdenSalida fachadaOrdenSalida;
 
 	@PostConstruct
 	public void initNewOrdenSalida() {
@@ -136,6 +122,9 @@ public class OrdenSalidaController implements Serializable {
 		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
 		gestionSesion = sessionMain.getGestionLogin();
 		listUsuario = usuarioRepository.findAllOrderedByID();
+		
+		//inicializar FachadaOrdenSalida
+		//fachadaOrdenSalida =new FachadaOrdenSalida();
 
 		selectedProyecto = new Proyecto();
 		selectedDetalleUnidad = new DetalleUnidad();
@@ -331,6 +320,7 @@ public class OrdenSalidaController implements Serializable {
 			//actualizar estado de orden ingreso
 			selectedOrdenSalida.setEstado("PR");
 			selectedOrdenSalida.setFechaAprobacion(fechaActual);
+			DetalleUnidad detalleUnidad = selectedOrdenSalida.getUnidadSolicitante();
 			Almacen almacenOrigen = selectedOrdenSalida.getAlmacen();
 			double total = 0;
 			//actuaizar stock de AlmacenProducto
@@ -338,16 +328,16 @@ public class OrdenSalidaController implements Serializable {
 			for(DetalleOrdenSalida d: listaDetalleOrdenSalida){
 				Producto prod = d.getProducto();
 				//1.- Actualizar detalle producto (PEPS) y tambiaen actualizar precio en detalleOrdenIngreso
-				if( ! actualizarDetalleProducto(almacenOrigen,d)){
+				if( ! fachadaOrdenSalida.actualizarDetalleProductoByOrdenSalida(almacenOrigen,d)){
 					//mostrar mensaje
 					FacesUtil.showDialog("dlgAlmacenSinExistencias");
 					initNewOrdenSalida();
 					return ; //no se econtro stock disponible
 				}
 				//2
-				actualizarStock(prod, d.getCantidadSolicitada(),fechaActual,d.getPrecioUnitario());
+				fachadaOrdenSalida.actualizarStock(prod, d.getCantidadSolicitada(),fechaActual,d.getPrecioUnitario());
 				//3
-				actualizarKardexProducto( prod,fechaActual, d.getCantidadSolicitada(),d.getPrecioUnitario());
+				fachadaOrdenSalida.actualizarKardexProducto( detalleUnidad.getNombre(),gestionSesion, selectedOrdenSalida,prod,fechaActual, d.getCantidadSolicitada(),d.getPrecioUnitario(),usuarioSession);
 				total = total + d.getPrecioUnitario();
 			}
 			//cactualizar OrdenSalida
@@ -359,116 +349,6 @@ public class OrdenSalidaController implements Serializable {
 		} catch (Exception e) {
 			System.out.println("Error : "+e.getMessage());
 			FacesUtil.errorMessage("Error al Procesar!");
-		}
-	}
-
-	/**
-	 * Actualiza el stock, verifica existencias de acuerdo al metodo PEPS
-	 * @param almacen De que almacen se sacara los productos
-	 * @param detalle
-	 * @return true si hay stock, false si no hay existencias
-	 */
-	private boolean actualizarDetalleProducto(Almacen almacen,DetalleOrdenSalida detalle){
-		try{
-			Producto producto = detalle.getProducto();
-			double cantidadSolicitada = detalle.getCantidadSolicitada();
-			double cantidaEntregada = detalle.getCantidadSolicitada();
-			double precioPonderado = 0;
-			int cantidadPrecios = 0;
-			//obtener todos los detalles del producto, para poder descontar stock de acuerdo a la cantidad solicitada
-			List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almacen,producto);
-			if(listDetalleProducto.size()>0){
-				for(DetalleProducto d : listDetalleProducto){
-					double stockActual = d.getStockActual();
-					if(cantidadSolicitada > 0){// si la  cantidad Solicitada lo obtiene
-						cantidadPrecios = cantidadPrecios + 1;//1
-						precioPonderado = precioPonderado + d.getPrecio();
-						double stockFinal = stockActual- cantidadSolicitada; 
-						double cantidadRestada = stockFinal < 0 ? cantidadSolicitada - stockActual : cantidadSolicitada;
-						d.setStockActual( stockFinal <= 0 ? 0 : stockFinal);
-						d.setEstado(stockFinal<=0?"IN":"AC");
-						detalleProductoRegistration.updated(d);
-						cantidadSolicitada = cantidadSolicitada - cantidadRestada  ;//actualizar cantidad solicitada
-					}
-				}
-				cantidaEntregada = cantidaEntregada - cantidadSolicitada;
-				//actualizar cantidad entregada, si no se obtuvo la cantidad solicitada
-				detalle.setCantidadEntregada(cantidaEntregada );//registrar el resto
-				//actualizar el precio
-				precioPonderado = (cantidadPrecios>0? (precioPonderado/cantidadPrecios):0);
-				detalle.setPrecioUnitario(precioPonderado);
-				detalle.setTotal(precioPonderado*cantidaEntregada);
-				detalleOrdenSalidaRegistration.updated(detalle);
-				return true;
-			}
-			return false;
-		}catch(Exception e){
-			System.out.println("actualizarDetalleProducto() ERROR: "+e.getMessage());
-			return false;
-		}
-	}
-
-	//registro en la tabla kardex_producto
-	private void actualizarKardexProducto(Producto prod,Date fechaActual,double cantidad,double precioUnitario) throws Exception{
-		try{
-			System.out.println("actualizarKardexProducto()");
-			//registrar Kardex
-			KardexProducto kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProducto(prod);
-			double stockAnterior = 0;
-			if(kardexProductoAnt != null){
-				stockAnterior = kardexProductoAnt.getStockAnterior();
-			}
-			double entrada = 0;
-			double salida = cantidad;
-			double saldo = stockAnterior - cantidad;
-
-			KardexProducto kardexProducto = new KardexProducto();
-			kardexProducto.setUnidadSolicitante("ORDEN SALIDA");
-			kardexProducto.setFecha(fechaActual);
-			kardexProducto.setAlmacen(selectedOrdenSalida.getAlmacen());
-			kardexProducto.setCantidad(cantidad);
-			kardexProducto.setEstado("AC");
-			kardexProducto.setFechaRegistro(fechaActual);
-			kardexProducto.setGestion(gestionSesion);
-			kardexProducto.setNumeroTransaccion(selectedOrdenSalida.getCorrelativo());
-
-			//EN BOLIVIANOS
-			kardexProducto.setPrecioUnitario(precioUnitario);
-			kardexProducto.setTotalEntrada(precioUnitario * entrada);
-			kardexProducto.setTotalSalida(precioUnitario * salida);
-			kardexProducto.setTotalSaldo(precioUnitario * saldo);
-
-			//CANTIDADES
-			kardexProducto.setStock(entrada);//ENTRADA
-			kardexProducto.setStockActual(salida);//SALIDA
-			kardexProducto.setStockAnterior(saldo);//SALDO
-
-			kardexProducto.setProducto(prod);
-			kardexProducto.setTipoMovimiento("ORDEN SALIDA");
-			kardexProducto.setUsuarioRegistro(usuarioSession);
-			kardexProductoRegistration.register(kardexProducto);
-		}catch(Exception e){
-			System.out.println("actualizarKardexProducto Error : "+e.getMessage());
-		}
-	}
-
-	private void actualizarStock(Producto prod ,double newStock,Date date,double precioUnitario) throws Exception {
-		try{
-			//0 . verificar si existe el producto en el almacen
-			System.out.println("actualizarStock()");
-			AlmacenProducto almProd =  almacenProductoRepository.findByProducto(prod);
-			System.out.println("almProd = "+almProd);
-			if(almProd != null){
-				// 1 .  si existe el producto
-				double oldStock = almProd.getStock();
-				double oldPrecioUnitario = almProd.getPrecioUnitario();
-				almProd.setStock(oldStock - newStock); //quitar (-)
-				almProd.setPrecioUnitario((oldPrecioUnitario+precioUnitario)/2);//precioPonderado
-				almacenProductoRegistration.updated(almProd);
-				return ;
-			}
-		}catch(Exception e){
-			System.out.println("actualizarStock Error : "+e.getMessage());
 		}
 	}
 

@@ -35,7 +35,7 @@
 								<p:commandLink id="buttonCancelar" value="&#160; Cancelar"
 									styleClass="btn btn-warning ion-minus-circled"
 									update="formTableTomaInventario, formBotonesHeader"
-									rendered="#{tomaInventarioController.modificar or tomaInventarioController.registrar }"
+									rendered="#{tomaInventarioController.modificar or tomaInventarioController.registrar or tomaInventarioController.conciliar}"
 									style="height:31px; padding:center"
 									action="#{tomaInventarioController.initNewTomaInventario()}">
 								</p:commandLink>
@@ -89,11 +89,20 @@
 									action="#{tomaInventarioController.buttonRevisar()}">
 								</p:commandLink>
 
-								<p:commandLink id="buttonConciliar" value="&#160; Conciliar"
+								<p:commandLink id="buttonConciliar1" value="&#160; Conciliar"
 									styleClass="btn btn-info ion-ios7-loop-strong"
 									style="height:31px; padding:center"
-									rendered="false"
-									update="formTableTomaInventario,formBotonesHeader">
+									rendered="#{tomaInventarioController.buttonConciliar}"
+									update="formTableTomaInventario,formBotonesHeader"
+									action="#{tomaInventarioController.buttonConciliarTomaInventario()}">
+								</p:commandLink>
+
+								<p:commandLink id="buttonConciliar2" value="&#160; Conciliar"
+									styleClass="btn btn-info ion-ios7-loop-strong"
+									style="height:31px; padding:center"
+									rendered="#{tomaInventarioController.conciliar}"
+									update="formTableTomaInventario,formBotonesHeader"
+									action="#{tomaInventarioController.conciliarTomaInventario()}">
 								</p:commandLink>
 
 								<p:commandLink id="buttonRegistrar3" value="&#160; Registrar"
@@ -199,6 +208,8 @@
 															rendered="#{_var.estado=='RE'}" value="Revisado" /></span>
 													<span class="label label-success"><h:outputText
 															rendered="#{_var.estado=='PR'}" value="Procesado" /></span>
+													<span class="label label-success"><h:outputText
+															rendered="#{_var.estado=='CN'}" value="Conciliado" /></span>
 												</p:column>
 
 												<p:column width="10%" headerText="Fecha"
@@ -229,7 +240,7 @@
 
 							<!-- FILTER -->
 							<ui:fragment
-								rendered="#{tomaInventarioController.registrar or tomaInventarioController.modificar}">
+								rendered="#{tomaInventarioController.registrar or tomaInventarioController.modificar or tomaInventarioController.conciliar}">
 								<div class="col-md-4">
 									<div class="panel panel-default">
 										<div class="panel-heading">
@@ -246,7 +257,7 @@
 																style=" color: #555555; background-image: none; width:100%;"
 																styleClass="input-sm form-control" required="true"
 																requiredMessage="Tipo Requerido."
-																disabled="#{tomaInventarioController.modificar}"
+																disabled="#{tomaInventarioController.modificar or tomaInventarioController.conciliar}"
 																value="#{tomaInventarioController.newTomaInventario.tipo}">
 
 																<p:ajax event="change"
@@ -270,6 +281,7 @@
 																	requiredMessage="Proveedor Requerido."
 																	forceSelection="true" var="_var" itemLabel="#{_var}"
 																	itemValue="#{_var.nombre}"
+																	disabled="#{tomaInventarioController.conciliar}"
 																	placeholder="[Escriba Proveedor]" maxResults="10">
 																	<p:ajax event="itemSelect"
 																		update="formTableTomaInventario:proveedorID"
@@ -297,7 +309,7 @@
 																requiredMessage="Producto Requerido."
 																forceSelection="true" var="_var" itemLabel="#{_var}"
 																itemValue="#{_var.nombre}"
-																disabled="#{tomaInventarioController.modificar}"
+																disabled="#{tomaInventarioController.modificar or tomaInventarioController.conciliar}"
 																placeholder="[Escriba Almacen]" maxResults="10">
 
 																<p:ajax event="itemSelect"
@@ -321,6 +333,7 @@
 																styleClass="input-sm form-control" size="40"
 																value="#{tomaInventarioController.newTomaInventario.nombreResponsable}"
 																required="true"
+																disabled="#{tomaInventarioController.conciliar}"
 																requiredMessage="Usuario Registro Requerido.">
 																<p:ajax event="change" />
 															</p:inputText>
@@ -335,6 +348,7 @@
 																styleClass="input-sm form-control" size="40"
 																value="#{tomaInventarioController.newTomaInventario.nombreInventariador}"
 																required="true"
+																disabled="#{tomaInventarioController.conciliar}"
 																requiredMessage="Usuario Registro Requerido.">
 																<p:ajax event="change" />
 															</p:inputText>
@@ -349,7 +363,7 @@
 																value="#{tomaInventarioController.newTomaInventario.fecha}"
 																onkeypress="return permiteKey(event, 'none')"
 																style=" color: #555555; background-image: none;"
-																disabled="#{tomaInventarioController.modificar}">
+																disabled="#{tomaInventarioController.modificar or tomaInventarioController.conciliar}">
 																<p:ajax event="dateSelect" />
 															</p:calendar>
 														</div>
@@ -363,6 +377,7 @@
 																styleClass="input-sm form-control" size="40"
 																value="#{tomaInventarioController.newTomaInventario.hoja}"
 																required="true"
+																disabled="#{tomaInventarioController.conciliar}"
 																requiredMessage="Usuario Registro Requerido.">
 																<p:ajax event="change" />
 															</p:inputText>
@@ -401,6 +416,7 @@
 									</div>
 								</div>
 							</ui:fragment>
+							<!-- MOSTRAR LOS PRODUCTOS DE EL ALMACEN SELECCIONADO -->
 							<ui:fragment
 								rendered="#{tomaInventarioController.registrar  and tomaInventarioController.newTomaInventario.tipo.equals('PARCIAL')}">
 
@@ -474,6 +490,95 @@
 									</div>
 								</div>
 							</ui:fragment>
+							<!-- TABLA DETALLE TOMAINVENTARIO A CONCILIAR  -->
+							<ui:fragment rendered="#{tomaInventarioController.conciliar}">
+
+								<div class="col-md-8" align="left">
+
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Seleccione los Items a conciliar</h3>
+										</div>
+										<!-- start here datatable -->
+										<div class="box-content no-padding">
+
+											<p:dataTable
+												style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important; margin-bottom:0;"
+												rowKey="#{_var.id}" id="productoTableConciliar" var="_var"
+												editable="true"
+												value="#{tomaInventarioController.listDetalleTomaInventario}"
+												rendered="#{not empty listaProducto}"
+												selection="#{tomaInventarioController.listSelectedDetalleTomaInventario}"
+												emptyMessage="No se encontraron Registros." editMode="cell">
+
+												<p:column selectionMode="multiple"
+													style="width:16px;text-align:center" />
+												<p:ajax event="rowSelectCheckbox" update="@form" />
+												<p:ajax event="rowUnselectCheckbox" update="@form" />
+
+												<p:column width="7%" headerText="Codigo"
+													filterBy="#{_var.producto.id}" filterStyle="width: 100%;"
+													filterMatchMode="contains">
+													<h:outputText value="#{_var.producto.id}">
+													</h:outputText>
+												</p:column>
+
+												<p:column width="15%" headerText="Nombre Item"
+													filterBy="#{_var.producto.nombre}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_var.producto.nombre}" />
+												</p:column>
+
+												<p:column width="8%" headerText="Unidad "
+													filterBy="#{_var.producto.unidadMedidas.nombre}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_var.producto.unidadMedidas.nombre}" />
+												</p:column>
+
+												<p:column width="8%" headerText="Cantidad registrada"
+													filterBy="#{_var.cantidadRegistrada}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_var.cantidadRegistrada}">
+													</h:outputText>
+												</p:column>
+
+												<p:column width="8%" headerText="Cantidad verificada"
+													filterBy="#{_var.cantidadVerificada}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText
+														value="#{_var.cantidadVerificada == null? ' ' :_var.cantidadVerificada}" />
+												</p:column>
+
+												<p:column headerText="Diferencia" width="8%"
+													filterBy="#{_var.diferencia}" filterStyle="width: 100%; "
+													filterMatchMode="contains">
+													<h:outputText
+														value="#{_var.diferencia == null? ' ' :_var.diferencia}" />
+												</p:column>
+
+												<p:column width="15%" headerText="Observacion"
+													filterBy="#{_var.observacion}" style="text-align:center;"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<p:cellEditor>
+														<f:facet name="output">
+															<h:outputText value="#{_var.observacion}" />
+														</f:facet>
+														<f:facet name="input">
+															<p:inputText id="modelInput1" value="#{_var.observacion}"
+																style="width:96%" />
+														</f:facet>
+													</p:cellEditor>
+												</p:column>
+
+											</p:dataTable>
+										</div>
+										<!-- end here datatable -->
+										<div class="panel-body"></div>
+
+									</div>
+								</div>
+							</ui:fragment>
+							<!-- TABLA DETALLETOMAINVENTARIO PARA EDITAR CAMPOS DE VERIFICACION, DIFERENCIA Y OBSERVACION -->
 							<ui:fragment rendered="#{tomaInventarioController.modificar}">
 								<div class="col-md-8" align="left">
 
@@ -650,7 +755,7 @@
 													</div>
 													<div class="col-md-1">
 														<p:commandLink id="editarDetalleOrdenIngreso"
-														    disabled="#{tomaInventarioController.verButtonDetalle}"
+															disabled="#{tomaInventarioController.verButtonDetalle}"
 															value="&#160;" styleClass="btn btn-primary ion-edit"
 															update="formTableTomaInventario"
 															oncomplete="PF('dlgProducto').show();" immediate="true"
@@ -803,7 +908,7 @@
 							<label for="totalID" class="col-sm-3 control-label">Total</label>
 							<div class="col-sm-9">
 								<p:inputText id="totalID" required="true"
-									requiredMessage="Total Requerido."
+									requiredMessage="Total Requerido." disabled="true"
 									value="#{tomaInventarioController.selectedDetalleOrdenIngreso.total}"
 									size="40">
 									<p:ajax event="change" />
@@ -876,7 +981,7 @@
 
 								</div>
 							</div>
-							
+
 							<div class="form-group ">
 								<div class="col-md-4">Codigo</div>
 								<div class="col-md-8">

@@ -21,7 +21,6 @@ import bo.com.qbit.webapp.data.AlmacenProductoRepository;
 import bo.com.qbit.webapp.data.AlmacenRepository;
 import bo.com.qbit.webapp.data.DetalleOrdenIngresoRepository;
 import bo.com.qbit.webapp.data.DetalleTomaInventarioRepository;
-import bo.com.qbit.webapp.data.KardexProductoRepository;
 import bo.com.qbit.webapp.data.OrdenIngresoRepository;
 import bo.com.qbit.webapp.data.PartidaRepository;
 import bo.com.qbit.webapp.data.ProductoRepository;
@@ -30,12 +29,13 @@ import bo.com.qbit.webapp.data.TomaInventarioRepository;
 import bo.com.qbit.webapp.data.UnidadMedidaRepository;
 import bo.com.qbit.webapp.model.Almacen;
 import bo.com.qbit.webapp.model.AlmacenProducto;
+import bo.com.qbit.webapp.model.BajaProducto;
 import bo.com.qbit.webapp.model.DetalleOrdenIngreso;
-import bo.com.qbit.webapp.model.DetalleProducto;
 import bo.com.qbit.webapp.model.DetalleTomaInventario;
 import bo.com.qbit.webapp.model.DetalleTomaInventarioOrdenIngreso;
+import bo.com.qbit.webapp.model.FachadaOrdenIngreso;
+import bo.com.qbit.webapp.model.FachadaOrdenSalida;
 import bo.com.qbit.webapp.model.Gestion;
-import bo.com.qbit.webapp.model.KardexProducto;
 import bo.com.qbit.webapp.model.OrdenIngreso;
 import bo.com.qbit.webapp.model.Partida;
 import bo.com.qbit.webapp.model.Producto;
@@ -43,13 +43,11 @@ import bo.com.qbit.webapp.model.Proveedor;
 import bo.com.qbit.webapp.model.TomaInventario;
 import bo.com.qbit.webapp.model.UnidadMedida;
 import bo.com.qbit.webapp.model.Usuario;
-import bo.com.qbit.webapp.service.AlmacenProductoRegistration;
+import bo.com.qbit.webapp.service.BajaProductoRegistration;
 import bo.com.qbit.webapp.service.DetalleOrdenIngresoRegistration;
-import bo.com.qbit.webapp.service.DetalleProductoRegistration;
 import bo.com.qbit.webapp.service.DetalleTomaInventarioOrdenIngresoRegistration;
 import bo.com.qbit.webapp.service.DetalleTomaInventarioRegistration;
 import bo.com.qbit.webapp.service.GestionRegistration;
-import bo.com.qbit.webapp.service.KardexProductoRegistration;
 import bo.com.qbit.webapp.service.OrdenIngresoRegistration;
 import bo.com.qbit.webapp.service.ProductoRegistration;
 import bo.com.qbit.webapp.service.TomaInventarioRegistration;
@@ -74,7 +72,6 @@ public class TomaInventarioController implements Serializable {
 
 	private @Inject ProductoRepository productoRepository;
 	private @Inject DetalleOrdenIngresoRepository detalleOrdenIngresoRepository;
-	private @Inject KardexProductoRepository kardexProductoRepository;
 	private @Inject UnidadMedidaRepository unidadMedidaRepository;
 	private @Inject PartidaRepository partidaRepository;
 	private @Inject ProveedorRepository proveedorRepository;
@@ -83,13 +80,11 @@ public class TomaInventarioController implements Serializable {
 	private @Inject TomaInventarioRegistration tomaInventarioRegistration;
 	private @Inject DetalleTomaInventarioRegistration detalleTomaInventarioRegistration;
 	private @Inject ProductoRegistration productoRegistration;
-	private @Inject DetalleProductoRegistration detalleProductoRegistration;
 	private @Inject OrdenIngresoRegistration ordenIngresoRegistration;
 	private @Inject DetalleOrdenIngresoRegistration detalleOrdenIngresoRegistration;
 	private @Inject GestionRegistration gestionRegistration;
 	private @Inject DetalleTomaInventarioOrdenIngresoRegistration detalleTomaInventarioOrdenIngresoRegistration;
-	private @Inject KardexProductoRegistration kardexProductoRegistration;
-	private @Inject AlmacenProductoRegistration almacenProductoRegistration;
+	private @Inject BajaProductoRegistration bajaProductoRegistration;
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
@@ -110,6 +105,8 @@ public class TomaInventarioController implements Serializable {
 	private boolean verLista = true;//mostrar lista de tomas de inventario
 	private boolean modificar = false;//verificar
 	private boolean registrar = false;//mostrar maestro detalle
+	private boolean buttonConciliar = false;//mostrar button conciliar
+	private boolean conciliar = false;
 
 	private String tituloPanel = "Registrar Almacen";
 	private String urlTomaInventario = "";
@@ -128,6 +125,7 @@ public class TomaInventarioController implements Serializable {
 	private List<TomaInventario> listTomaInventario = new ArrayList<TomaInventario>();
 	private List<AlmacenProducto> listAlmacenProducto = new ArrayList<AlmacenProducto>();
 	private List<String> listTipo = new ArrayList<String>();//INICIAL,PARCIAL,FINAL
+	private List<DetalleTomaInventario> listSelectedDetalleTomaInventario = new ArrayList<DetalleTomaInventario>();
 
 	//SESSION
 	private @Inject SessionMain sessionMain; //variable del login
@@ -152,6 +150,10 @@ public class TomaInventarioController implements Serializable {
 	//ORDEN INGRESO
 	private OrdenIngreso newOrdenIngreso;
 
+	//FACADE
+	private @Inject FachadaOrdenIngreso fachadaOrdenIngreso;
+	private @Inject FachadaOrdenSalida fachadaOrdenSalida;
+
 	@PostConstruct
 	public void initNewTomaInventario() {
 
@@ -163,12 +165,18 @@ public class TomaInventarioController implements Serializable {
 		// tituloPanel
 		tituloPanel = "Registrar Toma Inventario";
 
+		//inicilaizar fachada
+		//fachadaOrdenIngreso = new FachadaOrdenIngreso();
+		//fachadaOrdenSalida = new FachadaOrdenSalida();
+
 		crear = true;
 		verProcesar = true;
 		verReport = false;
 		revisarReport = false;
 		verGuardar = false;
 		verButtonReport = false;
+		conciliar = false;
+		buttonConciliar = false;
 
 		tipoTomaInventario = "PARCIAL";
 
@@ -274,7 +282,7 @@ public class TomaInventarioController implements Serializable {
 			}
 			//si es de Tipo INICIAL
 			if(newTomaInventario.getTipo().equals("INICIAL")){
-				//ACtualizar estado de gestion
+				//Actualizar estado de gestion
 				gestionSesion.setIniciada(true);
 				sessionMain.getGestionLogin().setIniciada(true);//actualaizar la gestion
 				gestionRegistration.update(gestionSesion);
@@ -391,11 +399,11 @@ public class TomaInventarioController implements Serializable {
 			for(DetalleOrdenIngreso d: listaDetalleOrdenIngreso){
 				Producto prod = d.getProducto();
 				//actualiza el esstock por producto almacen(teniendo en cuenta la agrupacion de productos)
-				actualizarStock(newOrdenIngreso.getAlmacen(),proveedor,prod, d.getCantidad(),fechaActual,d.getPrecioUnitario());
+				fachadaOrdenIngreso.actualizarStock(newOrdenIngreso.getAlmacen(),proveedor,prod, d.getCantidad(),fechaActual,d.getPrecioUnitario(),usuarioSession);
 				//registra la transaccion de entrada del producto
-				actualizarKardexProducto( prod,fechaActual, d.getCantidad(),d.getPrecioUnitario());
+				fachadaOrdenIngreso.actualizarKardexProducto(newOrdenIngreso.getCorrelativo(),newOrdenIngreso.getAlmacen(),gestionSesion, prod,fechaActual, d.getCantidad(),d.getPrecioUnitario(),usuarioSession);
 				//registra los stock de los producto , para luego utilizar PEPS en ordenes de traspaso y salida
-				cargarDetalleProducto(newOrdenIngreso.getAlmacen(),d.getProducto(), d.getCantidad(), d.getPrecioUnitario(), d.getFechaRegistro(), newOrdenIngreso.getCorrelativo());
+				fachadaOrdenIngreso.cargarDetalleProducto(fechaActual,newOrdenIngreso.getAlmacen(),d.getProducto(), d.getCantidad(), d.getPrecioUnitario(), d.getFechaRegistro(), newOrdenIngreso.getCorrelativo(),usuarioSession);
 			}
 
 
@@ -403,103 +411,11 @@ public class TomaInventarioController implements Serializable {
 		}
 	}
 
-	// cargar en la ttabla detalle_producto, reegistros de productos, para luego utilizar el metodo PEPS
-	private void cargarDetalleProducto(Almacen almacen,Producto producto,double cantidad, double precio, Date fecha, String correlativoTransaccion){
-		try{
-			Date fechaActual = new Date();
-			DetalleProducto detalleProducto = new DetalleProducto();
-			detalleProducto.setCodigo("OI"+correlativoTransaccion+fecha.toString());
-			detalleProducto.setAlmacen(almacen);
-			detalleProducto.setEstado("AC");
-			detalleProducto.setPrecio(precio);
-			detalleProducto.setStockActual(cantidad);
-			detalleProducto.setStockInicial(cantidad);
-			detalleProducto.setCorrelativoTransaccion(correlativoTransaccion);
-			detalleProducto.setFecha(fecha);
-			detalleProducto.setFechaRegistro(fechaActual);
-			detalleProducto.setProducto(producto);
-			detalleProducto.setUsuarioRegistro(usuarioSession);
-			detalleProductoRegistration.register(detalleProducto);
-		}catch(Exception e){
-			System.out.println("cargarDetalleProducto() ERROR: "+e.getMessage());
-		}
-	}
-
-	//registro en la tabla kardex_producto
-	private void actualizarKardexProducto(Producto prod,Date fechaActual,double cantidad,Double precioUnitario) throws Exception{
-		//registrar Kardex
-		KardexProducto kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProducto(prod);
-		double stockAnterior = 0;
-		if(kardexProductoAnt != null){
-			//se obtiene el saldo anterior del producto
-			stockAnterior = kardexProductoAnt.getStockAnterior();
-		}
-		double entrada = cantidad;
-		double salida = 0;
-		double saldo = stockAnterior + cantidad;
-
-		KardexProducto kardexProducto = new KardexProducto();
-		kardexProducto.setUnidadSolicitante("ORDEN INGRESO");
-		kardexProducto.setFecha(fechaActual);
-		kardexProducto.setAlmacen(newOrdenIngreso.getAlmacen());
-		kardexProducto.setCantidad(cantidad);
-		kardexProducto.setEstado("AC");
-		kardexProducto.setFechaRegistro(fechaActual);
-		kardexProducto.setGestion(gestionSesion);
-		kardexProducto.setNumeroTransaccion(newOrdenIngreso.getCorrelativo());
-
-
-		//BOLIVIANOS
-		kardexProducto.setPrecioUnitario(precioUnitario);
-		kardexProducto.setTotalEntrada(precioUnitario * entrada);
-		kardexProducto.setTotalSalida(precioUnitario * salida);
-		kardexProducto.setTotalSaldo(precioUnitario * saldo);
-
-		//CANTIDADES
-		kardexProducto.setStock(entrada);//ENTRADA
-		kardexProducto.setStockActual(salida);//SALIDA
-		kardexProducto.setStockAnterior(saldo);//SALDO
-
-		kardexProducto.setProducto(prod);
-
-		kardexProducto.setTipoMovimiento("ORDEN INGRESO");
-		kardexProducto.setUsuarioRegistro(usuarioSession);
-		kardexProductoRegistration.register(kardexProducto);
-	}
-
-	//registro en la tabla almacen_producto, actualiza el stock y el precio(promedio agrupando los productos)
-	private void actualizarStock(Almacen almacen,Proveedor proveedor,Producto prod ,double newStock,Date date,double precioUnitario) throws Exception {
-		//0 . verificar si existe el producto en el almacen
-		System.out.println("actualizarStock()");
-		AlmacenProducto almProd =  almacenProductoRepository.findByAlmacenProducto(almacen,prod);
-		if(almProd != null){
-			// 1 .  si existe el producto
-			double oldStock = almProd.getStock();
-			double oldPrecioUnitario = almProd.getPrecioUnitario();
-			almProd.setStock(oldStock + newStock);
-			almProd.setPrecioUnitario((( oldPrecioUnitario + precioUnitario)/2));//precio ponderado del producto
-			almacenProductoRegistration.updated(almProd);
-			return ;
-		}
-		// 2 . no existe el producto
-		almProd = new AlmacenProducto();
-		almProd.setAlmacen(almacen);
-		almProd.setProducto(prod);
-		almProd.setProveedor(proveedor);
-		almProd.setStock(newStock);
-		almProd.setPrecioUnitario(precioUnitario);
-		almProd.setEstado("AC");
-		almProd.setFechaRegistro(date);
-		almProd.setUsuarioRegistro(usuarioSession);
-
-		almacenProductoRegistration.register(almProd);
-	}
-
 	public void procesarConsulta(){
 		try {
 			listAlmacenProducto = almacenProductoRepository.findByAlmacen(selectedAlmacen);
 			if(listAlmacenProducto.size()==0){//validacion de almacen
-				if(selectedAlmacen==null){
+				if(selectedAlmacen.getId()==0){
 					FacesUtil.infoMessage("INFORMACION", "Seleccione un almacen ");
 				}else{
 					FacesUtil.infoMessage("INFORMACION", "No se encontraron existencias en el almacen "+selectedAlmacen.getNombre());
@@ -517,6 +433,74 @@ public class TomaInventarioController implements Serializable {
 		} catch (Exception e) {
 			FacesUtil.errorMessage("Error al Procesar!");
 		}
+	}
+
+	public void buttonConciliarTomaInventario(){
+		System.out.println("buttonConciliarTomaInventario()");
+		try {
+			newTomaInventario = selectedTomaInventario;
+			selectedAlmacen = selectedTomaInventario.getAlmacen();
+			listDetalleTomaInventario = new ArrayList<DetalleTomaInventario>();
+			listDetalleTomaInventario = detalleTomaInventarioRepository.findByTomaInventario(selectedTomaInventario);
+
+			verLista = false;
+			modificar = false;
+			registrar = false;
+			verButtonReport = false;
+			buttonConciliar = false;
+			conciliar = true;
+		} catch (Exception e) {
+			System.out.println("ERROR "+e.getMessage());
+		}
+	}
+
+	public void conciliarTomaInventario(){
+		try{
+			if(listSelectedDetalleTomaInventario.size()>0){
+				Date fechaActual = new Date();
+				selectedTomaInventario.setEstado("CN");//CONCILIADO
+				tomaInventarioRegistration.updated(selectedTomaInventario);
+				BajaProducto baja = new BajaProducto();
+				System.out.println("conciliarTomaInventario() size:"+listSelectedDetalleTomaInventario.size());
+				for(DetalleTomaInventario d: listSelectedDetalleTomaInventario){
+					System.out.println("d :"+d.getProducto().getNombre());
+					baja = new BajaProducto();
+					baja.setDetalleTomaInventario(d);
+					baja.setEstado("AC");
+					baja.setFechaRegistro(fechaActual);
+					baja.setObservacion(d.getObservacion());
+					baja.setStockActual(d.getCantidadVerificada());
+					baja.setStockAnterior(d.getCantidadRegistrada());
+					baja.setUsuarioRegistro(usuarioSession);
+					
+					//actualizar en AlmacenProducto
+					fachadaOrdenSalida.actualizarStock(d.getProducto(), d.getCantidadVerificada(), fechaActual, -1d);//-1 para que no actualize el precio
+					//actualizar en DetalleProducto
+					if(d.getCantidadRegistrada() - d.getCantidadVerificada() > 0){//si faltaron
+						fachadaOrdenSalida.actualizarDetalleProducto(selectedTomaInventario.getAlmacen(), d.getProducto(), d.getDiferencia());
+						bajaProductoRegistration.register(baja);
+						//actualizar en kardex(NOSE) como una salida
+					}else if (d.getCantidadRegistrada() - d.getCantidadVerificada() < 0) {//si sobraron
+						//falta establecer el precio y correlativoTransaccion
+						//precio promedio
+						double precioPromedio = almacenProductoRepository.findPrecioPromedioByProducto(d.getProducto());
+						String correlativoTransaccion = "TI"+new Date();
+						fachadaOrdenIngreso.cargarDetalleProducto(fechaActual, selectedTomaInventario.getAlmacen(), d.getProducto(), d.getDiferencia(), precioPromedio, fechaActual, correlativoTransaccion, usuarioSession);
+						bajaProductoRegistration.register(baja);
+						//actualizar en kardex(NOSE) como un ingreso
+					}else{
+						//aqui
+					}
+				}
+				FacesUtil.infoMessage("INFORMACION", "Toma Inventario "+selectedTomaInventario.getId()+" Conciliada.");
+				initNewTomaInventario();
+			}else{
+				FacesUtil.infoMessage("INFORMACION", "Seleccione los items para conciliarlos");
+			}
+		}catch(Exception e){
+			System.out.println("ERROR "+e.getMessage());
+		}
+
 	}
 
 	public void buttonRevisar(){
@@ -581,8 +565,10 @@ public class TomaInventarioController implements Serializable {
 		crear = false;
 		if(selectedTomaInventario.getEstadoRevision().equals("NO")){
 			revisarReport = true;
+			buttonConciliar = false;
 		}else{
 			revisarReport = false;
+			buttonConciliar = true;
 		}
 	}
 
@@ -1065,6 +1051,31 @@ public class TomaInventarioController implements Serializable {
 
 	public void setListTipo(List<String> listTipo) {
 		this.listTipo = listTipo;
+	}
+
+	public boolean isConciliar() {
+		return conciliar;
+	}
+
+	public void setConciliar(boolean conciliar) {
+		this.conciliar = conciliar;
+	}
+
+	public boolean isButtonConciliar() {
+		return buttonConciliar;
+	}
+
+	public void setButtonConciliar(boolean buttonConciliar) {
+		this.buttonConciliar = buttonConciliar;
+	}
+
+	public List<DetalleTomaInventario> getListSelectedDetalleTomaInventario() {
+		return listSelectedDetalleTomaInventario;
+	}
+
+	public void setListSelectedDetalleTomaInventario(
+			List<DetalleTomaInventario> listSelectedDetalleTomaInventario) {
+		this.listSelectedDetalleTomaInventario = listSelectedDetalleTomaInventario;
 	}
 
 }

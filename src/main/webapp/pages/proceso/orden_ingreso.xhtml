@@ -164,7 +164,7 @@
 																		itemLabel="DEVOLUCION" />
 																	<f:selectItem itemValue="TRASPASO" itemLabel="TRASPASO" />
 																	<p:ajax event="change"
-																		update="formTableOrdenIngreso,formBotonesHeader"
+																		update="formTableOrdenIngreso,formBotonesHeader,formDialogProducto"
 																		listener="#{ordenIngresoController.verificarEstadoImportacion()}" />
 																</h:selectOneMenu>
 															</div>
@@ -544,7 +544,6 @@
 		<!-- END GROWL -->
 
 		<!--   MODAL PRODUCTO -->
-
 		<p:dialog widgetVar="dlgProducto" resizable="false"
 			header="#{ordenIngresoController.tituloProducto}" showHeader="true"
 			modal="false" closeOnEscape="true" draggable="true" position="center"
@@ -607,7 +606,7 @@
 								Unitario</label>
 							<div class="col-sm-9">
 								<p:inputText id="precioID" required="true"
-									requiredMessage="Precio Requerido."
+									requiredMessage="Precio Requerido." disabled="#{ordenIngresoController.devolucion}"
 									value="#{ordenIngresoController.selectedDetalleOrdenIngreso.precioUnitario}"
 									size="40">
 									<p:ajax event="change" update="totalID"
@@ -641,7 +640,7 @@
 							<label for="totalID" class="col-sm-3 control-label">Total</label>
 							<div class="col-sm-9">
 								<p:inputText id="totalID" required="true"
-									requiredMessage="Total Requerido."
+									requiredMessage="Total Requerido." disabled="true"
 									value="#{ordenIngresoController.selectedDetalleOrdenIngreso.total}"
 									size="40">
 									<p:ajax event="change" />

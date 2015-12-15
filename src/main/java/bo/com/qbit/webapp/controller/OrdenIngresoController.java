@@ -26,7 +26,6 @@ import org.richfaces.cdi.push.Push;
 import bo.com.qbit.webapp.data.AlmacenProductoRepository;
 import bo.com.qbit.webapp.data.AlmacenRepository;
 import bo.com.qbit.webapp.data.DetalleOrdenIngresoRepository;
-import bo.com.qbit.webapp.data.KardexProductoRepository;
 import bo.com.qbit.webapp.data.OrdenIngresoRepository;
 import bo.com.qbit.webapp.data.PartidaRepository;
 import bo.com.qbit.webapp.data.ProductoRepository;
@@ -34,22 +33,17 @@ import bo.com.qbit.webapp.data.ProveedorRepository;
 import bo.com.qbit.webapp.data.UnidadMedidaRepository;
 import bo.com.qbit.webapp.data.UsuarioRepository;
 import bo.com.qbit.webapp.model.Almacen;
-import bo.com.qbit.webapp.model.AlmacenProducto;
 import bo.com.qbit.webapp.model.DetalleOrdenIngreso;
-import bo.com.qbit.webapp.model.DetalleProducto;
+import bo.com.qbit.webapp.model.FachadaOrdenIngreso;
 import bo.com.qbit.webapp.model.Gestion;
-import bo.com.qbit.webapp.model.KardexProducto;
 import bo.com.qbit.webapp.model.OrdenIngreso;
 import bo.com.qbit.webapp.model.Partida;
 import bo.com.qbit.webapp.model.Producto;
 import bo.com.qbit.webapp.model.Proveedor;
 import bo.com.qbit.webapp.model.UnidadMedida;
 import bo.com.qbit.webapp.model.Usuario;
-import bo.com.qbit.webapp.service.AlmacenProductoRegistration;
 import bo.com.qbit.webapp.service.AlmacenRegistration;
 import bo.com.qbit.webapp.service.DetalleOrdenIngresoRegistration;
-import bo.com.qbit.webapp.service.DetalleProductoRegistration;
-import bo.com.qbit.webapp.service.KardexProductoRegistration;
 import bo.com.qbit.webapp.service.OrdenIngresoRegistration;
 import bo.com.qbit.webapp.service.PartidaRegistration;
 import bo.com.qbit.webapp.service.ProductoRegistration;
@@ -75,19 +69,16 @@ public class OrdenIngresoController implements Serializable {
 	private @Inject ProveedorRepository proveedorRepository;
 	private @Inject ProductoRepository productoRepository;
 	private @Inject DetalleOrdenIngresoRepository detalleOrdenIngresoRepository;
-	private @Inject AlmacenProductoRepository almacenProductoRepository;
-	private @Inject KardexProductoRepository kardexProductoRepository;
 	private @Inject PartidaRepository partidaRepository;
 	private @Inject UnidadMedidaRepository unidadMedidaRepository;
+	private @Inject AlmacenProductoRepository almacenProductoRepository;
 
 	private @Inject OrdenIngresoRegistration ordenIngresoRegistration;
 	private @Inject DetalleOrdenIngresoRegistration detalleOrdenIngresoRegistration;
-	private @Inject AlmacenProductoRegistration almacenProductoRegistration;
-	private @Inject KardexProductoRegistration kardexProductoRegistration;
 	private @Inject ProductoRegistration productoRegistration;
 	private @Inject AlmacenRegistration almacenRegistration;
 	private @Inject PartidaRegistration partidaRegistration;
-	private @Inject DetalleProductoRegistration detalleProductoRegistration;
+	
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
@@ -106,6 +97,7 @@ public class OrdenIngresoController implements Serializable {
 	private boolean verReport = false;
 	private boolean nuevoProducto = false;
 	private boolean importarFile = false;//para habilitar importacion
+	private boolean devolucion = false;//tipo DEVOLUCION PARA SACAR PRECIO PROMEDIO
 
 	private String tituloProducto = "Agregar Producto";
 	private String tituloPanel = "Registrar Almacen";
@@ -120,6 +112,7 @@ public class OrdenIngresoController implements Serializable {
 	private OrdenIngreso newOrdenIngreso;
 	private DetalleOrdenIngreso selectedDetalleOrdenIngreso;
 	private UnidadMedida selectedUnidadMedida;
+	private double precioPromedio = 0;
 
 	//LIST
 	private List<Usuario> listUsuario = new ArrayList<Usuario>();
@@ -139,6 +132,9 @@ public class OrdenIngresoController implements Serializable {
 
 	//CREACION NUEVO PRODUCTO
 	private Producto newProducto= new Producto();
+	
+	//FACADE
+	private @Inject  FachadaOrdenIngreso fachadaOrdenIngreso;
 
 	@PostConstruct
 	public void initNewOrdenIngreso() {
@@ -148,6 +144,9 @@ public class OrdenIngresoController implements Serializable {
 		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
 		gestionSesion = sessionMain.getGestionLogin();
 		listUsuario = usuarioRepository.findAllOrderedByID();
+		
+		//inicializar fachadaOrdenIngreso
+		//fachadaOrdenIngreso = new FachadaOrdenIngreso();
 
 		selectedProducto = new Producto();
 		selectedAlmacen = new Almacen();
@@ -155,6 +154,8 @@ public class OrdenIngresoController implements Serializable {
 
 		selectedOrdenIngreso = null;
 		selectedDetalleOrdenIngreso = new DetalleOrdenIngreso();
+		precioPromedio = 0;
+		devolucion = false;
 
 		// tituloPanel
 		tituloPanel = "Registrar Orden Ingreso";
@@ -262,6 +263,11 @@ public class OrdenIngresoController implements Serializable {
 		}else{
 			importarFile = false;
 		}
+		if(newOrdenIngreso.getMotivoIngreso().equals("DEVOLUCION")){
+			devolucion = true;
+		}else{
+			devolucion = false;
+		}
 	}
 
 	// SELECT DETALLE ORDEN INGRESO CLICK
@@ -347,6 +353,7 @@ public class OrdenIngresoController implements Serializable {
 
 	public void procesarOrdenIngreso(){
 		try {
+			System.out.println("procesarOrdenIngreso() ");
 			Date fechaActual = new Date();
 			// actualizar estado de orden ingreso
 			selectedOrdenIngreso.setEstado("PR");
@@ -359,110 +366,22 @@ public class OrdenIngresoController implements Serializable {
 			for(DetalleOrdenIngreso d: listaDetalleOrdenIngreso){
 				Producto prod = d.getProducto();
 				//actualiza el esstock por producto almacen(teniendo en cuenta la agrupacion de productos)
-				actualizarStock(selectedOrdenIngreso.getAlmacen(),proveedor,prod, d.getCantidad(),fechaActual,d.getPrecioUnitario());
+				System.out.println("fachadaOrdenIngreso.actualizarStock() ");
+				fachadaOrdenIngreso.actualizarStock(selectedOrdenIngreso.getAlmacen(),proveedor,prod, d.getCantidad(),fechaActual,d.getPrecioUnitario(),usuarioSession);
 				//registra la transaccion de entrada del producto
-				actualizarKardexProducto( prod,fechaActual, d.getCantidad(),d.getPrecioUnitario());
+				System.out.println("fachadaOrdenIngreso.actualizarKardexProducto() ");
+				fachadaOrdenIngreso.actualizarKardexProducto(selectedOrdenIngreso.getCorrelativo(),selectedOrdenIngreso.getAlmacen(),gestionSesion, prod,fechaActual, d.getCantidad(),d.getPrecioUnitario(),usuarioSession);
 				//registra los stock de los producto , para luego utilizar PEPS en ordenes de traspaso y salida
-				cargarDetalleProducto(selectedOrdenIngreso.getAlmacen(),d.getProducto(), d.getCantidad(), d.getPrecioUnitario(), d.getFechaRegistro(), selectedOrdenIngreso.getCorrelativo());
+				System.out.println("fachadaOrdenIngreso.cargarDetalleProducto() ");
+				fachadaOrdenIngreso.cargarDetalleProducto(fechaActual,selectedOrdenIngreso.getAlmacen(),d.getProducto(), d.getCantidad(), d.getPrecioUnitario(), d.getFechaRegistro(), selectedOrdenIngreso.getCorrelativo(),usuarioSession);
 			}
 
 			FacesUtil.infoMessage("Orden de Ingreso Procesada!", "");
 			initNewOrdenIngreso();
 		} catch (Exception e) {
+			System.out.println("ERROR "+e.getMessage());
 			FacesUtil.errorMessage("Error al Procesar!");
 		}
-	}
-
-	// cargar en la ttabla detalle_producto, reegistros de productos, para luego utilizar el metodo PEPS
-	private void cargarDetalleProducto(Almacen almacen,Producto producto,double cantidad, double precio, Date fecha, String correlativoTransaccion){
-		try{
-			Date fechaActual = new Date();
-			DetalleProducto detalleProducto = new DetalleProducto();
-			detalleProducto.setCodigo("OI"+correlativoTransaccion+fecha.toString());
-			detalleProducto.setAlmacen(almacen);
-			detalleProducto.setEstado("AC");
-			detalleProducto.setPrecio(precio);
-			detalleProducto.setStockActual(cantidad);
-			detalleProducto.setStockInicial(cantidad);
-			detalleProducto.setCorrelativoTransaccion(correlativoTransaccion);
-			detalleProducto.setFecha(fecha);
-			detalleProducto.setFechaRegistro(fechaActual);
-			detalleProducto.setProducto(producto);
-			detalleProducto.setUsuarioRegistro(usuarioSession);
-			detalleProductoRegistration.register(detalleProducto);
-		}catch(Exception e){
-			System.out.println("cargarDetalleProducto() ERROR: "+e.getMessage());
-		}
-	}
-
-	//registro en la tabla kardex_producto
-	private void actualizarKardexProducto(Producto prod,Date fechaActual,double cantidad,Double precioUnitario) throws Exception{
-		//registrar Kardex
-		KardexProducto kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProducto(prod);
-		double stockAnterior = 0;
-		if(kardexProductoAnt != null){
-			//se obtiene el saldo anterior del producto
-			stockAnterior = kardexProductoAnt.getStockAnterior();
-		}
-		double entrada = cantidad;
-		double salida = 0;
-		double saldo = stockAnterior + cantidad;
-
-		KardexProducto kardexProducto = new KardexProducto();
-		kardexProducto.setUnidadSolicitante("ORDEN INGRESO");
-		kardexProducto.setFecha(fechaActual);
-		kardexProducto.setAlmacen(selectedOrdenIngreso.getAlmacen());
-		kardexProducto.setCantidad(cantidad);
-		kardexProducto.setEstado("AC");
-		kardexProducto.setFechaRegistro(fechaActual);
-		kardexProducto.setGestion(gestionSesion);
-		kardexProducto.setNumeroTransaccion(selectedOrdenIngreso.getCorrelativo());
-
-
-		//BOLIVIANOS
-		kardexProducto.setPrecioUnitario(precioUnitario);
-		kardexProducto.setTotalEntrada(precioUnitario * entrada);
-		kardexProducto.setTotalSalida(precioUnitario * salida);
-		kardexProducto.setTotalSaldo(precioUnitario * saldo);
-
-		//CANTIDADES
-		kardexProducto.setStock(entrada);//ENTRADA
-		kardexProducto.setStockActual(salida);//SALIDA
-		kardexProducto.setStockAnterior(saldo);//SALDO
-
-		kardexProducto.setProducto(prod);
-
-		kardexProducto.setTipoMovimiento("ORDEN INGRESO");
-		kardexProducto.setUsuarioRegistro(usuarioSession);
-		kardexProductoRegistration.register(kardexProducto);
-	}
-
-	//registro en la tabla almacen_producto, actualiza el stock y el precio(promedio agrupando los productos)
-	private void actualizarStock(Almacen almacen,Proveedor proveedor,Producto prod ,double newStock,Date date,double precioUnitario) throws Exception {
-		//0 . verificar si existe el producto en el almacen
-		System.out.println("actualizarStock()");
-		AlmacenProducto almProd =  almacenProductoRepository.findByAlmacenProducto(almacen,prod);
-		if(almProd != null){
-			// 1 .  si existe el producto
-			double oldStock = almProd.getStock();
-			double oldPrecioUnitario = almProd.getPrecioUnitario();
-			almProd.setStock(oldStock + newStock);
-			almProd.setPrecioUnitario((( oldPrecioUnitario + precioUnitario)/2));//precio ponderado del producto
-			almacenProductoRegistration.updated(almProd);
-			return ;
-		}
-		// 2 . no existe el producto
-		almProd = new AlmacenProducto();
-		almProd.setAlmacen(almacen);
-		almProd.setProducto(prod);
-		almProd.setProveedor(proveedor);
-		almProd.setStock(newStock);
-		almProd.setPrecioUnitario(precioUnitario);
-		almProd.setEstado("AC");
-		almProd.setFechaRegistro(date);
-		almProd.setUsuarioRegistro(usuarioSession);
-
-		almacenProductoRegistration.register(almProd);
 	}
 
 	public void cargarReporte(){
@@ -517,12 +436,26 @@ public class OrdenIngresoController implements Serializable {
 
 	public void agregarDetalleOrdenIngreso(){
 		System.out.println("agregarDetalleOrdenIngreso ");
+		//verificar si el producto ya fue agregado
+		if(verificarProductoAgregado(selectedProducto)){
+			FacesUtil.infoMessage("OBSERVACION", "Este producto ya fue agregado.");
+			return ;
+		}
 		selectedDetalleOrdenIngreso.setProducto(selectedProducto);
 		listaDetalleOrdenIngreso.add(0, selectedDetalleOrdenIngreso);
 		selectedProducto = new Producto();
 		selectedDetalleOrdenIngreso = new DetalleOrdenIngreso();
 		FacesUtil.resetDataTable("formTableOrdenIngreso:itemsTable1");
 		verButtonDetalle = true;
+	}
+	
+	private boolean verificarProductoAgregado(Producto selectedProducto){
+		for(DetalleOrdenIngreso detalle : listaDetalleOrdenIngreso){
+			if(detalle.getProducto().getId()==selectedProducto.getId()){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void modificarDetalleOrdenIngreso(){
@@ -610,10 +543,20 @@ public class OrdenIngresoController implements Serializable {
 		for(Producto i : listProducto){
 			if(i.getNombre().equals(nombre)){
 				selectedProducto = i;
+				if(devolucion){
+					calcularPrecioPromedioForDevolucion(selectedProducto);
+				}else{
+					selectedDetalleOrdenIngreso.setPrecioUnitario(0);
+				}
 				calcular();
 				return;
 			}
 		}
+	}
+	
+	private void calcularPrecioPromedioForDevolucion(Producto producto){
+		precioPromedio = almacenProductoRepository.findPrecioPromedioByProducto(producto);
+		selectedDetalleOrdenIngreso.setPrecioUnitario(precioPromedio);
 	}
 
 	// SELECCIONAR AUTOCOMPLETE UNIDAD DE MEDIDA
@@ -1042,6 +985,22 @@ public class OrdenIngresoController implements Serializable {
 
 	public void setSelectedUnidadMedida(UnidadMedida selectedUnidadMedida) {
 		this.selectedUnidadMedida = selectedUnidadMedida;
+	}
+
+	public double getPrecioPromedio() {
+		return precioPromedio;
+	}
+
+	public void setPrecioPromedio(double precioPromedio) {
+		this.precioPromedio = precioPromedio;
+	}
+	
+	public boolean getDevolucion() {
+		return devolucion;
+	}
+
+	public void setDevolucion(boolean devolucion) {
+		this.devolucion = devolucion;
 	}
 
 }

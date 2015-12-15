@@ -2,7 +2,7 @@ package bo.com.qbit.webapp.data;
 
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
@@ -10,7 +10,7 @@ import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.KardexProducto;
 import bo.com.qbit.webapp.model.Producto;
 
-@ApplicationScoped
+@Stateless
 public class KardexProductoRepository {
 
 	@Inject
@@ -34,6 +34,7 @@ public class KardexProductoRepository {
 		return em.createQuery(query).getResultList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public KardexProducto findKardexStockAnteriorByProducto(Producto producto) {
 		String query = "select ser from KardexProducto ser, Producto prod,Gestion ges where ser.producto.id = prod.id  and ser.gestion.id = ges.id and (ser.estado='AC' or ser.estado='IN') and ser.producto.id="+producto.getId()+" order by ser.id desc";
 		System.out.println("Query KardexProducto: " + query);

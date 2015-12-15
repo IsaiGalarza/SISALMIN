@@ -218,7 +218,8 @@
 								<li
 									class="#{(view.viewId.equals('/pages/parametrizacion/unidad.xhtml')) ? 'active' :'inactive'}"><a
 									href="#{request.contextPath}/pages/parametrizacion/unidad.xhtml">
-										<i class="icon-globe"></i><span class="sidebar-text">Area de Trabajo</span>
+										<i class="icon-globe"></i><span class="sidebar-text">Area
+											de Trabajo</span>
 								</a></li>
 
 								<li
@@ -226,11 +227,12 @@
 									href="#{request.contextPath}/pages/parametrizacion/funcionario.xhtml">
 										<i class="icon-globe"></i><span class="sidebar-text">Funcionario</span>
 								</a></li>
-								
+
 								<li
 									class="#{(view.viewId.equals('/pages/parametrizacion/unidad_medida.xhtml')) ? 'active' :'inactive'}"><a
 									href="#{request.contextPath}/pages/parametrizacion/unidad_medida.xhtml">
-										<i class="icon-globe"></i><span class="sidebar-text">Unidad Medida</span>
+										<i class="icon-globe"></i><span class="sidebar-text">Unidad
+											Medida</span>
 								</a></li>
 
 
@@ -320,15 +322,36 @@
 							<a href="#"><i class="icon-bar-chart"></i><span
 								class="sidebar-text">Reporte</span></a>
 							<ul class="nav nav-second-level">
-								
-								<li class="#{(view.viewId.equals('/pages/reportes/lista_item.xhtml')) ? 'active' :'inactive'}"><a href="#{request.contextPath}/pages/reportes/lista_item.xhtml"> <i class="icon-notebook"></i> <span class="sidebar-text">PEPS</span></a></li>
-								<li class="inactive"><a href="#"> <i class="icon-notebook"></i> <span class="sidebar-text">Ingresos</span></a></li>
-								<li class="inactive"><a href="#"> <i class="icon-notebook"></i> <span class="sidebar-text">Salidas</span></a></li>
-								<li class="inactive"><a href="#"> <i class="icon-notebook"></i> <span class="sidebar-text">Transpasos</span></a></li>
-								
+
+								<li
+									class="#{(view.viewId.equals('/pages/reportes/lista_item.xhtml')) ? 'active' :'inactive'}"><a
+									href="#{request.contextPath}/pages/reportes/lista_item.xhtml">
+										<i class="icon-notebook"></i> <span class="sidebar-text">PEPS</span>
+								</a></li>
+								<li class="inactive"><a href="#"> <i
+										class="icon-notebook"></i> <span class="sidebar-text">Ingresos</span></a></li>
+								<li class="inactive"><a href="#"> <i
+										class="icon-notebook"></i> <span class="sidebar-text">Salidas</span></a></li>
+								<li class="inactive"><a href="#"> <i
+										class="icon-notebook"></i> <span class="sidebar-text">Transpasos</span></a></li>
+
 							</ul>
 						</li>
 					</ui:insert>
+					<li
+						class="#{(view.viewId.equals('/pages/ayuda/manual_usuario.xhtml')) ? 'active' : 'inactive'}">
+						<a href="#"><i class="icon-support"></i><span
+							class="sidebar-text">Ayuda</span></a>
+						<ul class="nav nav-second-level">
+
+							<li
+								class="#{(view.viewId.equals('/pages/ayuda/manual_usuario.xhtml')) ? 'active' :'inactive'}"><a
+								href="#{request.contextPath}/pages/ayuda/manual_usuario.xhtml">
+									<i class="icon-notebook"></i> <span class="sidebar-text">Manuall Usuario</span>
+							</a></li>
+
+						</ul>
+					</li>
 				</ul>
 				</section> </aside>
 				<!--END SIDERBAR-->
