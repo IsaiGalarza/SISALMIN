@@ -42,7 +42,7 @@
 								<p:commandLink id="buttonCrear1"
 									value="&#160; Nueva Orden Salida"
 									styleClass="btn btn-success ion-plus-round"
-									rendered="#{ordenSalidaController.crear  and ! ordenSalidaController.verReport and ordenSalidaController.selectedOrdenSalida == null}"
+									rendered="#{ordenSalidaController.crear  and ! ordenSalidaController.verReport and ordenSalidaController.selectedOrdenSalida == null and sessionMain.tienePermisoPaginaAccion('ORDEN SALIDA','REGISTRAR')}"
 									update="formTableOrdenSalida, formBotonesHeader"
 									action="#{ordenSalidaController.cambiarAspecto()}"
 									style="height:31px;">
@@ -58,7 +58,7 @@
 
 								<p:commandLink id="buttonVerModificar" value="&#160; Modificar"
 									styleClass="btn btn-primary ion-edit"
-									rendered="#{ordenSalidaController.selectedOrdenSalida != null and ordenSalidaController.crear and ordenSalidaController.verProcesar and ! ordenSalidaController.verReport}"
+									rendered="#{ordenSalidaController.selectedOrdenSalida != null and ordenSalidaController.crear and ordenSalidaController.verProcesar and ! ordenSalidaController.verReport and sessionMain.tienePermisoPaginaAccion('ORDEN SALIDA','MODIFICAR')}"
 									style="height:31px; padding:center"
 									update="formTableOrdenSalida, :formBotonesHeader"
 									action="#{ordenSalidaController.cambiarAspectoModificar()}">
@@ -74,7 +74,7 @@
 
 								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
 									styleClass="btn btn-danger ion-close"
-									rendered="#{ordenSalidaController.selectedOrdenSalida != null and ordenSalidaController.crear and ordenSalidaController.verProcesar and ! ordenSalidaController.verReport}"
+									rendered="#{ordenSalidaController.selectedOrdenSalida != null and ordenSalidaController.crear and ordenSalidaController.verProcesar and ! ordenSalidaController.verReport and sessionMain.tienePermisoPaginaAccion('ORDEN SALIDA','ELIMINAR')}"
 									update="formTableOrdenSalida, :formBotonesHeader"
 									onclick="PF('dlgEliminarOrdenSalida').show()"
 									style="height:31px; padding:center">
@@ -82,7 +82,7 @@
 
 								<p:commandLink id="buttonProcesar" value="&#160; Procesar"
 									styleClass="btn btn-info ion-ios7-loop-strong"
-									rendered="#{ordenSalidaController.selectedOrdenSalida != null and ordenSalidaController.crear and ordenSalidaController.verProcesar and ! ordenSalidaController.verReport}"
+									rendered="#{ordenSalidaController.selectedOrdenSalida != null and ordenSalidaController.crear and ordenSalidaController.verProcesar and ! ordenSalidaController.verReport and sessionMain.tienePermisoPaginaAccion('ORDEN SALIDA','PROCESAR')}"
 									style="height:31px; padding:center"
 									update="formTableOrdenSalida, :formBotonesHeader"
 									action="#{ordenSalidaController.procesarOrdenSalida()}">
@@ -90,7 +90,7 @@
 
 								<p:commandLink id="buttonVerReporte" value="&#160; Ver Reporte"
 									styleClass="btn btn-info ion-printer"
-									rendered="#{ordenSalidaController.selectedOrdenSalida != null and ordenSalidaController.crear and ! ordenSalidaController.verReport}"
+									rendered="#{ordenSalidaController.selectedOrdenSalida != null and ordenSalidaController.crear and ! ordenSalidaController.verReport and sessionMain.tienePermisoPaginaAccion('ORDEN SALIDA','VER REPORTE')}"
 									style="height:31px; padding:center"
 									update="formTableOrdenSalida, :formBotonesHeader,formModalVistaPrevia"
 									action="#{ordenSalidaController.cargarReporte()}">

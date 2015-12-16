@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
@@ -174,6 +172,11 @@ public class UsuarioController implements Serializable {
 			newUsuario.setFechaRegistro(new Date());
 			newUsuario.setUsuarioRegistro(nombreUsuario);
 			newUsuario.setState(nombreEstado.equals("ACTIVO")?"AC":"IN");
+			if(usuarioRepository.findByLogin(newUsuario.getLogin()) != null){
+				FacesUtil.infoMessage("VALIDACION", "Usuario "+newUsuario.getLogin()+" ya existe.");
+				resetearFitrosTabla("formTableUsuario:dataTableUser");
+				return;
+			}
 			if(!newUsuario.validate(facesContext, empresaLogin, gestionLogin)){
 				System.out.println("registrarUsuario - > false ");
 				resetearFitrosTabla("formTableUsuario:dataTableUser");
@@ -194,7 +197,7 @@ public class UsuarioController implements Serializable {
 			loadDefault();
 		} catch (Exception e) {
 			System.out.println("Error al registrar Usuario error: "+e.getMessage());
-			FacesUtil.errorMessage("Error al registrar Usuario");
+			resetearFitrosTabla("formTableUsuario:dataTableUser");
 		}
 	}
 
@@ -266,7 +269,7 @@ public class UsuarioController implements Serializable {
 		modificar = false;
 		tipoColumnTable = "col-md-12";
 		newUsuario = new Usuario();
-		selectedUsuario = new Usuario();
+		selectedUsuario = null;
 		resetearFitrosTabla("formTableUsuario:dataTableUser");
 	}
 

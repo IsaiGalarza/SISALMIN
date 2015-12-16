@@ -42,7 +42,7 @@
 								<p:commandLink id="buttonCrear1"
 									value="&#160; Nueva Orden Ingreso"
 									styleClass="btn btn-success ion-plus-round"
-									rendered="#{ordenIngresoController.crear  and ! ordenIngresoController.verReport and ordenIngresoController.selectedOrdenIngreso == null}"
+									rendered="#{ordenIngresoController.crear  and ! ordenIngresoController.verReport and ordenIngresoController.selectedOrdenIngreso == null and sessionMain.tienePermisoPaginaAccion('ORDEN INGRESO','REGISTRAR')}"
 									update="formTableOrdenIngreso, formBotonesHeader"
 									action="#{ordenIngresoController.cambiarAspecto()}"
 									style="height:31px;">
@@ -58,7 +58,7 @@
 
 								<p:commandLink id="buttonVerModificar" value="&#160; Modificar"
 									styleClass="btn btn-primary ion-edit"
-									rendered="#{ordenIngresoController.selectedOrdenIngreso != null and ordenIngresoController.crear and ordenIngresoController.verProcesar and ! ordenIngresoController.verReport}"
+									rendered="#{ordenIngresoController.selectedOrdenIngreso != null and ordenIngresoController.crear and ordenIngresoController.verProcesar and ! ordenIngresoController.verReport and sessionMain.tienePermisoPaginaAccion('ORDEN INGRESO','MODIFICAR')}"
 									style="height:31px; padding:center"
 									update="formTableOrdenIngreso, :formBotonesHeader"
 									action="#{ordenIngresoController.cambiarAspectoModificar()}">
@@ -74,7 +74,7 @@
 
 								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
 									styleClass="btn btn-danger ion-close"
-									rendered="#{ordenIngresoController.selectedOrdenIngreso != null and ordenIngresoController.crear and ordenIngresoController.verProcesar and ! ordenIngresoController.verReport}"
+									rendered="#{ordenIngresoController.selectedOrdenIngreso != null and ordenIngresoController.crear and ordenIngresoController.verProcesar and ! ordenIngresoController.verReport and sessionMain.tienePermisoPaginaAccion('ORDEN INGRESO','ELIMINAR')}"
 									update="formTableOrdenIngreso, :formBotonesHeader"
 									onclick="PF('dlgEliminarOrdenIngreso').show()"
 									style="height:31px; padding:center">
@@ -82,7 +82,7 @@
 
 								<p:commandLink id="buttonProcesar" value="&#160; Procesar"
 									styleClass="btn btn-info ion-ios7-loop-strong"
-									rendered="#{ordenIngresoController.selectedOrdenIngreso != null and ordenIngresoController.crear and ordenIngresoController.verProcesar and ! ordenIngresoController.verReport}"
+									rendered="#{ordenIngresoController.selectedOrdenIngreso != null and ordenIngresoController.crear and ordenIngresoController.verProcesar and ! ordenIngresoController.verReport and sessionMain.tienePermisoPaginaAccion('ORDEN INGRESO','PROCESAR')}"
 									style="height:31px; padding:center"
 									update="formTableOrdenIngreso, :formBotonesHeader"
 									action="#{ordenIngresoController.procesarOrdenIngreso()}">
@@ -90,7 +90,7 @@
 
 								<p:commandLink id="buttonVerReporte" value="&#160; Ver Reporte"
 									styleClass="btn btn-info ion-printer"
-									rendered="#{ordenIngresoController.selectedOrdenIngreso != null and ordenIngresoController.crear  and ! ordenIngresoController.verReport}"
+									rendered="#{ordenIngresoController.selectedOrdenIngreso != null and ordenIngresoController.crear  and ! ordenIngresoController.verReport and sessionMain.tienePermisoPaginaAccion('ORDEN INGRESO','VER REPORTE')}"
 									style="height:31px; padding:center"
 									update="formTableOrdenIngreso, :formBotonesHeader,formModalVistaPrevia"
 									action="#{ordenIngresoController.cargarReporte()}">
@@ -99,7 +99,7 @@
 								<p:commandLink id="buttonImportar" value="&#160; Importar"
 									styleClass="btn btn-info ion-ios7-upload-outline"
 									style="height:31px; padding:center"
-									rendered="#{ordenIngresoController.importarFile}"
+									rendered="#{ordenIngresoController.importarFile and sessionMain.tienePermisoPaginaAccion('ORDEN INGRESO','IMPORTAR')}"
 									update="formDialogImport" onclick="PF('dlgImportExcel').show()">
 								</p:commandLink>
 
@@ -842,7 +842,7 @@
 
 
 		<!-- VISTA PREVIA REPORTE -->
-		<p:dialog header="ORDEN INGRESO"
+		<p:dialog header="ORDEN INGRESO" rendered="false"
 			widgetVar="dlgVistaPreviaOrdenIngreso" modal="true"
 			visible="#{not empty facesContext.maximumSeverity}" resizable="false"
 			position="center" width="750px">
@@ -910,7 +910,7 @@
 			resizable="false" position="center" width="500px">
 			<h:form id="formDialogImport" enctype="multipart/form-data">
 
-				<p:fileUpload
+				<p:fileUpload uploadLabel="test" label="SELECCIONAR ARCHIVO"
 					fileUploadListener="#{ordenIngresoController.handleFileUpload}"
 					mode="advanced" update="display" auto="true" sizeLimit="10000000"
 					allowTypes="/(\.|\/)(txt)$/" />

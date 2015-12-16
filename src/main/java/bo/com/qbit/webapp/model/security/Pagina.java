@@ -27,13 +27,13 @@ public class Pagina implements Serializable {
 	@Column(name="id", unique=true, nullable=false)
 	private Integer id;
 	
-	@Column(name="nombre", unique=true, nullable=false, length=25)
+	@Column(name="nombre", unique=true, nullable=false, length=255)
 	private String nombre;
 	
-	@Column(name="path", nullable=false, length=25)
+	@Column(name="path", nullable=false, length=255)
 	private String path;
 	
-	@Column(name="path2", nullable=true, length=25)
+	@Column(name="path2", nullable=true, length=255)
 	private String path2;
 	
 	@ManyToOne(fetch=FetchType.EAGER, optional=true)

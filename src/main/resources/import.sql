@@ -21,32 +21,23 @@
 -- ----------------------------
 -- Records of usuario
 -- ----------------------------
-INSERT INTO "public"."usuario" VALUES (1, 'super.super@gmail.com', '2015-01-01 00:00:00', null, 'DEMO', 'Mauricio Bejarano', 'DEMO', 0, 'SU', 'super');
-
+INSERT INTO "public"."usuario"(id,email ,fecha_registro,foto_perfil,login,nombre,password,peso_foto,state,usuario_registro,fecha_modificacion) VALUES (1,'admin.admin@gmail.com','2015-01-01 00:00:00',null,'admin','ADMINISTRADOR','admin', 0,'SU','admin',null);
 -- ----------------------------
 -- Records of roles
 -- ----------------------------
-INSERT INTO "public"."roles" VALUES (1, '2015-01-01 00:00:00', 'superusuario', 'SU', 'super');
-INSERT INTO "public"."rol" (id,estado,fecha_modificacion,fecha_registro,nombre,usuario_registro) VALUES (1,'SU',null,'2015-01-01 00:00:00','superusuario','super');
-
+INSERT INTO "public"."roles"(id,estado,fecha_modificacion,fecha_registro,nombre,usuario_registro,descripcion) VALUES(1,'SU',null,'2015-01-01 00:00:00','ADMINISTRADOR','admin','Grupo de Usuario Super Us.');
 -- ----------------------------
 -- Records of usuario_rol
 -- ----------------------------
-INSERT INTO "public"."usuario_rol" VALUES (1, 1, 1);
-INSERT INTO "public"."usuario_rolv1" (id,estado,fecha_modificacion,fecha_registro,usuario_registro,descripcion,id_rol,id_usuario) VALUES (1,'AC',null,'2015-01-01 00:00:00','super','Grupo de Usuario Super usuarios',1,1);
-
+INSERT INTO "public"."usuario_rol"(id,estado,fecha_modificacion ,fecha_registro ,usuario_registro,id_roles, id_usuario) values(1,'AC',null,'2015-01-01 00:00:00','admin',1,1);
 -- ----------------------------
 -- Records of modulo
 -- ----------------------------
 INSERT INTO "public"."modulo" (id,nombre,id_modulo_padre) VALUES (1,'SEGURIDAD',null);
 INSERT INTO "public"."modulo" (id,nombre,id_modulo_padre) VALUES (2,'PARAMETRIZACION',null);
-INSERT INTO "public"."modulo" (id,nombre,id_modulo_padre) VALUES (3,'CONTABILIDAD',null);
-INSERT INTO "public"."modulo" (id,nombre,id_modulo_padre) VALUES (4,'COMPRA',null);
-INSERT INTO "public"."modulo" (id,nombre,id_modulo_padre) VALUES (5,'VENTA',null);
-INSERT INTO "public"."modulo" (id,nombre,id_modulo_padre) VALUES (6,'REPORTE',null);
-INSERT INTO "public"."modulo" (id,nombre,id_modulo_padre) VALUES (7,'LIBRO',6);
-INSERT INTO "public"."modulo" (id,nombre,id_modulo_padre) VALUES (8,'ESTADO FINANCIERO',6);
-INSERT INTO "public"."modulo" (id,nombre,id_modulo_padre) VALUES (9,'CUADRO ACTIVO FIJO',6);
+INSERT INTO "public"."modulo" (id,nombre,id_modulo_padre) VALUES (3,'INVENTARIO',null);
+INSERT INTO "public"."modulo" (id,nombre,id_modulo_padre) VALUES (4,'PROCESO',null);
+INSERT INTO "public"."modulo" (id,nombre,id_modulo_padre) VALUES (5,'REPORTE',null);
 
 -- ----------------------------
 -- Records of accion
@@ -55,327 +46,226 @@ INSERT INTO "public"."accion" (id,nombre) VALUES (1,'REGISTRAR');
 INSERT INTO "public"."accion" (id,nombre) VALUES (2,'MODIFICAR');
 INSERT INTO "public"."accion" (id,nombre) VALUES (3,'ELIMINAR');
 INSERT INTO "public"."accion" (id,nombre) VALUES (4,'PROCESAR');
-INSERT INTO "public"."accion" (id,nombre) VALUES (5,'ANULAR COMPROBANTE');
+INSERT INTO "public"."accion" (id,nombre) VALUES (5,'VER REPORTE');
+INSERT INTO "public"."accion" (id,nombre) VALUES (6,'CONCILIAR');
+INSERT INTO "public"."accion" (id,nombre) VALUES (7,'REVISAR');
+INSERT INTO "public"."accion" (id,nombre) VALUES (8,'VER LISTA');
+INSERT INTO "public"."accion" (id,nombre) VALUES (9,'EXPORTAR');
+INSERT INTO "public"."accion" (id,nombre) VALUES (10,'IMPORTAR');
 
 -- ----------------------------
 -- Records of pagina
 -- ----------------------------
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (1,'USUARIO','usuario.xhtml',1);
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (1,'ROL','rol.xhtml',1);
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (2,'PERMISO','permiso.xhtml',1);
 
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (3,'EMPRESA','empresa.xhtml',2);
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (4,'SUCURSAL','sucursal.xhtml',2);
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (5,'TIPO COMPROBANTE','tipo_comprobante.xhtml',2);
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (6,'TIPO CAMBIO','tipo_cambio.xhtml',2);
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (7,'TIPO CAMIO UFV','tipo_ufv.xhtml',2);
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (8,'CENTRO COSTO','centro-costo.xhtml',2);
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (9,'CUENTA BANCARIA','cuenta_bancaria.xhtml',2) ;
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (10,'GRUPO DE IMPUESTO','grupo_impuesto.xhtml',2);
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (11,'PARAMETRIZACION','parametrizacion.xhtml',2);
+-- ----------------------------
+-- Records of pagina - MODULO SEGURIDAD
+-- ----------------------------
+INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('1', 'USUARIO', 'usuario.xhtml', '1', null);
+INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('2', 'ROL', 'rol.xhtml', '1', null);
+INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('3', 'PERMISO', 'permiso.xhtml', '1', null);
+-- ----------------------------
+-- Records of pagina - MODULO PARAMETRIZACION
+-- ----------------------------
+INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('4', 'EMPRESA', 'empresa.xhtml', '2', null);
+INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('5', 'PROVEEDOR', 'proveedor.xhtml', '2', null);
+INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('6', 'ALMACEN', 'almacen.xhtml', '2', null);
+INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('7', 'PARTIDA', 'partida.xhtml', '2', null);
+INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('8', 'PROYECTO', 'proyecto.xhtml', '2', null);
+INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('9', 'AREA DE TRABAJO', 'unidad.xhtml', '2', null);
+INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('10', 'FUNCIONARIO', 'funcionario.xhtml', '2', null);
+INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('11', 'UNIDAD DE MEDIDA', 'unidad_medida.xhtml', '2', null);
+-- ----------------------------
+-- Records of pagina - MODULO INVENTARIO
+-- ----------------------------
+INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('12', 'CATALOGO PRODUCTO', 'catalogo_producto.xhtml', '3', null);
+INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('13', 'KARDEX PRODUCTO', 'kardex_producto.xhtml', '3', null);
+INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('14', 'GESTION PRODUCTO', 'gestion-producto.xhtml', '3', null);
+INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('15', 'STOCK PRODUCTO', 'stock_producto.xhtml', '3', null);
+-- ----------------------------
+-- Records of pagina - MODULO PROCESO
+-- ----------------------------
+INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('16', 'ORDEN INGRESO', 'orden_ingreso.xhtml', '4', null);
+INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('17', 'ORDEN TRASPASO', 'orden_traspaso.xhtml', '4', null);
+INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('18', 'ORDEN SALIDA', 'orden_salida.xhtml', '4', null);
+INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('19', 'TOMA DE INVENTARIO', 'toma_inventario.xhtml', '4', null);
+-- ----------------------------
+-- Records of pagina - MODULO REPORTE
+-- ----------------------------
+INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('20', 'LISTA ITEM PEPS', 'lista_item.xhtml', '5', null);
+INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('21', 'REPORTE UNIDAD SOLICITANTE', 'report_unidad_solicitante.xhtml', '5', null);
+INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('22', 'REPORTE PARTIDA', 'report_partida.xhtml', '5', null);
+INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('23', 'REPORTE PROYECTO', 'report_proyecto.xhtml', '5', null);
 
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (12,'COMPROBANTE','comprobante_index.xhtml',3) ;
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (13,'PLAN DE CUENTA','plan_cuenta.xhtml',3);
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (14,'APERTURA Y CIERRE','apertura_cierre.xhtml',3);
-
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (15,'PROVEEDORES','proveedores.xhtml',4) ;
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (16,'ORDEN DE COMPRA','orden_compra.xhtml',4);
-
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (17,'CLIENTES','clientes.xhtml',5) ;
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (18,'COTIZACION','cotizacion_index.xhtml',5);
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (19,'SERVICIOS','servicios.xhtml',5);
-
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (20,'LIBRO DIARIO','libro_diario.xhtml',7) ;
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (21,'LIBRO MAYOR','libro_mayor.xhtml',7) ;
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (22,'SUMAS Y SALDOS','sumas_saldos.xhtml',7) ;
-
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (23,'BALANCE GENERAL','balance_general.xhtml',8) ;
-INSERT INTO pagina (id,nombre,path,id_modulo) VALUES (24,'ESTADO RESULTADO','estado_resultado.xhtml',8) ;
 
 -- ----------------------------
 -- Records of detalle_pagina
 -- ----------------------------
 
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (1,1,1);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (2,2,1);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (3,3,1);
-
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (4,1,2);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (5,2,2);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (6,3,2);
-
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (7,1,3);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (8,2,3);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (9,3,3);
-
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (10,1,4);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (11,2,4);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (12,3,4);
-
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (13,1,5);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (14,2,5);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (15,3,5);
-
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (16,1,6);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (17,2,6);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (18,3,6);
-
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (19,1,7);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (20,2,7);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (21,3,7);
-
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (22,1,8);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (23,2,8);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (24,3,8);
-
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (25,1,9);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (26,2,9);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (27,3,9);
-
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (28,1,10);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (29,2,10);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (30,3,10);
-
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (31,1,11);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (32,2,11);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (33,3,11);
-
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (34,1,12);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (35,2,12);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (36,3,12);
-
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (37,1,13);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (38,2,13);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (39,3,13);
-
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (40,1,14);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (41,2,14);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (42,3,14);
-
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (43,1,15);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (44,2,15);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (45,3,15);
-
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (46,1,16);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (47,2,16);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (48,3,16);
-
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (49,1,17);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (50,2,17);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (51,3,17);
-
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (52,1,18);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (53,2,18);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (54,3,18);
-
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (55,1,19);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (56,2,19);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (57,3,19);
-
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (58,1,20);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (59,2,20);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (60,3,20);
-
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (61,1,21);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (62,2,21);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (63,3,21);
-
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (64,1,22);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (65,2,22);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (66,3,22);
-
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (67,1,23);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (68,2,23);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (69,3,23);
-
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (70,1,24);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (71,2,24);
-INSERT INTO detalle_pagina (id,id_accion, id_pagina) VALUES  (72,3,24);
-
-
--- ----------------------------
--- Records of permiso_v1
--- ----------------------------
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (1,'AC',null,'2015-01-01 00:00:00','super',1,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (2,'AC',null,'2015-01-01 00:00:00','super',2,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (3,'AC',null,'2015-01-01 00:00:00','super',3,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (4,'AC',null,'2015-01-01 00:00:00','super',4,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (5,'AC',null,'2015-01-01 00:00:00','super',5,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (6,'AC',null,'2015-01-01 00:00:00','super',6,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (7,'AC',null,'2015-01-01 00:00:00','super',7,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (8,'AC',null,'2015-01-01 00:00:00','super',8,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (9,'AC',null,'2015-01-01 00:00:00','super',9,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (10,'AC',null,'2015-01-01 00:00:00','super',10,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (11,'AC',null,'2015-01-01 00:00:00','super',11,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (12,'AC',null,'2015-01-01 00:00:00','super',12,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (13,'AC',null,'2015-01-01 00:00:00','super',13,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (14,'AC',null,'2015-01-01 00:00:00','super',14,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (15,'AC',null,'2015-01-01 00:00:00','super',15,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (16,'AC',null,'2015-01-01 00:00:00','super',16,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (17,'AC',null,'2015-01-01 00:00:00','super',17,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (18,'AC',null,'2015-01-01 00:00:00','super',18,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (19,'AC',null,'2015-01-01 00:00:00','super',19,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (20,'AC',null,'2015-01-01 00:00:00','super',20,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (21,'AC',null,'2015-01-01 00:00:00','super',21,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (22,'AC',null,'2015-01-01 00:00:00','super',22,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (23,'AC',null,'2015-01-01 00:00:00','super',23,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (24,'AC',null,'2015-01-01 00:00:00','super',24,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (25,'AC',null,'2015-01-01 00:00:00','super',25,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (26,'AC',null,'2015-01-01 00:00:00','super',26,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (27,'AC',null,'2015-01-01 00:00:00','super',27,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (28,'AC',null,'2015-01-01 00:00:00','super',28,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (29,'AC',null,'2015-01-01 00:00:00','super',29,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (30,'AC',null,'2015-01-01 00:00:00','super',30,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (31,'AC',null,'2015-01-01 00:00:00','super',31,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (32,'AC',null,'2015-01-01 00:00:00','super',32,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (33,'AC',null,'2015-01-01 00:00:00','super',33,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (34,'AC',null,'2015-01-01 00:00:00','super',34,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (35,'AC',null,'2015-01-01 00:00:00','super',35,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (36,'AC',null,'2015-01-01 00:00:00','super',36,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (37,'AC',null,'2015-01-01 00:00:00','super',37,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (38,'AC',null,'2015-01-01 00:00:00','super',38,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (39,'AC',null,'2015-01-01 00:00:00','super',39,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (40,'AC',null,'2015-01-01 00:00:00','super',40,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (41,'AC',null,'2015-01-01 00:00:00','super',41,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (42,'AC',null,'2015-01-01 00:00:00','super',42,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (43,'AC',null,'2015-01-01 00:00:00','super',43,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (44,'AC',null,'2015-01-01 00:00:00','super',44,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (45,'AC',null,'2015-01-01 00:00:00','super',45,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (46,'AC',null,'2015-01-01 00:00:00','super',46,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (47,'AC',null,'2015-01-01 00:00:00','super',47,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (48,'AC',null,'2015-01-01 00:00:00','super',48,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (49,'AC',null,'2015-01-01 00:00:00','super',49,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (50,'AC',null,'2015-01-01 00:00:00','super',50,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (51,'AC',null,'2015-01-01 00:00:00','super',51,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (52,'AC',null,'2015-01-01 00:00:00','super',52,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (53,'AC',null,'2015-01-01 00:00:00','super',53,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (54,'AC',null,'2015-01-01 00:00:00','super',54,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (55,'AC',null,'2015-01-01 00:00:00','super',55,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (56,'AC',null,'2015-01-01 00:00:00','super',56,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (57,'AC',null,'2015-01-01 00:00:00','super',57,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (58,'AC',null,'2015-01-01 00:00:00','super',58,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (59,'AC',null,'2015-01-01 00:00:00','super',59,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (60,'AC',null,'2015-01-01 00:00:00','super',60,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (61,'AC',null,'2015-01-01 00:00:00','super',61,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (62,'AC',null,'2015-01-01 00:00:00','super',62,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (63,'AC',null,'2015-01-01 00:00:00','super',63,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (64,'AC',null,'2015-01-01 00:00:00','super',64,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (65,'AC',null,'2015-01-01 00:00:00','super',65,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (66,'AC',null,'2015-01-01 00:00:00','super',66,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (67,'AC',null,'2015-01-01 00:00:00','super',67,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (68,'AC',null,'2015-01-01 00:00:00','super',68,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (69,'AC',null,'2015-01-01 00:00:00','super',69,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (70,'AC',null,'2015-01-01 00:00:00','super',70,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (71,'AC',null,'2015-01-01 00:00:00','super',71,1);
-INSERT INTO  permiso_v1(id,estado,fecha_modificacion,fecha_registro,usuario_registro,id_detalle_pagina,id_rol) VALUES (72,'AC',null,'2015-01-01 00:00:00','super',72,1);
-
-
+-- 1 USUARIO
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('1', '1', '1');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('2', '2', '1');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('3', '3', '1');
+-- 2 ROL
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('4', '1', '2');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('5', '2', '2');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('6', '3', '2');
+-- 3 PERMISO
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('7', '1', '3');
+-- 4 EMPRESA
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('8', '2', '4');
+-- 5 PROVEEDOR
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('9', '1', '5');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('10', '2', '5');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('11', '3', '5');
+-- '6', 'ALMACEN'
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('12', '1', '6');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('13', '2', '6');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('14', '3', '6');
+-- '7', 'PARTIDA'
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('15', '1', '7');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('16', '2', '7');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('17', '3', '7');
+-- '8', 'PROYECTO'
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('18', '1', '8');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('19', '2', '8');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('20', '3', '8');
+-- '9', 'AREA DE TRABAJO'
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('21', '1', '9');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('22', '2', '9');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('23', '3', '9');
+-- '10', 'FUNCIONARIO'
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('24', '1', '10');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('25', '2', '10');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('26', '3', '10');
+-- '11', 'UNIDAD DE MEDIDA'
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('27', '1', '11');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('28', '2', '11');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('29', '3', '11');
+-- '12', 'CATALOGO PRODUCTO'
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('30', '8', '12');
+-- '13', 'KARDEX PRODUCTO'
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('31', '4', '13');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('32', '5', '13');
+-- '14', 'GESTION PRODUCTO'
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('33', '1', '14');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('34', '2', '14');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('35', '3', '14');
+-- '15', 'STOCK PRODUCTO'
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('36', '4', '15');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('37', '5', '15');
+-- '16', 'ORDEN INGRESO'
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('38', '1', '16');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('39', '2', '16');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('40', '3', '16');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('41', '4', '16');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('42', '5', '16');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('43', '10', '16');
+-- '17', 'ORDEN TRASPASO'
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('44', '1', '17');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('45', '2', '17');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('46', '3', '17');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('47', '4', '17');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('48', '5', '17');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('49', '9', '17');
+-- '18', 'ORDEN SALIDA'
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('50', '1', '18');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('51', '2', '18');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('52', '3', '18');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('53', '4', '18');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('54', '5', '18');
+-- '19', 'TOMA DE INVENTARIO'
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('55', '1', '19');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('56', '3', '19');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('57', '4', '19');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('58', '5', '19');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('59', '6', '19');
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('60', '7', '19');
+-- '20', 'LISTA ITEM PEPS'
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('61', '5', '20');
+-- '21', 'REPORTE UNIDAD SOLICITANTE'
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('62', '5', '21');
+-- '22', 'REPORTE PARTIDA'
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('63', '5', '22');
+-- '23', 'REPORTE PROYECTO'
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('64', '5', '23');
 
 -- ----------------------------
 -- Records of permiso
 -- ----------------------------
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (1, 'Seguridad', 1, null, 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (2, 'Usuario', 2, 'Seguridad', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (3, 'Roles', 2, 'Seguridad', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (4, 'Permiso', 2, 'Seguridad', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (5, 'Parametrizacion', 1, null, 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (6, 'Empresa', 2, 'Parametrizacion', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (7, 'Sucursal', 2, 'Parametrizacion', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (8, 'Informacion Legal', 2, 'Parametrizacion', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (9, 'Tipo de moneda', 2, 'Parametrizacion', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (10, 'Tipo de cambio', 2, 'Parametrizacion', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (11, 'Tipo de UFV', 2, 'Parametrizacion', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (12, 'Plan de cuenta', 2, 'Parametrizacion', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (13, 'Apertura y cierre de gestion', 2, 'Parametrizacion', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (14, 'Proceso', 1, null, 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (15, 'Cuentas monetarias', 2, 'Proceso', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (16, 'Cuentas no monetarias', 2, 'Proceso', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (17, 'Formulario', 1, null, 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (18, 'Comprobante', 2, 'Formulario', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (19, 'Venta', 1, null, 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (20, 'Compra', 1, null, 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (21, 'Proforma cotizacion', 2, 'Formulario', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (22, 'Activo fijo', 2, 'Formulario', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (23, 'Reporte', 1, null, 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (24, 'Libros', 2, 'Reporte', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (25, 'Libro diario', 3, 'Libros', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (26, 'Libro mayores', 3, 'Libros', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (27, 'Sumas y saldos', 3, 'Libros', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (28, 'Libro de compras, ventas y bancarizacion', 2, 'Libros', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (29, 'Estado financiero', 2, 'Reporte', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (30, 'Balance', 2, 'Reporte', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (31, 'Estado de resultados', 2, 'Reporte', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (32, 'Flujo de efectivo', 2, 'Reporte', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (33, 'Estado comparativo', 2, 'Reporte', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (34, 'Cuadro activo fijo', 2, 'Formulario', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (35, 'Centro Costo', 2, 'Parametrizacion', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (36, 'Cliente', 2, 'Parametrizacion', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (37, 'Servicio', 2, 'Parametrizacion', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (38, 'Tipo Comprobante', 2, 'Parametrizacion', 'AC');
-INSERT INTO "public"."permiso"(id,nombre,tipo,padre,estado) VALUES (39, 'Proveedor', 2, 'Compra', 'AC');
+
+INSERT INTO "public"."permiso" VALUES ('1', 'AC', null, '2015-01-01 00:00:00', 'admin', '1', '1');
+INSERT INTO "public"."permiso" VALUES ('2', 'AC', null, '2015-01-01 00:00:00', 'admin', '2', '1');
+INSERT INTO "public"."permiso" VALUES ('3', 'AC', null, '2015-01-01 00:00:00', 'admin', '3', '1');
+INSERT INTO "public"."permiso" VALUES ('4', 'AC', null, '2015-01-01 00:00:00', 'admin', '4', '1');
+INSERT INTO "public"."permiso" VALUES ('5', 'AC', null, '2015-01-01 00:00:00', 'admin', '5', '1');
+INSERT INTO "public"."permiso" VALUES ('6', 'AC', null, '2015-01-01 00:00:00', 'admin', '6', '1');
+INSERT INTO "public"."permiso" VALUES ('7', 'AC', null, '2015-01-01 00:00:00', 'admin', '7', '1');
+INSERT INTO "public"."permiso" VALUES ('8', 'AC', null, '2015-01-01 00:00:00', 'admin', '8', '1');
+INSERT INTO "public"."permiso" VALUES ('9', 'AC', null, '2015-01-01 00:00:00', 'admin', '9', '1');
+INSERT INTO "public"."permiso" VALUES ('10', 'AC', null, '2015-01-01 00:00:00', 'admin', '10', '1');
+INSERT INTO "public"."permiso" VALUES ('11', 'AC', null, '2015-01-01 00:00:00', 'admin', '11', '1');
+INSERT INTO "public"."permiso" VALUES ('12', 'AC', null, '2015-01-01 00:00:00', 'admin', '12', '1');
+INSERT INTO "public"."permiso" VALUES ('13', 'AC', null, '2015-01-01 00:00:00', 'admin', '13', '1');
+INSERT INTO "public"."permiso" VALUES ('14', 'AC', null, '2015-01-01 00:00:00', 'admin', '14', '1');
+INSERT INTO "public"."permiso" VALUES ('15', 'AC', null, '2015-01-01 00:00:00', 'admin', '15', '1');
+INSERT INTO "public"."permiso" VALUES ('16', 'AC', null, '2015-01-01 00:00:00', 'admin', '16', '1');
+INSERT INTO "public"."permiso" VALUES ('17', 'AC', null, '2015-01-01 00:00:00', 'admin', '17', '1');
+INSERT INTO "public"."permiso" VALUES ('18', 'AC', null, '2015-01-01 00:00:00', 'admin', '18', '1');
+INSERT INTO "public"."permiso" VALUES ('19', 'AC', null, '2015-01-01 00:00:00', 'admin', '19', '1');
+INSERT INTO "public"."permiso" VALUES ('20', 'AC', null, '2015-01-01 00:00:00', 'admin', '20', '1');
+INSERT INTO "public"."permiso" VALUES ('21', 'AC', null, '2015-01-01 00:00:00', 'admin', '21', '1');
+INSERT INTO "public"."permiso" VALUES ('22', 'AC', null, '2015-01-01 00:00:00', 'admin', '22', '1');
+INSERT INTO "public"."permiso" VALUES ('23', 'AC', null, '2015-01-01 00:00:00', 'admin', '23', '1');
+INSERT INTO "public"."permiso" VALUES ('24', 'AC', null, '2015-01-01 00:00:00', 'admin', '24', '1');
+INSERT INTO "public"."permiso" VALUES ('25', 'AC', null, '2015-01-01 00:00:00', 'admin', '25', '1');
+INSERT INTO "public"."permiso" VALUES ('26', 'AC', null, '2015-01-01 00:00:00', 'admin', '26', '1');
+INSERT INTO "public"."permiso" VALUES ('27', 'AC', null, '2015-01-01 00:00:00', 'admin', '27', '1');
+INSERT INTO "public"."permiso" VALUES ('28', 'AC', null, '2015-01-01 00:00:00', 'admin', '28', '1');
+INSERT INTO "public"."permiso" VALUES ('29', 'AC', null, '2015-01-01 00:00:00', 'admin', '29', '1');
+INSERT INTO "public"."permiso" VALUES ('30', 'AC', null, '2015-01-01 00:00:00', 'admin', '30', '1');
+INSERT INTO "public"."permiso" VALUES ('31', 'AC', null, '2015-01-01 00:00:00', 'admin', '31', '1');
+INSERT INTO "public"."permiso" VALUES ('32', 'AC', null, '2015-01-01 00:00:00', 'admin', '32', '1');
+INSERT INTO "public"."permiso" VALUES ('33', 'AC', null, '2015-01-01 00:00:00', 'admin', '33', '1');
+INSERT INTO "public"."permiso" VALUES ('34', 'AC', null, '2015-01-01 00:00:00', 'admin', '34', '1');
+INSERT INTO "public"."permiso" VALUES ('35', 'AC', null, '2015-01-01 00:00:00', 'admin', '35', '1');
+INSERT INTO "public"."permiso" VALUES ('36', 'AC', null, '2015-01-01 00:00:00', 'admin', '36', '1');
+INSERT INTO "public"."permiso" VALUES ('37', 'AC', null, '2015-01-01 00:00:00', 'admin', '37', '1');
+INSERT INTO "public"."permiso" VALUES ('38', 'AC', null, '2015-01-01 00:00:00', 'admin', '38', '1');
+INSERT INTO "public"."permiso" VALUES ('39', 'AC', null, '2015-01-01 00:00:00', 'admin', '39', '1');
+INSERT INTO "public"."permiso" VALUES ('40', 'AC', null, '2015-01-01 00:00:00', 'admin', '40', '1');
+INSERT INTO "public"."permiso" VALUES ('41', 'AC', null, '2015-01-01 00:00:00', 'admin', '41', '1');
+INSERT INTO "public"."permiso" VALUES ('42', 'AC', null, '2015-01-01 00:00:00', 'admin', '42', '1');
+INSERT INTO "public"."permiso" VALUES ('43', 'AC', null, '2015-01-01 00:00:00', 'admin', '43', '1');
+INSERT INTO "public"."permiso" VALUES ('44', 'AC', null, '2015-01-01 00:00:00', 'admin', '44', '1');
+INSERT INTO "public"."permiso" VALUES ('45', 'AC', null, '2015-01-01 00:00:00', 'admin', '45', '1');
+INSERT INTO "public"."permiso" VALUES ('46', 'AC', null, '2015-01-01 00:00:00', 'admin', '46', '1');
+INSERT INTO "public"."permiso" VALUES ('47', 'AC', null, '2015-01-01 00:00:00', 'admin', '47', '1');
+INSERT INTO "public"."permiso" VALUES ('48', 'AC', null, '2015-01-01 00:00:00', 'admin', '48', '1');
+INSERT INTO "public"."permiso" VALUES ('49', 'AC', null, '2015-01-01 00:00:00', 'admin', '49', '1');
+INSERT INTO "public"."permiso" VALUES ('50', 'AC', null, '2015-01-01 00:00:00', 'admin', '50', '1');
+INSERT INTO "public"."permiso" VALUES ('51', 'AC', null, '2015-01-01 00:00:00', 'admin', '51', '1');
+INSERT INTO "public"."permiso" VALUES ('52', 'AC', null, '2015-01-01 00:00:00', 'admin', '52', '1');
+INSERT INTO "public"."permiso" VALUES ('53', 'AC', null, '2015-01-01 00:00:00', 'admin', '53', '1');
+INSERT INTO "public"."permiso" VALUES ('54', 'AC', null, '2015-01-01 00:00:00', 'admin', '54', '1');
+INSERT INTO "public"."permiso" VALUES ('55', 'AC', null, '2015-01-01 00:00:00', 'admin', '55', '1');
+INSERT INTO "public"."permiso" VALUES ('56', 'AC', null, '2015-01-01 00:00:00', 'admin', '56', '1');
+INSERT INTO "public"."permiso" VALUES ('57', 'AC', null, '2015-01-01 00:00:00', 'admin', '57', '1');
+INSERT INTO "public"."permiso" VALUES ('58', 'AC', null, '2015-01-01 00:00:00', 'admin', '58', '1');
+INSERT INTO "public"."permiso" VALUES ('59', 'AC', null, '2015-01-01 00:00:00', 'admin', '59', '1');
+INSERT INTO "public"."permiso" VALUES ('60', 'AC', null, '2015-01-01 00:00:00', 'admin', '60', '1');
+INSERT INTO "public"."permiso" VALUES ('61', 'AC', null, '2015-01-01 00:00:00', 'admin', '61', '1');
+INSERT INTO "public"."permiso" VALUES ('62', 'AC', null, '2015-01-01 00:00:00', 'admin', '62', '1');
+INSERT INTO "public"."permiso" VALUES ('63', 'AC', null, '2015-01-01 00:00:00', 'admin', '63', '1');
+INSERT INTO "public"."permiso" VALUES ('64', 'AC', null, '2015-01-01 00:00:00', 'admin', '64', '1');
 
 -- ----------------------------
--- Records of privilegio
+-- Records of empresa
 -- ----------------------------
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (1, 'AC', 'AC', 1, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (2, 'AC', 'AC', 2, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (3, 'AC', 'AC', 3, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (4, 'AC', 'AC', 4, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (5, 'AC', 'AC', 5, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (6, 'AC', 'AC', 6, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (7, 'AC', 'AC', 7, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (8, 'AC', 'AC', 8, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (9, 'AC', 'AC', 9, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (10, 'AC', 'AC', 10, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (11, 'AC', 'AC', 11, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (12, 'AC', 'AC', 12, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (13, 'AC', 'AC', 13, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (14, 'AC', 'AC', 14, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (15, 'AC', 'AC', 15, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (16, 'AC', 'AC', 16, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (17, 'AC', 'AC', 17, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (18, 'AC', 'AC', 18, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (19, 'AC', 'AC', 19, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (20, 'AC', 'AC', 20, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (21, 'AC', 'AC', 21, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (22, 'AC', 'AC', 22, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (23, 'AC', 'AC', 23, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (24, 'AC', 'AC', 24, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (25, 'AC', 'AC', 25, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (26, 'AC', 'AC', 26, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (27, 'AC', 'AC', 27, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (28, 'AC', 'AC', 28, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (29, 'AC', 'AC', 29, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (30, 'AC', 'AC', 30, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (31, 'AC', 'AC', 31, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (32, 'AC', 'AC', 32, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (33, 'AC', 'AC', 33, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (34, 'AC', 'AC', 34, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (35, 'AC', 'AC', 35, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (36, 'AC', 'AC', 36, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (37, 'AC', 'AC', 37, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (38, 'AC', 'AC', 38, 1, 'AC', '2015-01-01 00:00:00', 'super');
-INSERT INTO "public"."privilegio"(id,escritura,lectura,id_permiso,id_roles,estado,fecha_registro,usuario_registro) VALUES (39, 'AC', 'AC', 39, 1, 'AC', '2015-01-01 00:00:00', 'super');
+INSERT INTO "public"."empresa" (id,nit,ciudad,direccion,estado,fecha_modificacion,fecha_registro,razonsocial,telefono,usuario_registro) VALUES ('1', '30000000', 'SANTA CRUZ DE LA SIERRA', 'CALLE RENE MORENO #100', 'AC', null, '2015-01-01 00:00:00', 'EMPRESA DEMO', '398702', 'admin');
 
 -- ----------------------------
--- Records of moneda
+-- Records of gestion
 -- ----------------------------
-INSERT INTO "public"."moneda" VALUES (1, 'BOLIVIANOS', 'Bs.');
-INSERT INTO "public"."moneda" VALUES (2, 'DOLAR', 'Usd.');
-INSERT INTO "public"."moneda" VALUES (3, 'REAL', 'R$.');
-INSERT INTO "public"."moneda" VALUES (4, 'EURO', 'E.');
-
-
--- ----------------------------
--- Records of tipo_cuenta
--- ----------------------------
--- INSERT INTO "public"."tipo_cuenta" VALUES (1, 'ACTIVO');
--- INSERT INTO "public"."tipo_cuenta" VALUES (2, 'PASIVO');
--- INSERT INTO "public"."tipo_cuenta" VALUES (3, 'CAPITAL');
--- INSERT INTO "public"."tipo_cuenta" VALUES (4, 'INGRESO');
--- INSERT INTO "public"."tipo_cuenta" VALUES (5, 'EGRESO');
--- INSERT INTO "public"."tipo_cuenta" VALUES (6, 'COSTO');
-
-
+INSERT INTO "public"."gestion" (id,estado,estado_cierre,fecha_modificacion,fecha_registro,gestion,iniciada,usuario_registro,id_empresa) VALUES ('1','AC','AC',null,'2015-01-01 00:00:00','2015','FALSE','admin','1');
 
 

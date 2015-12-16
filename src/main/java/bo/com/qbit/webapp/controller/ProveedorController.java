@@ -96,6 +96,10 @@ public class ProveedorController implements Serializable {
 	}
 
 	private void loadValuesDefaul(){
+		crear = true;
+		registrar = false;
+		modificar = false;
+
 		newProveedor = new Proveedor();
 		selectedProveedor = new Proveedor();
 		textoAutoCompleteCuenta = "";

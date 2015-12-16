@@ -31,7 +31,7 @@
 								<p:commandLink id="buttonCrear1"
 									value="&#160; Nuevo Funcionario"
 									styleClass="btn btn-success ion-plus-round"
-									rendered="#{funcionarioController.crear}"
+									rendered="#{funcionarioController.crear and sessionMain.tienePermisoPaginaAccion('FUNCIONARIO','REGISTRAR')}"
 									update=":formTableFuncionario, :formBotonesHeader"
 									action="#{funcionarioController.cambiarAspecto()}"
 									style="height:31px;">
@@ -55,7 +55,7 @@
 
 								<p:commandLink id="buttonModificar" value="&#160; Modificar"
 									styleClass="btn btn-primary ion-edit"
-									rendered="#{funcionarioController.modificar=='true'}"
+									rendered="#{funcionarioController.modificar=='true' and sessionMain.tienePermisoPaginaAccion('FUNCIONARIO','MODIFICAR')}"
 									style="height:31px; padding:center"
 									update=":formTableFuncionario, :formBotonesHeader"
 									action="#{funcionarioController.modificarFuncionario()}">
@@ -63,7 +63,7 @@
 
 								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
 									styleClass="btn btn-danger ion-close"
-									rendered="#{funcionarioController.modificar=='true'}"
+									rendered="#{funcionarioController.modificar=='true' and sessionMain.tienePermisoPaginaAccion('FUNCIONARIO','ELIMINAR')}"
 									update=":formTableFuncionario, :formBotonesHeader"
 									onclick="dlgEliminar.show()"
 									style="height:31px; padding:center">
@@ -276,7 +276,6 @@
 												selectionMode="single" rowKey="#{_Funcionario.id}"
 												id="FuncionarioTable" var="_Funcionario"
 												value="#{listaFuncionario}"
-												rendered="#{not empty listaFuncionario}"
 												emptyMessage="No se encontraron Registros.">
 
 												<p:ajax event="rowSelect"

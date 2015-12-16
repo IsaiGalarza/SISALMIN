@@ -43,7 +43,7 @@
 								<p:commandLink id="buttonCrear1"
 									value="&#160; Nueva Toma de Inventario"
 									styleClass="btn btn-success ion-plus-round"
-									rendered="#{tomaInventarioController.crear and  tomaInventarioController.selectedTomaInventario == null}"
+									rendered="#{tomaInventarioController.crear and  tomaInventarioController.selectedTomaInventario == null and sessionMain.tienePermisoPaginaAccion('TOMA DE INVENTARIO','REGISTRAR')}"
 									update="formTableTomaInventario, formBotonesHeader"
 									action="#{tomaInventarioController.cambiarAspecto()}"
 									style="height:31px;">
@@ -60,14 +60,14 @@
 								<p:commandLink id="buttonProcesar" value="&#160; Procesar"
 									styleClass="btn btn-info ion-ios7-loop-strong"
 									style="height:31px; padding:center"
-									rendered="#{tomaInventarioController.registrar and ! tomaInventarioController.newTomaInventario.tipo.equals('INICIAL')}"
+									rendered="#{tomaInventarioController.registrar and ! tomaInventarioController.newTomaInventario.tipo.equals('INICIAL') and sessionMain.tienePermisoPaginaAccion('TOMA DE INVENTARIO','PROCESAR')}"
 									update="formTableTomaInventario,formBotonesHeader"
 									action="#{tomaInventarioController.procesarConsulta()}">
 								</p:commandLink>
 
 								<p:commandLink id="buttonVerReporte" value="&#160; Ver Reporte"
 									styleClass="btn btn-info ion-printer"
-									rendered="#{tomaInventarioController.selectedTomaInventario != null and tomaInventarioController.verButtonReport}"
+									rendered="#{tomaInventarioController.selectedTomaInventario != null and tomaInventarioController.verButtonReport and sessionMain.tienePermisoPaginaAccion('TOMA DE INVENTARIO','VER REPORTE')}"
 									style="height:31px; padding:center"
 									update="formTableTomaInventario,formBotonesHeader"
 									action="#{tomaInventarioController.cargarReporte()}">
@@ -84,7 +84,7 @@
 								<p:commandLink id="buttonRevisar" value="&#160; Revisar"
 									styleClass="btn btn-info ion-ios7-loop-strong"
 									style="height:31px; padding:center"
-									rendered="#{ tomaInventarioController.revisarReport and (tomaInventarioController.listDetalleTomaInventario.size()==0) and !tomaInventarioController.selectedTomaInventario.tipo.equals('INICIAL')}"
+									rendered="#{ tomaInventarioController.revisarReport and (tomaInventarioController.listDetalleTomaInventario.size()==0) and !tomaInventarioController.selectedTomaInventario.tipo.equals('INICIAL') and sessionMain.tienePermisoPaginaAccion('TOMA DE INVENTARIO','REVISAR')}"
 									update="formTableTomaInventario,formBotonesHeader"
 									action="#{tomaInventarioController.buttonRevisar()}">
 								</p:commandLink>
@@ -92,7 +92,7 @@
 								<p:commandLink id="buttonConciliar1" value="&#160; Conciliar"
 									styleClass="btn btn-info ion-ios7-loop-strong"
 									style="height:31px; padding:center"
-									rendered="#{tomaInventarioController.buttonConciliar}"
+									rendered="#{tomaInventarioController.buttonConciliar and sessionMain.tienePermisoPaginaAccion('TOMA DE INVENTARIO','CONCILIAR')}"
 									update="formTableTomaInventario,formBotonesHeader"
 									action="#{tomaInventarioController.buttonConciliarTomaInventario()}">
 								</p:commandLink>
@@ -150,7 +150,6 @@
 												value="#{tomaInventarioController.listTomaInventario}"
 												selectionMode="single"
 												selection="#{tomaInventarioController.selectedTomaInventario}"
-												rendered="#{not empty listaProducto}"
 												emptyMessage="No se encontraron Registros.">
 
 												<p:ajax event="rowSelect"
@@ -433,7 +432,6 @@
 												style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
 												rowKey="#{_var.id}" id="productoTable" var="_var"
 												value="#{tomaInventarioController.listDetalleTomaInventario}"
-												rendered="#{not empty listaProducto}"
 												emptyMessage="No se encontraron Registros.">
 
 												<p:column width="7%" headerText="Codigo"  style="text-align:center;"
@@ -507,7 +505,6 @@
 												rowKey="#{_var.id}" id="productoTableConciliar" var="_var"
 												editable="true"
 												value="#{tomaInventarioController.listDetalleTomaInventario}"
-												rendered="#{not empty listaProducto}"
 												selection="#{tomaInventarioController.listSelectedDetalleTomaInventario}"
 												emptyMessage="No se encontraron Registros." editMode="cell">
 
@@ -593,7 +590,7 @@
 												style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
 												rowKey="#{_var.id}" id="productoTable2" var="_var"
 												value="#{tomaInventarioController.listDetalleTomaInventario}"
-												rendered="#{not empty listaProducto}" editable="true"
+												 editable="true"
 												editMode="cell" emptyMessage="No se encontraron Registros.">
 
 												<p:column width="5%" headerText="Codigo"

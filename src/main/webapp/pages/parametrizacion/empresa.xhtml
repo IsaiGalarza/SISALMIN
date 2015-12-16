@@ -29,7 +29,7 @@
 								</p:commandLink>
 								<p:commandLink id="buttonModificar" value="&#160; Modificar"
 									styleClass="btn btn-primary ion-edit"
-									rendered="#{! empresaController.modificar}"
+									rendered="#{! empresaController.modificar and sessionMain.tienePermisoPaginaAccion('EMPRESA','MODIFICAR')}"
 									style="height:31px; padding:center"
 									update="formRegEmpresa,formBotonesHeader"
 									action="#{empresaController.modificarForm()}">

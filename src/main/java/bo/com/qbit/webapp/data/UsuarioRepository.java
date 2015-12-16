@@ -31,11 +31,16 @@ public class UsuarioRepository {
 	}
 
 	public Usuario findByLogin(String name){
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Usuario> criteria = cb.createQuery(Usuario.class);
-		Root<Usuario> user = criteria.from(Usuario.class);
-		criteria.select(user).where(cb.equal(user.get("login"), name));
-		return em.createQuery(criteria).getSingleResult();
+		try{
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Usuario> criteria = cb.createQuery(Usuario.class);
+			Root<Usuario> user = criteria.from(Usuario.class);
+			criteria.select(user).where(cb.equal(user.get("login"), name));
+			return em.createQuery(criteria).getSingleResult();
+		}catch(Exception e){
+			System.out.println("ERROR :"+e.getMessage());
+			return null;
+		}
 	}
 
 	public Usuario findByLogin(String login, String password,Roles rol){

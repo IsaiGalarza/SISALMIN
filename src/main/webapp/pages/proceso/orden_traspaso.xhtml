@@ -42,7 +42,7 @@
 								<p:commandLink id="buttonCrear1"
 									value="&#160; Nueva Orden Traspaso"
 									styleClass="btn btn-success ion-plus-round"
-									rendered="#{ordenTraspasoController.crear and ! ordenTraspasoController.verReport and ordenTraspasoController.selectedOrdenTraspaso == null}"
+									rendered="#{ordenTraspasoController.crear and ! ordenTraspasoController.verReport and ordenTraspasoController.selectedOrdenTraspaso == null and sessionMain.tienePermisoPaginaAccion('ORDEN TRASPASO','VER REPORTE')}"
 									update="formTableOrdenTraspaso, formBotonesHeader"
 									action="#{ordenTraspasoController.cambiarAspecto()}"
 									style="height:31px;">
@@ -58,7 +58,7 @@
 
 								<p:commandLink id="buttonVerModificar" value="&#160; Modificar"
 									styleClass="btn btn-primary ion-edit"
-									rendered="#{ordenTraspasoController.selectedOrdenTraspaso != null and ordenTraspasoController.crear and ordenTraspasoController.verProcesar and ! ordenTraspasoController.verReport }"
+									rendered="#{ordenTraspasoController.selectedOrdenTraspaso != null and ordenTraspasoController.crear and ordenTraspasoController.verProcesar and ! ordenTraspasoController.verReport and sessionMain.tienePermisoPaginaAccion('ORDEN TRASPASO','MODIFICAR')}"
 									style="height:31px; padding:center"
 									update="formTableOrdenTraspaso, :formBotonesHeader,"
 									action="#{ordenTraspasoController.cambiarAspectoModificar()}">
@@ -66,7 +66,7 @@
 
 								<p:commandLink id="buttonModificar" value="&#160; Modificar"
 									styleClass="btn btn-primary ion-edit"
-									rendered="#{ordenTraspasoController.modificar and ordenTraspasoController.verProcesar}"
+									rendered="#{ordenTraspasoController.modificar and ordenTraspasoController.verProcesar }"
 									style="height:31px; padding:center"
 									update="formTableOrdenTraspaso,formBotonesHeader"
 									action="#{ordenTraspasoController.modificarOrdenTraspaso()}">
@@ -74,7 +74,7 @@
 
 								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
 									styleClass="btn btn-danger ion-close"
-									rendered="#{ordenTraspasoController.selectedOrdenTraspaso != null and ordenTraspasoController.crear and ordenTraspasoController.verProcesar and ! ordenTraspasoController.verReport }"
+									rendered="#{ordenTraspasoController.selectedOrdenTraspaso != null and ordenTraspasoController.crear and ordenTraspasoController.verProcesar and ! ordenTraspasoController.verReport and sessionMain.tienePermisoPaginaAccion('ORDEN TRASPASO','ELIMINAR')}"
 									update="formTableOrdenTraspaso,formBotonesHeader,formGrowl:msgs1"
 									onclick="PF('dlgEliminarOrdenTraspaso').show()"
 									style="height:31px; padding:center">
@@ -82,7 +82,7 @@
 
 								<p:commandLink id="buttonProcesar" value="&#160; Procesar"
 									styleClass="btn btn-info ion-ios7-loop-strong"
-									rendered="#{ordenTraspasoController.selectedOrdenTraspaso != null and ordenTraspasoController.crear and ordenTraspasoController.verProcesar and ! ordenTraspasoController.verReport}"
+									rendered="#{ordenTraspasoController.selectedOrdenTraspaso != null and ordenTraspasoController.crear and ordenTraspasoController.verProcesar and ! ordenTraspasoController.verReport and sessionMain.tienePermisoPaginaAccion('ORDEN TRASPASO','PROCESAR')}"
 									style="height:31px; padding:center"
 									update="formTableOrdenTraspaso, :formBotonesHeader,formGrowl:msgs1"
 									action="#{ordenTraspasoController.procesarOrdenTraspaso()}">
@@ -90,7 +90,7 @@
 
 								<p:commandLink id="buttonExportar" value="&#160; Exportar"
 									styleClass="btn orange ion-ios7-upload-outline"
-									rendered="#{ ordenTraspasoController.verExport}"
+									rendered="#{ ordenTraspasoController.verExport and sessionMain.tienePermisoPaginaAccion('ORDEN TRASPASO','EXPORTAR')}"
 									style="height:31px; padding:center"
 									update="formTableOrdenTraspaso, :formBotonesHeader,formGrowl:msgs1"
 									action="#{ordenTraspasoController.exportar()}">
@@ -98,7 +98,7 @@
 
 								<p:commandLink id="buttonVerReporte" value="&#160; Ver Reporte"
 									styleClass="btn btn-info ion-printer"
-									rendered="#{ordenTraspasoController.selectedOrdenTraspaso != null and ordenTraspasoController.crear and ! ordenTraspasoController.verReport}"
+									rendered="#{ordenTraspasoController.selectedOrdenTraspaso != null and ordenTraspasoController.crear and ! ordenTraspasoController.verReport and sessionMain.tienePermisoPaginaAccion('ORDEN TRASPASO','VER REPORTE')}"
 									style="height:31px; padding:center"
 									update="formTableOrdenTraspaso, :formBotonesHeader,formModalVistaPrevia"
 									action="#{ordenTraspasoController.cargarReporte()}">

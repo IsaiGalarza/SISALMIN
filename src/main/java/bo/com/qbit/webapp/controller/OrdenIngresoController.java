@@ -596,6 +596,10 @@ public class OrdenIngresoController implements Serializable {
 	}
 
 	public void convertJava() {
+		if(uploadedFile==null){
+			//FacesUtil.infoMessage("VALIDACION", "No se cargo ningun archivo.");
+			return;
+		}
 		System.out.println("convertJava() ");
 		listaDetalleOrdenIngreso = new ArrayList<DetalleOrdenIngreso>();
 		File archivo = null;

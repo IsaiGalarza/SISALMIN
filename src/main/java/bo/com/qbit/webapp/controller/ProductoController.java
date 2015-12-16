@@ -14,7 +14,6 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.persistence.EntityManager;
 
 import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
@@ -26,6 +25,7 @@ import bo.com.qbit.webapp.model.Producto;
 import bo.com.qbit.webapp.model.Partida;
 import bo.com.qbit.webapp.model.UnidadMedida;
 import bo.com.qbit.webapp.service.ProductoRegistration;
+import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.SessionMain;
 
 @Named(value = "productoController")
@@ -38,9 +38,6 @@ public class ProductoController implements Serializable {
 
 	@Inject
 	private FacesContext facesContext;
-
-	@Inject
-	private EntityManager em;
 
 	@Inject
 	Conversation conversation;
@@ -215,14 +212,18 @@ public class ProductoController implements Serializable {
 	public void registrarProducto() {
 		try {
 			System.out.println("Ingreso a registrarProducto: ");
-			
+			if(newProducto.getNombre().isEmpty() || newProducto.getCodigo().isEmpty() || newProducto.getDescripcion().isEmpty() || selectedUnidadMedida.getId()==0 || newProducto.getPartida().getId()==0){
+				FacesUtil.infoMessage("VALIDACION", "No puede haber campos vacios");
+				return;
+			}
+			if(newProducto.getTipoProducto().equals("SELECCIONE")){
+				FacesUtil.infoMessage("VALIDACION", "Seleccione un Tipo de Producto");
+				return;
+			}
 			System.out.println("id: "+newProducto.getUnidadMedidas().getId());
 			System.out.println("nombre: "+newProducto.getNombre());
+			System.out.println("codigo: "+newProducto.getCodigo());
 			System.out.println("descripcion: "+newProducto.getDescripcion());
-			System.out.println("estado: "+newProducto.getEstado());
-			System.out.println("fechaRegistro: "+newProducto.getUnidadMedidas().getFechaRegistro());
-			System.out.println("UsuarioRegistro: "+newProducto.getUnidadMedidas().getUsuarioRegistro());
-			System.out.println("fechaRegistro: "+newProducto.getUnidadMedidas().getFechaRegistro());
 			
 			newProducto.setPrecioUnitario(0);//el precio se define mediante orden ingreso
 			newProducto.setUnidadMedidas(selectedUnidadMedida);

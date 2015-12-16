@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Conversation;
@@ -49,14 +49,14 @@ public class PermisoController implements Serializable {
 	@Inject
 	Conversation conversation;
 
-	
+
 	private @Inject PermisoRepository permisoRepository;
 	private @Inject RolesRepository rolesRepository;
 	private @Inject DetallePaginaRepository detallePaginaRepository;
 
 	private @Inject PermisoRegistration permisoRegistration;
-	
-	private Logger log = Logger.getLogger(this.getClass());
+
+	//private Logger log = Logger.getLogger(this.getClass());
 
 	//login
 	private String nombreUsuario;
@@ -131,7 +131,7 @@ public class PermisoController implements Serializable {
 		listModulo = new ArrayList<Modulo>();
 		listPagina = new ArrayList<Pagina>();
 		listAccion = new ArrayList<EDAccion>();
-		
+
 		listModulo = findModuloByLocal();
 		listPagina = findPaginaByLocal();
 		listAccion = findEDAccionByLocal();
@@ -217,7 +217,7 @@ public class PermisoController implements Serializable {
 			}
 		}
 	}
-	
+
 	private boolean tienePermisoModulo(Modulo m){
 		for(Modulo modAux : listModulo){
 			if(modAux.equals(m)){
@@ -311,60 +311,73 @@ public class PermisoController implements Serializable {
 		}
 		cargarNodos();
 	}
-	
+
 	public void onNodeUnselect(NodeUnselectEvent event){
 		EDPermisoV1 e = (EDPermisoV1)event.getTreeNode().getData();
 		System.out.println("onNodeUnselect : "+e.getNombre() +" tipo : "+e.getTipo());
-//		switch (e.getTipo()) {
-//		case "MODULO":
-//			Modulo m = (Modulo)e.getObject();
-//			listModulo.remove(m);
-//			//obtener lista de paginas hijas de este modulo
-//			List<Pagina> listPaginasHijas = new ArrayList<Pagina>();
-//			
-//			//eliminar todas las paginas hijas
-//			for(Pagina p: listPagina){
-//				listPagina.remove(p);
-//			}
-//			
-//			// eliminar todas las acciones
-//			for(EDAccion eda : listAccion){
-//				if(listPaginasHijas.contains(eda.getPagina())){
-//					listAccion.remove(eda);
-//				}
-//			}
-//
-//			break;
-//		case "PAGINA":
-//			Pagina p = (Pagina)e.getObject();
-//			listPagina.remove(p);
-//			
-//			//eliminar las acciones asociadas a esta pagina
-//			for(EDAccion eda : listAccion){
-//				if(p.equals(eda.getPagina())){
-//					listAccion.remove(eda);
-//				}
-//			}
-//			
-//			//obtener moudulo padre de la pagina
-//			
-//			//verificar si el modulo que pertenece esta pagina tiene otros hijos, sino eliminar modulo
-//			
-//			
-////			agregarPermiso(p);
-//			break;
-//		case "ACCION":
-//			EDAccion eda = (EDAccion)e.getObject();
-////			if( ! listAccion.contains(eda)){
-////				listAccion.add(eda);
-////			}
-////			agregarPermiso(eda.getPagina());
-//			break;
-//
-//		default:
-//			break;
-//		}
-//		cargarNodos();
+		switch (e.getTipo()) {
+		case "MODULO":
+			Modulo m = (Modulo)e.getObject();
+			this.listModulo.remove(m);
+			//obtener lista de paginas hijas de este modulo
+			List<Pagina> listPaginasHijas = new ArrayList<Pagina>();
+			listPaginasHijas = obtenerPaginasByModulo(m);
+			//eliminar todas las paginas hijas
+			for(Pagina p: listPaginasHijas){
+				this.listPagina.remove(p);
+				//obtener lista de acciones de cada una de las paginas
+				List<EDAccion> listAccionHijas = obtenerEDAccionByPagina(p);
+				// eliminar todas las acciones
+				for(EDAccion eda : listAccionHijas){
+					if(listPaginasHijas.contains(eda.getPagina())){
+						this.listAccion.remove(eda);
+					}
+				}
+			}
+			break;
+		case "PAGINA":
+			Pagina p = (Pagina)e.getObject();
+			this.listPagina.remove(p);
+			List<EDAccion> listAccionHijas = obtenerEDAccionByPagina(p);
+			//eliminar las acciones asociadas a esta pagina
+			for(EDAccion eda : listAccionHijas){
+				if(p.equals(eda.getPagina())){
+					this.listAccion.remove(eda);
+				}
+			}			
+			// obtener moudulo padre de la pagina
+			Modulo modulo = p.getModulo();		
+			//verificar si el modulo que pertenece esta pagina tiene otros hijos, sino eliminar modulo
+			List<Pagina> listPaginasHijas2 = obtenerPaginasByModulo(modulo);
+			if(listPaginasHijas2.size()==0){
+				this.listModulo.remove(modulo);
+			}
+			break;
+		case "ACCION":
+			EDAccion eda = (EDAccion)e.getObject();
+			this.listAccion.remove(eda);
+			Pagina p3 = eda.getPagina();
+			Modulo modulo3 = p3.getModulo();
+			List<EDAccion> listEda3 = obtenerEDAccionByPagina(p3);
+			//si ya no hay acciones verificar, si era la utima de esta pagina y de ese modulo
+			if(listEda3.size() == 0){
+				//eliminar la pagina
+				this.listPagina.remove(p3);
+				//obtener las paginas de ese modulo, y verificar si ya no hay paginas eliminar modulo
+				List<Pagina> listPaginasHijas3 = obtenerPaginasByModulo(modulo3);
+				if(listPaginasHijas3.size()==0){
+					//si ya no hay paginas eliminar el modulo
+					this.listModulo.remove(modulo3);
+				}
+			}
+			break;
+		default:
+			break;
+		}
+		cargarNodos();
+		System.out.println("listModulo = "+listModulo.size());
+		System.out.println("listPagina = "+listPagina.size());
+		System.out.println("listAccion = "+listAccion.size());
 	}
 
 	private void agregarPermiso(Pagina p){
@@ -402,7 +415,6 @@ public class PermisoController implements Serializable {
 				perm.setEstado("RM");
 				permisoRegistration.update(perm);
 			}
-			//obtenerPermisosSeleccionados();
 			System.out.println("Ingreso a registrarPrivilegio 2");
 			for(EDAccion eda : listAccion){
 				Pagina pag = eda.getPagina();

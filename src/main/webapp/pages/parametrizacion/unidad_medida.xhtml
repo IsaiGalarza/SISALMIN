@@ -31,7 +31,7 @@
 								<p:commandLink id="buttonCrear1"
 									value="&#160; Nuevo Unidad de Medida"
 									styleClass="btn btn-success ion-plus-round"
-									rendered="#{unidadMedidaController.crear}"
+									rendered="#{unidadMedidaController.crear and sessionMain.tienePermisoPaginaAccion('UNIDAD DE MEDIDA','REGISTRAR')}"
 									update=":formTableUnidadMedida, :formBotonesHeader"
 									action="#{unidadMedidaController.cambiarAspecto()}"
 									style="height:31px;">
@@ -55,7 +55,7 @@
 
 								<p:commandLink id="buttonModificar" value="&#160; Modificar"
 									styleClass="btn btn-primary ion-edit"
-									rendered="#{unidadMedidaController.modificar=='true'}"
+									rendered="#{unidadMedidaController.modificar=='true' and sessionMain.tienePermisoPaginaAccion('UNIDAD DE MEDIDA','MODIFICAR')}"
 									style="height:31px; padding:center"
 									update=":formTableUnidadMedida, :formBotonesHeader"
 									action="#{unidadMedidaController.modificarUnidadMedida()}">
@@ -63,7 +63,7 @@
 
 								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
 									styleClass="btn btn-danger ion-close"
-									rendered="#{unidadMedidaController.modificar=='true'}"
+									rendered="#{unidadMedidaController.modificar=='true' and sessionMain.tienePermisoPaginaAccion('UNIDAD DE MEDIDA','ELIMINAR')}"
 									update=":formTableUnidadMedida, :formBotonesHeader"
 									onclick="dlgEliminar.show()"
 									style="height:31px; padding:center">
@@ -210,7 +210,6 @@
 												selectionMode="single" rowKey="#{_UnidadMedida.id}"
 												id="FuncionarioTable" var="_UnidadMedida"
 												value="#{listaUnidadMedida}"
-												rendered="#{not empty listaFuncionario}"
 												emptyMessage="No se encontraron Registros.">
 
 												<p:ajax event="rowSelect"

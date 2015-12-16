@@ -29,7 +29,7 @@
 								</p:commandLink>
 								<p:commandLink id="buttonCrear1" value="&#160; Nuevo Proyecto"
 									styleClass="btn btn-success ion-plus-round"
-									rendered="#{proyectoController.crear}"
+									rendered="#{proyectoController.crear and sessionMain.tienePermisoPaginaAccion('PROYECTO','REGISTRAR')}"
 									update=":formTableProyecto, :formBotonesHeader"
 									action="#{proyectoController.cambiarAspecto()}"
 									style="height:31px;">
@@ -53,7 +53,7 @@
 
 								<p:commandLink id="buttonModificar" value="&#160; Modificar"
 									styleClass="btn btn-primary ion-edit"
-									rendered="#{proyectoController.modificar=='true'}"
+									rendered="#{proyectoController.modificar=='true' and sessionMain.tienePermisoPaginaAccion('PROYECTO','MODIFICAR')}"
 									style="height:31px; padding:center"
 									update=":formTableProyecto, :formBotonesHeader"
 									action="#{proyectoController.modificarProyecto()}">
@@ -61,7 +61,7 @@
 
 								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
 									styleClass="btn btn-danger ion-close"
-									rendered="#{proyectoController.modificar=='true'}"
+									rendered="#{proyectoController.modificar=='true' and sessionMain.tienePermisoPaginaAccion('PROYECTO','ELIMINAR')}"
 									update=":formTableProyecto, :formBotonesHeader"
 									onclick="dlgEliminar.show()"
 									style="height:31px; padding:center">
@@ -220,7 +220,6 @@
 												selection="#{proyectoController.selectedProyecto}"
 												selectionMode="single" rowKey="#{_Proyecto.id}"
 												id="ProyectoTable" var="_Proyecto" value="#{listaProyecto}"
-												rendered="#{not empty listaProyecto}"
 												emptyMessage="No se encontraron Registros.">
 
 												<p:ajax event="rowSelect"

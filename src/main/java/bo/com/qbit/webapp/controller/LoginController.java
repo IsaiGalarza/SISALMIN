@@ -52,7 +52,6 @@ public class LoginController implements Serializable {
 	public void initNewLogin() {
 		username = "";
 		password = "";
-
 	}
 
 	public void login() {
@@ -67,6 +66,16 @@ public class LoginController implements Serializable {
 		HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
 		Usuario usuarioSession = sessionMain.validarUsuario_(username, password);
 		if(usuarioSession!=null){
+			//validacion usuario eliminado
+			if(usuarioSession.getState().equals("RM")){
+				FacesUtil.errorMessage("Usuario no registrado");
+				return;
+			}
+			//validacion usuario inactivo
+			if(usuarioSession.getState().equals("IN")){
+				FacesUtil.errorMessage("Usuario Inactivo");
+				return;
+			}
 			try {
 				if (request.getUserPrincipal() != null) {
 					logout();

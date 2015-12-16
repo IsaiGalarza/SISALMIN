@@ -376,7 +376,7 @@ public class OrdenTraspasoController implements Serializable {
 				wr.write(Cifrado.Encriptar(partida.getDescripcion(), 12)+"\r\n");
 				//>>>>>>>>DETALLE ORDEN INGRESO<<<<<<<<<
 				//16 cantidad
-				wr.write(Cifrado.Encriptar(String.valueOf(detalle.getCantidadSolicitada()), 12)+"\r\n");
+				wr.write(Cifrado.Encriptar(String.valueOf(detalle.getCantidadEntregada()), 12)+"\r\n");
 				//17 observacion
 				wr.write(Cifrado.Encriptar(detalle.getObservacion(), 12)+"\r\n");
 				//18 total
@@ -526,7 +526,7 @@ public class OrdenTraspasoController implements Serializable {
 					cargarDetalleProducto(fechaActual, almDest, prod, d.getCantidadSolicitada(), d.getPrecioUnitario(), d.getFechaRegistro(), selectedOrdenTraspaso.getCorrelativo(), usuarioSession);
 				}
 
-				total = total + d.getPrecioUnitario();
+				total = total + d.getTotal();
 			}
 			//cactualizar ordenTraspaso
 			ordenTraspasoRegistration.updated(selectedOrdenTraspaso);

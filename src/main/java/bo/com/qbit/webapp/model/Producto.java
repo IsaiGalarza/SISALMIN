@@ -58,6 +58,9 @@ public class Producto implements Serializable {
 		this.partida = new Partida();
 		this.precioUnitario = 0;
 		this.unidadMedidas = new UnidadMedida();
+		this.codigo = "";
+		this.descripcion = "";
+		this.tipoProducto="SELECCIONE";
 	}
 	
 	@Override

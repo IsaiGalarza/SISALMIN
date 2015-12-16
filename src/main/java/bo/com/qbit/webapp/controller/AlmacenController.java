@@ -46,9 +46,9 @@ public class AlmacenController implements Serializable {
 
 	private @Inject AlmacenRepository almacenRepository;
 	private @Inject UsuarioRepository usuarioRepository;
-	
+
 	private @Inject AlmacenRegistration almacenRegistration;	
-	
+
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
 	Event<String> pushEventSucursal;
@@ -56,14 +56,14 @@ public class AlmacenController implements Serializable {
 	private boolean modificar = false;
 	private boolean registrar = false;
 	private boolean crear = true;
-	
+
 	private String tituloPanel = "Registrar Almacen";
 	private Almacen selectedAlmacen;
 	private Almacen newAlmacen= new Almacen();
 	private List<Usuario> listUsuario = new ArrayList<Usuario>();
 	private List<Almacen> listaAlmacen;
 
-	
+
 	private boolean atencionCliente=false;
 
 	// @Named provides access the return value via the EL variable name
@@ -74,11 +74,11 @@ public class AlmacenController implements Serializable {
 	public List<Almacen> getListaAlmacen() {
 		return listaAlmacen;
 	}
-	
+
 	//SESSION
 	private @Inject SessionMain sessionMain; //variable del login
 	private String usuarioSession;
-	
+
 	@PostConstruct
 	public void initNewAlmacen() {
 
@@ -86,13 +86,14 @@ public class AlmacenController implements Serializable {
 		beginConversation();
 
 		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
+		//jalar los usuarios(ENCARGADOS LIBRES=SIN ALMACEN ASIGNADOS)
 		listUsuario = usuarioRepository.findAllOrderedByID();
 
 		newAlmacen = new Almacen();
 		newAlmacen.setEstado("AC");
 		newAlmacen.setFechaRegistro(new Date());
 		newAlmacen.setUsuarioRegistro(usuarioSession);
-		
+
 		selectedAlmacen = null;
 
 		// tituloPanel
@@ -100,25 +101,25 @@ public class AlmacenController implements Serializable {
 
 		// traer todos las almacenes ordenados por ID Desc
 		listaAlmacen = almacenRepository.traerAlmacenActivas();
-		
+
 		modificar = false;
 		registrar = false;
 		crear = true;
 		atencionCliente=false;
 	}
-	
+
 	public void cambiarAspecto(){
 		modificar = false;
 		registrar = true;
 		crear = false;
 	}
-	
+
 	public void cambiarAspectoModificar(){
 		modificar = true;
 		registrar = false;
 		crear = false;
 	}
-	
+
 	public void beginConversation() {
 		if (conversation.isTransient()) {
 			System.out.println("beginning conversation : " + this.conversation);
@@ -160,14 +161,18 @@ public class AlmacenController implements Serializable {
 	}
 
 	public void registrarAlmacen() {
+		if(newAlmacen.getNombre().isEmpty() || newAlmacen.getCodigo().isEmpty() || newAlmacen.getDireccion().isEmpty() || newAlmacen.getTelefono().isEmpty() || newAlmacen.getEncargado().getId()==0){
+			FacesUtil.infoMessage("VALIDACION", "No pueden haber campos vacios.");
+			return;
+		}
 		try {
 			System.out.println("Ingreso a registrarAlmacen: ");
 			almacenRegistration.register(newAlmacen);
-			
+
 			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
 					"Almacen Registrado!", newAlmacen.getNombre()+"!");
 			facesContext.addMessage(null, m);
-			
+
 			initNewAlmacen();
 		} catch (Exception e) {
 			String errorMessage = getRootErrorMessage(e);
@@ -182,7 +187,7 @@ public class AlmacenController implements Serializable {
 			System.out.println("Ingreso a modificarAlmacen: "
 					+ newAlmacen.getId());
 			almacenRegistration.updated(newAlmacen);
-			
+
 			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
 					"Almacen Modificado!", newAlmacen.getNombre()+"!");
 			facesContext.addMessage(null, m);
@@ -195,7 +200,7 @@ public class AlmacenController implements Serializable {
 			facesContext.addMessage(null, m);
 		}
 	}
-	
+
 	public void modificar(){
 		System.out.println("Ingreso a modificar");
 	}
@@ -265,7 +270,7 @@ public class AlmacenController implements Serializable {
 	public void setNewAlmacen(Almacen newAlmacen) {
 		this.newAlmacen = newAlmacen;
 	}
-	
+
 	public boolean isAtencionCliente() {
 		return atencionCliente;
 	}

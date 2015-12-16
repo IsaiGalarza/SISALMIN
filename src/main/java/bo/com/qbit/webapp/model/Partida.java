@@ -42,7 +42,8 @@ public class Partida implements Serializable {
 	private Partida partida;
 
 	public Partida() {
-		
+		super();
+		this.id = 0;
 	}
 
 	public Integer getId() {

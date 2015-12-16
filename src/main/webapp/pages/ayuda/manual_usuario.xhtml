@@ -15,17 +15,9 @@
 		<!--BEGIN CONTENT-->
 		<div class="content">
 			<section class="content-header">
-				<div class="pull-left" style="padding-top: 8px;">
-					<h:form id="formBotonesHeader" style="padding-left: 10px;">
-						<div class="btn-group-demo">
-							<div class="btn-group">
-
-								
-
-							</div>
-						</div>
-					</h:form>
-				</div>
+				<h1 class="pull-left">
+					MANUAL DE USUARIO <small>Detalle del uso del sistema</small>
+				</h1>
 				<div class="pull-right">
 					<ol class="breadcrumb">
 						<li><a href="#{request.contextPath}/pages/dashboard.xhtml"
@@ -40,10 +32,56 @@
 			<section class="main-content">
 				<section class="main-content">
 					<div class="row">
+						<div class="col-md-12">
+							<div id="page-invoice">
+								<div class="invoice">
+									<div class="invoice-company">
+										<span class="pull-right hidden-print"><a
+											href="#{request.contextPath}/resources/file/ManualdeUsuarioSIGA.pdf" class="btn btn-sm btn-success mbm"><i
+												class="fa fa-download mrs"></i>Exportar como PDF</a></span>
+										<h3>#{sessionMain.empresaLogin.razonSocial}</h3>
+									</div>
 
-						<h2>MANUAL DE USUARIO S.I.G.A.</h2>
+									<div class="invoice-content">
+										<div class="table-responsive">
+											<table class="table table-striped table-border-none">
+												<thead>
+													<tr>
+														<th></th>
 
+													</tr>
+												</thead>
+												<tbody>
 
+													<object type="application/pdf"
+														data="#{request.contextPath}/resources/file/ManualdeUsuarioSIGA.pdf?pfdrid_c=true"
+														height="1190px" width="100%" internalinstanceid="4">
+														<a>Your browser can't display pdf</a>
+													</object>
+
+												</tbody>
+											</table>
+										</div>
+
+									</div>
+									<div class="invoice-note">
+										* Make all cheques payable to [Your Company Name] <br />*
+										Payment is due within 30 days <br />* If you have any
+										questions concerning this invoice, contact [Name, Phone
+										Number, Email]
+									</div>
+									<div class="invoice-footer">
+										<p class="text-center mbs">THANK YOU FOR YOUR BUSINESS</p>
+										<p class="text-center">
+											<span class="mrm"><i class="fa fa-globe"></i>
+												qbit.com.bo</span><span class="mrm"><i class="fa fa-phone"></i>
+												T:3-360000</span><span class="mrm"><i class="fa fa-envelope"></i>
+												info@qbit.com.bo</span>
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 				</section>
 			</section>

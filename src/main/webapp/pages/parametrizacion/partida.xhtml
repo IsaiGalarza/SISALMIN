@@ -29,8 +29,8 @@
 								</p:commandLink>
 								<p:commandLink id="buttonCrear1" value="&#160; Nuevo Partida"
 									styleClass="btn btn-success ion-plus-round"
-									rendered="#{partidaController.crear}" immediate="true"
-									update=":formTablePartida, :formBotonesHeader"
+									rendered="#{partidaController.crear  and sessionMain.tienePermisoPaginaAccion('PARTIDA','REGISTRAR')}"
+									immediate="true" update=":formTablePartida, :formBotonesHeader"
 									action="#{partidaController.cambiarAspecto()}"
 									style="height:31px;">
 								</p:commandLink>
@@ -53,7 +53,7 @@
 
 								<p:commandLink id="buttonModificar" value="&#160; Modificar"
 									styleClass="btn btn-primary ion-edit"
-									rendered="#{partidaController.modificar=='true'}"
+									rendered="#{partidaController.modificar=='true' and sessionMain.tienePermisoPaginaAccion('PARTIDA','MODIFICAR')}"
 									style="height:31px; padding:center"
 									update=":formTablePartida, :formBotonesHeader"
 									action="#{partidaController.modificarPartida()}">
@@ -61,7 +61,7 @@
 
 								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
 									styleClass="btn btn-danger ion-close"
-									rendered="#{partidaController.modificar=='true'}"
+									rendered="#{partidaController.modificar=='true' and sessionMain.tienePermisoPaginaAccion('PARTIDA','ELIMINAR')}"
 									actionListener="#{partidaController.eliminarPartida()}"
 									update=":formTablePartida, :formBotonesHeader"
 									style="height:31px; padding:center">
@@ -200,94 +200,92 @@
 								</div>
 
 								<div class="col-md-8">
+									<ui:fragment rendered="false">
 
-									<div class="panel panel-default">
-										<div class="panel-heading">
-											<h3 class="panel-title">Lista de ITEMS</h3>
-										</div>
-										<!-- start here datatable -->
-										<div class="box-content no-padding">
+										<div class="panel panel-default">
+											<div class="panel-heading">
+												<h3 class="panel-title">Lista de ITEMS</h3>
+											</div>
+											<!-- start here datatable -->
+											<div class="box-content no-padding">
 
-											<div class="table-responsive">
+												<div class="table-responsive">
 
-												<p:dataTable
-													style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
-													selection="#{partidaController.selectedProducto}"
-													selectionMode="single" rowKey="#{_var}" id="itemsTable"
-													var="_var" value="#{partidaController.listaProductos}"
-													rendered="#{not empty partidaController.listaProductos}"
-													emptyMessage="No se encontraron Registros de ITEMS.">
+													<p:dataTable
+														style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+														selection="#{partidaController.selectedProducto}"
+														selectionMode="single" rowKey="#{_var}" id="itemsTable"
+														var="_var" value="#{partidaController.listaProductos}"
+														emptyMessage="No se encontraron Registros de ITEMS.">
 
-													<p:ajax event="rowSelect"
-														update=":formTablePartida, :formBotonesHeader"
-														listener="#{partidaController.onRowSelectProductoClick}" />
+														<p:ajax event="rowSelect"
+															update=":formTablePartida, :formBotonesHeader"
+															listener="#{partidaController.onRowSelectProductoClick}" />
 
-													<p:column width="5%" headerText="Codigo">
-														<h:outputText value="#{_var.codigo}" />
-													</p:column>
+														<p:column width="5%" headerText="Codigo">
+															<h:outputText value="#{_var.codigo}" />
+														</p:column>
 
-													<p:column headerText="Nombre ITEM">
-														<h:outputText value="#{_var.nombre}" />
-													</p:column>
+														<p:column headerText="Nombre ITEM">
+															<h:outputText value="#{_var.nombre}" />
+														</p:column>
 
-													<p:column headerText="Precio U.">
-														<h:outputText value="#{_var.precioUnitario}">
-															<f:convertNumber pattern="#,##0.00" />
-														</h:outputText>
+														<p:column headerText="Precio U.">
+															<h:outputText value="#{_var.precioUnitario}">
+																<f:convertNumber pattern="#,##0.00" />
+															</h:outputText>
 													#{' '}
 													<h:outputText value="Bs.-" />
-													</p:column>
+														</p:column>
 
-													<p:column headerText="Unidad">
-														<h:outputText value="#{_var.unidadMedidas.nombre}" />
-													</p:column>
+														<p:column headerText="Unidad">
+															<h:outputText value="#{_var.unidadMedidas.nombre}" />
+														</p:column>
 
-													<p:column headerText="Tipo">
-														<h:outputText value="#{_var.tipoProducto}" />
-													</p:column>
+														<p:column headerText="Tipo">
+															<h:outputText value="#{_var.tipoProducto}" />
+														</p:column>
 
-													<p:column headerText="Estado">
-														<span class="label label-success"><h:outputText
-																rendered="#{_Partida.estado=='AC'}" value="Activo" /></span>
-														<span class="label label-danger"><h:outputText
-																rendered="#{_Partida.estado=='IN'}" value="Inactivo" /></span>
-													</p:column>
+														<p:column headerText="Estado">
+															<span class="label label-success"><h:outputText
+																	rendered="#{_Partida.estado=='AC'}" value="Activo" /></span>
+															<span class="label label-danger"><h:outputText
+																	rendered="#{_Partida.estado=='IN'}" value="Inactivo" /></span>
+														</p:column>
 
 
-												</p:dataTable>
+													</p:dataTable>
+
+												</div>
 
 											</div>
 
+											<div align="right">
+
+												<p:commandButton rendered="false" icon="ui-icon-plus"
+													title="Agregar Producto"
+													oncomplete="PF('dlgProducto').show();"
+													update=":formDialogProducto"
+													action="#{partidaController.crearProducto()}"
+													immediate="true" />
+
+												<p:button icon="ui-icon-pencil" title="Modificar Producto"
+													oncomplete="PF('dlgProducto').show();"
+													action="#{partidaController.crearProducto()}"
+													immediate="true" update=":formDialogProducto"
+													disabled="#{partidaController.selectedProducto==null}">
+												</p:button>
+
+												<p:button icon="ui-icon-trash" title="Borrar Producto"
+													action="#{partidaController.borrarProducto()}"
+													immediate="true"
+													disabled="#{partidaController.selectedProducto==null}">
+												</p:button>
+											</div>
+											<!-- end here datatable -->
+											<div class="panel-body"></div>
 										</div>
-
-										<div align="right">
-
-											<p:commandButton rendered="false" icon="ui-icon-plus"
-												title="Agregar Producto"
-												oncomplete="PF('dlgProducto').show();"
-												update=":formDialogProducto"
-												action="#{partidaController.crearProducto()}"
-												immediate="true" />
-
-											<p:button icon="ui-icon-pencil" title="Modificar Producto"
-												oncomplete="PF('dlgProducto').show();"
-												action="#{partidaController.crearProducto()}"
-												immediate="true" update=":formDialogProducto"
-												disabled="#{partidaController.selectedProducto==null}">
-											</p:button>
-
-											<p:button icon="ui-icon-trash" title="Borrar Producto"
-												action="#{partidaController.borrarProducto()}"
-												immediate="true"
-												disabled="#{partidaController.selectedProducto==null}">
-											</p:button>
-										</div>
-
-										<!-- end here datatable -->
-										<div class="panel-body"></div>
-
-									</div>
-
+									</ui:fragment>
 
 
 
@@ -312,7 +310,6 @@
 												selection="#{partidaController.selectedPartida}"
 												selectionMode="single" rowKey="#{_Partida.id}"
 												id="PartidaTable" var="_Partida" value="#{listaPartida}"
-												rendered="#{not empty listaPartida}"
 												emptyMessage="No se encontraron Registros.">
 
 												<p:ajax event="rowSelect"

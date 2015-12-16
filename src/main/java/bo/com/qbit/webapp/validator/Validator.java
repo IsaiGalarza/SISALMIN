@@ -9,15 +9,17 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import bo.com.qbit.webapp.model.Empresa;
+import bo.com.qbit.webapp.model.Usuario;
 
 public abstract class Validator {
+	
 
 	private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-]+(\\." +
 			"[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*" +
 			"(\\.[A-Za-z]{2,})$";
 	private static final String LETTER_PATTERN = "[^A-Za-z ]";
-	@Inject
-	private EntityManager em;
+	
+	private @Inject EntityManager em;
 	private Pattern pattern;
 	private Matcher matcher;
 
@@ -27,13 +29,24 @@ public abstract class Validator {
 	public boolean isEmppty(Object object){
 		return object.toString().length()<1?true:false;
 	}
-
-	public boolean exist(Object object,String item,String value){
+	
+	public boolean exist(String object,String item,String value){
 		try{
-			String query = "select em from "+object+" em where em."+item+"="+value;
+			String query = "select em from "+object+" em where em."+item+" ='"+value+"'";
 			System.out.println("query: "+query);
-			Object obj =  em.createQuery(query).getSingleResult();
-			return obj!=null?true:false;
+			return em.createQuery(query).getSingleResult()!=null?true:false;
+		}catch(Exception e){
+			return false;
+		}
+	}
+
+	public boolean existUsuario(String value){
+		try{
+			String query = "select em from Usuario em where em.login ='"+value+"'";
+			System.out.println("query: "+query);
+			Usuario usuario = (Usuario) em.createQuery(query).getSingleResult();
+			System.out.println("usuario: "+usuario);
+			return usuario!=null?true:false;
 		}catch(Exception e){
 			return false;
 		}

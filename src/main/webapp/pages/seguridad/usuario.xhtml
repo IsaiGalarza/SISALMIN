@@ -23,12 +23,13 @@
 									styleClass="btn btn-warning ion-minus-circled"
 									style="height:31px; padding:center"
 									rendered="#{usuarioController.modificar or usuarioController.registrar}"
-									update=":formReg,:formBotonesHeader,:formTableUsuario"
+									update="formReg,formBotonesHeader,formTableUsuario"
 									action="#{usuarioController.actualizarFormReg()}">
 								</p:commandLink>
 								<p:commandLink id="buttonCrear1" value="&#160; Nuevo Usuario"
 									styleClass="btn btn-success ion-plus-round"
-									rendered="#{usuarioController.crear}" style="height:31px;">
+									rendered="#{usuarioController.crear and sessionMain.tienePermisoPaginaAccion('USUARIO','REGISTRAR')}"
+									style="height:31px;">
 									<p:ajax update="formTableUsuario,formReg,:formBotonesHeader"
 										listener="#{usuarioController.cambiarAspecto()}" />
 									<p:ajax
@@ -42,7 +43,7 @@
 										listener="#{usuarioController.registrarUsuario()}" />
 								</p:commandLink>
 								<p:commandLink id="buttonModificar" value="&#160; Modificar"
-									rendered="#{usuarioController.modificar}"
+									rendered="#{usuarioController.modificar and sessionMain.tienePermisoPaginaAccion('USUARIO','MODIFICAR')}"
 									styleClass="btn btn-primary ion-edit" style="height:31px;">
 									<p:ajax
 										update="formReg,formTableUsuario,formGrowl:msgs1,formBotonesHeader"
@@ -50,7 +51,7 @@
 								</p:commandLink>
 								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
 									styleClass="btn btn-danger ion-trash-b" style="height:31px;"
-									rendered="#{usuarioController.modificar}"
+									rendered="#{usuarioController.modificar and sessionMain.tienePermisoPaginaAccion('USUARIO','ELIMINAR')}"
 									disabled="#{newUsuario.state.equals('SU')}"
 									update="formTableUsuario,formReg,formGrowl:msgs1,:formBotonesHeader"
 									action="#{usuarioController.eliminarUsuario()}">
@@ -88,7 +89,7 @@
 													<div class="col-md-4 control-label">Nombre</div>
 													<div class="col-md-8">
 														<h:inputText id="inputTextNombre"
-															value="#{newUsuario.nombre}"
+															value="#{newUsuario.nombre}" disabled="#{newUsuario.state =='SU'}"
 															style=" color: #555555; background-image: none;"
 															styleClass="input-sm form-control">
 															<p:ajax event="change" />
@@ -143,19 +144,17 @@
 													</div>
 												</div>
 												<div class="form-group">
-													<ui:fragment rendered="#{ newUsuario.state !='SUPER'}">
-														<label class="col-md-4 control-label">Estado</label>
-														<div class="col-md-8">
-															<h:selectOneMenu id="estado"
-																styleClass="input-sm form-control"
-																style=" color: #555555; height:25px; font-size:11px;"
-																disabled="#{newUsuario.state =='SU'}" immediate="true"
-																value="#{usuarioController.nombreEstado}">
-																<f:ajax />
-																<f:selectItems value="#{usuarioController.listEstado}" />
-															</h:selectOneMenu>
-														</div>
-													</ui:fragment>
+													<label class="col-md-4 control-label">Estado</label>
+													<div class="col-md-8">
+														<h:selectOneMenu id="estado"
+															styleClass="input-sm form-control"
+															style=" color: #555555; height:25px; font-size:11px;"
+															disabled="#{newUsuario.state =='SU'}" immediate="true"
+															value="#{usuarioController.nombreEstado}">
+															<f:ajax />
+															<f:selectItems value="#{usuarioController.listEstado}" />
+														</h:selectOneMenu>
+													</div>
 												</div>
 												<!-- aqui botones -->
 											</div>
@@ -184,15 +183,16 @@
 												<p:ajax event="rowSelect"
 													listener="#{usuarioController.onRowSelect}"
 													update="formReg,formBotonesHeader,formTableUsuario" />
-												<p:column headerText="Id" width="8%" style="text-align:center;"
-													filterMatchMode="contains"
+												<p:column headerText="Id" width="8%"
+													style="text-align:center;" filterMatchMode="contains"
 													filterStyle="width: 100%; height:25px;"
 													filterBy="#{item.id}">
 													<h:outputText value="#{item.id}" />
 												</p:column>
 												<p:column headerText="Nombre" width="30%"
 													filterStyle="width: 100%; height:25px;"
-													filterMatchMode="contains" filterBy="#{item.usuario.nombre}">
+													filterMatchMode="contains"
+													filterBy="#{item.usuario.nombre}">
 													<h:outputText value="#{item.usuario.nombre}" />
 												</p:column>
 												<p:column headerText="Login" width="12%"

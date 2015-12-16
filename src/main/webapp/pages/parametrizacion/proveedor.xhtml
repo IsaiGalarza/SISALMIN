@@ -28,7 +28,7 @@
 								</p:commandLink>
 								<p:commandLink id="buttonCrear1" value="&#160; Nuevo Proveedor"
 									styleClass="btn btn-success ion-plus-round"
-									rendered="#{proveedorController.crear}"
+									rendered="#{proveedorController.crear and sessionMain.tienePermisoPaginaAccion('PROVEEDOR','REGISTRAR')}"
 									update=":formTableProveedor,:formReg,:formGrowl:msgs1,:formBotonesHeader"
 									action="#{proveedorController.cambiarAspecto()}"
 									style="height:31px;">
@@ -42,14 +42,14 @@
 								</p:commandLink>
 								<p:commandLink id="buttonModificar" value="&#160; Modificar"
 									styleClass="btn btn-primary ion-edit"
-									rendered="#{proveedorController.modificar}"
+									rendered="#{proveedorController.modificar and sessionMain.tienePermisoPaginaAccion('PROVEEDOR','MODIFICAR')}"
 									style="height:31px; padding:center"
 									update=":formTableProveedor,:formReg,formGrowl:msgs1,:formBotonesHeader"
 									action="#{proveedorController.modificar()}">
 								</p:commandLink>
 								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
 									styleClass="btn btn-danger ion-close"
-									rendered="#{proveedorController.modificar}"
+									rendered="#{proveedorController.modificar and sessionMain.tienePermisoPaginaAccion('PROVEEDOR','ELIMINAR')}"
 									update=":formTableProveedor,:formReg,formGrowl:msgs1,:formBotonesHeader"
 									style="height:31px; padding:center"
 									action="#{proveedorController.eliminar()}">

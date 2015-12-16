@@ -28,32 +28,32 @@
 								</p:commandLink>
 								<p:commandLink id="buttonCrear" value="&#160; Nuevo Rol"
 									styleClass="btn btn-success ion-plus-round"
-									rendered="#{rolController.crear}" style="height:31px;">
+									rendered="#{rolController.crear and sessionMain.tienePermisoPaginaAccion('ROL','REGISTRAR')}" style="height:31px;">
 									<p:ajax update="formTableRoles,formReg,:formBotonesHeader"
 										listener="#{rolController.cambiarAspecto()}" />
 									<p:ajax
 										listener="#{rolController.resetearFitrosTabla('formTableRoles:dataTableRoles')}" />
 								</p:commandLink>
 								<p:commandLink id="buttonRegistrar"
-									value="&#160; #{label['button.register']}"
-									styleClass="btn btn-success ion-plus-round"
+									value="&#160; REGISTRAR"
+									styleClass="btn btn-success ion-checkmark"
 									style="height:31px; padding:center"
-									rendered="#{rolController.registrar}"
+									rendered="#{rolController.registrar }"
 									update="formReg,formTableRoles,formBotonesHeader,:formGrowl:msgs1"
 									action="#{rolController.registrarRol()}">
 								</p:commandLink>
 								<p:commandLink id="buttonModificar"
-									value="&#160; #{label['button.modify']}"
+									value="&#160; MODIFICAR"
 									update="formReg,formTableRoles,formBotonesHeader,formGrowl:msgs1"
 									styleClass="btn btn-primary ion-edit"
-									rendered="#{rolController.modificar}"
+									rendered="#{rolController.modificar and sessionMain.tienePermisoPaginaAccion('ROL','MODIFICAR')}"
 									style="height:31px; padding:center"
 									action="#{rolController.modificarRol()}">
 								</p:commandLink>
 								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
 									styleClass="btn btn-danger ion-close"
 									style="height:31px; padding:center"
-									rendered="#{rolController.modificar}"
+									rendered="#{rolController.modificar and sessionMain.tienePermisoPaginaAccion('ROL','ELIMINAR')}"
 									update=":formReg,:formTableRoles,formBotonesHeader,formGrowl:msgs1"
 									disabled="#{rolController.newRol.estado =='SU'}"
 									action="#{rolController.eliminarRol()}">
@@ -93,7 +93,7 @@
 														<label class="col-md-4 control-label">Nombre</label>
 														<div class="col-md-8">
 															<h:inputText value="#{rolController.newRol.nombre}"
-																required="true"
+																required="true" maxlength="24"
 																style=" color: #555555; background-image: none;"
 																styleClass="input-sm form-control"
 																disabled="#{rolController.newRol.estado =='SU'}">
@@ -105,7 +105,7 @@
 														<label class="col-md-4 control-label">Descripcion</label>
 														<div class="col-md-8">
 															<p:inputTextarea id="descripcionID" styleClass="form-control"
-																size="40" value="#{rolController.newRol.descripcion}"
+																size="40" value="#{rolController.newRol.descripcion}" maxlength="250"
 																required="true" requiredMessage="Requerido." rows="5">
 																<p:ajax event="change" />
 															</p:inputTextarea>

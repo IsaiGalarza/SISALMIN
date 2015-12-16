@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Size;
 
 import bo.com.qbit.webapp.model.Empresa;
@@ -23,7 +24,7 @@ import bo.com.qbit.webapp.validator.Validator;
  * 
  */
 @Entity
-@Table(name="roles", catalog="public")
+@Table(name="roles", catalog="public", uniqueConstraints = @UniqueConstraint(columnNames="nombre"))
 public class Roles extends Validator implements java.io.Serializable {
 
 	private static final long serialVersionUID = -2073567436499863322L;
@@ -33,7 +34,7 @@ public class Roles extends Validator implements java.io.Serializable {
 	@Column(name="id", unique=true, nullable=false)
 	private Integer id;
 	
-	@Column(name="nombre", unique=true, nullable=false, length=25)
+	@Column(name="nombre", nullable=false, length=25)
 	private String nombre;
 	
 	@Column(name="descripcion",  nullable=true, length=255)
@@ -114,12 +115,12 @@ public class Roles extends Validator implements java.io.Serializable {
 			facesContext.addMessage(null, m);
 			return false;
 		}
-		if(exist("Roles", "name", this.nombre)){
-			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
-					"nombre Rol ya existe!", nombre);
-			facesContext.addMessage(null, m);
-			return false;
-		}		
+//		if(exist("Roles", "name", this.nombre)){
+//			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
+//					"nombre Rol ya existe!", nombre);
+//			facesContext.addMessage(null, m);
+//			return false;
+//		}		
 		return true;
 	}
 

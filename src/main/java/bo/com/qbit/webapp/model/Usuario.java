@@ -193,12 +193,12 @@ public class Usuario extends Validator implements Serializable {
 			facesContext.addMessage(null, m);
 			return false;
 		}
-		if(exist("Usuario", "nombre", this.nombre)){
-			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
-					"nombre Usuario ya existe!", nombre);
-			facesContext.addMessage(null, m);
-			return false;
-		}
+//		if(existUsuario( this.login)){
+//			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
+//					"Usuario login ya existe!", nombre);
+//			facesContext.addMessage(null, m);
+//			return false;
+//		}
 //		if(isValidateEmail(email)){
 //			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
 //					"email no válido!", "Ej: email@dominio.com");

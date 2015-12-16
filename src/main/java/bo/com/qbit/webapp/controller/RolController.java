@@ -116,21 +116,29 @@ public class RolController implements Serializable {
 	}
 
 	public void registrarRol() {
+		if(newRol.getNombre().isEmpty() || newRol.getDescripcion().isEmpty() ){
+			FacesUtil.infoMessage("VALIDACION", "No pueden haber campos vacios.");
+			resetearFitrosTabla("formTableRoles:dataTableRoles");
+			return;
+		}
 		try {
 			newRol.setEstado(nombreEstado.equals("ACTIVO")?"AC":"IN");
 			newRol.setFechaRegistro(new Date());
 			newRol.setUsuarioRegistro(nombreUsuario);
-			if(!newRol.validate(facesContext, empresaLogin, gestionLogin)){
+			//validacion
+			if(rolesRepository.findRolByNombre(newRol.getNombre())!=null){
+				FacesUtil.infoMessage("VALIDACION", "Rol "+newRol.getNombre()+" ya existe.");
 				resetearFitrosTabla("formTableRoles:dataTableRoles");
 				return;
 			}
+			
 			rolRegistration.create(newRol);
 			FacesUtil.showDialog("Rol registrado "+newRol.getNombre());
 			resetearFitrosTabla("formTableRoles:dataTableRoles");//formTableRoles:dataTableRoles
 			loadDefault();
 		} catch (Exception e) {
 			log.error("registrarRoles error: "+e.getMessage());
-			FacesUtil.errorMessage("Error al registrar Rol");
+			//FacesUtil.errorMessage("Error al registrar Rol");
 		}
 	}
 

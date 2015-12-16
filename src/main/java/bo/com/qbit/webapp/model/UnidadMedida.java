@@ -38,6 +38,7 @@ public class UnidadMedida implements Serializable {
 		this.id = 0 ;
 		this.nombre = "";
 		this.estado= "AC";
+		this.descripcion = "";
 	}
 
 	@Override

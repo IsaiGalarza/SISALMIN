@@ -29,7 +29,7 @@
 								</p:commandLink>
 								<p:commandLink id="buttonCrear1" value="&#160; Nueva Area Trabajo"
 									styleClass="btn btn-success ion-plus-round"
-									rendered="#{detalleUnidadController.crear}"
+									rendered="#{detalleUnidadController.crear and sessionMain.tienePermisoPaginaAccion('AREA DE TRABAJO','REGISTRAR')}"
 									update=":formTableUnidad, :formBotonesHeader"
 									action="#{detalleUnidadController.cambiarAspecto()}"
 									style="height:31px;">
@@ -53,7 +53,7 @@
 
 								<p:commandLink id="buttonModificar" value="&#160; Modificar"
 									styleClass="btn btn-primary ion-edit"
-									rendered="#{detalleUnidadController.modificar=='true'}"
+									rendered="#{detalleUnidadController.modificar=='true' and sessionMain.tienePermisoPaginaAccion('AREA DE TRABAJO','MODIFICAR')}"
 									style="height:31px; padding:center"
 									update=":formTableUnidad, :formBotonesHeader"
 									action="#{detalleUnidadController.modificarDetalleUnidad()}">
@@ -61,7 +61,7 @@
 
 								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
 									styleClass="btn btn-danger ion-close"
-									rendered="#{detalleUnidadController.modificar=='true'}"
+									rendered="#{detalleUnidadController.modificar=='true' and sessionMain.tienePermisoPaginaAccion('AREA DE TRABAJO','ELIMINAR')}"
 									update=":formTableUnidad, :formBotonesHeader"
 									onclick="dlgEliminar.show()"
 									style="height:31px; padding:center">
@@ -222,7 +222,6 @@
 												selectionMode="single" rowKey="#{_DetalleUnidad.id}"
 												id="DetalleUnidadTable" var="_DetalleUnidad"
 												value="#{listaDetalleUnidad}"
-												rendered="#{not empty listaDetalleUnidad}"
 												emptyMessage="No se encontraron Registros.">
 
 												<p:ajax event="rowSelect"

@@ -21,6 +21,8 @@ import bo.com.qbit.webapp.model.Almacen;
 import bo.com.qbit.webapp.model.Empresa;
 import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.Usuario;
+import bo.com.qbit.webapp.model.security.Accion;
+import bo.com.qbit.webapp.model.security.Pagina;
 import bo.com.qbit.webapp.model.security.Permiso;
 import bo.com.qbit.webapp.model.security.Roles;
 import bo.com.qbit.webapp.service.UsuarioRegistration;
@@ -107,11 +109,26 @@ public class SessionMain implements Serializable {
 	}
 
 	/**
+	 * Verifica si la pagina tiene permiso de acceso
+	 * @param pagina
+	 * @return boolean
+	 */
+	public boolean tienePermisoPaginaAccion(String pagina,String accion){
+		for(Permiso p: listPermiso){
+			Accion accionAux = p.getDetallePagina().getAccion();
+			Pagina paginaAux = p.getDetallePagina().getPagina();
+			if(paginaAux.getNombre().equals(pagina) && accionAux.getNombre().equals(accion)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * cargar foto del usuario
 	 */
 	public void setImageUserSession() {
 		try{
-			System.out.println("----- setImageUserSession() --------");
 			if(getUsuarioLogin().getPesoFoto() == 0){
 				this.usuarioLogin.setFotoPerfil(toByteArrayUsingJava(getImageDefault().getStream()));
 				this.usuarioLogin.setPesoFoto(32);
@@ -197,21 +214,15 @@ public class SessionMain implements Serializable {
 	public void setUsuarioLogin(Usuario usuarioLogin) {
 		this.usuarioLogin = usuarioLogin;
 	}
-	
+
 	public void actualizarrUsuario(){
 		usuarioRegistration.update(usuarioLogin);
 	}
 
 	public Empresa getEmpresaLogin() {
 		if(empresaLogin == null){
-			String empresa= "";
 			try{
-				HttpSession request = (HttpSession) facesContext.getExternalContext().getSession(false);
-				empresa = request.getAttribute("empresa")!=null?request.getAttribute("empresa").toString():"";
-				if(! empresa.isEmpty()){
-					empresaLogin =  empresaRepository.findByRazonSocial(empresa);
-					System.out.println("getEmpresaLoggin() -> empresaLoggin : "+empresaLogin.getRazonSocial());
-				}
+				empresaLogin = empresaRepository.findById(1);
 			}catch(Exception e){
 				empresaLogin =  null;
 				log.error("getEmpresaLoggin() ERROR: "+e.getMessage());
@@ -220,8 +231,8 @@ public class SessionMain implements Serializable {
 		return empresaLogin;
 	}
 
-	public void setEmpresaLoggin(Empresa empresaLoggin) {
-		this.empresaLogin = empresaLoggin;
+	public void setEmpresaLogin(Empresa empresaLogin) {
+		this.empresaLogin = empresaLogin;
 	}
 
 	public StreamedContent getFotoPerfil() {

@@ -30,7 +30,7 @@
 								
 								<p:commandLink id="buttonCrear1" value="&#160; Nuevo Almacen"
 									styleClass="btn btn-success ion-plus-round"
-									rendered="#{almacenController.crear}"
+									rendered="#{almacenController.crear  and sessionMain.tienePermisoPaginaAccion('ALMACEN','REGISTRAR')}"
 									update=":formTableProveedor, :formBotonesHeader"
 									action="#{almacenController.cambiarAspecto()}"
 									style="height:31px;">
@@ -46,7 +46,7 @@
 
 								<p:commandLink id="buttonVerModificar" value="&#160; Modificar"
 									styleClass="btn btn-primary ion-edit"
-									rendered="#{almacenController.selectedAlmacen!=null and almacenController.crear=='true'}"
+									rendered="#{almacenController.selectedAlmacen!=null and almacenController.crear=='true' }"
 									style="height:31px; padding:center"
 									update=":formTableProveedor, :formBotonesHeader"
 									action="#{almacenController.cambiarAspectoModificar()}">
@@ -54,7 +54,7 @@
 
 								<p:commandLink id="buttonModificar" value="&#160; Modificar"
 									styleClass="btn btn-primary ion-edit"
-									rendered="#{almacenController.modificar=='true'}"
+									rendered="#{almacenController.modificar=='true'  and sessionMain.tienePermisoPaginaAccion('ALMACEN','MODIFICAR')}"
 									style="height:31px; padding:center"
 									update=":formTableProveedor, :formBotonesHeader"
 									action="#{almacenController.modificarAlmacen()}">
@@ -62,7 +62,7 @@
 
 								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
 									styleClass="btn btn-danger ion-close"
-									rendered="#{almacenController.modificar=='true'}"
+									rendered="#{almacenController.modificar=='true'  and sessionMain.tienePermisoPaginaAccion('ALMACEN','ELIMINAR')}"
 									update=":formTableProveedor, :formBotonesHeader"
 									oncomplete="PF('dlgEliminar').show();"
 									style="height:31px; padding:center">
@@ -295,7 +295,7 @@
 												selection="#{almacenController.selectedAlmacen}"
 												selectionMode="single" rowKey="#{_almacen.id}"
 												id="almacenTable" var="_almacen" value="#{listaAlmacen}"
-												rendered="#{not empty listaAlmacen}"
+												
 												emptyMessage="No se encontraron Registros.">
 
 												<p:ajax event="rowSelect"

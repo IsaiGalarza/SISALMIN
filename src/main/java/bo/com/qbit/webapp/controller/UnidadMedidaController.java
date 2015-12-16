@@ -20,6 +20,7 @@ import org.richfaces.cdi.push.Push;
 import bo.com.qbit.webapp.data.UnidadMedidaRepository;
 import bo.com.qbit.webapp.model.UnidadMedida;
 import bo.com.qbit.webapp.service.UnidadMedidaRegistration;
+import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.SessionMain;
 
 @Named(value = "unidadMedidaController")
@@ -150,6 +151,10 @@ public class UnidadMedidaController implements Serializable {
 	public void registrarUnidadMedida() {
 		try {
 			System.out.println("Ingreso a registrarUnidadMedida: ");
+			if(newUnidadMedida.getNombre().isEmpty() || newUnidadMedida.getDescripcion().isEmpty()){
+				FacesUtil.infoMessage("VALIDACION","No puede haber campos vacios");
+				return;
+			}
 			unidadMedidaRegistration.register(newUnidadMedida);
 			
 			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,

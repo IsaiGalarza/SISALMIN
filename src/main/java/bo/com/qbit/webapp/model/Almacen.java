@@ -51,8 +51,13 @@ public class Almacen implements Serializable {
 
 	public Almacen() {
 		this.id = 0 ;
-		encargado= new Usuario();
-		estado= "AC";
+		this.nombre ="";
+		this.codigo = "";
+		this.telefono="";
+		this.direccion="";
+		this.encargado= new Usuario();
+		this.estado= "AC";
+		this.tipoAlmacen="ALMACEN CENTRAL";
 	}
 
 	@Override

@@ -346,7 +346,7 @@ public class OrdenSalidaController implements Serializable {
 				fachadaOrdenSalida.actualizarStock(prod, d.getCantidadSolicitada(),fechaActual,d.getPrecioUnitario());
 				//3
 				fachadaOrdenSalida.actualizarKardexProducto( detalleUnidad.getNombre(),gestionSesion, selectedOrdenSalida,prod,fechaActual, d.getCantidadSolicitada(),d.getPrecioUnitario(),usuarioSession);
-				total = total + d.getPrecioUnitario();
+				total = total + d.getTotal();
 			}
 			//cactualizar OrdenSalida
 			selectedOrdenSalida.setTotalImporte(total);

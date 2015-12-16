@@ -9,7 +9,7 @@
 	template="/WEB-INF/templates/template_main.xhtml">
 	<ui:define name="head">
 		<title>Permiso</title>
-		
+
 		<f:event listener="#{permisoController.initConversation}"
 			type="preRenderView"></f:event>
 	</ui:define>
@@ -28,8 +28,9 @@
 										styleClass="btn btn-primary icon-refresh" update="formTree"
 										action="#{permisoController.limpiarPermisos()}">
 									</p:commandLink>
-									<p:commandLink id="buttonGuardar" value="&#160; Guardar"
+									<p:commandLink id="buttonGuardar" value="&#160; Registrar"
 										style="height:31px; padding:center"
+										rendered="#{sessionMain.tienePermisoPaginaAccion('PERMISO','REGISTRAR')}"
 										styleClass="btn btn-success ion-checkmark"
 										update="formGrowl:msgs1"
 										action="#{permisoController.registrarPermisos()}">
@@ -52,72 +53,70 @@
 			</section>
 			<section class="main-content">
 				<section class="main-content">
-				
-				
-				<h:form id="formTree">
-				
-				
-				
-					<div class="row">
-						<div class="col-md-4">
-							<div class="panel panel-default">
-								<div class="panel-heading">
-									<h3 class="panel-title">Roles</h3>
-								</div>
-								<div class="panel-body">
-									<!-- start here register -->
-									<div class="row">
-										<div class="col-sm-12">
-											<div class="form-group">
-												<div class="col-md-6">Seleccione un Rol</div>
-												<div class="col-md-6">
-													
+
+					<h:form id="formTree">
+
+						<div class="row">
+							<div class="col-md-4">
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h3 class="panel-title">Roles</h3>
+									</div>
+									<div class="panel-body">
+										<!-- start here register -->
+										<div class="row">
+											<div class="col-sm-12">
+												<div class="form-group">
+													<div class="col-md-5" style="padding-right: 1px;">Seleccione un Rol</div>
+													<div class="col-md-7" style="padding-left: 1px;">
+
 														<h:selectOneMenu id="roles" styleClass="form-control"
 															immediate="true" value="#{permisoController.nombreRol}">
 															<!-- 	<f:ajax render=":formTablePermiso" /> -->
 															<f:selectItems value="#{permisoController.listRol}" />
 															<p:ajax update="formTree:docs,formTree:descripcionID" />
 														</h:selectOneMenu>
-													
+
+													</div>
 												</div>
-											</div>
-											<br />
-											<div class="form-group ">
-												<label class="col-md-6 control-label">Descripcion</label>
-												<div class="col-md-6">
-													<p:inputTextarea id="descripcionID"
-														styleClass="form-control" size="40" disabled="true"
-														value="#{permisoController.selectedRol.descripcion}"
-														required="true" requiredMessage="Requerido." rows="5">
-														<p:ajax event="change" />
-													</p:inputTextarea>
+												<br />
+												<div class="form-group ">
+													<label class="col-md-5" style="padding-right: 1px;">Descripcion</label>
+													<div class="col-md-7" style="padding-left: 1px;">
+														<p:inputTextarea id="descripcionID"
+															styleClass="form-control" size="70" disabled="true"
+															value="#{permisoController.selectedRol.descripcion}"
+															required="true" requiredMessage="Requerido." rows="10">
+															<p:ajax event="change" />
+														</p:inputTextarea>
+													</div>
 												</div>
 											</div>
 										</div>
+										<!-- end here register -->
 									</div>
-									<!-- end here register -->
 								</div>
 							</div>
-						</div>
-						<div class="col-md-8">
-							<div class="panel panel-default">
-								<div class="panel-heading">
-									<h3 class="panel-title">Permisos de Usuarios</h3>
-								</div>
-								<div class="panel-body">
-									<!-- start here register -->
-									<div class="row">
-										
+							<div class="col-md-8">
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h3 class="panel-title">Permisos de Usuarios</h3>
+									</div>
+									<div class="panel-body">
+										<!-- start here register -->
+										<div class="row">
+
 											<p:tree id="docs" value="#{permisoController.root}"
 												var="node" selectionMode="checkbox"
 												style="font-size: 13px !important; padding: 0 0 0 16px !important; width: 100%; font-family: sans-serif !important;"
 												selection="#{permisoController.selectedNodes2}">
 												<p:ajax event="select" update="formTree"
 													listener="#{permisoController.onNodeSelect}" />
-												
-												<p:ajax event="unselect" update="formTree" listener="#{permisoController.onNodeUnselect}" />
-												
-												<p:treeNode icon="ui-icon-star" >
+
+												<p:ajax event="unselect" update="formTree"
+													listener="#{permisoController.onNodeUnselect}" />
+
+												<p:treeNode icon="ui-icon-star">
 													<h:outputText value="MODULO #{node.nombre}" />
 												</p:treeNode>
 												<p:treeNode type="1" icon="ui-icon-newwin">
@@ -134,17 +133,14 @@
 												</p:treeNode>
 											</p:tree>
 
-										
+										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-					
-					
+
 					</h:form>
-					
-					
+
 				</section>
 			</section>
 		</div>
