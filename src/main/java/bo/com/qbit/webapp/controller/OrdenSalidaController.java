@@ -233,6 +233,14 @@ public class OrdenSalidaController implements Serializable {
 	}
 
 	public void registrarOrdenSalida() {
+		if( selectedAlmacen.getId()==0 || selectedDetalleUnidad.getId()==0 || selectedFuncionario.getId()==0 || newOrdenSalida.getNumeroPedidoMateriales().isEmpty() || selectedProyecto.getId()==0 || selectedAlmacen.getId()==0){
+			FacesUtil.infoMessage("ADVERTENCIA", "No puede haber campos vacios.");
+			return;
+		}
+		if(listaDetalleOrdenSalida.size()==0 ){
+			FacesUtil.infoMessage("ADVERTENCIA", "Debe Agregar items..");
+			return;
+		}
 		try {
 			Date fechaActual = new Date();
 			calcularTotal();

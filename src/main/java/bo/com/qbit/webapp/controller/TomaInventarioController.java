@@ -264,7 +264,11 @@ public class TomaInventarioController implements Serializable {
 
 	public void registrarTomaInventario() {
 		//validaciones
-		if(selectedProveedor.getId()==0 || selectedAlmacen.getId()==0 || newTomaInventario.getNombreInventariador().isEmpty() || newTomaInventario.getNombreResponsable().isEmpty() || newTomaInventario.getHoja().isEmpty()){
+		if(selectedProveedor.getId()==0 && newTomaInventario.getTipo().equals("INICIAL")){
+			FacesUtil.infoMessage("VALIDACION", "No pueden haber campos vacios");
+			return;
+		}
+		if( selectedAlmacen.getId()==0 || newTomaInventario.getNombreInventariador().isEmpty() || newTomaInventario.getNombreResponsable().isEmpty() || newTomaInventario.getHoja().isEmpty()){
 			FacesUtil.infoMessage("VALIDACION", "No pueden haber campos vacios");
 			return;
 		}
@@ -480,23 +484,15 @@ public class TomaInventarioController implements Serializable {
 					baja.setStockAnterior(d.getCantidadRegistrada());
 					baja.setUsuarioRegistro(usuarioSession);
 
-					//actualizar en AlmacenProducto
-					fachadaOrdenSalida.actualizarStock(d.getProducto(), d.getCantidadVerificada(), fechaActual, -1d);//-1 para que no actualize el precio
 					//actualizar en DetalleProducto
 					if(d.getCantidadRegistrada() - d.getCantidadVerificada() > 0){//si faltaron
+						//actualizar en AlmacenProducto
+						fachadaOrdenSalida.actualizarStock(d.getProducto(), d.getCantidadVerificada(), fechaActual, -1d);//-1 para que no actualize el precio
 						fachadaOrdenSalida.actualizarDetalleProducto(selectedTomaInventario.getAlmacen(), d.getProducto(), d.getDiferencia());
+						//actualizar en kardex(NOSE) como una salida (como baja de producto)
+						//fachadaOrdenSalida.actualizarKardexProducto("Por Baja de Producto", gestionSesion, selectedOrdenSalida, prod, fechaActual, cantidad, precioUnitario, usuarioSession);
 						bajaProductoRegistration.register(baja);
-						//actualizar en kardex(NOSE) como una salida
-					}else if (d.getCantidadRegistrada() - d.getCantidadVerificada() < 0) {//si sobraron
-						//falta establecer el precio y correlativoTransaccion
-						//precio promedio
-						double precioPromedio = almacenProductoRepository.findPrecioPromedioByProducto(d.getProducto());
-						String correlativoTransaccion = "TI"+new Date();
-						fachadaOrdenIngreso.cargarDetalleProducto(fechaActual, selectedTomaInventario.getAlmacen(), d.getProducto(), d.getDiferencia(), precioPromedio, fechaActual, correlativoTransaccion, usuarioSession);
-						bajaProductoRegistration.register(baja);
-						//actualizar en kardex(NOSE) como un ingreso
-					}else{
-						//aqui
+						
 					}
 				}
 				FacesUtil.infoMessage("INFORMACION", "Toma Inventario "+selectedTomaInventario.getId()+" Conciliada.");

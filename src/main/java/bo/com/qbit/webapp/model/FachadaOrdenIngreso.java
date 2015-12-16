@@ -28,6 +28,25 @@ public class FachadaOrdenIngreso implements Serializable{
 	private @Inject DetalleProductoRegistration detalleProductoRegistration;
 	private @Inject AlmacenProductoRegistration almacenProductoRegistration;
 	private @Inject KardexProductoRegistration kardexProductoRegistration;
+	
+	public void actualizarStockExistente(Almacen almacen,Producto prod ,double newStock)  {
+		try{
+			//0 . verificar si existe el producto en el almacen
+			AlmacenProducto almProd =  almacenProductoRepository.findByAlmacenProducto(almacen,prod);
+			System.out.println("aqui ");
+			if(almProd != null){
+				// 1 .  si existe el producto
+				double oldStock = almProd.getStock();
+				almProd.setStock(oldStock + newStock);
+				almacenProductoRegistration.updated(almProd);
+			}
+			
+		}catch(Exception e){
+
+			System.out.println("ERROR actualizarStock() "+e.getMessage());
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * registro en la tabla almacen_producto, actualiza el stock y el precio(promedio agrupando los productos)

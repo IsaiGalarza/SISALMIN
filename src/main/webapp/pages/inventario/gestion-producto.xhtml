@@ -337,12 +337,12 @@
 														<f:convertNumber pattern="#,##0.00" />
 													</h:outputText>
 												</p:column>
-												<p:column headerText="Tipo" filterBy="#{_var.tipoProducto}"
+												<p:column headerText="Tipo" filterBy="#{_var.tipoProducto}"  style="text-align:center;"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.tipoProducto}" />
 												</p:column>
 
-												<p:column headerText="Unidad Medida"
+												<p:column headerText="Unidad Medida"  style="text-align:center;"
 													filterBy="#{_var.unidadMedidas.nombre}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.unidadMedidas.nombre}" />

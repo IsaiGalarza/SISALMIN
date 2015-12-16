@@ -266,6 +266,14 @@ public class OrdenTraspasoController implements Serializable {
 	}
 
 	public void registrarOrdenTraspaso() {
+		if( selectedAlmacen.getId()==0 || selectedFuncionario.getId()==0  ||  selectedProyecto.getId()==0 ){
+			FacesUtil.infoMessage("ADVERTENCIA", "No puede haber campos vacios.");
+			return;
+		}
+		if(listaDetalleOrdenTraspaso.size()==0 ){
+			FacesUtil.infoMessage("ADVERTENCIA", "Debe Agregar items..");
+			return;
+		}
 		try {
 			//if(validarStock()){//valida el stock de los productos
 			//	FacesUtil.showDialog("dlgValidacionStock");
@@ -489,12 +497,12 @@ public class OrdenTraspasoController implements Serializable {
 			selectedOrdenTraspaso.setFechaAprobacion(fechaActual);
 			double total = 0;
 			Proveedor proveedor = null;
-			
-		//	newOrdenTraspaso.setAlmacenOrigen(selectedAlmacenOrigen);//selectedAlmacen; -> almacen destino
-			
+
+			//	newOrdenTraspaso.setAlmacenOrigen(selectedAlmacenOrigen);//selectedAlmacen; -> almacen destino
+
 			//actualizar stock de AlmacenProducto
 			listaDetalleOrdenTraspaso = detalleOrdenTraspasoRepository.findAllByOrdenTraspaso(selectedOrdenTraspaso);
-			
+
 			Almacen almOrig = selectedOrdenTraspaso.getAlmacenOrigen();
 			Almacen almDest = selectedOrdenTraspaso.getAlmacenDestino();
 			for(DetalleOrdenTraspaso d: listaDetalleOrdenTraspaso){
@@ -512,10 +520,12 @@ public class OrdenTraspasoController implements Serializable {
 				actualizarStockAlmacenDestino(proveedor,prod,almDest, d.getCantidadSolicitada(),fechaActual,d.getPrecioUnitario());
 				//4.-
 				actualizarKardexProducto(almOrig,almDest,prod, fechaActual, d.getCantidadSolicitada(),d.getPrecioUnitario());
-				
+
 				//agregar detalleProductos al almacen destino
-				//cargarDetalleProducto(fechaActual, almDest, prod, d.getCantidadSolicitada(), d.getPrecioUnitario(), fechaActual, "OT"+fechaActual, usuarioSession);
-				
+				if(totalCantidaEntregada>0){
+					cargarDetalleProducto(fechaActual, almDest, prod, d.getCantidadSolicitada(), d.getPrecioUnitario(), d.getFechaRegistro(), selectedOrdenTraspaso.getCorrelativo(), usuarioSession);
+				}
+
 				total = total + d.getPrecioUnitario();
 			}
 			//cactualizar ordenTraspaso
@@ -527,28 +537,29 @@ public class OrdenTraspasoController implements Serializable {
 			FacesUtil.errorMessage("Proceso Incorrecto.");
 		}
 	}
-	
+
 	public void cargarDetalleProducto(Date fechaActual,Almacen almacen,Producto producto,double cantidad, double precio, Date fecha, String correlativoTransaccion,String usuarioSession ) {
 		try{
-		DetalleProducto detalleProducto = new DetalleProducto();
-		detalleProducto.setCodigo("OI"+correlativoTransaccion+fecha.toString());
-		detalleProducto.setAlmacen(almacen);
-		detalleProducto.setEstado("AC");
-		detalleProducto.setPrecio(precio);
-		detalleProducto.setStockActual(cantidad);
-		detalleProducto.setStockInicial(cantidad);
-		detalleProducto.setCorrelativoTransaccion(correlativoTransaccion);
-		detalleProducto.setFecha(fecha);
-		detalleProducto.setFechaRegistro(fechaActual);
-		detalleProducto.setProducto(producto);
-		detalleProducto.setUsuarioRegistro(usuarioSession);
-		detalleProductoRegistration.register(detalleProducto);
+			DetalleProducto detalleProducto = new DetalleProducto();
+			detalleProducto.setCodigo("OT"+correlativoTransaccion+fecha.toString());
+			detalleProducto.setAlmacen(almacen);
+			detalleProducto.setEstado("AC");
+			detalleProducto.setPrecio(precio);
+			detalleProducto.setStockActual(cantidad);
+			detalleProducto.setStockInicial(cantidad);
+			detalleProducto.setCorrelativoTransaccion(correlativoTransaccion);
+			detalleProducto.setFecha(fecha);
+			detalleProducto.setFechaRegistro(fechaActual);
+			detalleProducto.setProducto(producto);
+			detalleProducto.setUsuarioRegistro(usuarioSession);
+			detalleProductoRegistration.register(detalleProducto);
 		}catch(Exception e){
 			System.out.println("ERROR cargarDetalleProducto() "+e.getMessage());
 			e.printStackTrace();
 		}
 	}
 
+	private double totalCantidaEntregada = 0;
 	/**
 	 * Actualiza el stock, verifica existencias de acuerdo al metodo PEPS
 	 * @param almacen De que almacen se sacara los productos
@@ -557,6 +568,7 @@ public class OrdenTraspasoController implements Serializable {
 	 */
 	private boolean actualizarDetalleProducto(Almacen almacen,DetalleOrdenTraspaso detalle){
 		try{
+			totalCantidaEntregada = 0;
 			Producto producto = detalle.getProducto();
 			double cantidadAux = detalle.getCantidadSolicitada();
 			double cantidadSolicitada = detalle.getCantidadSolicitada();// 15
@@ -590,6 +602,7 @@ public class OrdenTraspasoController implements Serializable {
 							detalle.setTotal(precio*cantidadRestada);
 							detalleOrdenTraspasoRegistration.register(detalle);
 						}
+						totalCantidaEntregada = totalCantidaEntregada + cantidadRestada;
 						cantidad = cantidad + 1;
 					}
 				}
@@ -1131,7 +1144,7 @@ public class OrdenTraspasoController implements Serializable {
 	public void setVerExport(boolean verExport) {
 		this.verExport = verExport;
 	}
-	
+
 	public static void main(String[] args){
 		System.out.println("ingreso");
 		String[] arg = {"1","2","3","4","5","6"};

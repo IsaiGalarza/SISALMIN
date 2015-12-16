@@ -82,6 +82,7 @@ public class OrdenIngreso implements Serializable{
 		this.proveedor=new Proveedor();
 		this.gestion = new Gestion();
 		this.observacion = "Ninguna";
+		this.numeroDocumento = "";
 	}
 
 	public Integer getId() {

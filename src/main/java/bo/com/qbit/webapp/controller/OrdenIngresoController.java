@@ -282,8 +282,12 @@ public class OrdenIngresoController implements Serializable {
 	}
 
 	public void registrarOrdenIngreso() {
-		if(selectedAlmacen.getId()==0 || selectedProveedor.getId()==0){
+		if( selectedAlmacen.getId()==0 || selectedProveedor.getId()==0 || newOrdenIngreso.getNumeroDocumento().isEmpty()){
 			FacesUtil.infoMessage("ADVERTENCIA", "No puede haber campos vacios.");
+			return;
+		}
+		if(listaDetalleOrdenIngreso.size()==0 ){
+			FacesUtil.infoMessage("ADVERTENCIA", "Debe Agregar items..");
 			return;
 		}
 		try {

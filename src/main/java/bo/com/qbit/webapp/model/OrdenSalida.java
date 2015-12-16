@@ -77,6 +77,7 @@ public class OrdenSalida implements Serializable{
 		this.funcionario = new Funcionario();
 		this.setProyecto(new Proyecto());
 		this.almacen = new Almacen();
+		this.numeroPedidoMateriales = "";
 	}
 
 	public Integer getId() {

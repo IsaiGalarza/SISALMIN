@@ -153,7 +153,7 @@
 												</p:column>
 
 												<p:column width="15%" headerText="Nro. Solicitud"
-													filterBy="#{_var.numeroTransaccion}"
+													filterBy="#{_var.numeroTransaccion}"  style="text-align:center;"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.numeroTransaccion}" />
 												</p:column>
@@ -164,33 +164,33 @@
 													<h:outputText value="#{_var.unidadSolicitante}" />
 												</p:column>
 
-												<p:column width="20%" headerText="Nombre"
+												<p:column width="20%" headerText="Nombre" 
 													filterBy="#{_var.producto.nombre}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.producto.nombre}" />
 												</p:column>
 
 												<p:column width="8%" headerText="Precio"
-													filterBy="#{_var.precioUnitario}"
+													filterBy="#{_var.precioUnitario}"  style="text-align:center;"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.precioUnitario}">
 														<f:convertNumber pattern="#,##0.00" />
 													</h:outputText>
 												</p:column>
 
-												<p:column width="8%" headerText="Entrada"
+												<p:column width="8%" headerText="Entrada"  style="text-align:center;"
 													filterBy="#{_var.stock}" filterStyle="width: 100%;"
 													filterMatchMode="contains">
 													<h:outputText value="#{_var.stock}" />
 												</p:column>
 
 												<p:column headerText="Salida" width="8%"
-													filterBy="#{_var.stockActual}"
+													filterBy="#{_var.stockActual}"  style="text-align:center;"
 													filterStyle="width: 100%; " filterMatchMode="contains">
 													<h:outputText value="#{_var.stockActual}" />
 												</p:column>
 
-												<p:column headerText="Saldo" width="8%"
+												<p:column headerText="Saldo" width="8%"  style="text-align:center;"
 													filterBy="#{_var.stockAnterior}" filterStyle="width: 100%; "
 													filterMatchMode="contains">
 													<h:outputText value="#{_var.stockAnterior}" />
