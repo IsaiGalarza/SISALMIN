@@ -357,7 +357,8 @@
 														</p:column>
 
 														<p:column headerText="Unidad Medida" width="10%">
-															<h:outputText value="#{_var.producto.unidadMedidas.nombre}" />
+															<h:outputText
+																value="#{_var.producto.unidadMedidas.nombre}" />
 														</p:column>
 
 														<p:column headerText="Cantidad" width="10%">
@@ -616,7 +617,7 @@
 								Solicitada</label>
 							<div class="col-sm-9">
 								<p:inputText id="cantidadID" required="true"
-									requiredMessage="Cantidad Requerido."
+									requiredMessage="Cantidad Requerido." onkeypress="return validateOnlyNumber(event)"
 									value="#{ordenSalidaController.selectedDetalleOrdenSalida.cantidadSolicitada}"
 									size="40">
 									<p:ajax event="change" update="totalID"
@@ -661,19 +662,19 @@
 								<div class="col-md-4">
 									<p:commandLink value="&#160; Aceptar"
 										styleClass="btn btn-success ion-checkmark btn-block"
-										onclick="PF('dlgProducto').hide();"
+										
 										rendered="#{ ! ordenSalidaController.editarOrdenSalida}">
 										<p:ajax
-											update="formGrowl:msgs1,formTableOrdenSalida:itemsTable1,formTableOrdenSalida:editarDetalleOrdenIngreso,formTableOrdenSalida:eliminarDetalleOrdenIngreso"
+											update="dialog100,formGrowl:msgs1,formTableOrdenSalida:itemsTable1,formTableOrdenSalida:editarDetalleOrdenIngreso,formTableOrdenSalida:eliminarDetalleOrdenIngreso"
 											listener="#{ordenSalidaController.agregarDetalleOrdenSalida()}" />
 									</p:commandLink>
 
 									<p:commandLink value="&#160; Modificar"
 										styleClass="btn btn-success ion-checkmark btn-block"
-										onclick="PF('dlgProducto').hide();"
+										
 										rendered="#{ordenSalidaController.editarOrdenSalida}">
 										<p:ajax
-											update="formTableOrdenSalida:itemsTable1,formTableOrdenSalida:editarDetalleOrdenIngreso,formTableOrdenSalida:eliminarDetalleOrdenIngreso"
+											update="dialog100,formTableOrdenSalida:itemsTable1,formTableOrdenSalida:editarDetalleOrdenIngreso,formTableOrdenSalida:eliminarDetalleOrdenIngreso"
 											listener="#{ordenSalidaController.modificarDetalleOrdenSalida()}" />
 									</p:commandLink>
 								</div>
@@ -751,7 +752,8 @@
 			position="center" width="500px">
 			<div class="row">
 				<div class="form-group">
-					<div class="col-md-12">El Almacen seleccionado no tiene Existencias</div>
+					<div class="col-md-12">El Almacen seleccionado no tiene
+						Existencias</div>
 				</div>
 			</div>
 			<br />
@@ -763,6 +765,33 @@
 				</div>
 			</div>
 
+		</p:dialog>
+
+
+		<p:dialog header="VALIDACION DE EXISTENCIAS DE ALMACEN"
+			widgetVar="dlgValidacionExistenciasAlmacen" 
+			visible="#{not empty facesContext.maximumSeverity}" resizable="false"
+			position="center" width="50%">
+			<h:form id="dialog100">
+				<div class="row">
+					<div class="form-group">
+						<div class="col-md-12">#{ordenSalidaController.textDialogExistencias}</div>
+					</div>
+				</div>
+				<br />
+				<div class="row">
+					<div class="form-group">
+						<div class="col-md-4"></div>
+						<div class="col-md-4"></div>
+						<div class="col-md-4">
+							<p:commandLink value="&#160; ACEPTAR"
+								styleClass="btn btn-success ion-checkmark btn-block"
+								onclick="PF('dlgValidacionExistenciasAlmacen').hide();">
+							</p:commandLink>
+						</div>
+					</div>
+				</div>
+			</h:form>
 		</p:dialog>
 
 

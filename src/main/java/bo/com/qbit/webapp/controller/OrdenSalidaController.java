@@ -343,17 +343,18 @@ public class OrdenSalidaController implements Serializable {
 				Producto prod = d.getProducto();
 				double cantidadSolicitada = d.getCantidadSolicitada();
 				//1.- Actualizar detalle producto (PEPS) y tambien actualizar precio en detalleOrdenIngreso
-				if( ! fachadaOrdenSalida.actualizarDetalleProductoByOrdenSalida(almacenOrigen,d)){
+				if(  fachadaOrdenSalida.actualizarDetalleProductoByOrdenSalida(almacenOrigen,d)){
 					//mostrar mensaje
-					FacesUtil.showDialog("dlgAlmacenSinExistencias");
-					initNewOrdenSalida();
-					return ; //no se econtro stock disponible
+					//FacesUtil.showDialog("dlgAlmacenSinExistencias");
+					//initNewOrdenSalida();
+					//return ; //no se econtro stock disponible
+
+					//2
+					fachadaOrdenSalida.actualizarStock(almacenOrigen,prod,cantidadSolicitada);
+					//3
+					fachadaOrdenSalida.actualizarKardexProducto( detalleUnidad.getNombre(),gestionSesion, selectedOrdenSalida,prod,fechaActual, d.getCantidadSolicitada(),d.getPrecioUnitario(),usuarioSession);
+					total = total + d.getTotal();
 				}
-				//2
-				fachadaOrdenSalida.actualizarStock(almacenOrigen,prod,cantidadSolicitada);
-				//3
-				fachadaOrdenSalida.actualizarKardexProducto( detalleUnidad.getNombre(),gestionSesion, selectedOrdenSalida,prod,fechaActual, d.getCantidadSolicitada(),d.getPrecioUnitario(),usuarioSession);
-				total = total + d.getTotal();
 			}
 			//cactualizar OrdenSalida
 			selectedOrdenSalida.setTotalImporte(total);
@@ -418,15 +419,47 @@ public class OrdenSalidaController implements Serializable {
 		editarOrdenSalida = false;
 	}
 
+	private String textDialogExistencias = "";
+
+
+	private double cantidadExistenciasByProductoAlmacen(Almacen almacen,Producto producto){
+		double cantidad = 0;
+		List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almacen,producto);
+		for(DetalleProducto detalle:listDetalleProducto){
+			cantidad = cantidad + detalle.getStockActual();
+		}
+		return cantidad;
+	}
+
 	public void agregarDetalleOrdenSalida(){
+		//verificar que seleccione el almacen
+		if(selectedAlmacen.getId()==0){
+			FacesUtil.infoMessage("VALIDACION", "Antes debe seleccionar el almacen");
+			return;
+		}
+		if(selectedProducto.getId()==0){
+			FacesUtil.infoMessage("VALIDACION", "Seleccione un producto");
+			//FacesUtil.hideDialog("dlgProducto");//ocultar dialog
+			return;
+		}
 		//verificar si hay stock del producto
-//		List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoOrderByFecha(selectedProducto);
-//		if( listDetalleProducto.size()==0 ){
-//			System.out.println("No HAY");
-//			FacesUtil.infoMessage("VALIDACION", selectedAlmacen.getNombre()+" sin existencias");
-//			return;
-//		//	return;
-//		}
+		double cantidad =  cantidadExistenciasByProductoAlmacen(selectedAlmacen,selectedProducto);
+		if( cantidad==0 ){ 
+			textDialogExistencias = "El almacen "+selectedAlmacen.getNombre()+" no tiene existencias del producto "+selectedProducto.getNombre();
+			//ocultar dialgo
+			FacesUtil.hideDialog("dlgProducto");//ocultar dialog
+			//abrir dialog
+			FacesUtil.showDialog("dlgValidacionExistenciasAlmacen");
+			return;
+		}else if(cantidad < selectedDetalleOrdenSalida.getCantidadSolicitada()){
+			textDialogExistencias = "El almacen "+selectedAlmacen.getNombre()+" solo tiene "+cantidad+" existencias del producto "+selectedProducto.getNombre();
+			//selectedDetalleOrdenSalida.setCantidadSolicitada(cantidad);
+			//ocultar dialgo
+			FacesUtil.hideDialog("dlgProducto");//ocultar dialog
+			//abrir dialog
+			FacesUtil.showDialog("dlgValidacionExistenciasAlmacen");
+			return;
+		}
 
 		System.out.println("agregarDetalleOrdenIngreso ");
 		selectedDetalleOrdenSalida.setProducto(selectedProducto);
@@ -435,9 +468,39 @@ public class OrdenSalidaController implements Serializable {
 		selectedDetalleOrdenSalida = new DetalleOrdenSalida();
 		FacesUtil.resetDataTable("formTableOrdenSalida:itemsTable1");
 		verButtonDetalle = true;
+		FacesUtil.hideDialog("dlgProducto");//ocultar dialog
 	}
 
 	public void modificarDetalleOrdenSalida(){
+		//verificar que seleccione el almacen
+		if(selectedAlmacen.getId()==0){
+			FacesUtil.infoMessage("VALIDACION", "Antes debe seleccionar el almacen");
+			return;
+		}
+		if(selectedProducto.getId()==0){
+			FacesUtil.infoMessage("VALIDACION", "Seleccione un producto");
+			//FacesUtil.hideDialog("dlgProducto");//ocultar dialog
+			return;
+		}
+		//verificar si hay stock del producto
+		double cantidad =  cantidadExistenciasByProductoAlmacen(selectedAlmacen,selectedProducto);
+		if( cantidad==0 ){ 
+			textDialogExistencias = "El almacen "+selectedAlmacen.getNombre()+" no tiene existencias del producto "+selectedProducto.getNombre();
+			//ocultar dialgo
+			FacesUtil.hideDialog("dlgProducto");//ocultar dialog
+			//abrir dialog
+			FacesUtil.showDialog("dlgValidacionExistenciasAlmacen");
+			return;
+		}else if(cantidad < selectedDetalleOrdenSalida.getCantidadSolicitada()){
+			textDialogExistencias = "El almacen "+selectedAlmacen.getNombre()+" solo tiene "+cantidad+" existencias del producto "+selectedProducto.getNombre();
+			//selectedDetalleOrdenSalida.setCantidadSolicitada(cantidad);
+			//ocultar dialgo
+			FacesUtil.hideDialog("dlgProducto");//ocultar dialog
+			//abrir dialog
+			FacesUtil.showDialog("dlgValidacionExistenciasAlmacen");
+			return;
+		}
+
 		System.out.println("modificarDetalleOrdenSalida ");
 		for(DetalleOrdenSalida d: listaDetalleOrdenSalida){
 			if(d.equals(selectedDetalleOrdenSalida)){
@@ -449,6 +512,7 @@ public class OrdenSalidaController implements Serializable {
 		FacesUtil.resetDataTable("formTableOrdenSalida:itemsTable1");
 		verButtonDetalle = true;
 		editarOrdenSalida = false;
+		FacesUtil.hideDialog("dlgProducto");//ocultar dialog
 	}
 
 	//calcular totales
@@ -542,7 +606,7 @@ public class OrdenSalidaController implements Serializable {
 	private  boolean verificarExistencias(Producto producto, double cantidad){
 		List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoOrderByFecha(selectedProducto);
 		if(listDetalleProducto.size()>0){
-			
+
 		}
 		return true;
 	}
@@ -789,6 +853,14 @@ public class OrdenSalidaController implements Serializable {
 
 	public void setVerReport(boolean verReport) {
 		this.verReport = verReport;
+	}
+
+	public String getTextDialogExistencias() {
+		return textDialogExistencias;
+	}
+
+	public void setTextDialogExistencias(String textDialogExistencias) {
+		this.textDialogExistencias = textDialogExistencias;
 	}
 
 }
