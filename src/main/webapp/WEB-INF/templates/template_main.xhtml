@@ -318,19 +318,19 @@
 
 					<ui:insert name="page_active_reporte">
 						<li
-							class="#{(view.viewId.equals('/pages/reportes/lista_item.xhtml')) ? 'active' : (view.viewId.equals('/pages/reportes/report_total_proyecto.xhtml')) ? 'active' :(view.viewId.equals('/pages/reportes/report_total_unidad_solicitante.xhtml')) ? 'active' :'inactive'}">
+							class="#{(view.viewId.equals('/pages/reportes/lista_item.xhtml')) ? 'active' : (view.viewId.equals('/pages/reportes/report_total_proyecto.xhtml')) ? 'active' :(view.viewId.equals('/pages/reportes/report_unidad_solicitante.xhtml')) ? 'active' :'inactive'}">
 							<a href="#"><i class="icon-bar-chart"></i><span
 								class="sidebar-text">Reporte</span></a>
 							<ul class="nav nav-second-level">
 
 								<li
-									class="#{(view.viewId.equals('/pages/reportes/lista_item.xhtml')) ? 'active' :(view.viewId.equals('/pages/reportes/report_total_proyecto.xhtml')) ? 'active' :(view.viewId.equals('/pages/reportes/report_total_unidad_solicitante.xhtml')) ? 'active' :'inactive'}"><a
+									class="#{(view.viewId.equals('/pages/reportes/lista_item.xhtml')) ? 'active' :(view.viewId.equals('/pages/reportes/report_total_proyecto.xhtml')) ? 'active' :(view.viewId.equals('/pages/reportes/report_unidad_solicitante.xhtml')) ? 'active' :'inactive'}"><a
 									href="#{request.contextPath}/pages/reportes/lista_item.xhtml">
 										<i class="icon-notebook"></i> <span class="sidebar-text">PEPS</span>
 								</a></li>
 								<li class="#{(view.viewId.equals('/pages/reportes/report_total_proyecto.xhtml')) ? 'active' :'inactive'}"><a href="#{request.contextPath}/pages/reportes/report_total_proyecto.xhtml"> <i
 										class="icon-notebook"></i> <span class="sidebar-text">Totales Proyecto</span></a></li>
-								<li class="#{(view.viewId.equals('/pages/reportes/report_total_unidad_solicitante.xhtml')) ? 'active' :'inactive'}"><a href="#{request.contextPath}/pages/reportes/report_total_unidad_solicitante.xhtml"> <i
+								<li class="#{(view.viewId.equals('/pages/reportes/report_unidad_solicitante.xhtml')) ? 'active' :'inactive'}"><a href="#{request.contextPath}/pages/reportes/report_unidad_solicitante.xhtml"> <i
 										class="icon-notebook"></i> <span class="sidebar-text">Totales Unidad Solicitante</span></a></li>
 
 							</ul>

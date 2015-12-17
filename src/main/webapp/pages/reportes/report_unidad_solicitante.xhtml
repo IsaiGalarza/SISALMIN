@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/WEB-INF/templates/template_main.xhtml">
+	<ui:define name="head">
+		<title>Report</title>
+		<f:event listener="#{reportTotalUnidadSolicitanteController.initConversation}"
+			type="preRenderView"></f:event>
+	</ui:define>
+
+	<ui:define name="content">
+		<!--BEGIN CONTENT-->
+		<div class="content">
+			<section class="content-header">
+				<div class="pull-left" style="padding-top: 8px;">
+					<h:form id="formBotonesHeader" style="padding-left: 10px;">
+						<div class="btn-group-demo">
+							<div class="btn-group">
+							    <p:commandLink id="buttonAtras" value="&#160; Atras"
+									styleClass="btn btn-warning ion-minus-circled"
+									update="formFilterProducto, formBotonesHeader"
+									rendered="#{reportTotalUnidadSolicitanteController.verReporte}"
+									style="height:31px; padding:center"
+									action="#{reportTotalUnidadSolicitanteController.initReporteProyecto()}">
+								</p:commandLink>
+								<p:commandLink id="buttonProcesar" value="&#160; Procesar"
+									styleClass="btn btn-info ion-ios7-loop-strong"
+									rendered="#{! reportTotalUnidadSolicitanteController.verReporte}"
+									style="height:31px; padding:center"
+									update=" formFilterProducto,formBotonesHeader"
+									action="#{reportTotalUnidadSolicitanteController.procesarConsulta()}">
+								</p:commandLink>
+
+								<p:commandLink id="buttonVerReporte" value="&#160; Ver Reporte"
+									styleClass="btn btn-info ion-printer"
+									rendered="#{reportTotalUnidadSolicitanteController.listaOrdenSalida.size() > 0}"
+									style="height:31px; padding:center"
+									update="formFilterProducto ,formBotonesHeader"
+									action="#{reportTotalUnidadSolicitanteController.cargarReporte()}">
+								</p:commandLink>
+							</div>
+						</div>
+					</h:form>
+				</div>
+				<div class="pull-right">
+					<ol class="breadcrumb">
+						<li><a href="#{request.contextPath}/pages/dashboard.xhtml"
+							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
+						<li><a
+							href="#{request.contextPath}/pages/reportes/report_total_unidad_solicitante.xhtml"
+							style="color: #0090FF; font-size: 12px;">Reporte</a></li>
+						<li class="active" style="font-size: 12px;">Reportes</li>
+					</ol>
+				</div>
+			</section>
+			<section class="main-content">
+				<section class="main-content">
+					<div class="row">
+						<h:form id="formFilterProducto" styleClass="form-horizontal">
+
+							<ui:fragment
+								rendered="#{ !reportTotalUnidadSolicitanteController.verReporte}">
+								<div class="col-md-4">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Filtro Proyecto</h3>
+										</div>
+										<!-- start here datatable -->
+										<div class="panel-body">
+											<div class="row">
+												<div class="col-md-12">
+													<div class="form-group ">
+														<div class="col-md-12">Fecha Inicial</div>
+														<div class="col-md-12">
+															<p:calendar pattern="dd/MM/yyyy" id="fechaInicial"
+																locale="es"
+																value="#{reportTotalUnidadSolicitanteController.fechaInicial}"
+																onkeypress="return permiteKey(event, 'none')"
+																style=" color: #555555; background-image: none;">
+																<p:ajax event="dateSelect" />
+															</p:calendar>
+														</div>
+													</div>
+													<div class="form-group ">
+														<div class="col-md-12">Fecha Final</div>
+														<div class="col-md-12">
+															<p:calendar pattern="dd/MM/yyyy" id="fechaFinal"
+																locale="es"
+																value="#{reportTotalUnidadSolicitanteController.fechaFinal}"
+																
+																onkeypress="return permiteKey(event, 'none')"
+																style=" color: #555555; background-image: none;">
+																<p:ajax event="dateSelect"  />
+															</p:calendar>
+														</div>
+													</div>
+
+												</div>
+
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="col-md-8">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Lista de Items</h3>
+										</div>
+										<!-- start here datatable -->
+										<div class="box-content no-padding">
+
+											<p:dataTable
+												style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+												rowKey="#{_var.id}" id="productoTable" var="_var"
+												value="#{reportTotalUnidadSolicitanteController.listaOrdenSalida}"
+												emptyMessage="No se encontraron Registros.">
+
+												<p:column width="10%" headerText="Fecha"
+													style="text-align:center"
+													filterBy="#{_var.fechaAprobacion}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_var.fechaAprobacion}">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</h:outputText>
+												</p:column>
+
+												<p:column width="15%" headerText="Orden Salida"
+													style="text-align:center" filterBy="#{_var.correlativo}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_var.correlativo}" />
+												</p:column>
+
+												<p:column width="30%" headerText="Unidad Solicitante"
+													filterBy="#{_var.unidadSolicitante.nombre}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_var.unidadSolicitante.nombre}" />
+												</p:column>
+
+
+												<p:column headerText="Descripcion"
+													filterBy="#{_var.proyecto.descripcion}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_var.proyecto.descripcion}" />
+												</p:column>
+
+
+												<p:column width="15%" headerText="Total"
+													style="text-align:center" filterBy="#{_var.totalImporte}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_var.totalImporte}" />
+												</p:column>
+												<p:columnGroup type="footer">
+													<p:row>
+														<p:column colspan="4" style="text-align:right"
+															footerText="Total:" />
+														<p:column
+															footerText="#{reportTotalUnidadSolicitanteController.total}"
+															style="text-align:center" />
+
+													</p:row>
+												</p:columnGroup>
+
+												<f:facet name="footer">
+													<h:outputText
+														value="#{reportTotalUnidadSolicitanteController.listaOrdenSalida.size()} Registros en Total" />
+												</f:facet>
+
+											</p:dataTable>
+
+										</div>
+
+										<!-- end here datatable -->
+										<div class="panel-body"></div>
+
+									</div>
+								</div>
+							</ui:fragment>
+
+							<ui:fragment
+								rendered="#{reportTotalUnidadSolicitanteController.verReporte}">
+								<div class="col-md-12">
+									<div class="panel panel-default">
+										<div class="panel-body" style="text-align: center;">
+											<p:media player="pdf" rendered="true"
+												value="#{reportTotalUnidadSolicitanteController.urlTotalUnidadSolicitante}"
+												width="800px" height="1125px" />
+										</div>
+									</div>
+								</div>
+							</ui:fragment>
+
+
+						</h:form>
+
+					</div>
+				</section>
+			</section>
+		</div>
+
+		<!--END CONTENT-->
+
+		<!-- START GROWL formGrowl:msgs1 -->
+		<h:form id="formGrowl">
+			<p:growl id="msgs1" showDetail="true" />
+		</h:form>
+		<!-- END GROWL -->
+
+
+
+	</ui:define>
+
+	<ui:insert name="scripts">
+
+	</ui:insert>
+</ui:composition>

@@ -420,10 +420,13 @@ public class OrdenSalidaController implements Serializable {
 
 	public void agregarDetalleOrdenSalida(){
 		//verificar si hay stock del producto
-		//verificarExistencias(selectedProducto, selectedDetalleOrdenSalida.getCantidadSolicitada())
-		//if( selectedProducto.getId()==0){
-		//	return;
-		//}
+//		List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoOrderByFecha(selectedProducto);
+//		if( listDetalleProducto.size()==0 ){
+//			System.out.println("No HAY");
+//			FacesUtil.infoMessage("VALIDACION", selectedAlmacen.getNombre()+" sin existencias");
+//			return;
+//		//	return;
+//		}
 
 		System.out.println("agregarDetalleOrdenIngreso ");
 		selectedDetalleOrdenSalida.setProducto(selectedProducto);
@@ -537,7 +540,7 @@ public class OrdenSalidaController implements Serializable {
 		}
 	}
 	private  boolean verificarExistencias(Producto producto, double cantidad){
-		List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoAndAlmacenOrderByFecha(selectedAlmacen,selectedProducto);
+		List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoOrderByFecha(selectedProducto);
 		if(listDetalleProducto.size()>0){
 			
 		}

@@ -664,7 +664,7 @@
 										onclick="PF('dlgProducto').hide();"
 										rendered="#{ ! ordenSalidaController.editarOrdenSalida}">
 										<p:ajax
-											update="formTableOrdenSalida:itemsTable1,formTableOrdenSalida:editarDetalleOrdenIngreso,formTableOrdenSalida:eliminarDetalleOrdenIngreso"
+											update="formGrowl:msgs1,formTableOrdenSalida:itemsTable1,formTableOrdenSalida:editarDetalleOrdenIngreso,formTableOrdenSalida:eliminarDetalleOrdenIngreso"
 											listener="#{ordenSalidaController.agregarDetalleOrdenSalida()}" />
 									</p:commandLink>
 
