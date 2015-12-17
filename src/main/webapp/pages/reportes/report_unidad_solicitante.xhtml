@@ -19,9 +19,12 @@
 					<h:form id="formBotonesHeader" style="padding-left: 10px;">
 						<div class="btn-group-demo">
 							<div class="btn-group">
-
-								
-
+								<p:commandLink id="buttonProcesar" value="&#160; Procesar"
+									styleClass="btn btn-info ion-ios7-loop-strong"
+									style="height:31px; padding:center"
+									update=" formBotonesHeader"
+									action="#{reporteUnidadSolicitanteController.procesarConsulta()}">
+								</p:commandLink>
 							</div>
 						</div>
 					</h:form>
@@ -40,9 +43,22 @@
 			<section class="main-content">
 				<section class="main-content">
 					<div class="row">
+						<h:form id="formFilterProducto" styleClass="form-horizontal">
+							<div class="col-md-4" align="left">
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h3 class="panel-title">Filtro Stock</h3>
+									</div>
+									<!-- start here datatable -->
+									<div class="panel-body">
+										<div class="row">
+											<div class="col-md-12 box-content form-horizontal"></div>
+										</div>
+									</div>
+								</div>
+							</div>
 
-						
-
+						</h:form>
 
 					</div>
 				</section>

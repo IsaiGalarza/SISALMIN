@@ -283,11 +283,11 @@ public class OrdenIngresoController implements Serializable {
 
 	public void registrarOrdenIngreso() {
 		if( selectedAlmacen.getId()==0 || selectedProveedor.getId()==0 || newOrdenIngreso.getNumeroDocumento().isEmpty()){
-			FacesUtil.infoMessage("ADVERTENCIA", "No puede haber campos vacios.");
+			FacesUtil.infoMessage("VALIDACION", "No puede haber campos vacios.");
 			return;
 		}
 		if(listaDetalleOrdenIngreso.size()==0 ){
-			FacesUtil.infoMessage("ADVERTENCIA", "Debe Agregar items..");
+			FacesUtil.infoMessage("VALIDACION", "Debe Agregar items..");
 			return;
 		}
 		try {
@@ -304,10 +304,10 @@ public class OrdenIngresoController implements Serializable {
 				d.setOrdenIngreso(newOrdenIngreso);
 				detalleOrdenIngresoRegistration.register(d);
 			}
-			FacesUtil.infoMessage("Orden de Ingreso Registrada!", ""+newOrdenIngreso.getCorrelativo());
+			FacesUtil.infoMessage("Orden de Ingreso Registrada", ""+newOrdenIngreso.getCorrelativo());
 			initNewOrdenIngreso();
 		} catch (Exception e) {
-			FacesUtil.errorMessage("Error al Registrar.");
+			System.out.println("registrarOrdenIngreso() ERROR: "+e.getMessage());
 		}
 	}
 
@@ -338,10 +338,10 @@ public class OrdenIngresoController implements Serializable {
 			newOrdenIngreso.setProveedor(selectedProveedor);
 			newOrdenIngreso.setTotalImporte(total);
 			ordenIngresoRegistration.updated(newOrdenIngreso);
-			FacesUtil.infoMessage("Orden de Ingreso Modificada!", ""+newOrdenIngreso.getCorrelativo());
+			FacesUtil.infoMessage("Orden de Ingreso Modificada", ""+newOrdenIngreso.getCorrelativo());
 			initNewOrdenIngreso();
 		} catch (Exception e) {
-			FacesUtil.errorMessage("Error al Modificar.");
+			System.out.println("modificarOrdenIngreso() ERROR: "+e.getMessage());
 		}
 	}
 
@@ -355,7 +355,7 @@ public class OrdenIngresoController implements Serializable {
 			FacesUtil.infoMessage("Orden de Ingreso Eliminada!", ""+newOrdenIngreso.getCorrelativo());
 			initNewOrdenIngreso();
 		} catch (Exception e) {
-			FacesUtil.errorMessage("Error al Eliminar.");
+			System.out.println("eliminarOrdenIngreso() ERROR: "+e.getMessage());
 		}
 	}
 

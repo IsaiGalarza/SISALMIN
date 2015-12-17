@@ -148,6 +148,10 @@ public class OrdenSalidaController implements Serializable {
 		listaDetalleOrdenSalida = new ArrayList<DetalleOrdenSalida>();
 		listaOrdenSalida = ordenSalidaRepository.findAllOrderedByID();
 
+		//obtener la primer unidad solicitante
+		//List<DetalleUnidad> l = detalleUnidadRepository.findAll100UltimosDetalleUnidad();
+		//selectedDetalleUnidad = l.size()>0?l.get(0):new DetalleUnidad();
+		
 		newOrdenSalida = new OrdenSalida();
 		newOrdenSalida.setCorrelativo(cargarCorrelativo(listaOrdenSalida.size()+1));
 		newOrdenSalida.setEstado("AC");
@@ -226,7 +230,6 @@ public class OrdenSalidaController implements Serializable {
 		try {
 			verButtonDetalle = false;
 		} catch (Exception e) {
-			e.printStackTrace();
 			System.out.println("Error in onRowSelectDetalleOrdenSalidaClick: "
 					+ e.getMessage());
 		}
@@ -234,11 +237,11 @@ public class OrdenSalidaController implements Serializable {
 
 	public void registrarOrdenSalida() {
 		if( selectedAlmacen.getId()==0 || selectedDetalleUnidad.getId()==0 || selectedFuncionario.getId()==0 || newOrdenSalida.getNumeroPedidoMateriales().isEmpty() || selectedProyecto.getId()==0 || selectedAlmacen.getId()==0){
-			FacesUtil.infoMessage("ADVERTENCIA", "No puede haber campos vacios.");
+			FacesUtil.infoMessage("VALIDACION", "No puede haber campos vacios.");
 			return;
 		}
 		if(listaDetalleOrdenSalida.size()==0 ){
-			FacesUtil.infoMessage("ADVERTENCIA", "Debe Agregar items..");
+			FacesUtil.infoMessage("VALIDACION", "Debe Agregar items.");
 			return;
 		}
 		try {
@@ -265,7 +268,7 @@ public class OrdenSalidaController implements Serializable {
 			FacesUtil.infoMessage("Orden de Salida Registrada!", ""+newOrdenSalida.getCorrelativo());
 			initNewOrdenSalida();
 		} catch (Exception e) {
-			FacesUtil.errorMessage("Error al Registrar.");
+			System.out.println("registrarOrdenSalida() ERROR: "+ e.getMessage());
 		}
 	}
 
@@ -302,7 +305,7 @@ public class OrdenSalidaController implements Serializable {
 			initNewOrdenSalida();
 
 		} catch (Exception e) {
-			FacesUtil.errorMessage("Error al Modificar.");
+			System.out.println("modificarOrdenSalida() ERROR: "+ e.getMessage());
 		}
 	}
 
@@ -317,7 +320,7 @@ public class OrdenSalidaController implements Serializable {
 			initNewOrdenSalida();
 
 		} catch (Exception e) {
-			FacesUtil.errorMessage("Error al Eliminar.");
+			System.out.println("eliminarOrdenSalida() ERROR: "+ e.getMessage());
 		}
 	}
 
@@ -335,7 +338,8 @@ public class OrdenSalidaController implements Serializable {
 			listaDetalleOrdenSalida = detalleOrdenSalidaRepository.findAllByOrdenSalida(selectedOrdenSalida);
 			for(DetalleOrdenSalida d: listaDetalleOrdenSalida){
 				Producto prod = d.getProducto();
-				//1.- Actualizar detalle producto (PEPS) y tambiaen actualizar precio en detalleOrdenIngreso
+				double cantidadSolicitada = d.getCantidadSolicitada();
+				//1.- Actualizar detalle producto (PEPS) y tambien actualizar precio en detalleOrdenIngreso
 				if( ! fachadaOrdenSalida.actualizarDetalleProductoByOrdenSalida(almacenOrigen,d)){
 					//mostrar mensaje
 					FacesUtil.showDialog("dlgAlmacenSinExistencias");
@@ -343,7 +347,7 @@ public class OrdenSalidaController implements Serializable {
 					return ; //no se econtro stock disponible
 				}
 				//2
-				fachadaOrdenSalida.actualizarStock(prod, d.getCantidadSolicitada(),fechaActual,d.getPrecioUnitario());
+				fachadaOrdenSalida.actualizarStock(almacenOrigen,prod,cantidadSolicitada);
 				//3
 				fachadaOrdenSalida.actualizarKardexProducto( detalleUnidad.getNombre(),gestionSesion, selectedOrdenSalida,prod,fechaActual, d.getCantidadSolicitada(),d.getPrecioUnitario(),usuarioSession);
 				total = total + d.getTotal();
@@ -453,8 +457,12 @@ public class OrdenSalidaController implements Serializable {
 
 	// ONCOMPLETETEXT PROVEEDOR
 	public List<Funcionario> completeFuncionario(String query) {
+		if(selectedDetalleUnidad.getId()==0){
+			FacesUtil.infoMessage("VALIDACION", "Antes debe seleccionar Unidad Solicitante");
+			return new ArrayList<Funcionario>();
+		}
 		String upperQuery = query.toUpperCase();
-		listaFuncionario = funcionarioRepository.findAllFuncionarioForQueryNombre(upperQuery);       
+		listaFuncionario = funcionarioRepository.findAllFuncionarioForQueryNombreAndDetalleUnidad(upperQuery,selectedDetalleUnidad);       
 		return listaFuncionario;
 	}
 

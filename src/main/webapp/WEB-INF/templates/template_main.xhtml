@@ -324,10 +324,12 @@
 							<ul class="nav nav-second-level">
 
 								<li
-									class="#{(view.viewId.equals('/pages/reportes/lista_item.xhtml')) ? 'active' :'inactive'}"><a
+									class="#{(view.viewId.equals('/pages/reportes/lista_item.xhtml')) ? 'active' :(view.viewId.equals('/pages/reportes/report_unidad_solicitante.xhtml')) ? 'active' :'inactive'}"><a
 									href="#{request.contextPath}/pages/reportes/lista_item.xhtml">
 										<i class="icon-notebook"></i> <span class="sidebar-text">PEPS</span>
 								</a></li>
+								<li class="#{(view.viewId.equals('/pages/reportes/report_unidad_solicitante.xhtml')) ? 'active' :'inactive'}"><a href="#{request.contextPath}/pages/reportes/report_unidad_solicitante.xhtml"> <i
+										class="icon-notebook"></i> <span class="sidebar-text">Unida Solicitante</span></a></li>
 								<li class="inactive"><a href="#"> <i
 										class="icon-notebook"></i> <span class="sidebar-text">Ingresos</span></a></li>
 								<li class="inactive"><a href="#"> <i
@@ -347,7 +349,7 @@
 							<li
 								class="#{(view.viewId.equals('/pages/ayuda/manual_usuario.xhtml')) ? 'active' :'inactive'}"><a
 								href="#{request.contextPath}/pages/ayuda/manual_usuario.xhtml">
-									<i class="icon-notebook"></i> <span class="sidebar-text">Manuall Usuario</span>
+									<i class="icon-notebook"></i> <span class="sidebar-text">Manual Usuario</span>
 							</a></li>
 
 						</ul>

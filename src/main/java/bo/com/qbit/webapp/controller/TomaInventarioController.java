@@ -35,6 +35,7 @@ import bo.com.qbit.webapp.model.DetalleTomaInventario;
 import bo.com.qbit.webapp.model.DetalleTomaInventarioOrdenIngreso;
 import bo.com.qbit.webapp.model.FachadaOrdenIngreso;
 import bo.com.qbit.webapp.model.FachadaOrdenSalida;
+import bo.com.qbit.webapp.model.FachadaOrdenTraspaso;
 import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.OrdenIngreso;
 import bo.com.qbit.webapp.model.Partida;
@@ -153,6 +154,7 @@ public class TomaInventarioController implements Serializable {
 	//FACADE
 	private @Inject FachadaOrdenIngreso fachadaOrdenIngreso;
 	private @Inject FachadaOrdenSalida fachadaOrdenSalida;
+	private @Inject FachadaOrdenTraspaso fachadaOrdenTraspaso;
 
 	@PostConstruct
 	public void initNewTomaInventario() {
@@ -472,6 +474,7 @@ public class TomaInventarioController implements Serializable {
 				selectedTomaInventario.setEstado("CN");//CONCILIADO
 				tomaInventarioRegistration.updated(selectedTomaInventario);
 				BajaProducto baja = new BajaProducto();
+				Almacen almacen = selectedTomaInventario.getAlmacen();
 				System.out.println("conciliarTomaInventario() size:"+listSelectedDetalleTomaInventario.size());
 				for(DetalleTomaInventario d: listSelectedDetalleTomaInventario){
 					System.out.println("d :"+d.getProducto().getNombre());
@@ -487,7 +490,7 @@ public class TomaInventarioController implements Serializable {
 					//actualizar en DetalleProducto
 					if(d.getCantidadRegistrada() - d.getCantidadVerificada() > 0){//si faltaron
 						//actualizar en AlmacenProducto
-						fachadaOrdenSalida.actualizarStock(d.getProducto(), d.getCantidadVerificada(), fechaActual, -1d);//-1 para que no actualize el precio
+						fachadaOrdenTraspaso.actualizarStock(almacen,d);//-1 para que no actualize el precio
 						fachadaOrdenSalida.actualizarDetalleProducto(selectedTomaInventario.getAlmacen(), d.getProducto(), d.getDiferencia());
 						//actualizar en kardex(NOSE) como una salida (como baja de producto)
 						//fachadaOrdenSalida.actualizarKardexProducto("Por Baja de Producto", gestionSesion, selectedOrdenSalida, prod, fechaActual, cantidad, precioUnitario, usuarioSession);

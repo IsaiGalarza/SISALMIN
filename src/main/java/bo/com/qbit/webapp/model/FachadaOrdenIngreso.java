@@ -28,7 +28,7 @@ public class FachadaOrdenIngreso implements Serializable{
 	private @Inject DetalleProductoRegistration detalleProductoRegistration;
 	private @Inject AlmacenProductoRegistration almacenProductoRegistration;
 	private @Inject KardexProductoRegistration kardexProductoRegistration;
-	
+
 	public void actualizarStockExistente(Almacen almacen,Producto prod ,double newStock)  {
 		try{
 			//0 . verificar si existe el producto en el almacen
@@ -40,7 +40,7 @@ public class FachadaOrdenIngreso implements Serializable{
 				almProd.setStock(oldStock + newStock);
 				almacenProductoRegistration.updated(almProd);
 			}
-			
+
 		}catch(Exception e){
 
 			System.out.println("ERROR actualizarStock() "+e.getMessage());
@@ -61,12 +61,10 @@ public class FachadaOrdenIngreso implements Serializable{
 	 */
 	public void actualizarStock(Almacen almacen,Proveedor proveedor,Producto prod ,double newStock,Date date,double precioUnitario,String usuarioSession)  {
 		try{
+			AlmacenProducto almProd = new AlmacenProducto();
+			/*
 			//0 . verificar si existe el producto en el almacen
-			System.out.println("actualizarStock() "+almacen.getId());
-			System.out.println("actualizarStock() "+proveedor.getId());
-			System.out.println("actualizarStock() "+prod.getId());
-
-			AlmacenProducto almProd =  almacenProductoRepository.findByAlmacenProducto(almacen,prod);
+			almProd =  almacenProductoRepository.findByAlmacenProducto(almacen,prod);
 			System.out.println("aqui ");
 			if(almProd != null){
 				// 1 .  si existe el producto
@@ -77,6 +75,7 @@ public class FachadaOrdenIngreso implements Serializable{
 				almacenProductoRegistration.updated(almProd);
 				return ;
 			}
+			*/
 			// 2 . no existe el producto
 			almProd = new AlmacenProducto();
 			almProd.setAlmacen(almacen);
@@ -87,12 +86,9 @@ public class FachadaOrdenIngreso implements Serializable{
 			almProd.setEstado("AC");
 			almProd.setFechaRegistro(date);
 			almProd.setUsuarioRegistro(usuarioSession);
-
 			almacenProductoRegistration.register(almProd);
 		}catch(Exception e){
-
 			System.out.println("ERROR actualizarStock() "+e.getMessage());
-			e.printStackTrace();
 		}
 	}
 
@@ -121,7 +117,7 @@ public class FachadaOrdenIngreso implements Serializable{
 			double saldo = stockAnterior + cantidad;
 
 			KardexProducto kardexProducto = new KardexProducto();
-			kardexProducto.setUnidadSolicitante("ORDEN INGRESO");
+			kardexProducto.setUnidadSolicitante(almacen.getNombre()+" X ORDEN INGRESO");
 			kardexProducto.setFecha(fechaActual);
 			kardexProducto.setAlmacen(almacen);
 			kardexProducto.setCantidad(cantidad);
@@ -167,22 +163,21 @@ public class FachadaOrdenIngreso implements Serializable{
 	 */
 	public void cargarDetalleProducto(Date fechaActual,Almacen almacen,Producto producto,double cantidad, double precio, Date fecha, String correlativoTransaccion,String usuarioSession ) {
 		try{
-		DetalleProducto detalleProducto = new DetalleProducto();
-		detalleProducto.setCodigo("OI"+correlativoTransaccion+fecha.toString());
-		detalleProducto.setAlmacen(almacen);
-		detalleProducto.setEstado("AC");
-		detalleProducto.setPrecio(precio);
-		detalleProducto.setStockActual(cantidad);
-		detalleProducto.setStockInicial(cantidad);
-		detalleProducto.setCorrelativoTransaccion(correlativoTransaccion);
-		detalleProducto.setFecha(fecha);
-		detalleProducto.setFechaRegistro(fechaActual);
-		detalleProducto.setProducto(producto);
-		detalleProducto.setUsuarioRegistro(usuarioSession);
-		detalleProductoRegistration.register(detalleProducto);
+			DetalleProducto detalleProducto = new DetalleProducto();
+			detalleProducto.setCodigo("OI"+correlativoTransaccion+fecha.toString());
+			detalleProducto.setAlmacen(almacen);
+			detalleProducto.setEstado("AC");
+			detalleProducto.setPrecio(precio);
+			detalleProducto.setStockActual(cantidad);
+			detalleProducto.setStockInicial(cantidad);
+			detalleProducto.setCorrelativoTransaccion(correlativoTransaccion);
+			detalleProducto.setFecha(fecha);
+			detalleProducto.setFechaRegistro(fechaActual);
+			detalleProducto.setProducto(producto);
+			detalleProducto.setUsuarioRegistro(usuarioSession);
+			detalleProductoRegistration.register(detalleProducto);
 		}catch(Exception e){
 			System.out.println("ERROR cargarDetalleProducto() "+e.getMessage());
-			e.printStackTrace();
 		}
 	}
 

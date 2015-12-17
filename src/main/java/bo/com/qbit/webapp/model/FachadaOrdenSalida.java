@@ -24,7 +24,7 @@ import bo.com.qbit.webapp.service.KardexProductoRegistration;
 public class FachadaOrdenSalida implements Serializable {
 
 	private static final long serialVersionUID = 3930915805505213300L;
-	
+
 	private @Inject DetalleProductoRepository detalleProductoRepository;
 	private @Inject DetalleOrdenSalidaRegistration detalleOrdenSalidaRegistration;
 	private @Inject AlmacenProductoRepository almacenProductoRepository;
@@ -71,23 +71,22 @@ public class FachadaOrdenSalida implements Serializable {
 		try{
 			Producto producto = detalle.getProducto();
 			double cantidadAux = detalle.getCantidadSolicitada();
-			double cantidadSolicitada = detalle.getCantidadSolicitada();// 15
+			double cantidadSolicitada = detalle.getCantidadSolicitada();//6
 			int cantidad = 1;
 			//obtener todos los detalles del producto, para poder descontar stock de acuerdo a la cantidad solicitada
 			List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almacen,producto);
-			//50 | 10
-			//52 | 10
+			//5 | 10
 			if(listDetalleProducto.size()>0){
 				for(DetalleProducto d : listDetalleProducto){
-					double stockActual = d.getStockActual();//10 |10
-					double precio = d.getPrecio(); // 50 | 52
-					if(cantidadSolicitada > 0){// 15 | 5
-						double stockFinal = stockActual- cantidadSolicitada; // 10-15=-5 | 10-5=5 |
-						double cantidadRestada = stockFinal < 0 ? cantidadSolicitada -(cantidadSolicitada - stockActual) : cantidadSolicitada; //15-(15-10)=10 | 5 |
+					double stockActual = d.getStockActual();//5 
+					double precio = d.getPrecio(); // 50 
+					if(cantidadSolicitada > 0){// 6
+						double stockFinal = stockActual- cantidadSolicitada; // 5-6=-1 | 10-5=5 |
+						double cantidadRestada = stockFinal < 0 ? cantidadSolicitada -(cantidadSolicitada - stockActual) : cantidadSolicitada; //6-(6-5)=5 
 						d.setStockActual( stockFinal <= 0 ? 0 : stockFinal); // 0 | 5
 						d.setEstado(stockFinal<=0?"IN":"AC"); // IN | AC
 						detalleProductoRegistration.updated(d);
-						cantidadSolicitada = cantidadSolicitada - cantidadRestada  ;//actualizar cantidad solicitada // 15-10=5| 5-5=0|
+						cantidadSolicitada = cantidadSolicitada - cantidadRestada  ;//actualizar cantidad solicitada // 6-5=1
 						if(cantidad == 1){
 							detalle.setCantidadEntregada(cantidadRestada);
 							detalle.setCantidadSolicitada(cantidadAux);
@@ -172,18 +171,16 @@ public class FachadaOrdenSalida implements Serializable {
 
 	/**
 	 * actualizar en la tabla almacen_producto, actualiza el stock y el precio(promedio agrupando los productos)
-	 * @param prod
-	 * @param newStock
-	 * @param date
-	 * @param precioUnitario(Si se pone -1 no actualiza el precio)
+	 * @param Almacen
+	 * @param DetalleOrdenSalida
 	 * @throws Exception
 	 */
-	public void actualizarStock(Producto prod ,double newStock,Date date,double precioUnitario) throws Exception {
-		try{
+	public void actualizarStock(Almacen almacen,Producto producto,double cantidadSolicitada) throws Exception {
+		System.out.println("actualizarStock()");
+		try{/*
 			//0 . verificar si existe el producto en el almacen
-			System.out.println("actualizarStock()");
-			AlmacenProducto almProd =  almacenProductoRepository.findByProducto(prod);
-			System.out.println("almProd = "+almProd);
+
+			//AlmacenProducto almProd =  new AlmacenProducto();
 			if(almProd != null){
 				// 1 .  si existe el producto
 				double oldStock = almProd.getStock();
@@ -193,9 +190,28 @@ public class FachadaOrdenSalida implements Serializable {
 				almacenProductoRegistration.updated(almProd);
 				return ;
 			}
+		 */
+			//Producto producto = detalle.getProducto();
+			//double cantidadSolicitada = detalle.getCantidadSolicitada();// 15
+			//obtener listAlmacenProducto ordenado por fecha segun metodo PEPS
+			List<AlmacenProducto> listAlmacenProducto =  almacenProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almacen,producto);
+			
+			if(listAlmacenProducto.size()>0){
+				for(AlmacenProducto d : listAlmacenProducto){
+					double stockActual = d.getStock();//10 
+					if(cantidadSolicitada > 0){// 15 
+						double stockFinal = stockActual- cantidadSolicitada; // 10-15=-5 | 10-5=5 |
+						double cantidadRestada = stockFinal < 0 ? cantidadSolicitada -(cantidadSolicitada - stockActual) : cantidadSolicitada; //15-(15-10)=10 
+						d.setStock( stockFinal <= 0 ? 0 : stockFinal); // 0 | 5
+						d.setEstado(stockFinal<=0?"IN":"AC"); // IN | AC
+						almacenProductoRegistration.updated(d);
+						cantidadSolicitada = cantidadSolicitada - cantidadRestada  ;//actualizar cantidad solicitada // 15-10=5
+						
+					}
+				}
+			}
 		}catch(Exception e){
 			System.out.println("actualizarStock Error : "+e.getMessage());
-			e.printStackTrace();
 		}
 	}
 

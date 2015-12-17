@@ -267,11 +267,11 @@ public class OrdenTraspasoController implements Serializable {
 
 	public void registrarOrdenTraspaso() {
 		if( selectedAlmacen.getId()==0 || selectedFuncionario.getId()==0  ||  selectedProyecto.getId()==0 ){
-			FacesUtil.infoMessage("ADVERTENCIA", "No puede haber campos vacios.");
+			FacesUtil.infoMessage("VALIDACION", "No puede haber campos vacios.");
 			return;
 		}
 		if(listaDetalleOrdenTraspaso.size()==0 ){
-			FacesUtil.infoMessage("ADVERTENCIA", "Debe Agregar items..");
+			FacesUtil.infoMessage("VALIDACION", "Debe Agregar items..");
 			return;
 		}
 		try {
@@ -507,6 +507,7 @@ public class OrdenTraspasoController implements Serializable {
 			Almacen almDest = selectedOrdenTraspaso.getAlmacenDestino();
 			for(DetalleOrdenTraspaso d: listaDetalleOrdenTraspaso){
 				Producto prod = d.getProducto();
+				double cantidadSolicitada = d.getCantidadSolicitada();
 				//1.- Actualizar detalle producto (PEPS) y tambiaen actualizar precio en detalleOrdenIngreso
 				if( ! actualizarDetalleProducto(almOrig,d)){
 					//mostrar mensaje
@@ -515,20 +516,23 @@ public class OrdenTraspasoController implements Serializable {
 					return;//no se econtro stock disponible
 				}
 				//2.- 
-				actualizarStockAlmacenOrigen(prod,almOrig, d.getCantidadSolicitada(),fechaActual,d.getPrecioUnitario());
-				//3.-
-				actualizarStockAlmacenDestino(proveedor,prod,almDest, d.getCantidadSolicitada(),fechaActual,d.getPrecioUnitario());
+				actualizarStockAlmacenOrigen(almOrig, prod,cantidadSolicitada);
+				
 				//4.-
 				actualizarKardexProducto(almOrig,almDest,prod, fechaActual, d.getCantidadSolicitada(),d.getPrecioUnitario());
 
 				//agregar detalleProductos al almacen destino
 				if(totalCantidaEntregada>0){
+					//3.-
+					actualizarStockAlmacenDestino(proveedor,prod,almDest, d.getCantidadSolicitada(),fechaActual,d.getPrecioUnitario());
+					//
 					cargarDetalleProducto(fechaActual, almDest, prod, d.getCantidadSolicitada(), d.getPrecioUnitario(), d.getFechaRegistro(), selectedOrdenTraspaso.getCorrelativo(), usuarioSession);
 				}
 
 				total = total + d.getTotal();
 			}
-			//cactualizar ordenTraspaso
+			//actualizar ordenTraspaso
+			selectedOrdenTraspaso.setTotalImporte(total);
 			ordenTraspasoRegistration.updated(selectedOrdenTraspaso);
 			FacesUtil.infoMessage("Orden de Traspaso Procesada!", "");
 			initNewOrdenTraspaso();
@@ -619,9 +623,12 @@ public class OrdenTraspasoController implements Serializable {
 	//aumentar stock de almacen destino
 	private void actualizarStockAlmacenDestino(Proveedor proveedor,Producto prod ,Almacen almDest, double newStock,Date date,double precioUnitario) throws Exception {
 		try{
-			//0 . verificar si existe el producto en el almacen
 			System.out.println("actualizarStockAlmacenDestino()");
-			AlmacenProducto almProd =  almacenProductoRepository.findByAlmacenProducto(almDest,prod);
+			//0 . verificar si existe el producto en el almacen
+			
+			AlmacenProducto almProd =  new AlmacenProducto();
+			/*
+			almProd =  almacenProductoRepository.findByAlmacenProducto(almDest,prod);
 			System.out.println("almProd = "+almProd);
 			if(almProd != null){
 				// 1 .  si existe el producto
@@ -632,6 +639,7 @@ public class OrdenTraspasoController implements Serializable {
 				almacenProductoRegistration.updated(almProd);
 				return ;
 			}
+			*/
 			// 2 . no existe el producto
 			almProd = new AlmacenProducto();
 			almProd.setAlmacen(almDest);
@@ -649,10 +657,12 @@ public class OrdenTraspasoController implements Serializable {
 	}
 
 	//disminuir stock de almacen origen
-	private void actualizarStockAlmacenOrigen(Producto prod ,Almacen almOrig,double newStock,Date date,double precioUnitario) throws Exception {
+	private void actualizarStockAlmacenOrigen(Almacen almOrig,Producto producto,double cantidadSolicitada) throws Exception {
 		try{
-			//0 . verificar si existe el producto en el almacen
 			System.out.println("actualizarStockAlmacenOrigen()");
+			/*
+			//0 . verificar si existe el producto en el almacen
+			
 			AlmacenProducto almProd =  almacenProductoRepository.findByAlmacenProducto(almOrig,prod);
 			if(almProd != null){
 				// 1 .  si existe el producto
@@ -662,6 +672,25 @@ public class OrdenTraspasoController implements Serializable {
 				almProd.setPrecioUnitario((oldPrecioUnitario+precioUnitario)/2);//precioPonderado
 				almacenProductoRegistration.updated(almProd);
 				return ;
+			}
+			*/
+			//Producto producto = detalle.getProducto();
+			//double cantidadSolicitada = detalle.getCantidadSolicitada();// 15
+			//obtener listAlmacenProducto ordenado por fecha segun metodo PEPS
+			List<AlmacenProducto> listAlmacenProducto =  almacenProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almOrig,producto);
+			
+			if(listAlmacenProducto.size()>0){
+				for(AlmacenProducto d : listAlmacenProducto){
+					double stockActual = d.getStock();//10 
+					if(cantidadSolicitada > 0){// 15 
+						double stockFinal = stockActual- cantidadSolicitada; // 10-15=-5 | 10-5=5 |
+						double cantidadRestada = stockFinal < 0 ? cantidadSolicitada -(cantidadSolicitada - stockActual) : cantidadSolicitada; //15-(15-10)=10 
+						d.setStock( stockFinal <= 0 ? 0 : stockFinal); // 0 | 5
+						d.setEstado(stockFinal<=0?"IN":"AC"); // IN | AC
+						almacenProductoRegistration.updated(d);
+						cantidadSolicitada = cantidadSolicitada - cantidadRestada  ;//actualizar cantidad solicitada // 15-10=5
+					}
+				}
 			}
 		}catch(Exception e){
 			System.out.println("actualizarStockAlmacenOrigen() Error: "+e.getMessage());

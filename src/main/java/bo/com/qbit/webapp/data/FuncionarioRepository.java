@@ -9,6 +9,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import bo.com.qbit.webapp.model.DetalleUnidad;
 import bo.com.qbit.webapp.model.Funcionario;
 
 @ApplicationScoped
@@ -113,5 +114,22 @@ public class FuncionarioRepository {
 			return null;
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Funcionario> findAllFuncionarioForQueryNombreAndDetalleUnidad(String criterio,DetalleUnidad detalleUnidad) {
+		try {
+			String query = "select ser from Funcionario ser,DetalleUnidad det where ser.detalleUnidad.id=det.id and ser.nombre like '%"
+					+ criterio + "%' and ser.estado='AC' and det.id="+detalleUnidad.getId()+" order by ser.nombre asc";
+			System.out.println("Consulta: " + query);
+			List<Funcionario> listaFuncionario = em.createQuery(query).getResultList();
+			return listaFuncionario;
+		} catch (Exception e) {
+			System.out.println("Error en findAllFuncionarioForDescription: "
+					+ e.getMessage());
+			return null;
+		}
+	}
+	
+	
 
 }
