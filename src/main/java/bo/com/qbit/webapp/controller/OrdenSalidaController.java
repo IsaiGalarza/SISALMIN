@@ -19,6 +19,7 @@ import org.richfaces.cdi.push.Push;
 
 import bo.com.qbit.webapp.data.AlmacenRepository;
 import bo.com.qbit.webapp.data.DetalleOrdenSalidaRepository;
+import bo.com.qbit.webapp.data.DetalleProductoRepository;
 import bo.com.qbit.webapp.data.DetalleUnidadRepository;
 import bo.com.qbit.webapp.data.FuncionarioRepository;
 import bo.com.qbit.webapp.data.OrdenSalidaRepository;
@@ -27,6 +28,7 @@ import bo.com.qbit.webapp.data.ProyectoRepository;
 import bo.com.qbit.webapp.data.UsuarioRepository;
 import bo.com.qbit.webapp.model.Almacen;
 import bo.com.qbit.webapp.model.DetalleOrdenSalida;
+import bo.com.qbit.webapp.model.DetalleProducto;
 import bo.com.qbit.webapp.model.DetalleUnidad;
 import bo.com.qbit.webapp.model.FachadaOrdenSalida;
 import bo.com.qbit.webapp.model.Funcionario;
@@ -60,6 +62,7 @@ public class OrdenSalidaController implements Serializable {
 	private @Inject FuncionarioRepository funcionarioRepository;
 	private @Inject DetalleUnidadRepository detalleUnidadRepository;
 	private @Inject ProyectoRepository proyectoRepository;
+	private @Inject DetalleProductoRepository detalleProductoRepository;
 
 	//Registration
 	private @Inject OrdenSalidaRegistration ordenSalidaRegistration;
@@ -112,7 +115,7 @@ public class OrdenSalidaController implements Serializable {
 	private Gestion gestionSesion;
 
 	private boolean atencionCliente=false;
-	
+
 	//Fachada
 	private @Inject FachadaOrdenSalida fachadaOrdenSalida;
 
@@ -122,7 +125,7 @@ public class OrdenSalidaController implements Serializable {
 		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
 		gestionSesion = sessionMain.getGestionLogin();
 		listUsuario = usuarioRepository.findAllOrderedByID();
-		
+
 		//inicializar FachadaOrdenSalida
 		//fachadaOrdenSalida =new FachadaOrdenSalida();
 
@@ -151,7 +154,7 @@ public class OrdenSalidaController implements Serializable {
 		//obtener la primer unidad solicitante
 		//List<DetalleUnidad> l = detalleUnidadRepository.findAll100UltimosDetalleUnidad();
 		//selectedDetalleUnidad = l.size()>0?l.get(0):new DetalleUnidad();
-		
+
 		newOrdenSalida = new OrdenSalida();
 		newOrdenSalida.setCorrelativo(cargarCorrelativo(listaOrdenSalida.size()+1));
 		newOrdenSalida.setEstado("AC");
@@ -416,6 +419,12 @@ public class OrdenSalidaController implements Serializable {
 	}
 
 	public void agregarDetalleOrdenSalida(){
+		//verificar si hay stock del producto
+		//verificarExistencias(selectedProducto, selectedDetalleOrdenSalida.getCantidadSolicitada())
+		//if( selectedProducto.getId()==0){
+		//	return;
+		//}
+
 		System.out.println("agregarDetalleOrdenIngreso ");
 		selectedDetalleOrdenSalida.setProducto(selectedProducto);
 		listaDetalleOrdenSalida.add(0, selectedDetalleOrdenSalida);
@@ -526,6 +535,13 @@ public class OrdenSalidaController implements Serializable {
 				return;
 			}
 		}
+	}
+	private  boolean verificarExistencias(Producto producto, double cantidad){
+		List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoAndAlmacenOrderByFecha(selectedAlmacen,selectedProducto);
+		if(listDetalleProducto.size()>0){
+			
+		}
+		return true;
 	}
 
 	// ONCOMPLETETEXT PROYECTO

@@ -2,6 +2,7 @@ package bo.com.qbit.webapp.controller;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -64,6 +65,11 @@ public class ReportUnidadSolicitanteController implements Serializable {
 	private Empresa empresaLogin;
 	private String usuarioLogin;
 
+	
+	//
+	private Date fechaInicial ;
+	private Date fechaFinal;
+	
 	@PostConstruct
 	public void initNewStockProducto() {
 
@@ -81,6 +87,9 @@ public class ReportUnidadSolicitanteController implements Serializable {
 		totalStockUnificado = 0;
 		precioUnificado = 0;
 		tipoConsulta = "PROVEEDOR";
+		
+		setFechaInicial(new Date());
+		setFechaFinal(new Date());
 
 	}
 
@@ -226,6 +235,22 @@ public class ReportUnidadSolicitanteController implements Serializable {
 
 	public void setPrecioUnificado(double precioUnificado) {
 		this.precioUnificado = precioUnificado;
+	}
+
+	public Date getFechaInicial() {
+		return fechaInicial;
+	}
+
+	public void setFechaInicial(Date fechaInicial) {
+		this.fechaInicial = fechaInicial;
+	}
+
+	public Date getFechaFinal() {
+		return fechaFinal;
+	}
+
+	public void setFechaFinal(Date fechaFinal) {
+		this.fechaFinal = fechaFinal;
 	}
 
 }

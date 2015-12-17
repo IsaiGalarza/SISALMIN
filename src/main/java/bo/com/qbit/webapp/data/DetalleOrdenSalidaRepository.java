@@ -1,5 +1,6 @@
 package bo.com.qbit.webapp.data;
 
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -40,5 +41,35 @@ public class DetalleOrdenSalidaRepository {
 		log.info("Query DetalleOrdenSalida: "+query);
 		return em.createQuery(query).getResultList();
 	}
+	/*
+	 * SELECT
+     proy.nombre AS nombre_proyecto,
+     proy.descripcion AS descripcion_proyecto,
+     gestion.gestion AS gestion,
+     dos.total AS subtotal,
+     os.fecha_aprobacion AS fecha,
+     ( select SUM(dos1.total) AS total from detalle_orden_salida dos1 WHERE
+     gestion.id=$P{pIdGestion} AND os.fecha_aprobacion >= to_date($P{pFechaInicio},'dd-MM-yyyy') AND
+     os.fecha_aprobacion <= to_date($P{pFechaFin},'dd-MM-yyyy') AND
+     os.estado='PR' )
+
+FROM
+      detalle_orden_salida dos
+      INNER JOIN orden_salida os ON dos.id_orden_salida = os.id
+      INNER JOIN proyecto proy ON dos.id_orden_salida = os.id
+      INNER JOIN gestion gestion ON os.id_gestion = gestion.id
+WHERE
+     gestion.id=$P{pIdGestion} AND os.fecha_aprobacion >= to_date($P{pFechaInicio},'dd-MM-yyyy') AND
+     os.fecha_aprobacion <= to_date($P{pFechaFin},'dd-MM-yyyy') AND
+     os.estado='PR'
+	 */
+	
+	@SuppressWarnings("unchecked")
+	public List<DetalleOrdenSalida> findByFechas(Date fechaInicial,Date fechaFinal) {
+		String query = "select em from DetalleOrdenSalida em,OrdenSalida os where em.ordenSalida.id=os.id and os.estado='PR' and os.fechaAprobacion>=:stDate and os.fechaAprobacion<=:edDate order by os.id desc";
+		log.info("Query DetalleOrdenSalida: "+query);
+		return em.createQuery(query).setParameter("stDate", fechaInicial).setParameter("edDate", fechaFinal).getResultList();
+	}
+	
 	
 }
