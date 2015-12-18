@@ -26,7 +26,7 @@ public class Almacen implements Serializable {
 
 	@Column(name="codigo",nullable=true)
 	private String codigo;
-	
+
 	@Column(name="online")
 	private boolean online;
 
@@ -36,12 +36,12 @@ public class Almacen implements Serializable {
 
 	@Column(name="tipo_almacen")
 	private String tipoAlmacen;
-	
+
 	private String estado;
-	
+
 	@Column(name="usuario_registro")
 	private String usuarioRegistro;
-	
+
 	@Column(name="fecha_registro")
 	private Date fechaRegistro;
 
@@ -65,6 +65,30 @@ public class Almacen implements Serializable {
 		return nombre ;
 	}
 	
+	@Override
+	public int hashCode() {
+		int hash = 0;
+		hash += (id != null ? id.hashCode() : 0);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(obj==null){
+			return false;
+		}else{
+			if(!(obj instanceof Almacen)){
+				return false;
+			}else{
+				if(((Almacen)obj).id==this.id){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		}
+	}
+
 	public Integer getId() {
 		return this.id;
 	}

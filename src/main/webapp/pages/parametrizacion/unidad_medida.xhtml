@@ -146,7 +146,7 @@
 													</div>
 
 													<div class="form-group ">
-														<div class="col-md-4">Descripcion</div>
+														<div class="col-md-4">Descripción</div>
 														<div class="col-md-8">
 															<p:inputTextarea id="descripcionID"
 																style=" color: #555555; background-image: none;"
@@ -229,7 +229,7 @@
 														value="#{_UnidadMedida.nombre}" />
 												</p:column>
 
-												<p:column width="30%" headerText="Descripcion"
+												<p:column width="30%" headerText="Descripción"
 													filterBy="#{_UnidadMedida.descripcion}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_UnidadMedida.descripcion}" />
@@ -259,6 +259,10 @@
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_UnidadMedida.usuarioRegistro}" />
 												</p:column>
+												<f:facet name="footer">
+													<h:outputText
+														value="#{listaUnidadMedida.size()} Registros en Total" />
+												</f:facet>
 
 											</p:dataTable>
 

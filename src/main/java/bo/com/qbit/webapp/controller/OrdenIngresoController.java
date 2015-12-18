@@ -25,6 +25,7 @@ import org.richfaces.cdi.push.Push;
 
 import bo.com.qbit.webapp.data.AlmacenProductoRepository;
 import bo.com.qbit.webapp.data.AlmacenRepository;
+import bo.com.qbit.webapp.data.CierreGestionAlmacenRepository;
 import bo.com.qbit.webapp.data.DetalleOrdenIngresoRepository;
 import bo.com.qbit.webapp.data.OrdenIngresoRepository;
 import bo.com.qbit.webapp.data.PartidaRepository;
@@ -34,6 +35,7 @@ import bo.com.qbit.webapp.data.UnidadMedidaRepository;
 import bo.com.qbit.webapp.data.UsuarioRepository;
 import bo.com.qbit.webapp.model.Almacen;
 import bo.com.qbit.webapp.model.DetalleOrdenIngreso;
+import bo.com.qbit.webapp.model.Empresa;
 import bo.com.qbit.webapp.model.FachadaOrdenIngreso;
 import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.OrdenIngreso;
@@ -72,6 +74,7 @@ public class OrdenIngresoController implements Serializable {
 	private @Inject PartidaRepository partidaRepository;
 	private @Inject UnidadMedidaRepository unidadMedidaRepository;
 	private @Inject AlmacenProductoRepository almacenProductoRepository;
+	private @Inject CierreGestionAlmacenRepository cierreGestionAlmacenRepository;
 
 	private @Inject OrdenIngresoRegistration ordenIngresoRegistration;
 	private @Inject DetalleOrdenIngresoRegistration detalleOrdenIngresoRegistration;
@@ -127,6 +130,7 @@ public class OrdenIngresoController implements Serializable {
 	private @Inject SessionMain sessionMain; //variable del login
 	private String usuarioSession;
 	private Gestion gestionSesion;
+	private Empresa empresaLogin;
 
 	private boolean atencionCliente = false;
 
@@ -144,6 +148,7 @@ public class OrdenIngresoController implements Serializable {
 		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
 		gestionSesion = sessionMain.getGestionLogin();
 		listUsuario = usuarioRepository.findAllOrderedByID();
+		empresaLogin = sessionMain.getEmpresaLogin();
 
 		//inicializar fachadaOrdenIngreso
 		//fachadaOrdenIngreso = new FachadaOrdenIngreso();
@@ -410,7 +415,7 @@ public class OrdenIngresoController implements Serializable {
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
 			String urlPath = request.getRequestURL().toString();
 			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
-			String urlPDFreporte = urlPath+"ReporteOrdenIngreso?pIdOrdenIngreso="+selectedOrdenIngreso.getId()+"&pIdEmpresa=1&pUsuario="+usuarioSession;
+			String urlPDFreporte = urlPath+"ReporteOrdenIngreso?pIdOrdenIngreso="+selectedOrdenIngreso.getId()+"&pUsuario="+usuarioSession+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial();
 			return urlPDFreporte;
 		}catch(Exception e){
 			return "error";
@@ -529,11 +534,18 @@ public class OrdenIngresoController implements Serializable {
 		}         
 		return results;
 	}
-
+	
 	public void onRowSelectAlmacenClick(SelectEvent event) {
 		String nombre =  event.getObject().toString();
 		for(Almacen i : listaAlmacen){
 			if(i.getNombre().equals(nombre)){
+				//verificar si el almacen-gestion ya fue cerrado
+				if(cierreGestionAlmacenRepository.finAlmacenGestionCerrado(i,gestionSesion) != null){
+					FacesUtil.infoMessage("INFORMACION", "El lmacen "+i.getNombre()+" fué cerrado");
+					listaAlmacen.remove(i);
+					selectedAlmacen = new Almacen();
+					return ;
+				}
 				selectedAlmacen = i;
 				return;
 			}

@@ -249,7 +249,7 @@
 								<li
 									class="#{(view.viewId.equals('/pages/inventario/catalogo_producto.xhtml')) ? 'active' :'inactive'}"><a
 									href="#{request.contextPath}/pages/inventario/catalogo_producto.xhtml">
-										<i class="icon-globe"></i><span class="sidebar-text">Catalogo
+										<i class="icon-globe"></i><span class="sidebar-text">Catálogo
 											de Productos</span>
 								</a></li>
 
@@ -318,7 +318,7 @@
 
 					<ui:insert name="page_active_reporte">
 						<li
-							class="#{(view.viewId.equals('/pages/reportes/lista_item.xhtml')) ? 'active' : (view.viewId.equals('/pages/reportes/report_total_proyecto.xhtml')) ? 'active' :(view.viewId.equals('/pages/reportes/report_unidad_solicitante.xhtml')) ? 'active' :'inactive'}">
+							class="#{(view.viewId.equals('/pages/reportes/lista_item.xhtml')) ? 'active' : (view.viewId.equals('/pages/reportes/report_total_proyecto.xhtml')) ? 'active' :(view.viewId.equals('/pages/reportes/report_unidad_solicitante.xhtml')) ? 'active' :(view.viewId.equals('/pages/reportes/report_total_partida.xhtml')) ? 'active' :(view.viewId.equals('/pages/reportes/report_total_funcionario.xhtml')) ? 'active' :'inactive'}">
 							<a href="#"><i class="icon-bar-chart"></i><span
 								class="sidebar-text">Reporte</span></a>
 							<ul class="nav nav-second-level">
@@ -328,10 +328,31 @@
 									href="#{request.contextPath}/pages/reportes/lista_item.xhtml">
 										<i class="icon-notebook"></i> <span class="sidebar-text">PEPS</span>
 								</a></li>
-								<li class="#{(view.viewId.equals('/pages/reportes/report_total_proyecto.xhtml')) ? 'active' :'inactive'}"><a href="#{request.contextPath}/pages/reportes/report_total_proyecto.xhtml"> <i
-										class="icon-notebook"></i> <span class="sidebar-text">Totales Proyecto</span></a></li>
-								<li class="#{(view.viewId.equals('/pages/reportes/report_unidad_solicitante.xhtml')) ? 'active' :'inactive'}"><a href="#{request.contextPath}/pages/reportes/report_unidad_solicitante.xhtml"> <i
-										class="icon-notebook"></i> <span class="sidebar-text">Totales Unidad Solicitante</span></a></li>
+								<li
+									class="#{(view.viewId.equals('/pages/reportes/report_total_proyecto.xhtml')) ? 'active' :'inactive'}"><a
+									href="#{request.contextPath}/pages/reportes/report_total_proyecto.xhtml">
+										<i class="icon-notebook"></i> <span class="sidebar-text">Totales
+											 Proyecto</span>
+								</a></li>
+								<li
+									class="#{(view.viewId.equals('/pages/reportes/report_unidad_solicitante.xhtml')) ? 'active' :'inactive'}"><a
+									href="#{request.contextPath}/pages/reportes/report_unidad_solicitante.xhtml">
+										<i class="icon-notebook"></i> <span class="sidebar-text">Totales
+											 Unidad Solicitante</span>
+								</a></li>
+								<li
+									class="#{(view.viewId.equals('/pages/reportes/report_total_partida.xhtml')) ? 'active' :'inactive'}"><a
+									href="#{request.contextPath}/pages/reportes/report_total_partida.xhtml">
+										<i class="icon-notebook"></i> <span class="sidebar-text">Totales
+											 Partida</span>
+								</a></li>
+								<li
+									class="#{(view.viewId.equals('/pages/reportes/report_total_funcionario.xhtml')) ? 'active' :'inactive'}"><a
+									href="#{request.contextPath}/pages/reportes/report_total_funcionario.xhtml">
+										<i class="icon-notebook"></i> <span class="sidebar-text">Totales
+											 Servidor Pub.</span>
+								</a></li>
+								
 
 							</ul>
 						</li>
@@ -345,7 +366,8 @@
 							<li
 								class="#{(view.viewId.equals('/pages/ayuda/manual_usuario.xhtml')) ? 'active' :'inactive'}"><a
 								href="#{request.contextPath}/pages/ayuda/manual_usuario.xhtml">
-									<i class="icon-notebook"></i> <span class="sidebar-text">Manual Usuario</span>
+									<i class="icon-notebook"></i> <span class="sidebar-text">Manual
+										Usuario</span>
 							</a></li>
 
 						</ul>

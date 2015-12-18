@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+
 //--datasource
 import javax.sql.DataSource;
 import javax.naming.Context;
@@ -64,7 +65,8 @@ public class ReporteTomaInventario  extends HttpServlet{
 			log.error("Error al conectar JDBC: "+e.getMessage());
 		}
 		try {
-			Integer pIdEmpresa = Integer.parseInt(request.getParameter("pIdEmpresa"));
+			String pNombreEmpresa = request.getParameter("pNombreEmpresa");
+			String pNitEmpresa = request.getParameter("pNitEmpresa");
 			Integer pIdTomaInventario = Integer.parseInt(request.getParameter("pIdTomaInventario"));
 			String  pUsuario = request.getParameter("pUsuario");
 
@@ -82,7 +84,8 @@ public class ReporteTomaInventario  extends HttpServlet{
 			@SuppressWarnings("rawtypes")
 			Map parameters = new HashMap();
 			parameters.put("pIdTomaInventario", pIdTomaInventario);
-			parameters.put("pIdEmpresa", pIdEmpresa);
+			parameters.put("pNombreEmpresa", pNombreEmpresa);
+			parameters.put("pNitEmpresa", pNitEmpresa);
 			parameters.put("pUsuario", pUsuario);
 
 			log.info("parameters "+parameters.toString());

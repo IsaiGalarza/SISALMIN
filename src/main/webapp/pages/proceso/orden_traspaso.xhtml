@@ -203,7 +203,7 @@
 														</div>
 
 														<div class="form-group ">
-															<div class="col-md-4">Servidor Publico</div>
+															<div class="col-md-4">Servidor Público</div>
 															<div class="col-md-8">
 																<p:autoComplete id="servidorPublicoID"
 																	style="width: 93%"
@@ -366,7 +366,8 @@
 														</p:column>
 
 														<p:column headerText="Unidad Medida" width="10%">
-															<h:outputText value="#{_var.producto.unidadMedidas.nombre}" />
+															<h:outputText
+																value="#{_var.producto.unidadMedidas.nombre}" />
 														</p:column>
 
 														<p:column headerText="Cantidad" width="10%">
@@ -386,7 +387,7 @@
 															</h:outputText>
 														</p:column>
 
-														<p:column headerText="Obervacion">
+														<p:column headerText="Observación">
 															<h:outputText value="#{_var.observacion}" />
 														</p:column>
 
@@ -463,13 +464,13 @@
 														update="formTableOrdenTraspaso, formBotonesHeader"
 														listener="#{ordenTraspasoController.onRowSelectOrdenTraspasoClick}" />
 
-													<p:column width="7%" headerText="Codigo"
+													<p:column width="7%" headerText="Código"
 														style="text-align:center;" filterBy="#{_var.correlativo}"
 														filterStyle="width: 100%;" filterMatchMode="contains">
 														<h:outputText value="#{_var.correlativo}" />
 													</p:column>
 
-													<p:column headerText="Almacen"
+													<p:column headerText="Almacén"
 														filterBy="#{_var.almacenDestino.nombre}"
 														filterStyle="width: 100%;" filterMatchMode="contains">
 														<h:outputText value="#{_var.almacenDestino.nombre}" />
@@ -584,7 +585,7 @@
 
 					<div class="row">
 						<div class="form-group">
-							<label for="descripcionID" class="col-sm-3 control-label">Observacion</label>
+							<label for="descripcionID" class="col-sm-3 control-label">Observación</label>
 							<div class="col-sm-9">
 								<p:inputTextarea id="descripcionID" required="true"
 									requiredMessage="Observacion Requerido."
@@ -631,23 +632,23 @@
 							</div>
 						</div>
 					</div>
-					
+
 					<ui:fragment rendered="false">
-					<br />
-					<div class="row">
-						<div class="form-group">
-							<label for="totalID" class="col-sm-3 control-label">Total</label>
-							<div class="col-sm-9">
-								<p:inputText id="totalID" required="true"
-									requiredMessage="Total Requerido." disabled="true"
-									value="#{ordenTraspasoController.selectedDetalleOrdenTraspaso.total}"
-									size="40">
-									<p:ajax event="change" />
-									<f:convertNumber pattern="#,##0.000" locale="en" />
-								</p:inputText>
+						<br />
+						<div class="row">
+							<div class="form-group">
+								<label for="totalID" class="col-sm-3 control-label">Total</label>
+								<div class="col-sm-9">
+									<p:inputText id="totalID" required="true"
+										requiredMessage="Total Requerido." disabled="true"
+										value="#{ordenTraspasoController.selectedDetalleOrdenTraspaso.total}"
+										size="40">
+										<p:ajax event="change" />
+										<f:convertNumber pattern="#,##0.000" locale="en" />
+									</p:inputText>
+								</div>
 							</div>
 						</div>
-					</div>
 					</ui:fragment>
 
 					<br />
@@ -667,19 +668,19 @@
 								<div class="col-md-4">
 									<p:commandLink value="&#160; Aceptar"
 										styleClass="btn btn-success ion-checkmark btn-block"
-										onclick="PF('dlgProducto').hide();"
+										
 										rendered="#{ ! ordenTraspasoController.editarOrdenTraspaso}">
 										<p:ajax
-											update="formTableOrdenTraspaso:itemsTable1,formTableOrdenTraspaso:editarDetalleOrdenTraspaso,formTableOrdenTraspaso:eliminarDetalleOrdenTraspaso"
+											update="dialog100,formTableOrdenTraspaso:itemsTable1,formTableOrdenTraspaso:editarDetalleOrdenTraspaso,formTableOrdenTraspaso:eliminarDetalleOrdenTraspaso"
 											listener="#{ordenTraspasoController.agregarDetalleOrdenTraspaso()}" />
 									</p:commandLink>
 
 									<p:commandLink value="&#160; Modificar"
 										styleClass="btn btn-success ion-checkmark btn-block"
-										onclick="PF('dlgProducto').hide();"
+										
 										rendered="#{ordenTraspasoController.editarOrdenTraspaso}">
 										<p:ajax
-											update="formTableOrdenTraspaso:itemsTable1,formTableOrdenTraspaso:editarDetalleOrdenTraspaso,formTableOrdenTraspaso:eliminarDetalleOrdenTraspaso"
+											update="dialog100,formTableOrdenTraspaso:itemsTable1,formTableOrdenTraspaso:editarDetalleOrdenTraspaso,formTableOrdenTraspaso:eliminarDetalleOrdenTraspaso"
 											listener="#{ordenTraspasoController.modificarDetalleOrdenTraspaso()}" />
 									</p:commandLink>
 								</div>
@@ -804,7 +805,7 @@
 			modal="true" visible="#{not empty facesContext.maximumSeverity}"
 			resizable="false" position="center" width="500px">
 			<h:form id="formDialogExport" enctype="multipart/form-data">
-			   Desea descargar el archivo  para importacion de almacen.
+			   Desea descargar el archivo  para importacion de almácen.
 			   <br />
 				<p:commandButton immediate="true" value="Descargar" ajax="false"
 					oncomplete="PF('dlgExportExcel').hide();">
@@ -813,14 +814,15 @@
 
 			</h:form>
 		</p:dialog>
-		
-		<p:dialog header="ALMACEN SIN EXISTENCIAS"
+
+		<p:dialog header="ALMACÉN SIN EXISTENCIAS"
 			widgetVar="dlgAlmacenSinExistencias" modal="true"
 			visible="#{not empty facesContext.maximumSeverity}" resizable="false"
 			position="center" width="500px">
 			<div class="row">
 				<div class="form-group">
-					<div class="col-md-12">El Almacen seleccionado no tiene Existencias</div>
+					<div class="col-md-12">El Almacén seleccionado no tiene
+						Existencias</div>
 				</div>
 			</div>
 			<br />
@@ -832,6 +834,32 @@
 				</div>
 			</div>
 
+		</p:dialog>
+
+		<p:dialog header="VALIDACION DE EXISTENCIAS DE ALMACÉN"
+			widgetVar="dlgValidacionExistenciasAlmacen"
+			visible="#{not empty facesContext.maximumSeverity}" resizable="false"
+			position="center" width="50%">
+			<h:form id="dialog100">
+				<div class="row">
+					<div class="form-group">
+						<div class="col-md-12">#{ordenTraspasoController.textDialogExistencias}</div>
+					</div>
+				</div>
+				<br />
+				<div class="row">
+					<div class="form-group">
+						<div class="col-md-4"></div>
+						<div class="col-md-4"></div>
+						<div class="col-md-4">
+							<p:commandLink value="&#160; ACEPTAR"
+								styleClass="btn btn-success ion-checkmark btn-block"
+								onclick="PF('dlgValidacionExistenciasAlmacen').hide();">
+							</p:commandLink>
+						</div>
+					</div>
+				</div>
+			</h:form>
 		</p:dialog>
 
 

@@ -112,6 +112,15 @@
 									style="height:31px; padding:center"
 									action="#{tomaInventarioController.registrarTomaInventario()}">
 								</p:commandLink>
+
+								<p:commandLink id="buttonCierreAlmacen"
+									value="&#160; Cierre Almacén"
+									styleClass="btn btn-info ion-ios7-loop-strong"
+									style="height:31px; padding:center"
+									rendered="#{tomaInventarioController.cierreAlmacen}"
+									update="formTableTomaInventario,formBotonesHeader"
+									action="#{tomaInventarioController.cerrarAlmacenPorGestion()}">
+								</p:commandLink>
 							</div>
 						</div>
 					</h:form>
@@ -156,13 +165,13 @@
 													update="formTableTomaInventario, formBotonesHeader"
 													listener="#{tomaInventarioController.onRowSelectTomaInventarioClick}" />
 
-												<p:column width="7%" headerText="Codigo"
+												<p:column width="7%" headerText="Código"
 													style="text-align:center;" filterBy="#{_var.id}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.id}" />
 												</p:column>
 
-												<p:column headerText="Almacen"
+												<p:column headerText="Almacén"
 													filterBy="#{_var.almacen.nombre}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.almacen.nombre}" />
@@ -209,6 +218,8 @@
 															rendered="#{_var.estado=='PR'}" value="Procesado" /></span>
 													<span class="label label-success"><h:outputText
 															rendered="#{_var.estado=='CN'}" value="Conciliado" /></span>
+													<span class="label label-success"><h:outputText
+															rendered="#{_var.estado=='CE'}" value="Cerrado" /></span>
 												</p:column>
 
 												<p:column width="10%" headerText="Fecha"
@@ -325,7 +336,7 @@
 													</div>
 
 													<div class="form-group ">
-														<div class="col-md-4">Nombre del Responsable Almacen</div>
+														<div class="col-md-4">Nombre del Responsable Almacén</div>
 														<div class="col-md-8">
 															<p:inputText id="responsableAlmacenID"
 																style=" color: #555555; background-image: none;"
@@ -434,9 +445,10 @@
 												value="#{tomaInventarioController.listDetalleTomaInventario}"
 												emptyMessage="No se encontraron Registros.">
 
-												<p:column width="7%" headerText="Codigo"  style="text-align:center;"
-													filterBy="#{_var.producto.codigo}" filterStyle="width: 100%;"
-													filterMatchMode="contains">
+												<p:column width="7%" headerText="Codigo"
+													style="text-align:center;"
+													filterBy="#{_var.producto.codigo}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.producto.codigo}">
 													</h:outputText>
 												</p:column>
@@ -447,37 +459,96 @@
 													<h:outputText value="#{_var.producto.nombre}" />
 												</p:column>
 
-												<p:column width="7%" headerText="Unidad "  style="text-align:center;"
+												<p:column width="7%" headerText="Unidad "
+													style="text-align:center;"
 													filterBy="#{_var.producto.unidadMedidas.nombre}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.producto.unidadMedidas.nombre}" />
 												</p:column>
 
 												<p:column width="8%" headerText="Cantidad registrada"
-													filterBy="#{_var.cantidadRegistrada}"  style="text-align:center;"
-													filterStyle="width: 100%;" filterMatchMode="contains">
+													filterBy="#{_var.cantidadRegistrada}"
+													style="text-align:center;" filterStyle="width: 100%;"
+													filterMatchMode="contains">
 													<h:outputText value="#{_var.cantidadRegistrada}">
 													</h:outputText>
 												</p:column>
 
 												<p:column width="8%" headerText="Cantidad verificada"
-													filterBy="#{_var.cantidadVerificada}"  style="text-align:center;"
-													filterStyle="width: 100%;" filterMatchMode="contains">
+													filterBy="#{_var.cantidadVerificada}"
+													style="text-align:center;" filterStyle="width: 100%;"
+													filterMatchMode="contains">
 													<h:outputText
 														value="#{_var.cantidadVerificada == null? ' ' :_var.cantidadVerificada}" />
 												</p:column>
 
-												<p:column headerText="Diferencia" width="8%"  style="text-align:center;"
-													filterBy="#{_var.diferencia}" filterStyle="width: 100%; "
-													filterMatchMode="contains">
+												<p:column headerText="Diferencia" width="8%"
+													style="text-align:center;" filterBy="#{_var.diferencia}"
+													filterStyle="width: 100%; " filterMatchMode="contains">
 													<h:outputText
 														value="#{_var.diferencia == null? ' ' :_var.diferencia}" />
 												</p:column>
 
-												<p:column headerText="Observacion" width="8%"
+												<p:column headerText="Observación" width="8%"
 													filterBy="#{_var.observacion}" filterStyle="width: 100%; "
 													filterMatchMode="contains">
 													<h:outputText value="#{_var.observacion}" />
+												</p:column>
+
+											</p:dataTable>
+										</div>
+										<!-- end here datatable -->
+										<div class="panel-body"></div>
+
+									</div>
+								</div>
+							</ui:fragment>
+							<!-- MOSTRAR CIERRE DE ALMACEN -->
+							<ui:fragment
+								rendered="#{tomaInventarioController.cierreAlmacen || tomaInventarioController.newTomaInventario.tipo.equals('FINAL')}">
+
+								<div class="col-md-8" align="left">
+
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">Lista Producto - Cierre Almacén</h3>
+										</div>
+										<!-- start here datatable -->
+										<div class="box-content no-padding">
+
+											<p:dataTable
+												style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
+												rowKey="#{_var.id}" id="productoTableCierre" var="_var"
+												value="#{tomaInventarioController.listDetalleTomaInventario}"
+												emptyMessage="No se encontraron Registros.">
+
+												<p:column width="7%" headerText="Codigo"
+													style="text-align:center;"
+													filterBy="#{_var.producto.codigo}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_var.producto.codigo}">
+													</h:outputText>
+												</p:column>
+
+												<p:column width="15%" headerText="Nombre Item"
+													filterBy="#{_var.producto.nombre}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_var.producto.nombre}" />
+												</p:column>
+
+												<p:column width="7%" headerText="Unidad "
+													style="text-align:center;"
+													filterBy="#{_var.producto.unidadMedidas.nombre}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_var.producto.unidadMedidas.nombre}" />
+												</p:column>
+
+												<p:column width="8%" headerText="Cantidad registrada"
+													filterBy="#{_var.cantidadRegistrada}"
+													style="text-align:center;" filterStyle="width: 100%;"
+													filterMatchMode="contains">
+													<h:outputText value="#{_var.cantidadRegistrada}">
+													</h:outputText>
 												</p:column>
 
 											</p:dataTable>
@@ -513,9 +584,9 @@
 												<p:ajax event="rowSelectCheckbox" update="@form" />
 												<p:ajax event="rowUnselectCheckbox" update="@form" />
 
-												<p:column width="7%" headerText="Codigo"  style="text-align:center;"
-													filterBy="#{_var.producto.id}" filterStyle="width: 100%;"
-													filterMatchMode="contains">
+												<p:column width="7%" headerText="Código"
+													style="text-align:center;" filterBy="#{_var.producto.id}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.producto.id}">
 													</h:outputText>
 												</p:column>
@@ -526,7 +597,8 @@
 													<h:outputText value="#{_var.producto.nombre}" />
 												</p:column>
 
-												<p:column width="8%" headerText="Unidad "  style="text-align:center;"
+												<p:column width="8%" headerText="Unidad "
+													style="text-align:center;"
 													filterBy="#{_var.producto.unidadMedidas.nombre}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.producto.unidadMedidas.nombre}" />
@@ -553,7 +625,7 @@
 														value="#{_var.diferencia == null? ' ' :_var.diferencia}" />
 												</p:column>
 
-												<p:column width="15%" headerText="Observacion"
+												<p:column width="15%" headerText="Observación"
 													filterBy="#{_var.observacion}" style="text-align:center;"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<p:cellEditor>
@@ -590,10 +662,10 @@
 												style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
 												rowKey="#{_var.id}" id="productoTable2" var="_var"
 												value="#{tomaInventarioController.listDetalleTomaInventario}"
-												 editable="true"
-												editMode="cell" emptyMessage="No se encontraron Registros.">
+												editable="true" editMode="cell"
+												emptyMessage="No se encontraron Registros.">
 
-												<p:column width="5%" headerText="Codigo"
+												<p:column width="5%" headerText="Código"
 													style="text-align:center;" filterBy="#{_var.producto.id}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.producto.id}">
@@ -652,7 +724,7 @@
 													</p:cellEditor>
 												</p:column>
 
-												<p:column headerText="Observacion" width="10%"
+												<p:column headerText="Observación" width="10%"
 													filterBy="#{_var.observacion}" filterStyle="width: 100%; "
 													filterMatchMode="contains">
 													<p:cellEditor>
@@ -724,7 +796,7 @@
 													</h:outputText>
 												</p:column>
 
-												<p:column headerText="Obervacion">
+												<p:column headerText="Obervación">
 													<h:outputText value="#{_var.observacion}" />
 												</p:column>
 
@@ -852,7 +924,7 @@
 
 					<div class="row">
 						<div class="form-group">
-							<label for="descripcionID" class="col-sm-3 control-label">Observacion</label>
+							<label for="descripcionID" class="col-sm-3 control-label">Observación</label>
 							<div class="col-sm-9">
 								<p:inputTextarea id="descripcionID" required="true"
 									requiredMessage="Observacion Requerido."
@@ -933,7 +1005,7 @@
 										styleClass="btn btn-success ion-checkmark btn-block"
 										onclick="PF('dlgProducto').hide();"
 										rendered="#{ ! tomaInventarioController.editarOrdenIngreso}">
-										<p:ajax update="formTableTomaInventario,formGrowl:msgs1" 
+										<p:ajax update="formTableTomaInventario,formGrowl:msgs1"
 											listener="#{tomaInventarioController.agregarDetalleOrdenIngreso()}" />
 									</p:commandLink>
 

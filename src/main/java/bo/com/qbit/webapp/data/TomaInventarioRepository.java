@@ -20,7 +20,7 @@ public class TomaInventarioRepository {
 
 	@SuppressWarnings("unchecked")
 	public List<TomaInventario> findAllOrderedByID() {
-		String query = "select ser from TomaInventario ser where (ser.estado='AC' or ser.estado='IN' or ser.estado='RE' or ser.estado='PR') order by ser.id desc";
+		String query = "select ser from TomaInventario ser where (ser.estado='AC' or ser.estado='IN' or ser.estado='RE' or ser.estado='PR' or ser.estado='CN' or ser.estado='CE') order by ser.id desc";
 		System.out.println("Query TomaInventario: " + query);
 		return em.createQuery(query).getResultList();
 	}

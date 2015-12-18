@@ -8,7 +8,7 @@
 	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
 	template="/WEB-INF/templates/template_main.xhtml">
 	<ui:define name="head">
-		<title>Almacen</title>
+		<title>Almacén</title>
 	</ui:define>
 
 	<ui:define name="content">
@@ -28,7 +28,7 @@
 									action="#{almacenController.initNewAlmacen()}">
 								</p:commandLink>
 								
-								<p:commandLink id="buttonCrear1" value="&#160; Nuevo Almacen"
+								<p:commandLink id="buttonCrear1" value="&#160; Nuevo Almacén"
 									styleClass="btn btn-success ion-plus-round"
 									rendered="#{almacenController.crear  and sessionMain.tienePermisoPaginaAccion('ALMACEN','REGISTRAR')}"
 									update=":formTableProveedor, :formBotonesHeader"
@@ -68,7 +68,7 @@
 									style="height:31px; padding:center">
 								</p:commandLink>
 
-								<p:dialog header="Desea Eliminar el Almacen?"
+								<p:dialog header="Desea Eliminar el Almacén?"
 									widgetVar="dlgEliminar" minHeight="40" modal="true">
 									<div class="form-group">
 										<div class="col-md-4">
@@ -128,7 +128,7 @@
 						<li><a
 							href="#{request.contextPath}/pages/parametrizacion/almacen.xhtml"
 							style="color: #0090FF; font-size: 12px;">Parametrización</a></li>
-						<li class="active" style="font-size: 12px;">Almacen</li>
+						<li class="active" style="font-size: 12px;">Almacén</li>
 					</ol>
 				</div>
 			</section>
@@ -143,7 +143,7 @@
 								<div class="col-md-4">
 									<div class="panel panel-default">
 										<div class="panel-heading">
-											<h3 class="panel-title">Registro Datos Almacen</h3>
+											<h3 class="panel-title">Registro Datos Almacén</h3>
 										</div>
 										<div class="panel-body">
 											<!-- start here register -->
@@ -151,7 +151,7 @@
 												<div class="col-md-12 box-content form-horizontal">
 
 													<div class="form-group ">
-														<div class="col-md-4">Nombre Almacen</div>
+														<div class="col-md-4">Nombre Almacén</div>
 														<div class="col-md-8">
 															<p:inputText id="descripcionID"
 																style=" color: #555555; background-image: none;"
@@ -164,7 +164,7 @@
 													</div>
 
 													<div class="form-group ">
-														<div class="col-md-4">Codigo</div>
+														<div class="col-md-4">Código</div>
 														<div class="col-md-8">
 															<p:inputText id="codigoID"
 																style=" color: #555555; background-image: none;"
@@ -209,7 +209,7 @@
 													</div>
 
 													<div class="form-group ">
-														<div class="col-md-4">Direccion</div>
+														<div class="col-md-4">Dirección</div>
 														<div class="col-md-8">
 															<p:inputText id="direccionID"
 																style=" color: #555555; background-image: none;"
@@ -222,7 +222,7 @@
 													</div>
 
 													<div class="form-group ">
-														<div class="col-md-4">Telefono</div>
+														<div class="col-md-4">Teléfono</div>
 														<div class="col-md-8">
 															<p:inputText id="telefonoID"
 																style=" color: #555555; background-image: none;"
@@ -242,7 +242,7 @@
 																<p:ajax event="change" />
 															</p:selectBooleanCheckbox>
 														</div>
-														<div class="col-md-7">[El Almacen tiene Conexion ?]</div>
+														<div class="col-md-7">[El Almacen tiene Conexión ?]</div>
 													</div>
 
 													<div class="form-group ">
@@ -285,7 +285,7 @@
 
 									<div class="panel panel-default">
 										<div class="panel-heading">
-											<h3 class="panel-title">Lista de Almacenes</h3>
+											<h3 class="panel-title">Lista de Almacén</h3>
 										</div>
 										<!-- start here datatable -->
 										<div class="box-content no-padding">
@@ -302,18 +302,18 @@
 													update=":formTableProveedor, :formBotonesHeader"
 													listener="#{almacenController.onRowSelectAlmacenClick}" />
 
-												<p:column width="8%" headerText="Codigo"
+												<p:column width="8%" headerText="Código"
 													filterBy="#{_almacen.codigo}" style="text-align:center;"
 													filterStyle="width: 100%; height:25px;"
 													filterMatchMode="contains">
 													<h:outputText value="#{_almacen.codigo}" />
 												</p:column>
-												<p:column headerText="Almacen" filterBy="#{_almacen.nombre}"
+												<p:column headerText="Almacén" filterBy="#{_almacen.nombre}"
 													filterStyle="width: 100%; height:25px;"
 													filterMatchMode="contains">
 													<h:outputText value="#{_almacen.nombre}" />
 												</p:column>
-												<p:column headerText="Direccion"
+												<p:column headerText="Dirección"
 													filterBy="#{_almacen.direccion}"
 													filterStyle="width: 100%; height:25px;"
 													filterMatchMode="contains">
@@ -360,6 +360,10 @@
 													filterMatchMode="contains">
 													<h:outputText value="#{_almacen.usuarioRegistro}" />
 												</p:column>
+												<f:facet name="footer">
+													<h:outputText
+														value="#{listaAlmacen.size()} Registros en Total" />
+												</f:facet>
 
 											</p:dataTable>
 

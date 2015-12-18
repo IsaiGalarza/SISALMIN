@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+
 //--datasource
 import javax.sql.DataSource;
 import javax.naming.Context;
@@ -64,7 +65,8 @@ public class ReporteKardexProducto  extends HttpServlet{
 			log.error("Error al conectar JDBC: "+e.getMessage());
 		}
 		try {
-			Integer pIdEmpresa = Integer.parseInt(request.getParameter("pIdEmpresa"));
+			String pNombreEmpresa = request.getParameter("pNombreEmpresa");
+			String pNitEmpresa = request.getParameter("pNitEmpresa");
 			Integer pIdProducto = Integer.parseInt(request.getParameter("pIdProducto"));
 			Integer pIdGestion = Integer.parseInt(request.getParameter("pIdGestion"));
 			String  pUsuario = request.getParameter("pUsuario");
@@ -82,9 +84,10 @@ public class ReporteKardexProducto  extends HttpServlet{
 			// create a map of parameters to pass to the report.   
 			@SuppressWarnings("rawtypes")
 			Map parameters = new HashMap();
+			parameters.put("pNombreEmpresa", pNombreEmpresa);
+			parameters.put("pNitEmpresa", pNitEmpresa);
 			parameters.put("pIdProducto", pIdProducto);
 			parameters.put("pIdGestion", pIdGestion);
-			parameters.put("pIdEmpresa", pIdEmpresa);
 			parameters.put("pUsuario", pUsuario);
 
 			log.info("parameters "+parameters.toString());

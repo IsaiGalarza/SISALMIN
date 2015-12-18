@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.jasperreports.engine.*;
-import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 import java.util.HashMap;
@@ -26,14 +25,13 @@ import javax.sql.DataSource;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
-import org.apache.log4j.Logger;
 
-@WebServlet("/ReporteOrdenTraspaso")
-public class ReporteOrdenTraspaso  extends HttpServlet{
+@WebServlet("/ReporteTotalFuncionario")
+public class ReporteTotalFuncionario  extends HttpServlet{
 
-	private static final long serialVersionUID = 7333709235199214683L;
-
-	private Logger log = Logger.getLogger(this.getClass());
+	private static final long serialVersionUID = 1031215904122053423L;
+	
+	//private Logger log = Logger.getLogger(this.getClass());
 
 	@SuppressWarnings({ "unchecked", "deprecation" })
 	protected void doGet(HttpServletRequest request,
@@ -53,6 +51,7 @@ public class ReporteOrdenTraspaso  extends HttpServlet{
 
 			//---------------------------------------------
 
+
 			if(conn!=null){
 				System.out.println("Conexion Exitosa datasource...");
 			}else{
@@ -60,14 +59,15 @@ public class ReporteOrdenTraspaso  extends HttpServlet{
 			}
 
 		} catch (Exception e) {
-			log.error("Error al conectar JDBC: "+e.getMessage());
+			System.out.println("Error al conectar JDBC: "+e.getMessage());
 		}
 		try {
 			String pNombreEmpresa = request.getParameter("pNombreEmpresa");
 			String pNitEmpresa = request.getParameter("pNitEmpresa");
-			Integer pIdOrdenTraspaso = Integer.parseInt(request.getParameter("pIdOrdenTraspaso"));
+			String pFechaInicio =  request.getParameter("pFechaInicio");
+			String pFechaFin = request.getParameter("pFechaFin");
+			Integer pIdGestion = Integer.parseInt(request.getParameter("pIdGestion"));
 			String  pUsuario = request.getParameter("pUsuario");
-			String  pTypeExport = request.getParameter("pTypeExport");
 
 			String realPath = request.getRealPath("/");
 			System.out.println("Real Path: "+realPath);
@@ -76,16 +76,17 @@ public class ReporteOrdenTraspaso  extends HttpServlet{
 			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
 			System.out.println("URL ::::: "+urlPath);
 
-			String rutaReporte = urlPath+"resources/report/orden_traspaso.jasper";
-			if(pTypeExport.equals("excel")){rutaReporte = urlPath+"resources/report/excel_orden_traspaso.jasper";}
+			String rutaReporte = urlPath+"resources/report/totales_funcionario.jasper";
 			System.out.println("rutaReporte: "+rutaReporte);
-
+			
 			// create a map of parameters to pass to the report.   
 			@SuppressWarnings("rawtypes")
 			Map parameters = new HashMap();
-			parameters.put("pIdOrdenTraspaso", pIdOrdenTraspaso);
 			parameters.put("pNombreEmpresa", pNombreEmpresa);
 			parameters.put("pNitEmpresa", pNitEmpresa);
+			parameters.put("pIdGestion", pIdGestion);
+			parameters.put("pFechaInicio", pFechaInicio);
+			parameters.put("pFechaFin", pFechaFin);
 			parameters.put("pUsuario", pUsuario);
 
 			System.out.println("parameters "+parameters.toString());
@@ -98,7 +99,6 @@ public class ReporteOrdenTraspaso  extends HttpServlet{
 				//System.out.println("jasperReport query: "+jasperReport.getQuery().getText());
 			}
 
-			//la siguiente linea es la que tarda demasiado ( la primera vez)
 			JasperPrint jasperPrint2 = JasperFillManager.fillReport(jasperReport, parameters, conn);
 
 			if(jasperPrint2!=null){
@@ -107,32 +107,13 @@ public class ReporteOrdenTraspaso  extends HttpServlet{
 				System.out.println("jasperPrint null");
 			}
 
-			if (pTypeExport.equals("pdf")) {
-				System.out.println("Entro a pdf");
-				response.setContentType("application/pdf");
-				//response.setHeader("Content-disposition", "attachment; filename=" + jasperPrint2.getName() + ".pdf");
-				JasperExportManager.exportReportToPdfStream(jasperPrint2, servletOutputStream);
-				servletOutputStream.flush();
-				servletOutputStream.close();
-			} else {
-				if (pTypeExport.equals("excel")) {
-					System.out.println("Entro a excel");
-					response.setContentType("application/xls");
-					response.setHeader("Content-disposition", "attachment; filename=" + jasperPrint2.getName() + ".xls");
-					JRXlsxExporter docxExporter = new JRXlsxExporter();
-					docxExporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint2);
-					docxExporter.setParameter(JRExporterParameter.OUTPUT_STREAM,servletOutputStream);
-					docxExporter.exportReport();
-				}
-			}
+			//save report to path
+			//JasperExportManager.exportReportToPdfFile(jasperPrint,"C:/etiquetas/Etiqueta+"+pCodigoPre+"-"+pNombreElaborado+".pdf");
+			response.setContentType("application/pdf");// text/html  application/pdf   application/html
+			JasperExportManager.exportReportToPdfStream(jasperPrint2,servletOutputStream);
 
-			// save report to path
-			// JasperExportManager.exportReportToPdfFile(jasperPrint,"C:/etiquetas/Etiqueta+"+pCodigoPre+"-"+pNombreElaborado+".pdf");
-			// response.setContentType("application/pdf");
-			// JasperExportManager.exportReportToPdfStream(jasperPrint2,servletOutputStream);
-
-			//servletOutputStream.flush();
-			//servletOutputStream.close();
+			servletOutputStream.flush();
+			servletOutputStream.close();
 
 		} catch (Exception e) {
 			// display stack trace in the browser

@@ -101,7 +101,7 @@
 				</div>
 				<div class="pull-right">
 					<ol class="breadcrumb">
-						<li><a href="#{request.contextPath}/pages/dashboard.jsf"
+						<li><a href="#{request.contextPath}/pages/dashboard.xhtml"
 							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
 						<li><a
 							href="#{request.contextPath}/pages/parametrizacion/partida.xhtml"
@@ -204,7 +204,7 @@
 
 										<div class="panel panel-default">
 											<div class="panel-heading">
-												<h3 class="panel-title">Lista de ITEMS</h3>
+												<h3 class="panel-title">Lista de Partida</h3>
 											</div>
 											<!-- start here datatable -->
 											<div class="box-content no-padding">
@@ -222,11 +222,11 @@
 															update=":formTablePartida, :formBotonesHeader"
 															listener="#{partidaController.onRowSelectProductoClick}" />
 
-														<p:column width="5%" headerText="Codigo">
+														<p:column width="5%" headerText="Código">
 															<h:outputText value="#{_var.codigo}" />
 														</p:column>
 
-														<p:column headerText="Nombre ITEM">
+														<p:column headerText="Nombre ">
 															<h:outputText value="#{_var.nombre}" />
 														</p:column>
 
@@ -253,6 +253,10 @@
 																	rendered="#{_Partida.estado=='IN'}" value="Inactivo" /></span>
 														</p:column>
 
+														<f:facet name="footer">
+															<h:outputText
+																value="#{partidaController.listaProductos.size()} Registros en Total" />
+														</f:facet>
 
 													</p:dataTable>
 
@@ -300,7 +304,7 @@
 
 									<div class="panel panel-default">
 										<div class="panel-heading">
-											<h3 class="panel-title">Lista de Partidas</h3>
+											<h3 class="panel-title">Lista de Partida</h3>
 										</div>
 										<!-- start here datatable -->
 										<div class="box-content no-padding">
@@ -316,7 +320,7 @@
 													update=":formTablePartida, :formBotonesHeader"
 													listener="#{partidaController.onRowSelectPartidaClick}" />
 
-												<p:column width="7%" headerText="Codigo"
+												<p:column width="7%" headerText="Código"
 													filterBy="#{_Partida.codigo}" style="text-align:center;"
 													filterStyle="width: 100%; height:25px;"
 													filterMatchMode="contains">
@@ -330,7 +334,7 @@
 													<h:outputText value="#{_Partida.nombre}" />
 												</p:column>
 
-												<p:column width="30%" headerText="Descripcion"
+												<p:column width="30%" headerText="Descripción"
 													filterBy="#{_Partida.descripcion}"
 													filterStyle="width: 100%; height:25px;"
 													filterMatchMode="contains">
@@ -363,6 +367,11 @@
 													filterMatchMode="contains">
 													<h:outputText value="#{_Partida.usuarioRegistro}" />
 												</p:column>
+
+												<f:facet name="footer">
+													<h:outputText
+														value="#{listaPartida.size()} Registros en Total" />
+												</f:facet>
 
 											</p:dataTable>
 
@@ -403,7 +412,7 @@
 				<div class="modal-body">
 					<div class="row">
 						<div class="form-group">
-							<label for="codigoID" class="col-sm-3 control-label">Codigo</label>
+							<label for="codigoID" class="col-sm-3 control-label">Código</label>
 							<div class="col-sm-9">
 								<p:inputText id="codigoID" required="true"
 									requiredMessage="Codigo Requerido."
@@ -429,7 +438,7 @@
 
 					<div class="row">
 						<div class="form-group">
-							<label for="descripcionID" class="col-sm-3 control-label">Descripcion</label>
+							<label for="descripcionID" class="col-sm-3 control-label">Descripción</label>
 							<div class="col-sm-9">
 								<p:inputTextarea id="descripcionID" required="true"
 									requiredMessage="Descripcion Requerido."

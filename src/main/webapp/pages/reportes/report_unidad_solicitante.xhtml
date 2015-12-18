@@ -38,7 +38,7 @@
 
 								<p:commandLink id="buttonVerReporte" value="&#160; Ver Reporte"
 									styleClass="btn btn-info ion-printer"
-									rendered="#{reportTotalUnidadSolicitanteController.listaOrdenSalida.size() > 0}"
+									rendered="#{reportTotalUnidadSolicitanteController.listaDetalleOrdenSalida.size() > 0}"
 									style="height:31px; padding:center"
 									update="formFilterProducto ,formBotonesHeader"
 									action="#{reportTotalUnidadSolicitanteController.cargarReporte()}">
@@ -54,7 +54,7 @@
 						<li><a
 							href="#{request.contextPath}/pages/reportes/report_total_unidad_solicitante.xhtml"
 							style="color: #0090FF; font-size: 12px;">Reporte</a></li>
-						<li class="active" style="font-size: 12px;">Reportes</li>
+						<li class="active" style="font-size: 12px;">Total por Unidad Solicitante</li>
 					</ol>
 				</div>
 			</section>
@@ -68,7 +68,7 @@
 								<div class="col-md-4">
 									<div class="panel panel-default">
 										<div class="panel-heading">
-											<h3 class="panel-title">Filtro Proyecto</h3>
+											<h3 class="panel-title">Filtro Unidad Solicitante</h3>
 										</div>
 										<!-- start here datatable -->
 										<div class="panel-body">
@@ -117,58 +117,49 @@
 
 											<p:dataTable
 												style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
-												rowKey="#{_var.id}" id="productoTable" var="_var"
-												value="#{reportTotalUnidadSolicitanteController.listaOrdenSalida}"
+												rowKey="#{_var.id}" id="productoTable2" var="_var"
+												value="#{reportTotalUnidadSolicitanteController.listaDetalleOrdenSalida}"
 												emptyMessage="No se encontraron Registros.">
 
 												<p:column width="10%" headerText="Fecha"
 													style="text-align:center"
-													filterBy="#{_var.fechaAprobacion}"
+													filterBy="#{_var.ordenSalida.fechaAprobacion}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.fechaAprobacion}">
+													<h:outputText value="#{_var.ordenSalida.fechaAprobacion}">
 														<f:convertDateTime pattern="dd/MM/yyyy" />
 													</h:outputText>
 												</p:column>
 
 												<p:column width="15%" headerText="Orden Salida"
-													style="text-align:center" filterBy="#{_var.correlativo}"
+													style="text-align:center" filterBy="#{_var.ordenSalida.correlativo}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.correlativo}" />
+													<h:outputText value="#{_var.ordenSalida.correlativo}" />
 												</p:column>
 
-												<p:column width="30%" headerText="Unidad Solicitante"
-													filterBy="#{_var.unidadSolicitante.nombre}"
+												<p:column width="30%" headerText="Partida"
+													filterBy="#{_var.producto.partida.nombre}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.unidadSolicitante.nombre}" />
+													<h:outputText value="#{_var.producto.partida.nombre}" />
 												</p:column>
 
 
 												<p:column headerText="Descripcion"
-													filterBy="#{_var.proyecto.descripcion}"
+													filterBy="#{_var.producto.partida.descripcion}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.proyecto.descripcion}" />
+													<h:outputText value="#{_var.producto.partida.descripcion}" />
 												</p:column>
 
 
 												<p:column width="15%" headerText="Total"
-													style="text-align:center" filterBy="#{_var.totalImporte}"
+													style="text-align:center" filterBy="#{_var.total}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.totalImporte}" />
+													<h:outputText value="#{_var.total}" />
 												</p:column>
-												<p:columnGroup type="footer">
-													<p:row>
-														<p:column colspan="4" style="text-align:right"
-															footerText="Total:" />
-														<p:column
-															footerText="#{reportTotalUnidadSolicitanteController.total}"
-															style="text-align:center" />
-
-													</p:row>
-												</p:columnGroup>
+												
 
 												<f:facet name="footer">
 													<h:outputText
-														value="#{reportTotalUnidadSolicitanteController.listaOrdenSalida.size()} Registros en Total" />
+														value="#{reportTotalUnidadSolicitanteController.listaDetalleOrdenSalida.size()} Registros en Total" />
 												</f:facet>
 
 											</p:dataTable>

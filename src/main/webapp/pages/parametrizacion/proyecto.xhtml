@@ -102,7 +102,7 @@
 				</div>
 				<div class="pull-right">
 					<ol class="breadcrumb">
-						<li><a href="#{request.contextPath}/pages/dashboard.jsf"
+						<li><a href="#{request.contextPath}/pages/dashboard.xhtml"
 							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
 						<li><a
 							href="#{request.contextPath}/pages/parametrizacion/proyecto.xhtml"
@@ -210,7 +210,7 @@
 
 									<div class="panel panel-default">
 										<div class="panel-heading">
-											<h3 class="panel-title">Lista de Proyectos</h3>
+											<h3 class="panel-title">Lista de Proyecto</h3>
 										</div>
 										<!-- start here datatable -->
 										<div class="box-content no-padding">
@@ -226,7 +226,7 @@
 													update=":formTableProyecto, :formBotonesHeader"
 													listener="#{proyectoController.onRowSelectProyectoClick}" />
 
-												<p:column width="8%" headerText="Codigo"
+												<p:column width="8%" headerText="Código"
 													filterBy="#{_Proyecto.codigo}" style="text-align:center;"
 													filterStyle="width: 100%; height:25px;"
 													filterMatchMode="contains">
@@ -239,7 +239,7 @@
 													<h:outputText value="#{_Proyecto.nombre}" />
 												</p:column>
 
-												<p:column headerText="Descripcion"
+												<p:column headerText="Descripción"
 													filterBy="#{_Proyecto.descripcion}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_Proyecto.descripcion}" />
@@ -268,6 +268,11 @@
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_Proyecto.usuarioRegistro}" />
 												</p:column>
+												
+												<f:facet name="footer">
+													<h:outputText
+														value="#{listaProyecto.size()} Registros en Total" />
+												</f:facet>
 
 											</p:dataTable>
 

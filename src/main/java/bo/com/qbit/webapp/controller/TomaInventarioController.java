@@ -19,6 +19,7 @@ import org.richfaces.cdi.push.Push;
 
 import bo.com.qbit.webapp.data.AlmacenProductoRepository;
 import bo.com.qbit.webapp.data.AlmacenRepository;
+import bo.com.qbit.webapp.data.CierreGestionAlmacenRepository;
 import bo.com.qbit.webapp.data.DetalleOrdenIngresoRepository;
 import bo.com.qbit.webapp.data.DetalleTomaInventarioRepository;
 import bo.com.qbit.webapp.data.OrdenIngresoRepository;
@@ -30,9 +31,11 @@ import bo.com.qbit.webapp.data.UnidadMedidaRepository;
 import bo.com.qbit.webapp.model.Almacen;
 import bo.com.qbit.webapp.model.AlmacenProducto;
 import bo.com.qbit.webapp.model.BajaProducto;
+import bo.com.qbit.webapp.model.CierreGestionAlmacen;
 import bo.com.qbit.webapp.model.DetalleOrdenIngreso;
 import bo.com.qbit.webapp.model.DetalleTomaInventario;
 import bo.com.qbit.webapp.model.DetalleTomaInventarioOrdenIngreso;
+import bo.com.qbit.webapp.model.Empresa;
 import bo.com.qbit.webapp.model.FachadaOrdenIngreso;
 import bo.com.qbit.webapp.model.FachadaOrdenSalida;
 import bo.com.qbit.webapp.model.FachadaOrdenTraspaso;
@@ -45,6 +48,7 @@ import bo.com.qbit.webapp.model.TomaInventario;
 import bo.com.qbit.webapp.model.UnidadMedida;
 import bo.com.qbit.webapp.model.Usuario;
 import bo.com.qbit.webapp.service.BajaProductoRegistration;
+import bo.com.qbit.webapp.service.CierreGestionAlmacenRegistration;
 import bo.com.qbit.webapp.service.DetalleOrdenIngresoRegistration;
 import bo.com.qbit.webapp.service.DetalleTomaInventarioOrdenIngresoRegistration;
 import bo.com.qbit.webapp.service.DetalleTomaInventarioRegistration;
@@ -70,13 +74,13 @@ public class TomaInventarioController implements Serializable {
 	private @Inject AlmacenProductoRepository almacenProductoRepository;
 	private @Inject DetalleTomaInventarioRepository detalleTomaInventarioRepository;
 	private @Inject TomaInventarioRepository tomaInventarioRepository;
-
 	private @Inject ProductoRepository productoRepository;
 	private @Inject DetalleOrdenIngresoRepository detalleOrdenIngresoRepository;
 	private @Inject UnidadMedidaRepository unidadMedidaRepository;
 	private @Inject PartidaRepository partidaRepository;
 	private @Inject ProveedorRepository proveedorRepository;
 	private @Inject OrdenIngresoRepository ordenIngresoRepository;
+	private @Inject CierreGestionAlmacenRepository cierreGestionAlmacenRepository;
 
 	private @Inject TomaInventarioRegistration tomaInventarioRegistration;
 	private @Inject DetalleTomaInventarioRegistration detalleTomaInventarioRegistration;
@@ -86,6 +90,7 @@ public class TomaInventarioController implements Serializable {
 	private @Inject GestionRegistration gestionRegistration;
 	private @Inject DetalleTomaInventarioOrdenIngresoRegistration detalleTomaInventarioOrdenIngresoRegistration;
 	private @Inject BajaProductoRegistration bajaProductoRegistration;
+	private @Inject CierreGestionAlmacenRegistration CierreGestionAlmacenRegistration;
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
@@ -108,6 +113,7 @@ public class TomaInventarioController implements Serializable {
 	private boolean registrar = false;//mostrar maestro detalle
 	private boolean buttonConciliar = false;//mostrar button conciliar
 	private boolean conciliar = false;
+	private boolean cierreAlmacen = false;
 
 	private String tituloPanel = "Registrar Almacen";
 	private String urlTomaInventario = "";
@@ -132,6 +138,7 @@ public class TomaInventarioController implements Serializable {
 	private @Inject SessionMain sessionMain; //variable del login
 	private String usuarioSession;
 	private Gestion gestionSesion;
+	private Empresa empresaLogin;
 
 	//PRODUTO
 	private Producto newProducto ;
@@ -163,6 +170,7 @@ public class TomaInventarioController implements Serializable {
 
 		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
 		gestionSesion = sessionMain.getGestionLogin();
+		empresaLogin = sessionMain.getEmpresaLogin();
 
 		// tituloPanel
 		tituloPanel = "Registrar Toma Inventario";
@@ -179,6 +187,7 @@ public class TomaInventarioController implements Serializable {
 		verButtonReport = false;
 		conciliar = false;
 		buttonConciliar = false;
+		setCierreAlmacen(false);
 
 		tipoTomaInventario = "PARCIAL";
 
@@ -346,6 +355,54 @@ public class TomaInventarioController implements Serializable {
 		}
 	}
 
+	//cierre de almacen por gestion
+	public void cerrarAlmacenPorGestion(){
+		//validaciones
+		if(selectedAlmacen.getId() == 0){
+			FacesUtil.infoMessage("VALIDACION", "Seleccione un Almacém");
+			return;
+		}
+		if(  newTomaInventario.getNombreInventariador().isEmpty() ||  newTomaInventario.getNombreResponsable().isEmpty() || newTomaInventario.getHoja().isEmpty()){
+			FacesUtil.infoMessage("VALIDACION", "No pueden haber campos vacios");
+			return;
+		}
+
+		try{
+			System.out.println("cerrarAlmacenPorGestion()");
+			//1, registrar  toma invenario con estado= CE
+			Date fechaActual = new Date();
+			newTomaInventario.setAlmacen(selectedAlmacen);
+			newTomaInventario.setEstado("CE");
+			newTomaInventario.setFechaRegistro(fechaActual);
+			newTomaInventario = tomaInventarioRegistration.register(newTomaInventario);
+			for(DetalleTomaInventario detalle : listDetalleTomaInventario){
+				double diferencia = 0;
+				String observacion = "CIERRE";
+				double registrada = detalle.getCantidadRegistrada();
+				detalle.setCantidadVerificada(registrada);
+				detalle.setDiferencia(diferencia);
+				detalle.setObservacion(observacion);
+				detalle.setTomaInventario(newTomaInventario);
+				detalle.setFechaRegistro(fechaActual);
+				detalle.setUsuarioRegistro(usuarioSession);
+				detalleTomaInventarioRegistration.register(detalle);
+			}
+			//2. registrar objeto de cierre
+			CierreGestionAlmacen cierre = new CierreGestionAlmacen();
+			cierre.setEstado("AC");
+			cierre.setFechaRegistro(fechaActual);
+			cierre.setUsuarioRegistro(usuarioSession);
+			cierre.setGestion(gestionSesion);
+			cierre.setAlmacen(newTomaInventario.getAlmacen());
+			cierre.setTomaInventario(newTomaInventario);
+			cierre = CierreGestionAlmacenRegistration.register(cierre);
+			FacesUtil.infoMessage("CIERRE DE ALMACEN CORRECTO", newTomaInventario.getAlmacen()+" CERRADO - GESTION "+gestionSesion.getGestion());
+			initNewTomaInventario();
+		}catch(Exception e){
+			System.out.println("cerrarAlmacenPorGestion ERROR: "+e.getMessage());
+		}
+	}
+
 	//Agregar producto
 	public void registrarOrdenIngreso() {
 		try {
@@ -426,13 +483,18 @@ public class TomaInventarioController implements Serializable {
 
 	public void procesarConsulta(){
 		try {
+			if(selectedAlmacen.getId()==0){
+				FacesUtil.infoMessage("INFORMACION", "Seleccione un almacen ");
+				return;
+			}
+			//verificar si el almacen-gestion ya fue cerrado
+			if(cierreGestionAlmacenRepository.finAlmacenGestionCerrado(selectedAlmacen,gestionSesion) != null){
+				FacesUtil.infoMessage("INFORMACION", "El lmacen "+selectedAlmacen.getNombre()+" fué cerrado");
+				return ;
+			}
 			listAlmacenProducto = almacenProductoRepository.findByAlmacen(selectedAlmacen);
 			if(listAlmacenProducto.size()==0){//validacion de almacen
-				if(selectedAlmacen.getId()==0){
-					FacesUtil.infoMessage("INFORMACION", "Seleccione un almacen ");
-				}else{
-					FacesUtil.infoMessage("INFORMACION", "No se encontraron existencias en el almacen "+selectedAlmacen.getNombre());
-				}
+				FacesUtil.infoMessage("INFORMACION", "No se encontraron existencias en el almacen "+selectedAlmacen.getNombre());
 				return ;
 			}
 			listDetalleTomaInventario = new ArrayList<DetalleTomaInventario>();
@@ -442,7 +504,12 @@ public class TomaInventarioController implements Serializable {
 				detalle.setCantidadRegistrada(ap.getStock());
 				listDetalleTomaInventario.add(detalle);
 			}
-			verGuardar = listDetalleTomaInventario.size()>0?true:false;
+			if(newTomaInventario.getTipo().equals("FINAL")){
+				cierreAlmacen = true;
+			}else{
+				cierreAlmacen = false;
+				verGuardar = listDetalleTomaInventario.size()>0?true:false;
+			}
 		} catch (Exception e) {
 			FacesUtil.errorMessage("Error al Procesar!");
 		}
@@ -495,7 +562,7 @@ public class TomaInventarioController implements Serializable {
 						//actualizar en kardex(NOSE) como una salida (como baja de producto)
 						//fachadaOrdenSalida.actualizarKardexProducto("Por Baja de Producto", gestionSesion, selectedOrdenSalida, prod, fechaActual, cantidad, precioUnitario, usuarioSession);
 						bajaProductoRegistration.register(baja);
-						
+
 					}
 				}
 				FacesUtil.infoMessage("INFORMACION", "Toma Inventario "+selectedTomaInventario.getId()+" Conciliada.");
@@ -559,7 +626,7 @@ public class TomaInventarioController implements Serializable {
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
 			String urlPath = request.getRequestURL().toString();
 			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
-			String urlPDFreporte = urlPath+"ReporteTomaInventario?pIdTomaInventario="+selectedTomaInventario.getId()+"&pIdEmpresa=1&pUsuario="+usuarioSession;
+			String urlPDFreporte = urlPath+"ReporteTomaInventario?pIdTomaInventario="+selectedTomaInventario.getId()+"&pUsuario="+usuarioSession+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial();
 			return urlPDFreporte;
 		}catch(Exception e){
 			return "error";
@@ -569,12 +636,21 @@ public class TomaInventarioController implements Serializable {
 	public void onRowSelectTomaInventarioClick(SelectEvent event){
 		verButtonReport = true;
 		crear = false;
+		if(selectedTomaInventario.getTipo().equals("FINAL") ){
+			buttonConciliar = false;
+			revisarReport = false;
+			return;			
+		}
 		if(selectedTomaInventario.getEstadoRevision().equals("NO")){
 			revisarReport = true;
 			buttonConciliar = false;
 		}else{
 			revisarReport = false;
-			buttonConciliar = true;
+			if(selectedTomaInventario.getEstado().equals("CN")){
+				buttonConciliar = false;
+			}else{
+				buttonConciliar = true;
+			}
 		}
 	}
 
@@ -1096,6 +1172,14 @@ public class TomaInventarioController implements Serializable {
 	public void setListSelectedDetalleTomaInventario(
 			List<DetalleTomaInventario> listSelectedDetalleTomaInventario) {
 		this.listSelectedDetalleTomaInventario = listSelectedDetalleTomaInventario;
+	}
+
+	public boolean isCierreAlmacen() {
+		return cierreAlmacen;
+	}
+
+	public void setCierreAlmacen(boolean cierreAlmacen) {
+		this.cierreAlmacen = cierreAlmacen;
 	}
 
 }

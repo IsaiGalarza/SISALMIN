@@ -87,6 +87,9 @@ public class ReportTotalProyectoController implements Serializable {
 		listGestion = gesionRepository.findAll();
 		selectedGestion = listGestion.get(0);
 		nuevaGestion = String.valueOf(selectedGestion.getGestion());
+		
+		listaDetalleOrdenSalida = new ArrayList<DetalleOrdenSalida>();
+		listaOrdenSalida = new ArrayList<OrdenSalida>();
 
 		verReporte = false;
 		selectedProducto = new Producto();
@@ -122,22 +125,40 @@ public class ReportTotalProyectoController implements Serializable {
 		return null;
 	}
 
+	private List<OrdenSalida> listOrdenSalidaAux = new ArrayList<OrdenSalida>();
 	public void procesarConsulta(){
 		setTotal(0);
 		System.out.println("procesarConsulta() inicial="+fechaInicial+" - final="+fechaFinal);
-		//listaDetalleOrdenSalida = detalleOrdenSalidaRepository.findByFechas(fechaInicial,fechaFinal);
+		listaDetalleOrdenSalida = detalleOrdenSalidaRepository.findByFechas(fechaInicial,fechaFinal);
 		listaOrdenSalida = new ArrayList<OrdenSalida>();
 		listaOrdenSalida = ordenSalidaRepository.findByFechas(fechaInicial, fechaFinal);
 		if(listaOrdenSalida.size()==0){
 			FacesUtil.infoMessage("VALIDACION", "No se encontraron registros");
 			return;
 		}else{
+			listOrdenSalidaAux = new ArrayList<OrdenSalida>();
 			for(OrdenSalida d: listaOrdenSalida){
-				total = total + d.getTotalImporte();
+				addOrdenSalida(d);
 			}
+			listaOrdenSalida = listOrdenSalidaAux;
+		}
+		for(OrdenSalida d: listOrdenSalidaAux){
+			total = total + d.getTotalImporte();
 		}
 		//setListaOrdenSalida(ordenSalidaRepository.findByFechas(fechaInicial,fechaFinal));
 	}
+
+	private void addOrdenSalida(OrdenSalida ordenSalida){
+		for(OrdenSalida orden : listOrdenSalidaAux){
+			if(orden.getId() == ordenSalida.getId()){
+				double cantidadAnterior = orden.getTotalImporte();
+				orden.setTotalImporte(cantidadAnterior+ordenSalida.getTotalImporte());
+				return;
+			}
+		}
+		listOrdenSalidaAux.add(ordenSalida);
+	}
+
 
 	
 	public void cargarReporte(){

@@ -105,7 +105,7 @@
 				</div>
 				<div class="pull-right">
 					<ol class="breadcrumb">
-						<li><a href="#{request.contextPath}/pages/dashboard.jsf"
+						<li><a href="#{request.contextPath}/pages/dashboard.xhtml"
 							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
 						<li><a
 							href="#{request.contextPath}/pages/parametrizacion/Funcionario.xhtml"
@@ -186,7 +186,7 @@
 													</div>
 
 													<div class="form-group ">
-														<div class="col-md-4">Telefono</div>
+														<div class="col-md-4">Teléfono</div>
 														<div class="col-md-8">
 															<p:inputText id="telefonoID"
 																style=" color: #555555; background-image: none;"
@@ -265,7 +265,7 @@
 
 									<div class="panel panel-default">
 										<div class="panel-heading">
-											<h3 class="panel-title">Lista de Funcionarios</h3>
+											<h3 class="panel-title">Lista de Funcionario</h3>
 										</div>
 										<!-- start here datatable -->
 										<div class="box-content no-padding">
@@ -295,13 +295,13 @@
 														value="#{_Funcionario.nombre} #{_Funcionario.apellidos}" />
 												</p:column>
 
-												<p:column width="30%" headerText="Direccion"
+												<p:column width="30%" headerText="Dirección"
 													filterBy="#{_Funcionario.direccion}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_Funcionario.direccion}" />
 												</p:column>
 
-												<p:column width="10%" headerText="Telefono"
+												<p:column width="10%" headerText="Teléfono"
 													style="text-align:center;"
 													filterBy="#{_Funcionario.telefono}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
@@ -332,6 +332,11 @@
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_Funcionario.usuarioRegistro}" />
 												</p:column>
+												
+												<f:facet name="footer">
+													<h:outputText
+														value="#{listaFuncionario.size()} Registros en Total" />
+												</f:facet>
 
 											</p:dataTable>
 

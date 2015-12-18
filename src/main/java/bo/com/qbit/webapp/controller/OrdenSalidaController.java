@@ -18,6 +18,7 @@ import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
 
 import bo.com.qbit.webapp.data.AlmacenRepository;
+import bo.com.qbit.webapp.data.CierreGestionAlmacenRepository;
 import bo.com.qbit.webapp.data.DetalleOrdenSalidaRepository;
 import bo.com.qbit.webapp.data.DetalleProductoRepository;
 import bo.com.qbit.webapp.data.DetalleUnidadRepository;
@@ -30,6 +31,7 @@ import bo.com.qbit.webapp.model.Almacen;
 import bo.com.qbit.webapp.model.DetalleOrdenSalida;
 import bo.com.qbit.webapp.model.DetalleProducto;
 import bo.com.qbit.webapp.model.DetalleUnidad;
+import bo.com.qbit.webapp.model.Empresa;
 import bo.com.qbit.webapp.model.FachadaOrdenSalida;
 import bo.com.qbit.webapp.model.Funcionario;
 import bo.com.qbit.webapp.model.Gestion;
@@ -38,6 +40,7 @@ import bo.com.qbit.webapp.model.Producto;
 import bo.com.qbit.webapp.model.Proyecto;
 import bo.com.qbit.webapp.model.Usuario;
 import bo.com.qbit.webapp.service.DetalleOrdenSalidaRegistration;
+import bo.com.qbit.webapp.service.DetalleProductoRegistration;
 import bo.com.qbit.webapp.service.OrdenSalidaRegistration;
 import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.SessionMain;
@@ -63,10 +66,12 @@ public class OrdenSalidaController implements Serializable {
 	private @Inject DetalleUnidadRepository detalleUnidadRepository;
 	private @Inject ProyectoRepository proyectoRepository;
 	private @Inject DetalleProductoRepository detalleProductoRepository;
+	private @Inject CierreGestionAlmacenRepository cierreGestionAlmacenRepository;
 
 	//Registration
 	private @Inject OrdenSalidaRegistration ordenSalidaRegistration;
 	private @Inject DetalleOrdenSalidaRegistration detalleOrdenSalidaRegistration;
+	private @Inject DetalleProductoRegistration detalleProductoRegistration;
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
 	Event<String> pushEventSucursal;
@@ -113,6 +118,7 @@ public class OrdenSalidaController implements Serializable {
 	private @Inject SessionMain sessionMain; //variable del login
 	private String usuarioSession;
 	private Gestion gestionSesion;
+	private Empresa empresaLogin;
 
 	private boolean atencionCliente=false;
 
@@ -125,6 +131,7 @@ public class OrdenSalidaController implements Serializable {
 		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
 		gestionSesion = sessionMain.getGestionLogin();
 		listUsuario = usuarioRepository.findAllOrderedByID();
+		empresaLogin = sessionMain.getEmpresaLogin();
 
 		//inicializar FachadaOrdenSalida
 		//fachadaOrdenSalida =new FachadaOrdenSalida();
@@ -341,19 +348,17 @@ public class OrdenSalidaController implements Serializable {
 			listaDetalleOrdenSalida = detalleOrdenSalidaRepository.findAllByOrdenSalida(selectedOrdenSalida);
 			for(DetalleOrdenSalida d: listaDetalleOrdenSalida){
 				Producto prod = d.getProducto();
-				double cantidadSolicitada = d.getCantidadSolicitada();
 				//1.- Actualizar detalle producto (PEPS) y tambien actualizar precio en detalleOrdenIngreso
-				if(  fachadaOrdenSalida.actualizarDetalleProductoByOrdenSalida(almacenOrigen,d)){
+				if( actualizarDetalleProductoByOrdenSalida(almacenOrigen,d)){
 					//mostrar mensaje
 					//FacesUtil.showDialog("dlgAlmacenSinExistencias");
 					//initNewOrdenSalida();
 					//return ; //no se econtro stock disponible
-
 					//2
-					fachadaOrdenSalida.actualizarStock(almacenOrigen,prod,cantidadSolicitada);
+					fachadaOrdenSalida.actualizarStock(almacenOrigen,prod,cantidadEntregada);
 					//3
-					fachadaOrdenSalida.actualizarKardexProducto( detalleUnidad.getNombre(),gestionSesion, selectedOrdenSalida,prod,fechaActual, d.getCantidadSolicitada(),d.getPrecioUnitario(),usuarioSession);
-					total = total + d.getTotal();
+					fachadaOrdenSalida.actualizarKardexProducto( detalleUnidad.getNombre(),gestionSesion, selectedOrdenSalida,prod,fechaActual, cantidadEntregada,d.getPrecioUnitario(),usuarioSession);
+					total = total + (cantidadEntregada * d.getPrecioUnitario());
 				}
 			}
 			//cactualizar OrdenSalida
@@ -365,6 +370,63 @@ public class OrdenSalidaController implements Serializable {
 		} catch (Exception e) {
 			System.out.println("Error : "+e.getMessage());
 			FacesUtil.errorMessage("Error al Procesar!");
+		}
+	}
+	//contabiliza la cantidad verdadera que se entrego, aplicado en el metodo actualizarDetalleProductoByOrdenSalida(...);
+	private double cantidadEntregada = 0;
+	
+	/**
+	 * Actualiza el stock, verifica existencias de acuerdo al metodo PEPS
+	 * @param almacen De que almacen se sacara los productos
+	 * @param detalle
+	 * @return true si hay stock, false si no hay existencias
+	 */
+	public boolean actualizarDetalleProductoByOrdenSalida(Almacen almacen,DetalleOrdenSalida detalle){
+		try{
+			cantidadEntregada = 0;
+			Producto producto = detalle.getProducto();
+			double cantidadAux = detalle.getCantidadSolicitada();
+			double cantidadSolicitada = detalle.getCantidadSolicitada();//6
+			int cantidad = 1;
+			//obtener todos los detalles del producto, para poder descontar stock de acuerdo a la cantidad solicitada
+			List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almacen,producto);
+			//5 | 10
+			if(listDetalleProducto.size()>0){
+				for(DetalleProducto d : listDetalleProducto){
+					double stockActual = d.getStockActual();//5 
+					double precio = d.getPrecio(); // 50 
+					if(cantidadSolicitada > 0){// 6
+						double stockFinal = stockActual- cantidadSolicitada; // 5-6=-1 | 10-5=5 |
+						double cantidadRestada = stockFinal < 0 ? cantidadSolicitada -(cantidadSolicitada - stockActual) : cantidadSolicitada; //6-(6-5)=5 
+						d.setStockActual( stockFinal <= 0 ? 0 : stockFinal); // 0 | 5
+						d.setEstado(stockFinal<=0?"IN":"AC"); // IN | AC
+						detalleProductoRegistration.updated(d);
+						cantidadSolicitada = cantidadSolicitada - cantidadRestada  ;//actualizar cantidad solicitada // 6-5=1
+						if(cantidad == 1){
+							detalle.setCantidadEntregada(cantidadRestada);
+							detalle.setCantidadSolicitada(cantidadAux);
+							detalle.setPrecioUnitario(precio);
+							detalle.setTotal(precio*cantidadRestada);
+							detalleOrdenSalidaRegistration.updated(detalle);
+						}else{//nuevo DetalleOrdenSalida con otro precio
+							detalle.setId(0);
+							detalle.setCantidadEntregada(cantidadRestada );
+							detalle.setCantidadSolicitada(cantidadAux);
+							detalle.setPrecioUnitario(precio);
+							detalle.setTotal(precio*cantidadRestada);
+							detalleOrdenSalidaRegistration.register(detalle);
+						}
+						cantidad = cantidad + 1;
+					}
+				}
+				cantidadEntregada = cantidadAux - cantidadSolicitada;
+				return true;
+			}
+			return false;
+		}catch(Exception e){
+			System.out.println("actualizarDetalleProductoByOrdenSalida() ERROR: "+e.getMessage());
+			e.printStackTrace();
+			return false;
 		}
 	}
 
@@ -387,7 +449,7 @@ public class OrdenSalidaController implements Serializable {
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
 			String urlPath = request.getRequestURL().toString();
 			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
-			String urlPDFreporte = urlPath+"ReporteOrdenSalida?pIdOrdenSalida="+selectedOrdenSalida.getId()+"&pIdEmpresa=1&pUsuario="+usuarioSession+"&pTypeExport=pdf";
+			String urlPDFreporte = urlPath+"ReporteOrdenSalida?pIdOrdenSalida="+selectedOrdenSalida.getId()+"&pUsuario="+usuarioSession+"&pTypeExport=pdf"+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial();
 			return urlPDFreporte;
 		}catch(Exception e){
 			return "error";
@@ -580,6 +642,12 @@ public class OrdenSalidaController implements Serializable {
 		String nombre =  event.getObject().toString();
 		for(Almacen i : listaAlmacen){
 			if(i.getNombre().equals(nombre)){
+				//verificar si el almacen-gestion ya fue cerrado
+				if(cierreGestionAlmacenRepository.finAlmacenGestionCerrado(i,gestionSesion) != null){
+					FacesUtil.infoMessage("INFORMACION", "El lmacen "+i.getNombre()+" fué cerrado");
+					selectedAlmacen = new Almacen();
+					return ;
+				}
 				selectedAlmacen = i;
 				return;
 			}

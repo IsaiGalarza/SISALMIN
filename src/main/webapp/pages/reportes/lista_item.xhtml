@@ -28,7 +28,7 @@
 							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
 						<li><a
 							href="#{request.contextPath}/pages/reportes/lista_item.xhtml"
-							style="color: #0090FF; font-size: 12px;">Parametrización</a></li>
+							style="color: #0090FF; font-size: 12px;">Reporte</a></li>
 						<li class="active" style="font-size: 12px;">Lista de
 							Item</li>
 					</ol>
@@ -55,7 +55,7 @@
 											
 											emptyMessage="No se encontraron Registros.">
 
-											<p:column width="7%" headerText="Codigo" filterBy="#{_var.correlativoTransaccion}"
+											<p:column width="7%" headerText="Código" filterBy="#{_var.correlativoTransaccion}"
 												style="text-align:center;" filterStyle="width: 100%;"
 												filterMatchMode="contains">
 												<h:outputText value="#{_var.correlativoTransaccion}" />
@@ -73,7 +73,7 @@
 												<h:outputText value="#{_var.producto.nombre}" />
 											</p:column>
 											
-											<p:column width="19%" headerText="Almacen"
+											<p:column width="19%" headerText="Almacén"
 												filterBy="#{_var.almacen.nombre}"
 												filterStyle="width: 100%;" filterMatchMode="contains">
 												<h:outputText value="#{_var.almacen.nombre}" />

@@ -64,6 +64,7 @@ public class ReporteTotalPartida  extends HttpServlet{
 		try {
 			String pNombreEmpresa = request.getParameter("pNombreEmpresa");
 			String pNitEmpresa = request.getParameter("pNitEmpresa");
+			
 			String pFechaInicio =  request.getParameter("pFechaInicio");
 			String pFechaFin = request.getParameter("pFechaFin");
 			Integer pIdGestion = Integer.parseInt(request.getParameter("pIdGestion"));

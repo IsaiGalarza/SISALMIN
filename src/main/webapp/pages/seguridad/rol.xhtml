@@ -35,7 +35,7 @@
 										listener="#{rolController.resetearFitrosTabla('formTableRoles:dataTableRoles')}" />
 								</p:commandLink>
 								<p:commandLink id="buttonRegistrar"
-									value="&#160; REGISTRAR"
+									value="&#160; Registrar"
 									styleClass="btn btn-success ion-checkmark"
 									style="height:31px; padding:center"
 									rendered="#{rolController.registrar }"
@@ -173,11 +173,15 @@
 														rendered="#{item.estado=='SU'}" value="SUPER" /></span>
 											</p:column>
 											<p:column width="15%" filterStyle="width: 100%; height:25px;"
-												headerText="Fecha Reg." filterBy="#{item.fechaRegistro}">
+												headerText="Fecha" filterBy="#{item.fechaRegistro}">
 												<h:outputText value="#{item.fechaRegistro}">
 													<f:convertDateTime pattern="dd/MM/yyyy" />
 												</h:outputText>
 											</p:column>
+											<f:facet name="footer">
+													<h:outputText
+														value="#{rolController.listRol.size()} Registros en Total" />
+												</f:facet>
 										</p:dataTable>
 									</div>
 									<!-- end here datatable -->

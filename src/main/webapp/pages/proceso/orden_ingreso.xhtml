@@ -198,7 +198,7 @@
 														</div>
 
 														<div class="form-group ">
-															<div class="col-md-4">Almacen</div>
+															<div class="col-md-4">Almacén</div>
 															<div class="col-md-8">
 
 																<p:autoComplete id="almacenID" style="width: 93%"
@@ -362,7 +362,7 @@
 															</h:outputText>
 														</p:column>
 
-														<p:column headerText="Obervacion">
+														<p:column headerText="Observación">
 															<h:outputText value="#{_var.observacion}" />
 														</p:column>
 
@@ -451,13 +451,13 @@
 														update="formTableOrdenIngreso, formBotonesHeader"
 														listener="#{ordenIngresoController.onRowSelectOrdenIngresoClick}" />
 
-													<p:column width="7%" headerText="Codigo"
+													<p:column width="7%" headerText="Código"
 														style="text-align:center;" filterBy="#{_var.correlativo}"
 														filterStyle="width: 100%;" filterMatchMode="contains">
 														<h:outputText value="#{_var.correlativo}" />
 													</p:column>
 
-													<p:column headerText="Almacen"
+													<p:column headerText="Almacén"
 														filterBy="#{_var.almacen.nombre}"
 														filterStyle="width: 100%;" filterMatchMode="contains">
 														<h:outputText value="#{_var.almacen.nombre}" />
@@ -587,7 +587,7 @@
 
 					<div class="row">
 						<div class="form-group">
-							<label for="descripcionID" class="col-sm-3 control-label">Observacion</label>
+							<label for="descripcionID" class="col-sm-3 control-label">Observación</label>
 							<div class="col-sm-9">
 								<p:inputTextarea id="descripcionID" required="true"
 									requiredMessage="Observacion Requerido."
@@ -718,7 +718,7 @@
 							</div>
 							
 							<div class="form-group ">
-								<div class="col-md-4">Codigo</div>
+								<div class="col-md-4">Código</div>
 								<div class="col-md-8">
 									<p:inputText id="nuevoCodigoID"
 										style=" color: #555555; background-image: none;"

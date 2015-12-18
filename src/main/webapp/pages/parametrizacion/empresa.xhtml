@@ -63,7 +63,7 @@
 							<div class="col-md-5">
 								<div class="panel panel-default">
 									<div class="panel-heading">
-										<h3 class="panel-title">Parametros de Empresa</h3>
+										<h3 class="panel-title">Parámetros de Empresa</h3>
 									</div>
 									<div class="panel-body">
 										<!-- start here register -->
@@ -108,7 +108,7 @@
 																		</div>
 																	</div>
 																	<div class="form-group">
-																		<div class="col-md-4">Telefono</div>
+																		<div class="col-md-4">Teléfono</div>
 																		<div class="col-md-8">
 																			<h:inputText value="#{newEmpresa.telefono}"
 																				rendered="#{ empresaController.modificar}"
@@ -156,7 +156,7 @@
 															<div class="row">
 																<div class="col-md-12 box-content form-horizontal">
 																	<div class="form-group">
-																		<div class="col-md-4">Gestion Activa</div>
+																		<div class="col-md-4">Gestión Activa</div>
 																		<div class="col-md-8">
 																			<h:selectOneMenu id="gestionID"
 																				rendered="#{ empresaController.modificar}"
@@ -173,18 +173,18 @@
 																		</div>
 																	</div>
 																	<div class="form-group">
-																		<div class="col-md-4"> Gestion Inciada</div>
+																		<div class="col-md-4"> Gestión Inciada</div>
 																		<div class="col-md-8">
 																			<h:outputLabel
 																				value="#{empresaController.gestionIniciada}" />
 																		</div>
 																	</div>
 																	<div class="form-group">
-																		<div class="col-md-4">Nueva Gestion</div>
+																		<div class="col-md-4">Nueva Gestión</div>
 																		<div class="col-md-8">
 																			<p:commandLink id="buttonNueva"
 																				disabled="#{ ! empresaController.modificar}"
-																				value="&#160; Nueva Gestion"
+																				value="&#160; Nueva Gestión"
 																				styleClass="btn btn-primary ion-plus-round"
 																				style="height:31px; padding:center"
 																				update="formDlgNuevaGestion,formGrowl:msgs1,:formBotonesHeader"
@@ -220,13 +220,13 @@
 		<!-- END GROWL -->
 
 		<!-- START DIALOG -->
-		<p:dialog header="NUEVA GESTION" widgetVar="dlgNuevaGestion"
+		<p:dialog header="NUEVA GESTIÓN" widgetVar="dlgNuevaGestion"
 			height="100%">
 			<h:form id="formDlgNuevaGestion">
 				<div class="row">
 					<div class="col-md-12 box-content form-horizontal">
 						<div class="form-group">
-							<div class="col-md-4">Gestion</div>
+							<div class="col-md-4">Gestión</div>
 							<div class="col-md-8">
 								<h:inputText value="#{empresaController.newGestion.gestion}"
 									style=" color: #555555; background-image: none;"

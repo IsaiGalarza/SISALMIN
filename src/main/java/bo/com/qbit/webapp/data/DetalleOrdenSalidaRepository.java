@@ -8,9 +8,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
-import bo.com.qbit.webapp.model.DetalleOrdenIngreso;
 import bo.com.qbit.webapp.model.DetalleOrdenSalida;
-import bo.com.qbit.webapp.model.OrdenIngreso;
 import bo.com.qbit.webapp.model.OrdenSalida;
 
 @Stateless
@@ -70,6 +68,23 @@ WHERE
 		log.info("Query DetalleOrdenSalida: "+query);
 		return em.createQuery(query).setParameter("stDate", fechaInicial).setParameter("edDate", fechaFinal).getResultList();
 	}
+	
+	/*
+	 *  select  os.fecha_aprobacion,partida.nombre , SUM(dos.total) , os.correlativo from detalle_orden_salida dos,producto producto,partida partida,orden_salida os
+ where dos.id_producto = producto.id and
+ dos.id_orden_salida = os.id and
+ producto.id_partida = partida.id and
+ os.estado = 'PR'
+ group by partida.nombre,dos.total,os.correlativo,os.fecha_aprobacion
+	 
+	
+	@SuppressWarnings("unchecked")
+	public List<DetalleOrdenSalida> findTotalPartidaByFechas(Date fechaInicial,Date fechaFinal) {
+		String query = "select em from DetalleOrdenSalida em,OrdenSalida os where em.ordenSalida.id=os.id and os.estado='PR' and os.fechaAprobacion>=:stDate and os.fechaAprobacion<=:edDate order by os.id desc";
+		log.info("Query DetalleOrdenSalida: "+query);
+		return em.createQuery(query).setParameter("stDate", fechaInicial).setParameter("edDate", fechaFinal).getResultList();
+	}
+	*/
 	
 	
 }

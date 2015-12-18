@@ -28,11 +28,12 @@ import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.Fechas;
 import bo.com.qbit.webapp.util.SessionMain;
 
-@Named(value = "reportTotalPartidaController")
+@Named(value = "reportTotalFuncionarioController")
 @ConversationScoped
-public class ReportTotalPartidaController implements Serializable {
+public class ReportTotalFuncionarioController implements Serializable {
 
-	private static final long serialVersionUID = 1729413085201098608L;
+
+	private static final long serialVersionUID = -1447373695624632878L;
 
 	public static final String PUSH_CDI_TOPIC = "pushCdi";
 
@@ -46,11 +47,11 @@ public class ReportTotalPartidaController implements Serializable {
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
 	Event<String> pushEventSucursal;
-	
+
 	@Inject
 	private FacesContext facesContext;
-	
-	private String urlTotalPartida;
+
+	private String urlTotalFuncionario;
 	private boolean verReporte ;
 
 	private String nuevaGestion;
@@ -70,7 +71,7 @@ public class ReportTotalPartidaController implements Serializable {
 	private Gestion gestionLogin;
 	private Empresa empresaLogin;
 	private String usuarioLogin;
-	
+
 	//
 	private Date fechaInicial ;
 	private Date fechaFinal;
@@ -87,15 +88,14 @@ public class ReportTotalPartidaController implements Serializable {
 		listGestion = gesionRepository.findAll();
 		selectedGestion = listGestion.get(0);
 		nuevaGestion = String.valueOf(selectedGestion.getGestion());
-		
+
 		listaDetalleOrdenSalida = new ArrayList<DetalleOrdenSalida>();
 		listaOrdenSalida = new ArrayList<OrdenSalida>();
-		total = 0;
 
 		verReporte = false;
 		selectedProducto = new Producto();
 		setTotal(0);
-		
+
 		setFechaInicial(new Date());
 		setFechaFinal(new Date());
 
@@ -160,22 +160,29 @@ public class ReportTotalPartidaController implements Serializable {
 		listOrdenSalidaAux.add(ordenSalida);
 	}
 
-	
 	public void cargarReporte(){
 		try {
-			urlTotalPartida = loadURL();
+			urlTotalFuncionario = loadURL();
 			verReporte = true;
 		} catch (Exception e) {
 			FacesUtil.errorMessage("Proceso Incorrecto.");
 		}
 	}
-	
+
 	public String loadURL(){
 		try{
+			/*
+			 * 			String pNombreEmpresa = request.getParameter("pNombreEmpresa");
+			String pNitEmpresa = request.getParameter("pNitEmpresa");
+			String pFechaInicio =  request.getParameter("pFechaInicio");
+			String pFechaFin = request.getParameter("pFechaFin");
+			Integer pIdGestion = Integer.parseInt(request.getParameter("pIdGestion"));
+			String  pUsuario = request.getParameter("pUsuario");
+			 */
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
 			String urlPath = request.getRequestURL().toString();
 			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
-			String urlPDFreporte = urlPath+"ReporteTotalPartida?pFechaInicio="+Fechas.deDateAString(fechaInicial)+"&pFechaFin="+Fechas.deDateAString(fechaFinal)+"&pIdProducto="+selectedProducto.getId()+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial()+"&pIdGestion="+selectedGestion.getId()+"&pUsuario="+usuarioLogin;
+			String urlPDFreporte = urlPath+"ReporteTotalFuncionario?pFechaInicio="+Fechas.deDateAString(fechaInicial)+"&pFechaFin="+Fechas.deDateAString(fechaFinal)+"&pIdProducto="+selectedProducto.getId()+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial()+"&pIdGestion="+selectedGestion.getId()+"&pUsuario="+usuarioLogin;
 			return urlPDFreporte;
 		}catch(Exception e){
 			return "error";
@@ -265,12 +272,12 @@ public class ReportTotalPartidaController implements Serializable {
 		this.verReporte = verReporte;
 	}
 
-	public String getUrlTotalPartida() {
-		return urlTotalPartida;
+	public String getUrlTotalFuncionario() {
+		return urlTotalFuncionario;
 	}
 
-	public void setUrlTotalPartida(String urlTotalPartida) {
-		this.urlTotalPartida = urlTotalPartida;
+	public void setUrlTotalFuncionario(String urlTotalFuncionario) {
+		this.urlTotalFuncionario = urlTotalFuncionario;
 	}
 
 }

@@ -19,6 +19,7 @@ import org.richfaces.cdi.push.Push;
 import bo.com.qbit.webapp.data.GestionRepository;
 import bo.com.qbit.webapp.data.KardexProductoRepository;
 import bo.com.qbit.webapp.data.ProductoRepository;
+import bo.com.qbit.webapp.model.Empresa;
 import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.KardexProducto;
 import bo.com.qbit.webapp.model.Producto;
@@ -65,6 +66,7 @@ public class KardexProductoController implements Serializable {
 	
 	private String urlKardexProducto = "";
 	private String usuarioSession;
+	private Empresa empresaLogin;
 
 	@PostConstruct
 	public void initNewKardexProducto() {
@@ -72,6 +74,7 @@ public class KardexProductoController implements Serializable {
 		System.out.println("... initNewKardexProducto ...");
 		gestionLogin = sessionMain.getGestionLogin();
 		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
+		empresaLogin = sessionMain.getEmpresaLogin();
 		
 		verReport = false;
 		selectedProducto = new Producto();
@@ -150,7 +153,7 @@ public class KardexProductoController implements Serializable {
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
 			String urlPath = request.getRequestURL().toString();
 			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
-			String urlPDFreporte = urlPath+"ReporteKardexProducto?pIdProducto="+selectedProducto.getId()+"&pIdGestion="+selectedGestion.getId()+"&pIdEmpresa=1&pUsuario="+usuarioSession;
+			String urlPDFreporte = urlPath+"ReporteKardexProducto?pIdProducto="+selectedProducto.getId()+"&pIdGestion="+selectedGestion.getId()+"&pUsuario="+usuarioSession+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial();
 			return urlPDFreporte;
 		}catch(Exception e){
 			return "error";

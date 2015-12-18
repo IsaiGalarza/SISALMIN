@@ -153,7 +153,7 @@
 																	value="#{ordenSalidaController.selectedDetalleUnidad.nombre}"
 																	completeMethod="#{ordenSalidaController.completeDetalleUnidad}"
 																	minQueryLength="3" dropdown="true" required="true"
-																	requiredMessage="Almacen Requerido."
+																	requiredMessage="Unidad Solicitante Requerido."
 																	forceSelection="true" var="_var" itemLabel="#{_var}"
 																	itemValue="#{_var.nombre}"
 																	placeholder="[Escriba Unidad]" maxResults="10">
@@ -171,7 +171,7 @@
 														</div>
 
 														<div class="form-group ">
-															<div class="col-md-4">Servidor Publico</div>
+															<div class="col-md-4">Servidor Público</div>
 															<div class="col-md-8">
 																<p:autoComplete id="servidorPublicoID"
 																	style="width: 93%"
@@ -271,7 +271,7 @@
 															</div>
 														</div>
 														<div class="form-group ">
-															<div class="col-md-4">Almacen</div>
+															<div class="col-md-4">Almacén</div>
 															<div class="col-md-8">
 
 																<p:autoComplete id="almacenID" style="width: 93%"
@@ -282,7 +282,7 @@
 																	requiredMessage="Almacen Requerido."
 																	forceSelection="true" var="_var" itemLabel="#{_var}"
 																	itemValue="#{_var.nombre}"
-																	placeholder="[Escriba Almacen]" maxResults="10">
+																	placeholder="[Escriba Almacén]" maxResults="10">
 
 																	<p:ajax event="itemSelect"
 																		update="formTableOrdenSalida:almacenID"
@@ -378,7 +378,7 @@
 															</h:outputText>
 														</p:column>
 
-														<p:column headerText="Obervacion">
+														<p:column headerText="Observación">
 															<h:outputText value="#{_var.observacion}" />
 														</p:column>
 
@@ -455,13 +455,13 @@
 														update="formTableOrdenSalida, formBotonesHeader"
 														listener="#{ordenSalidaController.onRowSelectOrdenSalidaClick}" />
 
-													<p:column width="8%" headerText="Codigo"
+													<p:column width="8%" headerText="Código"
 														style="text-align:center;" filterBy="#{_var.correlativo}"
 														filterStyle="width: 100%;" filterMatchMode="contains">
 														<h:outputText value="#{_var.correlativo}" />
 													</p:column>
 
-													<p:column headerText="Almacen"
+													<p:column headerText="Almacén"
 														filterBy="#{_var.almacen.nombre}"
 														filterStyle="width: 100%;" filterMatchMode="contains">
 														<h:outputText value="#{_var.almacen.nombre}" />
@@ -578,7 +578,7 @@
 					<br />
 					<div class="row">
 						<div class="form-group">
-							<label for="descripcionID" class="col-sm-3 control-label">Observacion</label>
+							<label for="descripcionID" class="col-sm-3 control-label">Observación</label>
 							<div class="col-sm-9">
 								<p:inputTextarea id="descripcionID" required="true"
 									requiredMessage="Observacion Requerido."
@@ -746,13 +746,13 @@
 		</p:dialog>
 		<!-- END DIALOG -->
 
-		<p:dialog header="ALMACEN SIN EXISTENCIAS"
+		<p:dialog header="ALMACÉN SIN EXISTENCIAS"
 			widgetVar="dlgAlmacenSinExistencias" modal="true"
 			visible="#{not empty facesContext.maximumSeverity}" resizable="false"
 			position="center" width="500px">
 			<div class="row">
 				<div class="form-group">
-					<div class="col-md-12">El Almacen seleccionado no tiene
+					<div class="col-md-12">El Almacén seleccionado no tiene
 						Existencias</div>
 				</div>
 			</div>
@@ -768,7 +768,7 @@
 		</p:dialog>
 
 
-		<p:dialog header="VALIDACION DE EXISTENCIAS DE ALMACEN"
+		<p:dialog header="VALIDACION DE EXISTENCIAS DE ALMACÉN"
 			widgetVar="dlgValidacionExistenciasAlmacen" 
 			visible="#{not empty facesContext.maximumSeverity}" resizable="false"
 			position="center" width="50%">

@@ -101,12 +101,12 @@
 				</div>
 				<div class="pull-right">
 					<ol class="breadcrumb">
-						<li><a href="#{request.contextPath}/pages/dashboard.xhrml"
+						<li><a href="#{request.contextPath}/pages/dashboard.xhtml"
 							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
 						<li><a
 							href="#{request.contextPath}/pages/inventario/gestion-producto.xhtml"
-							style="color: #0090FF; font-size: 12px;">Parametrización</a></li>
-						<li class="active" style="font-size: 12px;">Gestion de
+							style="color: #0090FF; font-size: 12px;">Inventario</a></li>
+						<li class="active" style="font-size: 12px;">Gestión de
 							Productos</li>
 					</ol>
 				</div>
@@ -170,7 +170,7 @@
 														</div>
 													</div>
 													<div class="form-group ">
-														<div class="col-md-4">Codigo</div>
+														<div class="col-md-4">Código</div>
 														<div class="col-md-8">
 															<p:inputText id="codigoID"
 																style=" color: #555555; background-image: none;"
@@ -293,7 +293,7 @@
 
 									<div class="panel panel-default">
 										<div class="panel-heading">
-											<h3 class="panel-title">Lista de Productos</h3>
+											<h3 class="panel-title">Lista de Producto</h3>
 										</div>
 										<!-- start here datatable -->
 										<div class="box-content no-padding">
@@ -309,7 +309,7 @@
 													update=":formTableProducto, :formBotonesHeader"
 													listener="#{productoController.onRowSelectProductoClick}" />
 
-												<p:column width="6%" headerText="Codigo"
+												<p:column width="6%" headerText="Código"
 													filterBy="#{_var.codigo}" style="text-align:center;"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.codigo}" />

@@ -9,7 +9,8 @@
 	template="/WEB-INF/templates/template_main.xhtml">
 	<ui:define name="head">
 		<title>Report</title>
-		<f:event listener="#{reportTotalPartidaController.initConversation}"
+		<f:event
+			listener="#{reportTotalFuncionarioController.initConversation}"
 			type="preRenderView"></f:event>
 	</ui:define>
 
@@ -21,27 +22,27 @@
 					<h:form id="formBotonesHeader" style="padding-left: 10px;">
 						<div class="btn-group-demo">
 							<div class="btn-group">
-							    <p:commandLink id="buttonAtras" value="&#160; Atras"
+								<p:commandLink id="buttonAtras" value="&#160; Atras"
 									styleClass="btn btn-warning ion-minus-circled"
 									update="formFilterProducto, formBotonesHeader"
-									rendered="#{reportTotalPartidaController.verReporte}"
+									rendered="#{reportTotalFuncionarioController.verReporte}"
 									style="height:31px; padding:center"
-									action="#{reportTotalPartidaController.initReporteProyecto()}">
+									action="#{reportTotalFuncionarioController.initReporteProyecto()}">
 								</p:commandLink>
 								<p:commandLink id="buttonProcesar" value="&#160; Procesar"
 									styleClass="btn btn-info ion-ios7-loop-strong"
-									rendered="#{! reportTotalPartidaController.verReporte}"
+									rendered="#{! reportTotalFuncionarioController.verReporte}"
 									style="height:31px; padding:center"
 									update=" formFilterProducto,formBotonesHeader"
-									action="#{reportTotalPartidaController.procesarConsulta()}">
+									action="#{reportTotalFuncionarioController.procesarConsulta()}">
 								</p:commandLink>
 
 								<p:commandLink id="buttonVerReporte" value="&#160; Ver Reporte"
 									styleClass="btn btn-info ion-printer"
-									rendered="#{reportTotalPartidaController.listaDetalleOrdenSalida.size() > 0}"
+									rendered="#{reportTotalFuncionarioController.listaDetalleOrdenSalida.size() > 0}"
 									style="height:31px; padding:center"
 									update="formFilterProducto ,formBotonesHeader"
-									action="#{reportTotalPartidaController.cargarReporte()}">
+									action="#{reportTotalFuncionarioController.cargarReporte()}">
 								</p:commandLink>
 							</div>
 						</div>
@@ -54,7 +55,8 @@
 						<li><a
 							href="#{request.contextPath}/pages/reportes/report_total_unidad_solicitante.xhtml"
 							style="color: #0090FF; font-size: 12px;">Reporte</a></li>
-						<li class="active" style="font-size: 12px;">Total por partida</li>
+						<li class="active" style="font-size: 12px;">Total Gastado por
+							Funcionario</li>
 					</ol>
 				</div>
 			</section>
@@ -64,11 +66,11 @@
 						<h:form id="formFilterProducto" styleClass="form-horizontal">
 
 							<ui:fragment
-								rendered="#{ !reportTotalPartidaController.verReporte}">
+								rendered="#{ !reportTotalFuncionarioController.verReporte}">
 								<div class="col-md-4">
 									<div class="panel panel-default">
 										<div class="panel-heading">
-											<h3 class="panel-title">Filtro Partida</h3>
+											<h3 class="panel-title">Filtro Funcionario</h3>
 										</div>
 										<!-- start here datatable -->
 										<div class="panel-body">
@@ -79,7 +81,7 @@
 														<div class="col-md-12">
 															<p:calendar pattern="dd/MM/yyyy" id="fechaInicial"
 																locale="es"
-																value="#{reportTotalPartidaController.fechaInicial}"
+																value="#{reportTotalFuncionarioController.fechaInicial}"
 																onkeypress="return permiteKey(event, 'none')"
 																style=" color: #555555; background-image: none;">
 																<p:ajax event="dateSelect" />
@@ -91,11 +93,10 @@
 														<div class="col-md-12">
 															<p:calendar pattern="dd/MM/yyyy" id="fechaFinal"
 																locale="es"
-																value="#{reportTotalPartidaController.fechaFinal}"
-																
+																value="#{reportTotalFuncionarioController.fechaFinal}"
 																onkeypress="return permiteKey(event, 'none')"
 																style=" color: #555555; background-image: none;">
-																<p:ajax event="dateSelect"  />
+																<p:ajax event="dateSelect" />
 															</p:calendar>
 														</div>
 													</div>
@@ -114,11 +115,10 @@
 										</div>
 										<!-- start here datatable -->
 										<div class="box-content no-padding">
-
-											<p:dataTable
+										<p:dataTable
 												style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
 												rowKey="#{_var.id}" id="productoTable2" var="_var"
-												value="#{reportTotalPartidaController.listaDetalleOrdenSalida}"
+												value="#{reportTotalFuncionarioController.listaDetalleOrdenSalida}"
 												emptyMessage="No se encontraron Registros.">
 
 												<p:column width="10%" headerText="Fecha"
@@ -136,17 +136,17 @@
 													<h:outputText value="#{_var.ordenSalida.correlativo}" />
 												</p:column>
 
-												<p:column width="30%" headerText="Partida"
-													filterBy="#{_var.producto.partida.nombre}"
+												<p:column width="30%" headerText="Funcionario"
+													filterBy="#{_var.ordenSalida.funcionario.nombre}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.producto.partida.nombre}" />
+													<h:outputText value="#{_var.ordenSalida.funcionario.nombre}" />
 												</p:column>
 
 
-												<p:column headerText="Descripcion"
-													filterBy="#{_var.producto.partida.descripcion}"
+												<p:column headerText="Cargo"
+													filterBy="#{_var.ordenSalida.funcionario.cargo}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.producto.partida.descripcion}" />
+													<h:outputText value="#{_var.ordenSalida.funcionario.cargo}" />
 												</p:column>
 
 
@@ -159,10 +159,12 @@
 
 												<f:facet name="footer">
 													<h:outputText
-														value="#{reportTotalPartidaController.listaDetalleOrdenSalida.size()} Registros en Total" />
+														value="#{reportTotalFuncionarioController.listaDetalleOrdenSalida.size()} Registros en Total" />
 												</f:facet>
 
 											</p:dataTable>
+
+											
 
 										</div>
 
@@ -172,14 +174,14 @@
 									</div>
 								</div>
 							</ui:fragment>
-							
+
 							<ui:fragment
-								rendered="#{reportTotalPartidaController.verReporte}">
+								rendered="#{reportTotalFuncionarioController.verReporte}">
 								<div class="col-md-12">
 									<div class="panel panel-default">
 										<div class="panel-body" style="text-align: center;">
 											<p:media player="pdf" rendered="true"
-												value="#{reportTotalPartidaController.urlTotalPartida}"
+												value="#{reportTotalFuncionarioController.urlTotalFuncionario}"
 												width="800px" height="1125px" />
 										</div>
 									</div>
