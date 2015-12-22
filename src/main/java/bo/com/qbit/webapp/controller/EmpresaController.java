@@ -61,6 +61,7 @@ public class EmpresaController implements Serializable {
 	private boolean modificar = false;
 	private Integer gestion;
 	private String gestionIniciada;
+	private Empresa empresaSesion;
 
 	//login
 	private @Inject SessionMain sessionMain; //variable del login
@@ -80,6 +81,7 @@ public class EmpresaController implements Serializable {
 		beginConversation();
 		usuarioSession = sessionMain.getUsuarioLogin();
 		nombreUsuario = usuarioSession.getLogin();
+		empresaSesion = sessionMain.getEmpresaLogin();
 
 		loadValuesDefault();
 	}

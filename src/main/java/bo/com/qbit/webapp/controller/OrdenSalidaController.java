@@ -156,7 +156,7 @@ public class OrdenSalidaController implements Serializable {
 		verReport = false;
 
 		listaDetalleOrdenSalida = new ArrayList<DetalleOrdenSalida>();
-		listaOrdenSalida = ordenSalidaRepository.findAllOrderedByID();
+		listaOrdenSalida = ordenSalidaRepository.findAllOrderedByIDGestion(gestionSesion);
 
 		//obtener la primer unidad solicitante
 		//List<DetalleUnidad> l = detalleUnidadRepository.findAll100UltimosDetalleUnidad();

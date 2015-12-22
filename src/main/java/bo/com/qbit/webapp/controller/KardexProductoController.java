@@ -9,6 +9,7 @@ import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.event.Event;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
@@ -16,9 +17,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
 
+import bo.com.qbit.webapp.data.AlmacenRepository;
 import bo.com.qbit.webapp.data.GestionRepository;
 import bo.com.qbit.webapp.data.KardexProductoRepository;
 import bo.com.qbit.webapp.data.ProductoRepository;
+import bo.com.qbit.webapp.model.Almacen;
 import bo.com.qbit.webapp.model.Empresa;
 import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.KardexProducto;
@@ -33,7 +36,7 @@ public class KardexProductoController implements Serializable {
 	private static final long serialVersionUID = 2039368857381714460L;
 
 	public static final String PUSH_CDI_TOPIC = "pushCdi";
-	
+
 	@Inject
 	private FacesContext facesContext;
 
@@ -43,6 +46,7 @@ public class KardexProductoController implements Serializable {
 	private @Inject KardexProductoRepository kardexProductoRepository;
 	private @Inject GestionRepository gesionRepository;
 	private @Inject ProductoRepository productoRepository;
+	private @Inject AlmacenRepository almacenRepository;
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
@@ -54,19 +58,22 @@ public class KardexProductoController implements Serializable {
 	//OBJECT
 	private Producto selectedProducto;
 	private Gestion selectedGestion;
+	private Almacen selectedAlmacen;
 
 	//LIST
 	private List<KardexProducto> listaKardexProducto = new ArrayList<KardexProducto>();
 	private List<Producto> listaProducto = new ArrayList<Producto>();
 	private List<Gestion> listGestion = new ArrayList<Gestion>();
+	private List<Almacen> listAlmacen = new ArrayList<Almacen>();
 
 	//SESSION
 	private @Inject SessionMain sessionMain; //variable del login
 	private Gestion gestionLogin;
-	
+
 	private String urlKardexProducto = "";
 	private String usuarioSession;
 	private Empresa empresaLogin;
+	private String nameSelectedAlmacen;
 
 	@PostConstruct
 	public void initNewKardexProducto() {
@@ -75,13 +82,17 @@ public class KardexProductoController implements Serializable {
 		gestionLogin = sessionMain.getGestionLogin();
 		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
 		empresaLogin = sessionMain.getEmpresaLogin();
-		
+
 		verReport = false;
 		selectedProducto = new Producto();
+		selectedAlmacen = new Almacen();
 		listGestion = gesionRepository.findAll();
 		selectedGestion = listGestion.get(0);
 		listaKardexProducto = new ArrayList<KardexProducto>();
 		nuevaGestion =String.valueOf(selectedGestion.getGestion());
+		listAlmacen = almacenRepository.findAllActivosOrderedByID();
+		
+		setNameSelectedAlmacen("");
 	}
 
 	public void initConversation() {
@@ -129,12 +140,21 @@ public class KardexProductoController implements Serializable {
 			FacesUtil.infoMessage("ADVERTENCIA", "Seleccione un producto");
 			return;
 		}else{
-			listaKardexProducto  = kardexProductoRepository.findByProductoAndGestion(selectedProducto,selectedGestion);
+			System.out.println("almacen="+selectedAlmacen.getNombre());
+			if(selectedAlmacen.getNombre().isEmpty() ){
+				listaKardexProducto  = kardexProductoRepository.findByProductoAndGestion(selectedProducto,selectedGestion);
+			}else{
+				listaKardexProducto  = kardexProductoRepository.findByProductoAlmacenAndGestion(selectedProducto,selectedAlmacen,selectedGestion);
+			}
+			if(listaKardexProducto.size()==0){
+				FacesUtil.infoMessage("VALIDACION", "No se encontraron Registros.");
+			}
 			FacesUtil.resetDataTable("formTableProducto:productoTable");
+
 		}
 	}
-	
-	
+
+
 	public void cargarReporte(){
 		try {
 			urlKardexProducto = loadURL();
@@ -147,7 +167,7 @@ public class KardexProductoController implements Serializable {
 			FacesUtil.errorMessage("Proceso Incorrecto.");
 		}
 	}
-	
+
 	public String loadURL(){
 		try{
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
@@ -224,5 +244,34 @@ public class KardexProductoController implements Serializable {
 
 	public void setUrlKardexProducto(String urlKardexProducto) {
 		this.urlKardexProducto = urlKardexProducto;
+	}
+
+	public Almacen getSelectedAlmacen() {
+		return selectedAlmacen;
+	}
+
+	public void setSelectedAlmacen(Almacen selectedAlmacen) {
+		this.selectedAlmacen = selectedAlmacen;
+	}
+
+	public List<Almacen> getListAlmacen() {
+		return listAlmacen;
+	}
+
+	public void setListAlmacen(List<Almacen> listAlmacen) {
+		this.listAlmacen = listAlmacen;
+	}
+
+	public String getNameSelectedAlmacen() {
+		return nameSelectedAlmacen;
+	}
+
+	public void setNameSelectedAlmacen(String nameSelectedAlmacen) {
+		this.nameSelectedAlmacen = nameSelectedAlmacen;
+		for(Almacen a : listAlmacen){
+			if(a.getNombre().equals(nameSelectedAlmacen)){
+				selectedAlmacen = a;				
+			}
+		}
 	}
 }

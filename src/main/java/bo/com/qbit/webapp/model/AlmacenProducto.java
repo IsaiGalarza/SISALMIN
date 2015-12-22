@@ -51,7 +51,7 @@ public class AlmacenProducto implements Serializable {
 	@JoinColumn(name="id_producto", nullable=false)
 	private Producto producto;
 
-	@ManyToOne(fetch=FetchType.EAGER, optional=false)
+	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="id_proveedor", nullable=true)
 	private Proveedor proveedor;
 

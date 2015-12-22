@@ -106,7 +106,7 @@ public class FachadaOrdenIngreso implements Serializable{
 	public void actualizarKardexProducto(String correlativo,Almacen almacen,Gestion gestionSesion,Producto prod,Date fechaActual,double cantidad,Double precioUnitario,String usuarioSession) {
 		try{
 			//registrar Kardex
-			KardexProducto kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProducto(prod);
+			KardexProducto kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProductoAlmacen(prod,almacen);
 			double stockAnterior = 0;
 			if(kardexProductoAnt != null){
 				//se obtiene el saldo anterior del producto
@@ -124,7 +124,7 @@ public class FachadaOrdenIngreso implements Serializable{
 			kardexProducto.setEstado("AC");
 			kardexProducto.setFechaRegistro(fechaActual);
 			kardexProducto.setGestion(gestionSesion);
-			kardexProducto.setNumeroTransaccion(correlativo);
+			kardexProducto.setNumeroTransaccion("I-"+correlativo);
 
 
 			//BOLIVIANOS

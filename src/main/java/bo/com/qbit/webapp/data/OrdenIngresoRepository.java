@@ -29,6 +29,13 @@ public class OrdenIngresoRepository {
 	}
 	
 	@SuppressWarnings("unchecked")
+	public List<OrdenIngreso> findAllOrderedByIDGestion(Gestion gestion) {
+		String query = "select ser from OrdenIngreso ser where ( ser.estado='AC' or ser.estado='IN' or ser.estado='PR') and ser.gestion.id="+gestion.getId()+" order by ser.id desc";
+		System.out.println("Query OrdenIngreso: " + query);
+		return em.createQuery(query).getResultList();
+	}
+	
+	@SuppressWarnings("unchecked")
 	public int obtenerNumeroOrdenIngreso(Date date, Gestion gestion){
 		Integer year = Integer.parseInt( new SimpleDateFormat("yyyy").format(date));
 		String query = "select em from OrdenIngreso em where (em.estado='AC' or em.estado='IN' or em.estado='PR') and em.gestion.id="+gestion.getId()+" and date_part('year', em.fechaDocumento) ="+year;

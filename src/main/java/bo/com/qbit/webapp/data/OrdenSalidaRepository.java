@@ -29,6 +29,13 @@ public class OrdenSalidaRepository {
 	}
 	
 	@SuppressWarnings("unchecked")
+	public List<OrdenSalida> findAllOrderedByIDGestion(Gestion gestion) {
+		String query = "select ser from OrdenSalida ser where ( ser.estado='AC' or ser.estado='PR') and ser.gestion.id="+gestion.getId()+" order by ser.id desc";
+		System.out.println("Query findAllOrderedByID: " + query);
+		return em.createQuery(query).getResultList();
+	}
+	
+	@SuppressWarnings("unchecked")
 	public List<OrdenSalida> findByFechas(Date fechaInicial,Date fechaFinal) {
 		String query = "select os from DetalleOrdenSalida em,OrdenSalida os where em.ordenSalida.id=os.id and os.estado='PR' and os.fechaAprobacion>=:stDate and os.fechaAprobacion<=:edDate order by os.id desc";
 		System.out.println("Query findByFechas: " + query);

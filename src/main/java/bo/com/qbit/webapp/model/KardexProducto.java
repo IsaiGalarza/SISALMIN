@@ -91,6 +91,8 @@ public class KardexProducto implements Serializable {
 	private Gestion gestion;
 	
 	public KardexProducto(){
+		super();
+		this.id = 0;
 		this.precioUnitario = 0;
 		this.totalEntrada = 0;
 		this.totalSalida = 0;

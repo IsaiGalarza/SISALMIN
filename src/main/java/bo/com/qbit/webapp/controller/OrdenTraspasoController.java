@@ -511,14 +511,17 @@ public class OrdenTraspasoController implements Serializable {
 		}
 	}
 
+	private double total = 0;
+	
 	public void procesarOrdenTraspaso(){
 		try {
 			System.out.println("procesarOrdenTraspaso()");
+			total = 0;
 			Date fechaActual = new Date();
 			//actualizar estado de orden Traspaso
 			selectedOrdenTraspaso.setEstado("PR");
 			selectedOrdenTraspaso.setFechaAprobacion(fechaActual);
-			double total = 0;
+			
 			Proveedor proveedor = null;
 
 			//	newOrdenTraspaso.setAlmacenOrigen(selectedAlmacenOrigen);//selectedAlmacen; -> almacen destino
@@ -532,24 +535,28 @@ public class OrdenTraspasoController implements Serializable {
 				Producto prod = d.getProducto();
 				//double cantidadSolicitada = d.getCantidadSolicitada();
 				//1.- Actualizar detalle producto (PEPS) y tambiaen actualizar precio en detalleOrdenIngreso
-				if( ! actualizarDetalleProducto(almOrig,d)){
+				if(  actualizarDetalleProducto(almOrig,d)){
 					//mostrar mensaje
 					//FacesUtil.showDialog("dlgAlmacenSinExistencias");
 					//initNewOrdenTraspaso();
 					//return;//no se econtro stock disponible
 
 					//2.- 
+					System.out.println("actualizarStockAlmacenOrigen("+almOrig.getNombre()+","+prod.getNombre()+","+totalCantidaEntregada);
 					actualizarStockAlmacenOrigen(almOrig, prod,totalCantidaEntregada);
 
 					//4.-
+					System.out.println("actualizarKardexProducto("+almOrig.getNombre()+","+almDest.getNombre()+","+prod.getNombre()+","+fechaActual+","+totalCantidaEntregada+","+d.getPrecioUnitario());
 					actualizarKardexProducto(almOrig,almDest,prod, fechaActual, totalCantidaEntregada,d.getPrecioUnitario());
-					total = total + (totalCantidaEntregada * d.getPrecioUnitario());
+					//total = total + (totalCantidaEntregada * d.getPrecioUnitario());
 				}
 				//agregar detalleProductos al almacen destino
 				if(verificacionCantidadEntregada>0){
 					//3.-
+					System.out.println("actualizarStockAlmacenDestino("+proveedor+","+prod.getNombre()+","+almDest.getNombre()+","+totalCantidaEntregada+","+fechaActual+","+d.getPrecioUnitario());
 					actualizarStockAlmacenDestino(proveedor,prod,almDest, totalCantidaEntregada,fechaActual,d.getPrecioUnitario());
 					//
+					System.out.println("cargarDetalleProducto("+fechaActual+","+almDest.getNombre()+","+prod.getNombre()+","+totalCantidaEntregada+","+d.getPrecioUnitario()+","+d.getFechaRegistro()+","+selectedOrdenTraspaso.getCorrelativo()+","+usuarioSession);
 					cargarDetalleProducto(fechaActual, almDest, prod, totalCantidaEntregada, d.getPrecioUnitario(), d.getFechaRegistro(), selectedOrdenTraspaso.getCorrelativo(), usuarioSession);
 				}
 
@@ -605,6 +612,7 @@ public class OrdenTraspasoController implements Serializable {
 			int cantidad = 1;
 			//obtener todos los detalles del producto, para poder descontar stock de acuerdo a la cantidad solicitada
 			List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almacen,producto);
+			System.out.println("listDetalleProducto.size()"+listDetalleProducto.size());
 			//50 | 10
 			//52 | 10
 			if(listDetalleProducto.size()>0){
@@ -624,6 +632,7 @@ public class OrdenTraspasoController implements Serializable {
 							detalle.setPrecioUnitario(precio);
 							detalle.setTotal(precio*cantidadRestada);
 							detalleOrdenTraspasoRegistration.updated(detalle);
+							total = total + detalle.getTotal();
 						}else{//nuevo DetalleOrdenSalida con otro precio
 							detalle.setId(0);
 							detalle.setCantidadEntregada(cantidadRestada );
@@ -631,6 +640,7 @@ public class OrdenTraspasoController implements Serializable {
 							detalle.setPrecioUnitario(precio);
 							detalle.setTotal(precio*cantidadRestada);
 							detalleOrdenTraspasoRegistration.register(detalle);
+							total = total + detalle.getTotal();
 						}
 						verificacionCantidadEntregada = verificacionCantidadEntregada + cantidadRestada;
 						cantidad = cantidad + 1;
@@ -705,6 +715,7 @@ public class OrdenTraspasoController implements Serializable {
 			//double cantidadSolicitada = detalle.getCantidadSolicitada();// 15
 			//obtener listAlmacenProducto ordenado por fecha segun metodo PEPS
 			List<AlmacenProducto> listAlmacenProducto =  almacenProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almOrig,producto);
+			System.out.println("listAlmacenProducto.size()"+listAlmacenProducto.size());
 
 			if(listAlmacenProducto.size()>0){
 				for(AlmacenProducto d : listAlmacenProducto){
@@ -729,7 +740,8 @@ public class OrdenTraspasoController implements Serializable {
 		System.out.println("actualizarKardexProducto()");
 		try{
 			//registrar Kardex
-			KardexProducto kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProducto(prod);
+			KardexProducto kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProductoAlmacen(prod,selectedOrdenTraspaso.getAlmacenDestino());
+			System.out.println("kardexProductoAnt "+kardexProductoAnt);
 			double stockAnterior = 0;
 			if(kardexProductoAnt != null){
 				//se obtiene el saldo anterior del producto
@@ -739,17 +751,22 @@ public class OrdenTraspasoController implements Serializable {
 			double entrada = cantidad;
 			double salida = 0;
 			double saldo = stockAnterior + cantidad;//(+) aumenta en el almacen de destino
+			System.out.println("Aumentando stock al almacen destino = "+selectedOrdenTraspaso.getAlmacenDestino().getNombre());
+			System.out.println("entrada="+entrada);
+			System.out.println("salida="+salida);
+			System.out.println("saldo="+saldo);
 
-			//ingresando al almacen
+			//ingresando al almacen destino
 			KardexProducto kardexProducto = new KardexProducto();
-			kardexProducto.setUnidadSolicitante(selectedOrdenTraspaso.getAlmacenOrigen().getNombre());
+			kardexProducto.setId(0);
+			kardexProducto.setUnidadSolicitante(selectedOrdenTraspaso.getAlmacenDestino().getNombre());
 			kardexProducto.setFecha(fechaActual);
 			kardexProducto.setAlmacen(selectedOrdenTraspaso.getAlmacenDestino());
 			kardexProducto.setCantidad(cantidad);
 			kardexProducto.setEstado("AC");
 			kardexProducto.setFechaRegistro(fechaActual);
 			kardexProducto.setGestion(gestionSesion);
-			kardexProducto.setNumeroTransaccion(selectedOrdenTraspaso.getCorrelativo());
+			kardexProducto.setNumeroTransaccion("T-"+selectedOrdenTraspaso.getCorrelativo());
 
 			//EN BOLIVIANOS
 			kardexProducto.setPrecioUnitario(precioUnitario);
@@ -767,20 +784,34 @@ public class OrdenTraspasoController implements Serializable {
 			kardexProducto.setUsuarioRegistro(usuarioSession);
 			//register orden traspaso - almacen de destino
 			kardexProductoRegistration.register(kardexProducto);
-
+			///----------------------------------------------------------------------------------------
+			
+			//registrar Kardex
+		    kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProductoAlmacen(prod,selectedOrdenTraspaso.getAlmacenOrigen());
+		    System.out.println("kardexProductoAnt "+kardexProductoAnt);
+			stockAnterior = 0;
+			if(kardexProductoAnt != null){
+				//se obtiene el saldo anterior del producto
+				stockAnterior = kardexProductoAnt.getStockAnterior();
+			}
 			entrada = 0;
 			salida = cantidad;
 			saldo = stockAnterior -  cantidad;//(-) disminuye en el almacen origen
-			//register orden traspaso - almacen de origen
+			System.out.println("Disminuyecto stock al almacen origen = "+selectedOrdenTraspaso.getAlmacenOrigen().getNombre());
+			System.out.println("entrada="+entrada);
+			System.out.println("salida="+salida);
+			System.out.println("saldo="+saldo);
+			//saliendo del almacen de origen
 			kardexProducto = new KardexProducto();
-			kardexProducto.setUnidadSolicitante(selectedOrdenTraspaso.getAlmacenDestino().getNombre());
+			kardexProducto.setId(0);
+			kardexProducto.setUnidadSolicitante(selectedOrdenTraspaso.getAlmacenOrigen().getNombre());
 			kardexProducto.setFecha(fechaActual);
 			kardexProducto.setAlmacen(selectedOrdenTraspaso.getAlmacenOrigen());
 			kardexProducto.setCantidad(cantidad);
 			kardexProducto.setEstado("AC");
 			kardexProducto.setFechaRegistro(fechaActual);
 			kardexProducto.setGestion(gestionSesion);
-			kardexProducto.setNumeroTransaccion(selectedOrdenTraspaso.getCorrelativo());
+			kardexProducto.setNumeroTransaccion("T-"+selectedOrdenTraspaso.getCorrelativo());
 
 			//EN BOLIVIANOS
 			kardexProducto.setPrecioUnitario(precioUnitario);

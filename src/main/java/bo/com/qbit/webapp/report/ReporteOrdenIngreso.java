@@ -20,16 +20,12 @@ import net.sf.jasperreports.engine.util.JRLoader;
 import java.util.HashMap;
 import java.util.Map;
 
-
-
-
-
-
 //--datasource
-import javax.sql.DataSource;
+//import javax.sql.DataSource;
 import javax.inject.Inject;
-import javax.naming.Context;
-import javax.naming.InitialContext;
+//import javax.naming.Context;
+//import javax.naming.InitialContext;
+
 
 
 
@@ -107,9 +103,12 @@ public class ReporteOrdenIngreso  extends HttpServlet{
 			String rutaReporte = urlPath+"resources/report/orden_ingreso.jasper";
 			System.out.println("rutaReporte: "+rutaReporte);
 			
+			String URL_SERVLET_LOGO = urlPath+"ServletImageLogo?id=1&type=EMPRESA";
+			
 			// create a map of parameters to pass to the report.   
 			@SuppressWarnings("rawtypes")
 			Map parameters = new HashMap();
+			parameters.put("pDirPhoto", URL_SERVLET_LOGO);
 			parameters.put("pIdOrdenIngreso", pIdOrdenIngreso);
 			parameters.put("pNombreEmpresa", pNombreEmpresa);
 			parameters.put("pNitEmpresa", pNitEmpresa);

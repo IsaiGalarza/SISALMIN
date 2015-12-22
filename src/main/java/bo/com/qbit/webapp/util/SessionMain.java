@@ -9,8 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
-import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.StreamedContent;
 import org.primefaces.model.UploadedFile;
 
 import bo.com.qbit.webapp.data.EmpresaRepository;
@@ -26,11 +24,6 @@ import bo.com.qbit.webapp.model.security.Pagina;
 import bo.com.qbit.webapp.model.security.Permiso;
 import bo.com.qbit.webapp.model.security.Roles;
 import bo.com.qbit.webapp.service.UsuarioRegistration;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,8 +60,6 @@ public class SessionMain implements Serializable {
 
 	private boolean modificar = false;
 
-	private StreamedContent fotoPerfil;
-
 	//list Permisos del usuario
 	private List<Permiso> listPermiso;
 
@@ -80,7 +71,6 @@ public class SessionMain implements Serializable {
 		usuarioLogin = null;
 		empresaLogin = null;
 		gestionLogin = null;
-		fotoPerfil = null;
 		almacenLogin = null;
 	}
 
@@ -122,39 +112,6 @@ public class SessionMain implements Serializable {
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * cargar foto del usuario
-	 */
-	public void setImageUserSession() {
-		try{
-			if(getUsuarioLogin().getPesoFoto() == 0){
-				this.usuarioLogin.setFotoPerfil(toByteArrayUsingJava(getImageDefault().getStream()));
-				this.usuarioLogin.setPesoFoto(32);
-			}
-		}catch(Exception e){
-			System.out.println("setImageUserSession() - Error: "+e.getMessage());
-		}
-	}
-
-	public StreamedContent getImagen(){
-		return getImageDefault();
-	}
-
-	private StreamedContent getImageDefault() {
-		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-		InputStream stream = classLoader.getResourceAsStream("avatar.jpg");
-		return new DefaultStreamedContent(stream, "image/jpeg");
-	}
-
-	private static byte[] toByteArrayUsingJava(InputStream is) throws IOException{ 
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		int reads = is.read();
-		while(reads != -1){
-			baos.write(reads); reads = is.read(); 
-		}
-		return baos.toByteArray();
 	}
 
 	public String getParameterRequest(String name){
@@ -235,27 +192,6 @@ public class SessionMain implements Serializable {
 		this.empresaLogin = empresaLogin;
 	}
 
-	public StreamedContent getFotoPerfil() {
-		System.out.println("----- getFotoPerfil() fotoPerfil="+fotoPerfil+" --------");
-		if(fotoPerfil == null){
-			System.out.println("----- fotoPerfil = null --------");
-			String mimeType = "image/jpg";
-			InputStream is = null;
-			try{
-				is= new ByteArrayInputStream(getUsuarioLogin().getFotoPerfil());
-				fotoPerfil = new DefaultStreamedContent(new ByteArrayInputStream(toByteArrayUsingJava(is)), mimeType);
-			}catch(Exception e){
-				log.error("getImageUserSession() -> error : "+e.getMessage());
-				return null;
-			}
-		}
-		return fotoPerfil;
-	}
-
-	public void setFotoPerfil(StreamedContent fotoPerfil) {
-		this.fotoPerfil = fotoPerfil;
-	}
-
 	public Gestion getGestionLogin() {
 		if(gestionLogin == null){
 			this.gestionLogin = gestionRepository.findByGestionCierreActivo();
@@ -292,4 +228,6 @@ public class SessionMain implements Serializable {
 	public void setModificar(boolean modificar) {
 		this.modificar = modificar;
 	}
+
+
 }

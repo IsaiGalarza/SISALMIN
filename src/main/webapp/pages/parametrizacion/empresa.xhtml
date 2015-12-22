@@ -59,7 +59,7 @@
 			<section class="main-content">
 				<section class="main-content">
 					<div class="row">
-						<h:form id="formRegEmpresa">
+						<h:form id="formRegEmpresa" enctype="multipart/form-data">
 							<div class="col-md-5">
 								<div class="panel panel-default">
 									<div class="panel-heading">
@@ -74,6 +74,7 @@
 														<li class="active"><a href="#tab_5_1"
 															data-toggle="tab">EMPRESA</a></li>
 														<li><a href="#tab_5_2" data-toggle="tab">GESTIÓN</a></li>
+														<li><a href="#tab_5_3" data-toggle="tab">PARÁMETROS</a></li>
 													</ul>
 													<div class="tab-content">
 														<div id="tab_5_1" class="tab-pane active">
@@ -173,7 +174,7 @@
 																		</div>
 																	</div>
 																	<div class="form-group">
-																		<div class="col-md-4"> Gestión Inciada</div>
+																		<div class="col-md-4">Gestión Inciada</div>
 																		<div class="col-md-8">
 																			<h:outputLabel
 																				value="#{empresaController.gestionIniciada}" />
@@ -193,11 +194,35 @@
 																			</p:commandLink>
 																		</div>
 																	</div>
-																	
+
 																</div>
 															</div>
 														</div>
+														<div id="tab_5_3" class="tab-pane">
+															<div class="row">
 
+																LOGO
+																<p:graphicImage
+																	value="#{loginController.imageLogo}"
+																	cache="false" styleClass="img-circle inline-block"
+																	width="80" height="80" />
+
+																<p:fileUpload value="#{loginController.fileLogo}"
+																	mode="simple" skinSimple="false"
+																	style="text-align: left; " />
+
+																<br />
+
+																<div class="col-md-6">
+																	<p:commandLink value="Guardar Logo"
+																		update="formRegEmpresa"
+																		styleClass="btn btn-success btn-block" ajax="false"
+																		actionListener="#{loginController.uploadLogo}">
+																	</p:commandLink>
+																</div>
+
+															</div>
+														</div>
 													</div>
 												</div>
 											</div>

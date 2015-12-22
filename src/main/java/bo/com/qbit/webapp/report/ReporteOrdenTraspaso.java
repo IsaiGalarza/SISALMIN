@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+
 //--datasource
 import javax.sql.DataSource;
 import javax.naming.Context;
@@ -79,10 +80,13 @@ public class ReporteOrdenTraspaso  extends HttpServlet{
 			String rutaReporte = urlPath+"resources/report/orden_traspaso.jasper";
 			if(pTypeExport.equals("excel")){rutaReporte = urlPath+"resources/report/excel_orden_traspaso.jasper";}
 			System.out.println("rutaReporte: "+rutaReporte);
+			
+			String URL_SERVLET_LOGO = urlPath+"ServletImageLogo?id=1&type=EMPRESA";
 
 			// create a map of parameters to pass to the report.   
 			@SuppressWarnings("rawtypes")
 			Map parameters = new HashMap();
+			parameters.put("pDirPhoto", URL_SERVLET_LOGO);
 			parameters.put("pIdOrdenTraspaso", pIdOrdenTraspaso);
 			parameters.put("pNombreEmpresa", pNombreEmpresa);
 			parameters.put("pNitEmpresa", pNitEmpresa);

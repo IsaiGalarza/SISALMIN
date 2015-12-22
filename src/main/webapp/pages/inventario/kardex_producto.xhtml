@@ -100,7 +100,7 @@
 														<div class="col-md-4">Producto</div>
 														<div class="col-md-8">
 															<p:autoComplete id="productoID" style="width: 93%"
-																	inputStyle="width: 93%; color: #555555; background-image: none;"
+																inputStyle="width: 93%; color: #555555; background-image: none;"
 																value="#{kardexProductoController.selectedProducto.nombre}"
 																completeMethod="#{kardexProductoController.completeProducto}"
 																minQueryLength="3" dropdown="true" required="true"
@@ -118,6 +118,21 @@
 																</p:column>
 
 															</p:autoComplete>
+														</div>
+													</div >
+
+													<div class="form-group " >
+														<div class="col-md-4">Almacén</div>
+														<div class="col-md-8">
+															<p:selectOneMenu id="almacenID"
+																inputStyle="width: 100%; color: #555555; background-image: none; "
+																style="width: 100%;"
+																value="#{kardexProductoController.nameSelectedAlmacen}">
+																<f:selectItem itemLabel="TODOS" itemValue="" />
+																<f:selectItems
+																	value="#{kardexProductoController.listAlmacen}" />
+																<p:ajax event="change" />
+															</p:selectOneMenu>
 														</div>
 													</div>
 
@@ -150,10 +165,17 @@
 													</h:outputText>
 												</p:column>
 
-												<p:column width="15%" headerText="Nro. Solicitud"
-													filterBy="#{_var.numeroTransaccion}"  style="text-align:center;"
-													filterStyle="width: 100%;" filterMatchMode="contains">
+												<p:column width="10%" headerText="Nro. Solicitud"
+													filterBy="#{_var.numeroTransaccion}"
+													style="text-align:center;" filterStyle="width: 100%;"
+													filterMatchMode="contains">
 													<h:outputText value="#{_var.numeroTransaccion}" />
+												</p:column>
+
+												<p:column width="10%" headerText="Almacén"
+													filterBy="#{_var.almacen.nombre}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_var.almacen.nombre}" />
 												</p:column>
 
 												<p:column width="16%" headerText="Unidad Solicitante"
@@ -162,38 +184,39 @@
 													<h:outputText value="#{_var.unidadSolicitante}" />
 												</p:column>
 
-												<p:column width="20%" headerText="Nombre" 
+												<p:column width="20%" headerText="Nombre"
 													filterBy="#{_var.producto.nombre}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.producto.nombre}" />
 												</p:column>
 
 												<p:column width="8%" headerText="Precio"
-													filterBy="#{_var.precioUnitario}"  style="text-align:center;"
-													filterStyle="width: 100%;" filterMatchMode="contains">
+													filterBy="#{_var.precioUnitario}"
+													style="text-align:center;" filterStyle="width: 100%;"
+													filterMatchMode="contains">
 													<h:outputText value="#{_var.precioUnitario}">
 														<f:convertNumber pattern="#,##0.00" />
 													</h:outputText>
 												</p:column>
 
-												<p:column width="8%" headerText="Entrada"  style="text-align:center;"
-													filterBy="#{_var.stock}" filterStyle="width: 100%;"
-													filterMatchMode="contains">
+												<p:column width="8%" headerText="Entrada"
+													style="text-align:center;" filterBy="#{_var.stock}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.stock}" />
 												</p:column>
 
 												<p:column headerText="Salida" width="8%"
-													filterBy="#{_var.stockActual}"  style="text-align:center;"
+													filterBy="#{_var.stockActual}" style="text-align:center;"
 													filterStyle="width: 100%; " filterMatchMode="contains">
 													<h:outputText value="#{_var.stockActual}" />
 												</p:column>
 
-												<p:column headerText="Saldo" width="8%"  style="text-align:center;"
-													filterBy="#{_var.stockAnterior}" filterStyle="width: 100%; "
-													filterMatchMode="contains">
+												<p:column headerText="Saldo" width="8%"
+													style="text-align:center;" filterBy="#{_var.stockAnterior}"
+													filterStyle="width: 100%; " filterMatchMode="contains">
 													<h:outputText value="#{_var.stockAnterior}" />
 												</p:column>
-												
+
 												<f:facet name="footer">
 													<h:outputText
 														value="#{kardexProductoController.listaKardexProducto.size()} Registros en Total" />

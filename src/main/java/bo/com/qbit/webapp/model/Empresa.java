@@ -32,6 +32,11 @@ public class Empresa extends Validator implements Serializable {
 	private String NIT;
 	private String ciudad;
 	
+	@Column(name = "foto_perfil", nullable = true)
+	private byte[] fotoPerfil;
+	
+	@Column(name = "peso_foto", nullable = true)
+	private int pesoFoto;
 	
 	@Size(max = 2) //AC , IN
 	private String estado;
@@ -51,7 +56,8 @@ public class Empresa extends Validator implements Serializable {
 		this.direccion = "";
 		this.telefono = "";
 		this.NIT = "";
-		this.ciudad = "";		
+		this.ciudad = "";
+		this.pesoFoto = 0;
 	}
 	
 	@Override
@@ -207,6 +213,22 @@ public class Empresa extends Validator implements Serializable {
 
 	public void setFechaModificacion(Date fechaModificacion) {
 		this.fechaModificacion = fechaModificacion;
+	}
+
+	public byte[] getFotoPerfil() {
+		return fotoPerfil;
+	}
+
+	public void setFotoPerfil(byte[] fotoPerfil) {
+		this.fotoPerfil = fotoPerfil;
+	}
+
+	public int getPesoFoto() {
+		return pesoFoto;
+	}
+
+	public void setPesoFoto(int pesoFoto) {
+		this.pesoFoto = pesoFoto;
 	}
 
 }

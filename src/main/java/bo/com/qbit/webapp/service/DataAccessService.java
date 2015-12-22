@@ -30,7 +30,7 @@ public abstract class DataAccessService<T> {
 	private EntityManager em ;//= emf.createEntityManager();
 
 
-	Logger log = Logger.getLogger(DataAccessService.class);
+	//Logger log = Logger.getLogger(DataAccessService.class);
 
 
 	@Inject
@@ -57,13 +57,13 @@ public abstract class DataAccessService<T> {
 	 */
 	public T create(T t) {
 		try {
-			log.info("Registering "+ t.toString());
+			System.out.println("Registering "+ t.toString());
 			//this.em.getTransaction().begin();
 			this.em.persist(t);
 			this.em.flush();
 			this.em.refresh(t);
 			tEventSrc.fire(t);
-			log.info("register complet:  "+t);
+			System.out.println("register complet:  "+t);
 			//this.em.getTransaction().commit();
 			//this.em.close();
 			return t;
@@ -79,7 +79,7 @@ public abstract class DataAccessService<T> {
 			 * }
 			 */
 		} catch (Exception e) {
-			log.info("Registering Error " + e);
+			System.out.println("Registering Error " + e);
 			//this.em.getTransaction().rollback();
 			return null;
 		}
@@ -136,10 +136,10 @@ public abstract class DataAccessService<T> {
 	public T update(T item) {
 		try {
 			T t= (T) this.em.merge(item);
-			log.info("update complet:  "+item);
+			System.out.println("update complet:  "+item);
 			return t;
 		} catch (Exception e) {
-			log.info("Error:  "+e.toString());
+			System.out.println("Error:  "+e.toString());
 			return null;	
 		}
 

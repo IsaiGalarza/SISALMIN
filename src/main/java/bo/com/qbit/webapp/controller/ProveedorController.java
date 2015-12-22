@@ -26,6 +26,7 @@ import bo.com.qbit.webapp.model.Empresa;
 import bo.com.qbit.webapp.model.Proveedor;
 import bo.com.qbit.webapp.service.EstadoUsuarioLogin;
 import bo.com.qbit.webapp.service.ProveedorRegistration;
+import bo.com.qbit.webapp.util.FacesUtil;
 
 @Named(value = "proveedorController")
 @SuppressWarnings("serial")
@@ -92,10 +93,10 @@ public class ProveedorController implements Serializable {
 		beginConversation();		
 		estadoUsuarioLogin = new EstadoUsuarioLogin(facesContext);
 		nombreUsuario =  estadoUsuarioLogin.getNombreUsuarioSession();
-		loadValuesDefaul();
+		loadValuesDefault();
 	}
 
-	private void loadValuesDefaul(){
+	private void loadValuesDefault(){
 		crear = true;
 		registrar = false;
 		modificar = false;
@@ -133,12 +134,10 @@ public class ProveedorController implements Serializable {
 			newProveedor.setUsuarioRegistro(nombreUsuario);
 			newProveedor.setFechaRegistro(new Date());
 			newProveedor = proveedorRegistration.create(newProveedor);
-			
-			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
-					"Proveedor Registrado!", newProveedor.getNombre()+"!");
-			facesContext.addMessage(null, m);
 
-			loadValuesDefaul();
+			FacesUtil.infoMessage("Proveedor Registrado!", newProveedor.getNombre());
+
+			initNewProveedor();
 		} catch (Exception e) {
 			e.printStackTrace();
 			String errorMessage = getRootErrorMessage(e);
@@ -167,7 +166,7 @@ public class ProveedorController implements Serializable {
 			modificar = false;
 			tipoColumnTable = "col-md-8";
 			resetearFitrosTabla("formTableProveedor:dataTableProveedor");
-			loadValuesDefaul();
+			loadValuesDefault();
 		} catch (Exception e) {
 			String errorMessage = getRootErrorMessage(e);
 			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_ERROR,
@@ -192,7 +191,7 @@ public class ProveedorController implements Serializable {
 			tipoColumnTable = "col-md-8";
 			resetearFitrosTabla("formTableProveedor:dataTableProveedor");
 		
-			loadValuesDefaul();
+			loadValuesDefault();
 		} catch (Exception e) {
 			String errorMessage = getRootErrorMessage(e);
 			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_ERROR,

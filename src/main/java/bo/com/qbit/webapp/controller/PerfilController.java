@@ -10,8 +10,12 @@ import java.util.List;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpSession;
 
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -19,11 +23,12 @@ import org.primefaces.model.UploadedFile;
 
 import bo.com.qbit.webapp.model.Empresa;
 import bo.com.qbit.webapp.model.Usuario;
+import bo.com.qbit.webapp.service.UsuarioRegistration;
 import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.SessionMain;
 
-
-@ManagedBean
+@Named(value = "perfilController")
+@SessionScoped
 public class PerfilController implements Serializable {
 
 	
@@ -48,29 +53,38 @@ public class PerfilController implements Serializable {
 		System.out.println("initNewPerfil()");
 		setNombreUsuario(sessionMain.getUsuarioLogin().getLogin());
 		setEmpresaLogin(sessionMain.getEmpresaLogin());
+		usuarioSession = sessionMain.getUsuarioLogin();
 		// tituloPanel
 		tituloPanel = "Perfil";
 		modificar = false;
 		fotoPerfilTemp = null;
 	}
 
+	private @Inject UsuarioRegistration usuarioRegistration;
+	
 	public void upload() {
-		setModificar(false);
+		setModificar(true);
 		System.out.println("upload()  file:" + file);
-		if ( file != null ) {
-			//usuarioLogin.setFotoPerfil(file.getContents());
-			//usuarioLogin.setPesoFoto(file.getContents().length);
-			//usuarioLogin.setFechaRegistro(new Date());
-			//usuarioRegistration.update(usuarioLogin);
-			InputStream is = null;
-			String mimeType = "image/jpg";
-			try{
-				is = new ByteArrayInputStream(file.getContents());//file.getContents()
-				fotoPerfilTemp = new DefaultStreamedContent(new ByteArrayInputStream(toByteArrayUsingJava(is)), mimeType);
-			}catch(Exception e){
-				System.out.println("upload() -> error : "+e.getMessage());
-			}
-			FacesUtil.infoMessage("Foto perfil Cargada", "");
+		if (file != null) {
+			usuarioSession.setFotoPerfil(file.getContents());
+			usuarioSession.setPesoFoto(file.getContents().length);
+			usuarioRegistration.update(usuarioSession);
+			setImageUserSession();
+		}
+	}
+	
+	public void setImageUserSession() {
+		// cargar foto del usuario
+		try {
+			HttpSession session = (HttpSession) FacesContext
+					.getCurrentInstance().getExternalContext()
+					.getSession(false);
+			byte[] image = usuarioSession.getFotoPerfil();
+			session.setAttribute("imageUser", image);
+
+		} catch (Exception e) {
+			System.out.println("setImageUserSession() - Error: "
+					+ e.getMessage());
 		}
 	}
 	

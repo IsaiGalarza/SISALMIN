@@ -66,12 +66,12 @@
 												<h:outputText value="#{_var.producto.partida.codigo}" />
 											</p:column>
 
-											<p:column width="30%" headerText="Nombre"
+											<p:column width="25%" headerText="Nombre"
 												filterBy="#{_var.producto.nombre}"
 												filterStyle="width: 100%;" filterMatchMode="contains">
 												<h:outputText value="#{_var.producto.nombre}" />
 											</p:column>
-											<p:column headerText="Precio U."
+											<p:column headerText="Precio U." width="8%" 
 												filterBy="#{_var.precioUnitario}"  style="text-align:center;"
 												filterStyle="width: 100%;" filterMatchMode="contains">
 												<h:outputText value="#{_var.precioUnitario}">
@@ -100,6 +100,12 @@
 												filterBy="#{_var.proveedor.nombre}"
 												filterStyle="width: 100%;" filterMatchMode="contains">
 												<h:outputText value="#{_var.proveedor.nombre}" />
+											</p:column>
+											
+											<p:column headerText="Almacén"
+												filterBy="#{_var.almacen.nombre}"
+												filterStyle="width: 100%;" filterMatchMode="contains">
+												<h:outputText value="#{_var.almacen.nombre}" />
 											</p:column>
 											
 											<f:facet name="footer">

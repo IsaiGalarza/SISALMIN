@@ -22,14 +22,38 @@
 -- Records of usuario
 -- ----------------------------
 INSERT INTO "public"."usuario"(id,email ,fecha_registro,foto_perfil,login,nombre,password,peso_foto,state,usuario_registro,fecha_modificacion) VALUES (1,'admin.admin@gmail.com','2015-01-01 00:00:00',null,'admin','ADMINISTRADOR','admin', 0,'SU','admin',null);
+
+-- ----------------------------
+--  Sequence structure for usuario_id_seq
+-- ----------------------------
+DROP SEQUENCE IF EXISTS "public"."usuario_id_seq";
+CREATE SEQUENCE "public"."usuario_id_seq" INCREMENT 1 START 2 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+ALTER TABLE "public"."usuario_id_seq" OWNER TO "inventario";
+
+
 -- ----------------------------
 -- Records of roles
 -- ----------------------------
 INSERT INTO "public"."roles"(id,estado,fecha_modificacion,fecha_registro,nombre,usuario_registro,descripcion) VALUES(1,'SU',null,'2015-01-01 00:00:00','ADMINISTRADOR','admin','Grupo de Usuario Super Us.');
+
+-- ----------------------------
+--  Sequence structure for roles_id_seq
+-- ----------------------------
+DROP SEQUENCE IF EXISTS "public"."roles_id_seq";
+CREATE SEQUENCE "public"."roles_id_seq" INCREMENT 1 START 2 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+ALTER TABLE "public"."roles_id_seq" OWNER TO "inventario";
+
+
 -- ----------------------------
 -- Records of usuario_rol
 -- ----------------------------
 INSERT INTO "public"."usuario_rol"(id,estado,fecha_modificacion ,fecha_registro ,usuario_registro,id_roles, id_usuario) values(1,'AC',null,'2015-01-01 00:00:00','admin',1,1);
+-- ----------------------------
+--  Sequence structure for usuario_rol_id_seq
+-- ----------------------------
+DROP SEQUENCE IF EXISTS "public"."usuario_rol_id_seq";
+CREATE SEQUENCE "public"."usuario_rol_id_seq" INCREMENT 1 START 2 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+ALTER TABLE "public"."usuario_rol_id_seq" OWNER TO "inventario";
 -- ----------------------------
 -- Records of modulo
 -- ----------------------------
@@ -95,6 +119,7 @@ INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('20', 'LI
 INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('21', 'REPORTE UNIDAD SOLICITANTE', 'report_unidad_solicitante.xhtml', '5', null);
 INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('22', 'REPORTE PARTIDA', 'report_partida.xhtml', '5', null);
 INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('23', 'REPORTE PROYECTO', 'report_proyecto.xhtml', '5', null);
+INSERT INTO "public"."pagina" (id,nombre,path,id_modulo,path2) VALUES ('24', 'REPORTE SERV. PUBLICO', 'report_total_funcionario.xhtml', '5', null);
 
 
 -- ----------------------------
@@ -188,6 +213,8 @@ INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('62', '5
 INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('63', '5', '22');
 -- '23', 'REPORTE PROYECTO'
 INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('64', '5', '23');
+-- '24' 'REPORTE SERV. PUBLICO'
+INSERT INTO "public"."detalle_pagina" (id,id_accion, id_pagina) VALUES ('65', '5', '24');
 
 -- ----------------------------
 -- Records of permiso
@@ -257,15 +284,28 @@ INSERT INTO "public"."permiso" VALUES ('61', 'AC', null, '2015-01-01 00:00:00', 
 INSERT INTO "public"."permiso" VALUES ('62', 'AC', null, '2015-01-01 00:00:00', 'admin', '62', '1');
 INSERT INTO "public"."permiso" VALUES ('63', 'AC', null, '2015-01-01 00:00:00', 'admin', '63', '1');
 INSERT INTO "public"."permiso" VALUES ('64', 'AC', null, '2015-01-01 00:00:00', 'admin', '64', '1');
+INSERT INTO "public"."permiso" VALUES ('65', 'AC', null, '2015-01-01 00:00:00', 'admin', '65', '1');
+-- ----------------------------
+--  Sequence structure for permiso_id_seq
+-- ----------------------------
+DROP SEQUENCE IF EXISTS "public"."permiso_id_seq";
+CREATE SEQUENCE "public"."permiso_id_seq" INCREMENT 1 START 66 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+ALTER TABLE "public"."permiso_id_seq" OWNER TO "inventario";
 
 -- ----------------------------
 -- Records of empresa
 -- ----------------------------
-INSERT INTO "public"."empresa" (id,nit,ciudad,direccion,estado,fecha_modificacion,fecha_registro,razonsocial,telefono,usuario_registro) VALUES ('1', '30000000', 'SANTA CRUZ DE LA SIERRA', 'CALLE RENE MORENO #100', 'AC', null, '2015-01-01 00:00:00', 'EMPRESA DEMO', '398702', 'admin');
+INSERT INTO "public"."empresa" (id,nit,ciudad,direccion,estado,fecha_modificacion,fecha_registro,razonsocial,telefono,usuario_registro,foto_perfil,peso_foto) VALUES ('1', '30000000', 'SANTA CRUZ DE LA SIERRA', 'CALLE RENE MORENO #100', 'AC', null, '2015-01-01 00:00:00', 'EMPRESA DEMO', '398702', 'admin',null,0);
 
 -- ----------------------------
 -- Records of gestion
 -- ----------------------------
 INSERT INTO "public"."gestion" (id,estado,estado_cierre,fecha_modificacion,fecha_registro,gestion,iniciada,usuario_registro,id_empresa) VALUES ('1','AC','AC',null,'2015-01-01 00:00:00','2015','FALSE','admin','1');
+-- ----------------------------
+--  Sequence structure for gestion_id_seq
+-- ----------------------------
+DROP SEQUENCE IF EXISTS "public"."gestion_id_seq";
+CREATE SEQUENCE "public"."gestion_id_seq" INCREMENT 1 START 2 MAXVALUE 9223372036854775807 MINVALUE 1 CACHE 1;
+ALTER TABLE "public"."gestion_id_seq" OWNER TO "inventario";
 
 

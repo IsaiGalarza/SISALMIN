@@ -100,7 +100,7 @@ public class OrdenIngresoController implements Serializable {
 	private boolean verReport = false;
 	private boolean nuevoProducto = false;
 	private boolean importarFile = false;//para habilitar importacion
-	private boolean devolucion = false;//tipo DEVOLUCION PARA SACAR PRECIO PROMEDIO
+	private boolean devolucion = false;//tipo DEVOLUCION PARA SACAR PRECIO PROMEDIO(SE PUSO TODO EN FALSO PARA QUE NO PROMEDIE)
 
 	private String tituloProducto = "Agregar Producto";
 	private String tituloPanel = "Registrar Almacen";
@@ -175,7 +175,7 @@ public class OrdenIngresoController implements Serializable {
 		verReport = false;
 
 		listaDetalleOrdenIngreso = new ArrayList<DetalleOrdenIngreso>();
-		listaOrdenIngreso = ordenIngresoRepository.findAllOrderedByID();
+		listaOrdenIngreso = ordenIngresoRepository.findAllOrderedByIDGestion(gestionSesion);
 		listaAlmacen = almacenRepository.findAllActivosOrderedByID();
 		listaProveedor = proveedorRepository.findAllActivoOrderedByID();
 
@@ -269,7 +269,7 @@ public class OrdenIngresoController implements Serializable {
 			importarFile = false;
 		}
 		if(newOrdenIngreso.getMotivoIngreso().equals("DEVOLUCION")){
-			devolucion = true;
+			devolucion = false;
 		}else{
 			devolucion = false;
 		}
@@ -415,7 +415,7 @@ public class OrdenIngresoController implements Serializable {
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
 			String urlPath = request.getRequestURL().toString();
 			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
-			String urlPDFreporte = urlPath+"ReporteOrdenIngreso?pIdOrdenIngreso="+selectedOrdenIngreso.getId()+"&pUsuario="+usuarioSession+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial();
+			String urlPDFreporte = urlPath+"ReporteOrdenIngreso?pIdOrdenIngreso="+selectedOrdenIngreso.getId()+"&pUsuario="+usuarioSession+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial();
 			return urlPDFreporte;
 		}catch(Exception e){
 			return "error";
@@ -563,11 +563,11 @@ public class OrdenIngresoController implements Serializable {
 		for(Producto i : listProducto){
 			if(i.getNombre().equals(nombre)){
 				selectedProducto = i;
-				if(devolucion){
-					calcularPrecioPromedioForDevolucion(selectedProducto);
-				}else{
-					selectedDetalleOrdenIngreso.setPrecioUnitario(0);
-				}
+//				if(devolucion){
+//					calcularPrecioPromedioForDevolucion(selectedProducto);
+//				}else{
+//					selectedDetalleOrdenIngreso.setPrecioUnitario(0);
+//				}
 				calcular();
 				return;
 			}

@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -23,8 +22,10 @@ import org.primefaces.model.StreamedContent;
 import org.primefaces.model.UploadedFile;
 
 import bo.com.qbit.webapp.data.UsuarioRolRepository;
+import bo.com.qbit.webapp.model.Empresa;
 import bo.com.qbit.webapp.model.Usuario;
 import bo.com.qbit.webapp.model.security.UsuarioRol;
+import bo.com.qbit.webapp.service.UsuarioRegistration;
 import bo.com.qbit.webapp.util.DateUtility;
 import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.SessionMain;
@@ -45,11 +46,14 @@ public class LoginController implements Serializable {
 	private StreamedContent fotoPerfilTemp;
 
 	private UploadedFile file;
+	
+	private UploadedFile fileLogo;;
 
 	private boolean modificar = false;
 
 	@PostConstruct
 	public void initNewLogin() {
+		System.out.println("initNewLogin()");
 		username = "";
 		password = "";
 	}
@@ -58,7 +62,7 @@ public class LoginController implements Serializable {
 		System.out.println(" ------- login() ----user="+username+"  |  pass="+password);
 		if(username.isEmpty() || password.isEmpty()){
 			System.out.println("login() -> Usuario o Password sin datos.");
-			FacesUtil.errorMessage("Ingrear Usuario y Contraseña.");
+			FacesUtil.errorMessage("Ingresar Usuario y Contraseña.");
 			return; 
 		}
 
@@ -98,10 +102,12 @@ public class LoginController implements Serializable {
 	}
 
 	private void load(Usuario usuario){
+		this.usuarioSession = usuario;
 		UsuarioRol usuarioRolV1 = usuarioRolRepository.findByUsuario(usuario);
 		sessionMain.setUsuarioLogin(usuario);
 		sessionMain.cargarPermisos(usuarioRolV1.getRol());
-		sessionMain.setImageUserSession();
+		setImageUserSession();
+		setImageLogo();
 	}
 
 	public void logout() {
@@ -128,30 +134,6 @@ public class LoginController implements Serializable {
 		}
 	}
 
-	public void upload() {
-		setModificar(false);
-		System.out.println("upload()  file:" + file);
-		if ( file != null ) {
-			InputStream is = null;
-			String mimeType = "image/jpg";
-			try{
-				is = new ByteArrayInputStream(file.getContents());//file.getContents()
-				fotoPerfilTemp = null;
-				fotoPerfilTemp = new DefaultStreamedContent(new ByteArrayInputStream(toByteArrayUsingJava(is)), mimeType);
-				sessionMain.setFotoPerfil(fotoPerfilTemp);
-				Usuario user = sessionMain.getUsuarioLogin();
-				user.setFotoPerfil(file.getContents());
-				user.setPesoFoto(file.getContents().length);
-				user.setFechaRegistro(new Date());
-				sessionMain.setUsuarioLogin(user);
-				sessionMain.actualizarrUsuario();
-			}catch(Exception e){
-				System.out.println("upload() -> error : "+e.getMessage());
-			}
-			FacesUtil.infoMessage("Foto perfil Cargada", "");
-		}
-	}
-
 	private static byte[] toByteArrayUsingJava(InputStream is) throws IOException{ 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		int reads = is.read();
@@ -160,6 +142,154 @@ public class LoginController implements Serializable {
 		}
 		return baos.toByteArray();
 	}
+
+	public StreamedContent getImageUserSession() {
+		String mimeType = "image/jpg";
+		StreamedContent file;
+		InputStream is = null;
+		try {
+			HttpSession request = (HttpSession) FacesContext
+					.getCurrentInstance().getExternalContext()
+					.getSession(false);
+			byte[] image = (byte[]) request.getAttribute("imageUser");
+			is = new ByteArrayInputStream(image);
+			return new DefaultStreamedContent(new ByteArrayInputStream(
+					toByteArrayUsingJava(is)), mimeType);
+		} catch (Exception e) {
+			System.out.println("getEmpresaSession() -> error : "
+					+ e.getMessage());
+			return null;
+		}
+	}
+
+	public void setImageUserSession() {
+		// cargar foto del usuario
+		try {
+			HttpSession session = (HttpSession) FacesContext
+					.getCurrentInstance().getExternalContext()
+					.getSession(false);
+			byte[] image = sessionMain.getUsuarioLogin().getFotoPerfil();
+			if (image == null) {
+				image = toByteArrayUsingJava(getImageDefault().getStream());
+			}
+			session.setAttribute("imageUser", image);
+
+		} catch (Exception e) {
+			System.out.println("setImageUserSession() - Error: "
+					+ e.getMessage());
+		}
+	}
+
+	private StreamedContent getImageDefault() {
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		InputStream stream = classLoader.getResourceAsStream("avatar.jpg");
+		return new DefaultStreamedContent(stream, "image/jpeg");
+	}
+	
+	private StreamedContent getImageDefaultLogo() {
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		InputStream stream = classLoader.getResourceAsStream("logo-siga.png");
+		return new DefaultStreamedContent(stream, "image/png");
+	}
+
+	///perfil
+	private @Inject UsuarioRegistration usuarioRegistration;
+	private @Inject bo.com.qbit.webapp.service.EmpresaRegistration empresaRegistration;
+	private Usuario usuarioSession;
+
+	public void upload() {
+		setModificar(true);
+		System.out.println("upload()  file:" + file);
+		if (file != null) {
+			usuarioSession.setFotoPerfil(file.getContents());
+			usuarioSession.setPesoFoto(file.getContents().length);
+			usuarioRegistration.update(usuarioSession);
+			setImageUserSession2();
+			System.out.println("upload()  OK");
+		}
+	}
+	
+	public void setImageUserSession2() {
+		// cargar foto del usuario
+		try {
+			HttpSession session = (HttpSession) FacesContext
+					.getCurrentInstance().getExternalContext()
+					.getSession(false);
+			byte[] image = usuarioSession.getFotoPerfil();
+			session.setAttribute("imageUser", image);
+
+		} catch (Exception e) {
+			System.out.println("setImageUserSession() - Error: "
+					+ e.getMessage());
+		}
+	}
+	
+	public void uploadLogo() {
+		setModificar(true);
+		System.out.println("upload()  fileLogo:" + fileLogo);
+		if (fileLogo != null) {
+			Empresa empresa = sessionMain.getEmpresaLogin();
+			empresa.setFotoPerfil(fileLogo.getContents());
+			empresa.setPesoFoto(fileLogo.getContents().length);
+			empresa = empresaRegistration.update(empresa);
+			sessionMain.setEmpresaLogin(empresa);
+			setImageLogo2();
+			System.out.println("uploadLogo()  OK");
+		}
+	}
+	
+	public void setImageLogo() {
+		// cargar foto del usuario
+		try {
+			HttpSession session = (HttpSession) FacesContext
+					.getCurrentInstance().getExternalContext()
+					.getSession(false);
+			byte[] image = sessionMain.getEmpresaLogin().getFotoPerfil();
+			if (image == null) {
+				image = toByteArrayUsingJava(getImageDefaultLogo().getStream());
+			}
+			session.setAttribute("imageLogo", image);
+
+		} catch (Exception e) {
+			System.out.println("setImageUserSession() - Error: "
+					+ e.getMessage());
+		}
+	}
+
+	public void setImageLogo2() {
+		// cargar foto del usuario
+		try {
+			HttpSession session = (HttpSession) FacesContext
+					.getCurrentInstance().getExternalContext()
+					.getSession(false);
+			byte[] image = sessionMain.getEmpresaLogin().getFotoPerfil();
+			session.setAttribute("imageLogo", image);
+
+		} catch (Exception e) {
+			System.out.println("setImageUserSession() - Error: "
+					+ e.getMessage());
+		}
+	}
+	
+	public StreamedContent getImageLogo() {
+		String mimeType = "image/jpg";
+		StreamedContent file;
+		InputStream is = null;
+		try {
+			HttpSession request = (HttpSession) FacesContext
+					.getCurrentInstance().getExternalContext()
+					.getSession(false);
+			byte[] image = (byte[]) request.getAttribute("imageLogo");
+			is = new ByteArrayInputStream(image);
+			return new DefaultStreamedContent(new ByteArrayInputStream(
+					toByteArrayUsingJava(is)), mimeType);
+		} catch (Exception e) {
+			System.out.println("getEmpresaSession() -> error : "
+					+ e.getMessage());
+			return null;
+		}
+	}
+
 
 	// ----------- Getters and Setters ------------
 
@@ -203,5 +333,13 @@ public class LoginController implements Serializable {
 
 	public void setModificar(boolean modificar) {
 		this.modificar = modificar;
+	}
+
+	public UploadedFile getFileLogo() {
+		return fileLogo;
+	}
+
+	public void setFileLogo(UploadedFile fileLogo) {
+		this.fileLogo = fileLogo;
 	}
 }

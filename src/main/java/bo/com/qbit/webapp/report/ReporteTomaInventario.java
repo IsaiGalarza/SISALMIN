@@ -21,6 +21,7 @@ import java.util.Map;
 
 
 
+
 //--datasource
 import javax.sql.DataSource;
 import javax.naming.Context;
@@ -80,9 +81,12 @@ public class ReporteTomaInventario  extends HttpServlet{
 			String rutaReporte = urlPath+"resources/report/toma_inventario.jasper";
 			log.info("rutaReporte: "+rutaReporte);
 			
+			String URL_SERVLET_LOGO = urlPath+"ServletImageLogo?id=1&type=EMPRESA";
+			
 			// create a map of parameters to pass to the report.   
 			@SuppressWarnings("rawtypes")
 			Map parameters = new HashMap();
+			parameters.put("pDirPhoto", URL_SERVLET_LOGO);
 			parameters.put("pIdTomaInventario", pIdTomaInventario);
 			parameters.put("pNombreEmpresa", pNombreEmpresa);
 			parameters.put("pNitEmpresa", pNitEmpresa);

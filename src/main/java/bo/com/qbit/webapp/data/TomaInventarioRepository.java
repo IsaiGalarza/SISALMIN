@@ -6,6 +6,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
+import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.TomaInventario;
 
 @ApplicationScoped
@@ -21,6 +22,13 @@ public class TomaInventarioRepository {
 	@SuppressWarnings("unchecked")
 	public List<TomaInventario> findAllOrderedByID() {
 		String query = "select ser from TomaInventario ser where (ser.estado='AC' or ser.estado='IN' or ser.estado='RE' or ser.estado='PR' or ser.estado='CN' or ser.estado='CE') order by ser.id desc";
+		System.out.println("Query TomaInventario: " + query);
+		return em.createQuery(query).getResultList();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<TomaInventario> findAllOrderedByIDGestion(Gestion gestion) {
+		String query = "select ser from TomaInventario ser where (ser.estado='AC' or ser.estado='IN' or ser.estado='RE' or ser.estado='PR' or ser.estado='CN' or ser.estado='CE') and ser.gestion.id="+gestion.getId()+" order by ser.id desc";
 		System.out.println("Query TomaInventario: " + query);
 		return em.createQuery(query).getResultList();
 	}

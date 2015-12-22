@@ -39,14 +39,11 @@
 									<div class="panel-body">
 										<h:form id="formPerfil" enctype="multipart/form-data">
 											<div class="profile-name text-center mtm mbsm">
-												<p:graphicImage value="#{sessionMain.fotoPerfil}" cache="false"
-													rendered="#{ ! loginController.modificar}" 
+												<p:graphicImage value="#{loginController.imageUserSession}"
+													cache="false"
 													styleClass="img-circle inline-block" width="150"
 													height="150" />
-												<p:graphicImage value="#{loginController.fotoPerfilTemp}" cache="false" 
-													alt="Seleccione Imagen" rendered="#{ loginController.modificar}"
-													styleClass="img-circle inline-block" width="150"
-													height="150" />
+												
 											</div>
 											<div class="profile-name text-center mtm mbsm">
 												<h3>
@@ -76,9 +73,9 @@
 												</p:commandLink>
 											</div>
 											<div class="col-md-6">
-												<p:commandLink value="Guardar" ajax="false"
+												<p:commandLink value="Guardar" update=":formPerfil"
 													rendered="#{loginController.modificar}"
-													styleClass="btn btn-success btn-block" update="formPerfil"
+													styleClass="btn btn-success btn-block"  ajax="false"
 													actionListener="#{loginController.upload}">
 												</p:commandLink>
 											</div>

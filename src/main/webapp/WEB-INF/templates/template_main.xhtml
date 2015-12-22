@@ -127,8 +127,8 @@
 					<li class="dropdown dropdown-user menu-user"><a href="#"
 						data-toggle="dropdown" class="dropdown-toggle"> <!-- <p:graphicImage
 								library="gfx" name="person.jpg" width="27"
-								styleClass="img-circle" />  --> <p:graphicImage width="27px;"
-								value="#{sessionMain.fotoPerfil}" styleClass="img-circle" /> <span>#{sessionMain.usuarioLogin.nombre}
+								styleClass="img-circle" />  --> <p:graphicImage width="27px;" cache="false"
+								value="#{loginController.imageUserSession}" styleClass="img-circle" /> <span>#{sessionMain.usuarioLogin.nombre}
 						</span>&nbsp;<b class="caret"></b></a>
 						<ul class="dropdown-menu">
 							<li><a href="#{request.contextPath}/pages/profile.xhtml"><i
