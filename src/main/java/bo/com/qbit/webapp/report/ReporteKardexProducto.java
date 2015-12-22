@@ -34,7 +34,7 @@ import org.apache.log4j.Logger;
 public class ReporteKardexProducto  extends HttpServlet{
 
 	private static final long serialVersionUID = 1031215904122053423L;
-	
+
 	private Logger log = Logger.getLogger(this.getClass());
 
 	@SuppressWarnings({ "unchecked", "deprecation" })
@@ -71,6 +71,7 @@ public class ReporteKardexProducto  extends HttpServlet{
 			Integer pIdProducto = Integer.parseInt(request.getParameter("pIdProducto"));
 			Integer pIdGestion = Integer.parseInt(request.getParameter("pIdGestion"));
 			String  pUsuario = request.getParameter("pUsuario");
+			Integer pIdAlmacen = Integer.parseInt(request.getParameter("pIdAlmacen"));
 
 			String realPath = request.getRealPath("/");
 			log.info("Real Path: "+realPath);
@@ -78,15 +79,23 @@ public class ReporteKardexProducto  extends HttpServlet{
 			String urlPath = request.getRequestURL().toString();
 			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
 			log.info("URL ::::: "+urlPath);
-
-			String rutaReporte = urlPath+"resources/report/kardex_producto.jasper";
-			log.info("rutaReporte: "+rutaReporte);
-			
-			String URL_SERVLET_LOGO = urlPath+"ServletImageLogo?id=1&type=EMPRESA";
-			
 			// create a map of parameters to pass to the report.   
 			@SuppressWarnings("rawtypes")
 			Map parameters = new HashMap();
+			
+			String rutaReporte = "";
+			if(pIdAlmacen==0){
+				rutaReporte = urlPath+"resources/report/kardex_producto.jasper";
+			}else{
+				rutaReporte = urlPath+"resources/report/kardex_producto_almacen.jasper";
+				parameters.put("pIdAlmacen", pIdAlmacen);
+			}
+			log.info("rutaReporte: "+rutaReporte);
+
+			String URL_SERVLET_LOGO = urlPath+"ServletImageLogo?id=1&type=EMPRESA";
+
+
+
 			parameters.put("pDirPhoto", URL_SERVLET_LOGO);
 			parameters.put("pNombreEmpresa", pNombreEmpresa);
 			parameters.put("pNitEmpresa", pNitEmpresa);

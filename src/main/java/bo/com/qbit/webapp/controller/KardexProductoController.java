@@ -9,7 +9,6 @@ import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.event.Event;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
@@ -173,7 +172,12 @@ public class KardexProductoController implements Serializable {
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
 			String urlPath = request.getRequestURL().toString();
 			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
-			String urlPDFreporte = urlPath+"ReporteKardexProducto?pIdProducto="+selectedProducto.getId()+"&pIdGestion="+selectedGestion.getId()+"&pUsuario="+usuarioSession+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial();
+			String pIdAlmacen = String.valueOf(selectedAlmacen.getId());
+			if(selectedAlmacen.getNombre().isEmpty()){
+				pIdAlmacen = "0";
+			}
+			String urlPDFreporte = urlPath+"ReporteKardexProducto?pIdProducto="+selectedProducto.getId()+"&pIdGestion="+selectedGestion.getId()+"&pUsuario="+usuarioSession+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial()+"&pIdAlmacen="+pIdAlmacen;
+			System.out.println(">>>>>>>>>> urlPDFreporte = "+urlPDFreporte);
 			return urlPDFreporte;
 		}catch(Exception e){
 			return "error";
