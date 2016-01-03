@@ -64,6 +64,22 @@
 									update="formTableTomaInventario,formBotonesHeader"
 									action="#{tomaInventarioController.procesarConsulta()}">
 								</p:commandLink>
+								
+								<p:commandLink id="buttonVerModificar" value="&#160; Revisar"
+									styleClass="btn btn-info ion-ios7-loop-strong"
+									rendered="#{tomaInventarioController.buttonEditarTomaInventarioIncial}"
+									style="height:31px; padding:center"
+									update="formTableTomaInventario,formBotonesHeader"
+									action="#{tomaInventarioController.cargarSelectedTomaInventario()}">
+								</p:commandLink>
+								
+								<p:commandLink id="buttonProcesar2" value="&#160; Procesar"
+									styleClass="btn btn-info ion-ios7-loop-strong"
+									style="height:31px; padding:center"
+									rendered="#{tomaInventarioController.buttonProcesarTomaInventarioIncial and sessionMain.tienePermisoPaginaAccion('TOMA DE INVENTARIO','PROCESAR')}"
+									update="formTableTomaInventario,formBotonesHeader"
+									action="#{tomaInventarioController.procesarTomaInventarioInicial()}">
+								</p:commandLink>
 
 								<p:commandLink id="buttonVerReporte" value="&#160; Ver Reporte"
 									styleClass="btn btn-info ion-printer"
@@ -84,7 +100,7 @@
 								<p:commandLink id="buttonRevisar" value="&#160; Revisar"
 									styleClass="btn btn-info ion-ios7-loop-strong"
 									style="height:31px; padding:center"
-									rendered="#{ tomaInventarioController.revisarReport and (tomaInventarioController.listDetalleTomaInventario.size()==0) and !tomaInventarioController.selectedTomaInventario.tipo.equals('INICIAL') and sessionMain.tienePermisoPaginaAccion('TOMA DE INVENTARIO','REVISAR')}"
+									rendered="#{ tomaInventarioController.revisarReport and (tomaInventarioController.listDetalleTomaInventario.size()==0) and sessionMain.tienePermisoPaginaAccion('TOMA DE INVENTARIO','REVISAR')}"
 									update="formTableTomaInventario,formBotonesHeader"
 									action="#{tomaInventarioController.buttonRevisar()}">
 								</p:commandLink>
@@ -107,10 +123,18 @@
 
 								<p:commandLink id="buttonRegistrar3" value="&#160; Registrar"
 									styleClass="btn btn-success ion-checkmark"
-									rendered="#{tomaInventarioController.newTomaInventario.tipo.equals('INICIAL') and tomaInventarioController.registrar}"
+									rendered="#{tomaInventarioController.newTomaInventario.tipo.equals('INICIAL') and tomaInventarioController.registrar and !tomaInventarioController.editarTomaInventarioIncial}"
 									update="formTableTomaInventario, formBotonesHeader,formGrowl:msgs1"
 									style="height:31px; padding:center"
 									action="#{tomaInventarioController.registrarTomaInventario()}">
+								</p:commandLink>
+								
+								<p:commandLink id="buttonRegistrar4" value="&#160; Registrar"
+									styleClass="btn btn-success ion-checkmark"
+									rendered="#{tomaInventarioController.editarTomaInventarioIncial}"
+									update="formTableTomaInventario, formBotonesHeader,formGrowl:msgs1"
+									style="height:31px; padding:center"
+									action="#{tomaInventarioController.modificarTomaInventario()}">
 								</p:commandLink>
 
 								<p:commandLink id="buttonCierreAlmacen"
@@ -121,6 +145,7 @@
 									update="formTableTomaInventario,formBotonesHeader"
 									action="#{tomaInventarioController.cerrarAlmacenPorGestion()}">
 								</p:commandLink>
+								
 							</div>
 						</div>
 					</h:form>
@@ -254,7 +279,7 @@
 								<div class="col-md-4">
 									<div class="panel panel-default">
 										<div class="panel-heading">
-											<h3 class="panel-title">Filtro Toma Inventario</h3>
+											<h3 class="panel-title">Datos Toma Inventario</h3>
 										</div>
 										<div class="panel-body">
 											<!-- start here register -->
@@ -307,7 +332,6 @@
 														</div>
 													</ui:fragment>
 
-
 													<div class="form-group ">
 														<div class="col-md-4">Almacén</div>
 														<div class="col-md-8">
@@ -323,7 +347,7 @@
 																placeholder="[Escriba Almacen]" maxResults="10">
 
 																<p:ajax event="itemSelect"
-																	update="formTableTomaInventario:almacenID"
+																	update="formTableTomaInventario:almacenID,responsableAlmacenID"
 																	listener="#{tomaInventarioController.onRowSelectAlmacenClick}" />
 
 																<p:column>
@@ -342,8 +366,8 @@
 																style=" color: #555555; background-image: none;"
 																styleClass="input-sm form-control" size="40"
 																value="#{tomaInventarioController.newTomaInventario.nombreResponsable}"
-																required="true"
-																disabled="#{tomaInventarioController.conciliar}"
+																required="true" 
+																disabled="true"
 																requiredMessage="Usuario Registro Requerido.">
 																<p:ajax event="change" />
 															</p:inputText>
@@ -434,7 +458,7 @@
 
 									<div class="panel panel-default">
 										<div class="panel-heading">
-											<h3 class="panel-title">Lista Producto</h3>
+											<h3 class="panel-title">Lista Producto 1</h3>
 										</div>
 										<!-- start here datatable -->
 										<div class="box-content no-padding">
@@ -648,12 +672,12 @@
 								</div>
 							</ui:fragment>
 							<!-- TABLA DETALLETOMAINVENTARIO PARA EDITAR CAMPOS DE VERIFICACION, DIFERENCIA Y OBSERVACION -->
-							<ui:fragment rendered="#{tomaInventarioController.modificar}">
+							<ui:fragment rendered="#{tomaInventarioController.modificar and !tomaInventarioController.buttonEditarTomaInventarioIncial}">
 								<div class="col-md-8" align="left">
 
 									<div class="panel panel-default">
 										<div class="panel-heading">
-											<h3 class="panel-title">Lista Producto</h3>
+											<h3 class="panel-title">Lista Producto 2</h3>
 										</div>
 										<!-- start here datatable -->
 										<div class="box-content no-padding">
@@ -747,12 +771,12 @@
 								</div>
 							</ui:fragment>
 							<ui:fragment
-								rendered="#{(tomaInventarioController.registrar or tomaInventarioController.modificar) and tomaInventarioController.newTomaInventario.tipo.equals('INICIAL')}">
+								rendered="#{(tomaInventarioController.registrar or tomaInventarioController.modificar) and tomaInventarioController.newTomaInventario.tipo.equals('INICIAL') or editarTomaInventarioIncial}">
 								<div class="col-md-8" align="left">
 
 									<div class="panel panel-default">
 										<div class="panel-heading">
-											<h3 class="panel-title">Lista Producto</h3>
+											<h3 class="panel-title">Lista Producto 3</h3>
 										</div>
 										<!-- start here datatable -->
 										<div class="box-content no-padding">

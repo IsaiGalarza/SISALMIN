@@ -63,37 +63,10 @@
 								<p:commandLink id="buttonEliminar" value="&#160; Eliminar"
 									styleClass="btn btn-danger ion-close"
 									rendered="#{productoController.modificar=='true'}"
-									update=":formTableProducto, :formBotonesHeader"
-									onclick="dlgEliminar.show()"
+									update="formTableProducto,formBotonesHeader,formDlgEliminar"
+									onclick="PF('dlgEliminar').show()"
 									style="height:31px; padding:center">
 								</p:commandLink>
-
-								<p:dialog header="Desea Eliminar el Producto?"
-									widgetVar="dlgEliminar" minHeight="40" modal="true">
-									<h:panelGrid columns="2" cellpadding="5">
-
-										<p:outputLabel value="ID" />
-										<p:outputLabel value="#{productoController.newProducto.id}"
-											style="text-transform: uppercase" required="true" size="20">
-										</p:outputLabel>
-
-										<p:outputLabel value="Nombre" />
-										<p:outputLabel style="text-transform: uppercase" size="20"
-											value="#{productoController.newProducto.nombre}"
-											required="true" requiredMessage="Requerido.">
-										</p:outputLabel>
-
-									</h:panelGrid>
-									<p:commandButton value="Si"
-										actionListener="#{productoController.eliminarProducto()}"
-										icon="ui-icon-trash" style="width: 90px; text-color: white;"
-										update=":formTableProducto" oncomplete="dlgEliminar.hide()"
-										styleClass="btn btn-default" immediate="true" />
-									<p:commandButton value="No"
-										style="width: 90px; text-color: white;"
-										update=":formTableProducto" oncomplete="dlgEliminar.hide()"
-										styleClass="btn btn-default" immediate="true" />
-								</p:dialog>
 
 							</div>
 						</div>
@@ -333,12 +306,14 @@
 														<f:convertNumber pattern="#,##0.00" />
 													</h:outputText>
 												</p:column>
-												<p:column headerText="Tipo" filterBy="#{_var.tipoProducto}"  style="text-align:center;"
-													filterStyle="width: 100%;" filterMatchMode="contains">
+												<p:column headerText="Tipo" filterBy="#{_var.tipoProducto}"
+													style="text-align:center;" filterStyle="width: 100%;"
+													filterMatchMode="contains">
 													<h:outputText value="#{_var.tipoProducto}" />
 												</p:column>
 
-												<p:column headerText="Unidad Medida"  style="text-align:center;"
+												<p:column headerText="Unidad Medida"
+													style="text-align:center;"
 													filterBy="#{_var.unidadMedidas.nombre}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.unidadMedidas.nombre}" />
@@ -400,6 +375,32 @@
 		</h:form>
 		<!-- END GROWL -->
 
+
+		<p:dialog header="Desea Eliminar el Producto?" widgetVar="dlgEliminar"
+			minHeight="40" modal="true">
+			<h:form id="formDlgEliminar">
+				<h:panelGrid columns="2" cellpadding="5">
+					<p:outputLabel value="ID: " />
+					<p:outputLabel value="#{productoController.newProducto.id}"
+						style="text-transform: uppercase" required="true" size="20">
+					</p:outputLabel>
+
+					<p:outputLabel value="Nombre: " />
+					<p:outputLabel style="text-transform: uppercase" size="20"
+						value="#{productoController.newProducto.nombre}" required="true"
+						requiredMessage="Requerido.">
+					</p:outputLabel>
+				</h:panelGrid>
+				<p:commandButton value="Si"
+					actionListener="#{productoController.eliminarProducto()}"
+					icon="ui-icon-trash" style="width: 90px; text-color: white;"
+					update=":formTableProducto" oncomplete="PF('dlgEliminar').hide()"
+					styleClass="btn btn-default" immediate="true" />
+				<p:commandButton value="No" style="width: 90px; text-color: white;"
+					update=":formTableProducto" oncomplete="PF('dlgEliminar').hide()"
+					styleClass="btn btn-default" immediate="true" />
+			</h:form>
+		</p:dialog>
 
 
 	</ui:define>

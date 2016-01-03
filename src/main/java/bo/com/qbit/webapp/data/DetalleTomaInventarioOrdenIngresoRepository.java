@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 
 import bo.com.qbit.webapp.model.DetalleTomaInventarioOrdenIngreso;
 import bo.com.qbit.webapp.model.OrdenIngreso;
+import bo.com.qbit.webapp.model.TomaInventario;
 
 @Stateless
 public class DetalleTomaInventarioOrdenIngresoRepository {
@@ -35,5 +36,17 @@ public class DetalleTomaInventarioOrdenIngresoRepository {
 		String query = "select em from DetalleOrdenIngreso em where em.estado='AC' and em.ordenIngreso.id="+ordenIngreso.getId()+"  order by em.id desc";
 		log.info("Query DetalleOrdenIngreso: "+query);
 		return em.createQuery(query).getResultList();
+	}
+	
+	public DetalleTomaInventarioOrdenIngreso findByOrdenIngreso(OrdenIngreso ordenIngreso) {
+		String query = "select em from DetalleTomaInventarioOrdenIngreso em where (em.estado='AC' or em.estado='IN') and em.ordenIngreso.id="+ordenIngreso.getId();
+		log.info("Query DetalleOrdenIngreso: "+query);
+		return (DetalleTomaInventarioOrdenIngreso) em.createQuery(query).getSingleResult();
+	}
+	
+	public DetalleTomaInventarioOrdenIngreso findByTomaInventario(TomaInventario tomaInventario) {
+		String query = "select em from DetalleTomaInventarioOrdenIngreso em where (em.estado='AC' or em.estado='IN') and em.tomaInventario.id="+tomaInventario.getId();
+		log.info("Query DetalleOrdenIngreso: "+query);
+		return (DetalleTomaInventarioOrdenIngreso) em.createQuery(query).getSingleResult();
 	}
 }

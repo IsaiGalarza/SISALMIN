@@ -27,10 +27,16 @@ public class DetalleTomaInventarioRepository {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<DetalleTomaInventario> findByTomaInventario(TomaInventario tomaInventario) {
+	public List<DetalleTomaInventario> findAllByTomaInventario(TomaInventario tomaInventario) {
 		String query = "select ser from DetalleTomaInventario ser where ( ser.estado='AC' or ser.estado='IN') and ser.tomaInventario.id="+tomaInventario.getId()+" order by ser.id desc";
 		System.out.println("Query DetalleTomaInventario: " + query);
-		return em.createQuery(query).getResultList();
+		return  em.createQuery(query).getResultList();
+	}
+	
+	public DetalleTomaInventario findByTomaInventario(TomaInventario tomaInventario) {
+		String query = "select ser from DetalleTomaInventario ser where ( ser.estado='AC' or ser.estado='IN') and ser.tomaInventario.id="+tomaInventario.getId();
+		System.out.println("Query DetalleTomaInventario: " + query);
+		return (DetalleTomaInventario) em.createQuery(query).getSingleResult();
 	}
 	
 	

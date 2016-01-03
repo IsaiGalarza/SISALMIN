@@ -1,7 +1,5 @@
 package bo.com.qbit.webapp.service;
 
-import java.util.logging.Logger;
-
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -12,9 +10,6 @@ import bo.com.qbit.webapp.model.TomaInventario;
 //The @Stateless annotation eliminates the need for manual transaction demarcation
 @Stateless
 public class TomaInventarioRegistration {
-	
-	@Inject
-    private Logger log;
 
     @Inject
     private EntityManager em;
@@ -23,7 +18,7 @@ public class TomaInventarioRegistration {
     private Event<TomaInventario> tomaInventarioEventSrc;
     
     public TomaInventario register(TomaInventario tomaInventario) throws Exception {
-        log.info("Registering ordenIngreso " );
+        System.out.println("Registering tomaInventario " );
         this.em.persist(tomaInventario);
         this.em.flush();
         this.em.refresh(tomaInventario);
@@ -32,13 +27,13 @@ public class TomaInventarioRegistration {
     }
     
     public void updated(TomaInventario almacen) throws Exception {
-    	log.info("Updated TomaInventario ");
+    	System.out.println("Updated TomaInventario ");
         em.merge(almacen);
         tomaInventarioEventSrc.fire(almacen);
     }
     
     public void remover(TomaInventario almacen){
-    	log.info("Remover TomaInventario ");
+    	System.out.println("Remover TomaInventario ");
     	almacen.setEstado("RM");
         em.merge(almacen);
         tomaInventarioEventSrc.fire(almacen);

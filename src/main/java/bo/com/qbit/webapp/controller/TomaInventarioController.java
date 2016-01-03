@@ -21,6 +21,7 @@ import bo.com.qbit.webapp.data.AlmacenProductoRepository;
 import bo.com.qbit.webapp.data.AlmacenRepository;
 import bo.com.qbit.webapp.data.CierreGestionAlmacenRepository;
 import bo.com.qbit.webapp.data.DetalleOrdenIngresoRepository;
+import bo.com.qbit.webapp.data.DetalleTomaInventarioOrdenIngresoRepository;
 import bo.com.qbit.webapp.data.DetalleTomaInventarioRepository;
 import bo.com.qbit.webapp.data.OrdenIngresoRepository;
 import bo.com.qbit.webapp.data.PartidaRepository;
@@ -73,6 +74,7 @@ public class TomaInventarioController implements Serializable {
 	private @Inject AlmacenRepository almacenRepository;
 	private @Inject AlmacenProductoRepository almacenProductoRepository;
 	private @Inject DetalleTomaInventarioRepository detalleTomaInventarioRepository;
+	private @Inject DetalleTomaInventarioOrdenIngresoRepository detalleTomaInventarioOrdenIngresoRepository;
 	private @Inject TomaInventarioRepository tomaInventarioRepository;
 	private @Inject ProductoRepository productoRepository;
 	private @Inject DetalleOrdenIngresoRepository detalleOrdenIngresoRepository;
@@ -100,21 +102,26 @@ public class TomaInventarioController implements Serializable {
 	private FacesContext facesContext;
 
 	//ESTADOS
-
 	private boolean crear = true;
 	private boolean verProcesar = true;
 	private boolean verReport = false;
 	private boolean verButtonReport = false;
 	private boolean revisarReport = false;
 	private boolean verGuardar = false;
-
 	private boolean verLista = true;//mostrar lista de tomas de inventario
 	private boolean modificar = false;//verificar
 	private boolean registrar = false;//mostrar maestro detalle
 	private boolean buttonConciliar = false;//mostrar button conciliar
 	private boolean conciliar = false;
 	private boolean cierreAlmacen = false;
+	private boolean buttonEditarTomaInventarioIncial;
+	private boolean buttonProcesarTomaInventarioIncial;
+	private boolean verButtonDetalle = true;
+	private boolean editarOrdenIngreso = false;
+	private boolean nuevoProducto = false;
+	private boolean editarTomaInventarioIncial = false;//estado, modificar toma de inventario inicial
 
+	//VAR
 	private String tituloPanel = "Registrar Almacen";
 	private String urlTomaInventario = "";
 	private String tipoTomaInventario;
@@ -129,6 +136,7 @@ public class TomaInventarioController implements Serializable {
 	private List<Almacen> listaAlmacen = new ArrayList<Almacen>();
 	private List<Proveedor> listaProveedor = new ArrayList<Proveedor>();
 	private List<DetalleTomaInventario> listDetalleTomaInventario = new ArrayList<DetalleTomaInventario>();
+	private List<DetalleTomaInventario> listDetalleTomaInventarioEliminadas = new ArrayList<DetalleTomaInventario>();
 	private List<TomaInventario> listTomaInventario = new ArrayList<TomaInventario>();
 	private List<AlmacenProducto> listAlmacenProducto = new ArrayList<AlmacenProducto>();
 	private List<String> listTipo = new ArrayList<String>();//INICIAL,PARCIAL,FINAL
@@ -145,14 +153,11 @@ public class TomaInventarioController implements Serializable {
 	private Producto selectedProducto;
 	private UnidadMedida selectedUnidadMedida;
 	private DetalleOrdenIngreso selectedDetalleOrdenIngreso;
-	private boolean nuevoProducto = false;
 	private List<UnidadMedida> listUnidadMedida = new ArrayList<UnidadMedida>();
 	private List<Partida> listPartida = new ArrayList<Partida>();
 	private List<DetalleOrdenIngreso> listaDetalleOrdenIngreso = new ArrayList<DetalleOrdenIngreso>(); // ITEMS
 	private List<DetalleOrdenIngreso> listDetalleOrdenIngresoEliminados = new ArrayList<DetalleOrdenIngreso>();
 	private String tituloProducto = "Agregar Producto";
-	private boolean verButtonDetalle = true;
-	private boolean editarOrdenIngreso = false;
 	private List<Proveedor> listProveedor = new ArrayList<Proveedor>();
 	private Proveedor selectedProveedor;
 	//ORDEN INGRESO
@@ -175,10 +180,6 @@ public class TomaInventarioController implements Serializable {
 		// tituloPanel
 		tituloPanel = "Registrar Toma Inventario";
 
-		//inicilaizar fachada
-		//fachadaOrdenIngreso = new FachadaOrdenIngreso();
-		//fachadaOrdenSalida = new FachadaOrdenSalida();
-
 		crear = true;
 		verProcesar = true;
 		verReport = false;
@@ -188,6 +189,9 @@ public class TomaInventarioController implements Serializable {
 		conciliar = false;
 		buttonConciliar = false;
 		setCierreAlmacen(false);
+		editarTomaInventarioIncial = false;
+		buttonProcesarTomaInventarioIncial = false;
+		buttonEditarTomaInventarioIncial = false;
 
 		tipoTomaInventario = "PARCIAL";
 
@@ -196,7 +200,7 @@ public class TomaInventarioController implements Serializable {
 		modificar = false;
 		registrar = false;
 
-		listTomaInventario = tomaInventarioRepository.findAllOrderedByID();
+		listTomaInventario = tomaInventarioRepository.findAllOrderedByIDGestion(gestionSesion);
 		listDetalleTomaInventario = new ArrayList<DetalleTomaInventario>();
 		listaAlmacen = almacenRepository.findAllOrderedByID();
 		listTipo  = new ArrayList<String>();
@@ -208,6 +212,7 @@ public class TomaInventarioController implements Serializable {
 		newTomaInventario.setEstado("AC");
 		newTomaInventario.setFecha(new Date());
 		newTomaInventario.setFechaRegistro(new Date());
+		newTomaInventario.setGestion(gestionSesion);
 		newTomaInventario.setUsuarioRegistro(usuarioSession);
 
 		//PROUDCTO
@@ -237,10 +242,18 @@ public class TomaInventarioController implements Serializable {
 	}
 
 	public void cambiarAspecto(){
+		//verificar si ya hay una tomma de inventario inicial en esa gestion
+		if(existeTomaInventarioIncialByGestion()){
+			FacesUtil.infoMessage("VALIDACION", "Ya se registro una toma Inventario Inicial, gestion "+gestionSesion.getGestion());
+			return;
+		}
 		verLista = false;
 		modificar = false;
 		registrar = true;
 		crear = false;
+	}
+	private boolean existeTomaInventarioIncialByGestion(){
+		return tomaInventarioRepository.findTIInicialByGestion(gestionSesion);
 	}
 
 	public void cambiarAspectoModificar(){
@@ -273,10 +286,54 @@ public class TomaInventarioController implements Serializable {
 		return String.format("%06d", nroOrdenIngreso);
 	}
 
+	public void procesarTomaInventarioInicial(){
+		// DetalleTomaInventarioOrdenIngreso
+		DetalleTomaInventarioOrdenIngreso detalle = detalleTomaInventarioOrdenIngresoRepository.findByTomaInventario(selectedTomaInventario);
+		//almacen
+		selectedAlmacen = selectedTomaInventario.getAlmacen();
+		//orden ingreso
+		newOrdenIngreso = detalle.getOrdenIngreso();
+		//proveedor
+		//selectedProveedor = newOrdenIngreso.getProveedor();
+		//detalle orden ingreso
+		//listaDetalleOrdenIngreso = detalleOrdenIngresoRepository.findAllByOrdenIngreso(newOrdenIngreso);
+		Date fechaActual = new Date();
+		try{
+			//si es de Tipo INICIAL
+			if(selectedTomaInventario.getTipo().equals("INICIAL")){
+				//Actualizar estado de gestion
+				gestionSesion.setIniciada(true);
+				sessionMain.getGestionLogin().setIniciada(true);//actualaizar la gestion en la session
+				gestionRegistration.update(gestionSesion);
+				//				DetalleTomaInventarioOrdenIngreso detalle = new DetalleTomaInventarioOrdenIngreso();
+				//				detalle.setEstado("AC");
+				//				detalle.setFechaRegistro(fechaActual);
+				//				detalle.setOrdenIngreso(newOrdenIngreso);
+				//				detalle.setTomaInventario(selectedTomaInventario);
+				//				detalle.setUsuarioRegistro(usuarioSession);
+				detalle.setEstado("AC");
+				detalleTomaInventarioOrdenIngresoRegistration.updated(detalle);
+				//procesar OrdenIngreso
+				procesarOrdenIngreso();
+				//actualizar estado
+				selectedTomaInventario.setFechaRevision(fechaActual);
+				selectedTomaInventario.setEstado("PR");
+				selectedTomaInventario.setEstadoRevision("SI");
+				tomaInventarioRegistration.updated(selectedTomaInventario);
+				FacesUtil.infoMessage("Toma Inventario Registrada!", "");
+				initNewTomaInventario();
+			}
+			initNewTomaInventario();
+		}catch(Exception e){
+			System.out.println("procesarTomaInventarioInicial() Error "+e.getMessage());
+		}
+
+	}
+
 	public void registrarTomaInventario() {
 		//validaciones
 		if(selectedProveedor.getId()==0 && newTomaInventario.getTipo().equals("INICIAL")){
-			FacesUtil.infoMessage("VALIDACION", "No pueden haber campos vacios");
+			FacesUtil.infoMessage("VALIDACION", "Seleccione un proveedor");
 			return;
 		}
 		if( selectedAlmacen.getId()==0 || newTomaInventario.getNombreInventariador().isEmpty() || newTomaInventario.getNombreResponsable().isEmpty() || newTomaInventario.getHoja().isEmpty()){
@@ -296,52 +353,95 @@ public class TomaInventarioController implements Serializable {
 			newTomaInventario.setEstado("AC");
 			newTomaInventario.setFechaRegistro(fechaActual);
 			newTomaInventario = tomaInventarioRegistration.register(newTomaInventario);
-			for(DetalleTomaInventario detalle : listDetalleTomaInventario){
-				detalle.setTomaInventario(newTomaInventario);
-				detalle.setFechaRegistro(fechaActual);
-				detalle.setUsuarioRegistro(usuarioSession);
-				detalleTomaInventarioRegistration.register(detalle);
-			}
+			System.out.println("newTomaInventario:"+newTomaInventario.getId());
+			//			for(DetalleTomaInventario detalle : listDetalleTomaInventario){
+			//				detalle.setTomaInventario(newTomaInventario);
+			//				detalle.setFechaRegistro(fechaActual);
+			//				detalle.setUsuarioRegistro(usuarioSession);
+			//				detalleTomaInventarioRegistration.register(detalle);
+			//			}
 			//si es de Tipo INICIAL
 			if(newTomaInventario.getTipo().equals("INICIAL")){
-				//Actualizar estado de gestion
-				gestionSesion.setIniciada(true);
-				sessionMain.getGestionLogin().setIniciada(true);//actualaizar la gestion
-				gestionRegistration.update(gestionSesion);
 				//registrar ordenIngreso
 				registrarOrdenIngreso();
 				DetalleTomaInventarioOrdenIngreso detalle = new DetalleTomaInventarioOrdenIngreso();
-				detalle.setEstado("AC");
+				detalle.setEstado("IN");
 				detalle.setFechaRegistro(fechaActual);
 				detalle.setOrdenIngreso(newOrdenIngreso);
 				detalle.setTomaInventario(newTomaInventario);
 				detalle.setUsuarioRegistro(usuarioSession);
 				detalleTomaInventarioOrdenIngresoRegistration.register(detalle);
-				//procesar OrdenIngreso
-				procesarOrdenIngreso();
-				//actualizar estado
-				newTomaInventario.setFechaRevision(fechaActual);
-				newTomaInventario.setEstado("PR");
-				tomaInventarioRegistration.updated(newTomaInventario);
 			}
-
-
 			FacesUtil.infoMessage("Toma Inventario Registrada!", "");
 			initNewTomaInventario();
 		} catch (Exception e) {
+			System.out.println("Error : "+e.getMessage());
 			FacesUtil.errorMessage("Error al Registrar.");
 		}
 	}
 
-	public void modificarTomaInvenario() {
+	public void modificarTomaInventario() {
 		try {
-			System.out.println("Ingreso a modificarOrdenIngreso: ");
-
+			System.out.println("Ingreso a modificarTomaInvenario: ");
+			Date fechaActual = new Date();
+			newTomaInventario.setAlmacen(selectedAlmacen);
+			newTomaInventario.setEstado("AC");
+			tomaInventarioRegistration.updated(newTomaInventario);
+			//modificar detalle orden ingreso(Solo para inicial)
+			for(DetalleOrdenIngreso detalleOI1 : listaDetalleOrdenIngreso){
+				if(detalleOI1.getId()==0){
+					detalleOI1.setEstado("AC");
+					detalleOI1.setFechaRegistro(fechaActual);
+					detalleOI1.setOrdenIngreso(newOrdenIngreso);
+					detalleOI1.setUsuarioRegistro(usuarioSession);
+					detalleOrdenIngresoRegistration.register(detalleOI1);
+					//nuevo DetalleTomaInventario
+					DetalleTomaInventario detalle = new DetalleTomaInventario();
+					detalle.setCantidad((int)detalleOI1.getCantidad());
+					detalle.setCantidadRegistrada(detalleOI1.getCantidad());
+					detalle.setCantidadVerificada(detalleOI1.getCantidad());
+					detalle.setDiferencia(0d);
+					detalle.setEstado("AC");
+					detalle.setFechaRegistro(fechaActual);
+					detalle.setProducto(detalleOI1.getProducto());
+					detalle.setTomaInventario(newTomaInventario);
+					detalle.setUsuarioRegistro(usuarioSession);
+					detalleTomaInventarioRegistration.register(detalle);
+				}else{
+					detalleOrdenIngresoRegistration.updated(detalleOI1);
+					DetalleTomaInventario detalleAux = obtenerDetalleTomaInventarioByProducto( detalleOI1.getProducto());
+					detalleAux.setCantidad((int)detalleOI1.getCantidad());
+					detalleAux.setCantidadRegistrada(detalleOI1.getCantidad());
+					detalleAux.setCantidadVerificada(detalleOI1.getCantidad());
+					detalleAux.setProducto(detalleOI1.getProducto());
+					detalleTomaInventarioRegistration.updated(detalleAux);
+				}
+			}
+			for(DetalleOrdenIngreso detalleOI2: listDetalleOrdenIngresoEliminados){
+				if(detalleOI2.getId()!=0){
+					detalleOI2.setEstado("RM");
+					detalleOrdenIngresoRegistration.updated(detalleOI2);
+					//actualizar DetalleTomaInventario
+					DetalleTomaInventario detalleAux = obtenerDetalleTomaInventarioByProducto( detalleOI2.getProducto());
+					detalleAux.setEstado("RM");
+					detalleTomaInventarioRegistration.updated(detalleAux);
+				}
+			}
 			FacesUtil.infoMessage("Orden de Ingreso Modificada!", "");
 			initNewTomaInventario();
 		} catch (Exception e) {
+			System.out.println("Error "+e.getMessage());
 			FacesUtil.errorMessage("Error al Modificar.");
 		}
+	}
+
+	private DetalleTomaInventario obtenerDetalleTomaInventarioByProducto(Producto producto){
+		for(DetalleTomaInventario detalle : listDetalleTomaInventario){
+			if(detalle.getProducto().getId()==producto.getId()){
+				return detalle;
+			}
+		}
+		return null;
 	}
 
 	public void eliminarTomaInventario() {
@@ -410,6 +510,7 @@ public class TomaInventarioController implements Serializable {
 			calcularTotal();
 			System.out.println("Ingreso a registrarOrdenIngreso: ");
 			int numeroCorrelativo = ordenIngresoRepository.obtenerNumeroOrdenIngreso(new Date(),gestionSesion);
+			System.out.println("numeroCorrelativo="+numeroCorrelativo);
 			newOrdenIngreso.setMotivoIngreso("TOMA INVENTARIO INICIAL");
 			newOrdenIngreso.setTipoDocumento("SIN DOCUMENTO");
 			newOrdenIngreso.setNumeroDocumento("0");
@@ -424,12 +525,13 @@ public class TomaInventarioController implements Serializable {
 			newOrdenIngreso.setAlmacen(selectedAlmacen);
 			newOrdenIngreso.setProveedor(selectedProveedor);
 			newOrdenIngreso = ordenIngresoRegistration.register(newOrdenIngreso);
+			System.out.println("newOrdenIngreso: "+newOrdenIngreso.getId());
 			for(DetalleOrdenIngreso d: listaDetalleOrdenIngreso){
 
 				d.setFechaRegistro(fechaActual);
 				d.setUsuarioRegistro(usuarioSession);
 				d.setOrdenIngreso(newOrdenIngreso);
-				detalleOrdenIngresoRegistration.register(d);
+				d= detalleOrdenIngresoRegistration.register(d);
 				//Registrar detalle toma inventario
 				DetalleTomaInventario detalle = new DetalleTomaInventario();
 				detalle.setCantidadRegistrada(d.getCantidad());
@@ -476,7 +578,6 @@ public class TomaInventarioController implements Serializable {
 				fachadaOrdenIngreso.cargarDetalleProducto(fechaActual,newOrdenIngreso.getAlmacen(),d.getProducto(), d.getCantidad(), d.getPrecioUnitario(), d.getFechaRegistro(), newOrdenIngreso.getCorrelativo(),usuarioSession);
 			}
 
-
 		} catch (Exception e) {
 		}
 	}
@@ -521,7 +622,7 @@ public class TomaInventarioController implements Serializable {
 			newTomaInventario = selectedTomaInventario;
 			selectedAlmacen = selectedTomaInventario.getAlmacen();
 			listDetalleTomaInventario = new ArrayList<DetalleTomaInventario>();
-			listDetalleTomaInventario = detalleTomaInventarioRepository.findByTomaInventario(selectedTomaInventario);
+			listDetalleTomaInventario = detalleTomaInventarioRepository.findAllByTomaInventario(selectedTomaInventario);
 
 			verLista = false;
 			modificar = false;
@@ -581,12 +682,15 @@ public class TomaInventarioController implements Serializable {
 			newTomaInventario = selectedTomaInventario;
 			selectedAlmacen = selectedTomaInventario.getAlmacen();
 			listDetalleTomaInventario = new ArrayList<DetalleTomaInventario>();
-			listDetalleTomaInventario = detalleTomaInventarioRepository.findByTomaInventario(selectedTomaInventario);
+			listDetalleTomaInventario = detalleTomaInventarioRepository.findAllByTomaInventario(selectedTomaInventario);
 
 			verLista = false;
 			modificar = true;
 			registrar = false;
 			verButtonReport = false;
+			if(selectedTomaInventario.getTipo().equals("INICIAL")){
+				cargarSelectedTomaInventario();
+			}
 		} catch (Exception e) {
 			System.out.println("ERROR "+e.getMessage());
 		}
@@ -633,6 +737,33 @@ public class TomaInventarioController implements Serializable {
 		}
 	}
 
+	public void cargarSelectedTomaInventario(){
+		// DetalleTomaInventarioOrdenIngreso
+		DetalleTomaInventarioOrdenIngreso detalle = detalleTomaInventarioOrdenIngresoRepository.findByTomaInventario(selectedTomaInventario);
+		//almacen
+		selectedAlmacen = selectedTomaInventario.getAlmacen();
+		//orden ingreso
+		newOrdenIngreso = detalle.getOrdenIngreso();
+		//proveedor
+		selectedProveedor = newOrdenIngreso.getProveedor();
+		//detalle orden ingreso
+		listaDetalleOrdenIngreso = detalleOrdenIngresoRepository.findAllByOrdenIngreso(newOrdenIngreso);
+
+		//detalle toma inventario
+		editarTomaInventarioIncial = true;
+		verLista = false;
+		modificar = false;
+		registrar = true;
+		verButtonReport = false;
+		newTomaInventario = selectedTomaInventario;
+		// ocultar botones
+		buttonEditarTomaInventarioIncial = false;
+		buttonProcesarTomaInventarioIncial = false;
+		
+		//
+		listDetalleTomaInventario = detalleTomaInventarioRepository.findAllByTomaInventario(selectedTomaInventario);
+	}
+
 	public void onRowSelectTomaInventarioClick(SelectEvent event){
 		verButtonReport = true;
 		crear = false;
@@ -640,6 +771,18 @@ public class TomaInventarioController implements Serializable {
 			buttonConciliar = false;
 			revisarReport = false;
 			return;			
+		}
+		if(selectedTomaInventario.getTipo().equals("INICIAL")){
+			if(selectedTomaInventario.getEstado().equals("AC")){
+				System.out.println("TomaInventario Incial - Modificar - Procesar");
+				buttonEditarTomaInventarioIncial = true;
+				buttonProcesarTomaInventarioIncial = true;
+			}else{
+				buttonEditarTomaInventarioIncial = false;
+				buttonProcesarTomaInventarioIncial = false;
+			}
+
+			return;
 		}
 		if(selectedTomaInventario.getEstadoRevision().equals("NO")){
 			revisarReport = true;
@@ -654,12 +797,6 @@ public class TomaInventarioController implements Serializable {
 		}
 	}
 
-	public void modificarTomaInventario(){
-		System.out.println("modificarDetalleOrdenIngreso ");
-		FacesUtil.resetDataTable("formTableTomaInventario:itemsTable1");
-
-	}
-
 	// ONCOMPLETETEXT ALMACEN
 	public List<Almacen> completeAlmacen(String query) {
 		String upperQuery = query.toUpperCase();
@@ -672,6 +809,7 @@ public class TomaInventarioController implements Serializable {
 		for(Almacen i : listaAlmacen){
 			if(i.getNombre().equals(nombre)){
 				selectedAlmacen = i;
+				newTomaInventario.setNombreResponsable(selectedAlmacen.getEncargado().getNombre());
 				return;
 			}
 		}
@@ -1180,6 +1318,41 @@ public class TomaInventarioController implements Serializable {
 
 	public void setCierreAlmacen(boolean cierreAlmacen) {
 		this.cierreAlmacen = cierreAlmacen;
+	}
+
+	public boolean isButtonEditarTomaInventarioIncial() {
+		return buttonEditarTomaInventarioIncial;
+	}
+
+	public void setButtonEditarTomaInventarioIncial(
+			boolean buttonEditarTomaInventarioIncial) {
+		this.buttonEditarTomaInventarioIncial = buttonEditarTomaInventarioIncial;
+	}
+
+	public boolean isButtonProcesarTomaInventarioIncial() {
+		return buttonProcesarTomaInventarioIncial;
+	}
+
+	public void setButtonProcesarTomaInventarioIncial(
+			boolean buttonProcesarTomaInventarioIncial) {
+		this.buttonProcesarTomaInventarioIncial = buttonProcesarTomaInventarioIncial;
+	}
+
+	public List<DetalleTomaInventario> getListDetalleTomaInventarioEliminadas() {
+		return listDetalleTomaInventarioEliminadas;
+	}
+
+	public void setListDetalleTomaInventarioEliminadas(
+			List<DetalleTomaInventario> listDetalleTomaInventarioEliminadas) {
+		this.listDetalleTomaInventarioEliminadas = listDetalleTomaInventarioEliminadas;
+	}
+
+	public boolean isEditarTomaInventarioIncial() {
+		return editarTomaInventarioIncial;
+	}
+
+	public void setEditarTomaInventarioIncial(boolean editarTomaInventarioIncial) {
+		this.editarTomaInventarioIncial = editarTomaInventarioIncial;
 	}
 
 }

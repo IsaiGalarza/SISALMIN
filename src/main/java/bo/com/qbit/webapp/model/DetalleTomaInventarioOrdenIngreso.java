@@ -32,12 +32,12 @@ public class DetalleTomaInventarioOrdenIngreso implements Serializable{
 	private String usuarioRegistro;
 
 	// bi-directional many-to-one association to PedidoMov
-	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_orden_ingreso")
 	private OrdenIngreso ordenIngreso;
 
 	// bi-directional many-to-one association to Producto
-	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_toma_inventario", nullable = true)
 	private TomaInventario tomaInventario;
 	

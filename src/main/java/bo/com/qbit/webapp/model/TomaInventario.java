@@ -60,6 +60,10 @@ public class TomaInventario implements Serializable{
 	@Column(name = "usuario_registro")
 	private String usuarioRegistro;
 	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "id_gestion", nullable = true)
+	private Gestion gestion;
+	
 	// bi-directional many-to-one association to DetallePedidoMov
 	@OneToMany(mappedBy = "tomaInventario")
 	private List<DetalleTomaInventario> detalleTomaInventario;
@@ -72,6 +76,7 @@ public class TomaInventario implements Serializable{
 		this.hoja = "";
 		this.setEstadoRevision("NO");
 		this.tipo = "PARCIAL";
+		this.gestion = new Gestion();
 	}
 
 	public Integer getId() {
@@ -184,6 +189,14 @@ public class TomaInventario implements Serializable{
 
 	public void setTipo(String tipo) {
 		this.tipo = tipo;
+	}
+
+	public Gestion getGestion() {
+		return gestion;
+	}
+
+	public void setGestion(Gestion gestion) {
+		this.gestion = gestion;
 	}
 
 }

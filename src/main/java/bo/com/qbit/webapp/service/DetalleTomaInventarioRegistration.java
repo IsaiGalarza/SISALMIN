@@ -1,6 +1,5 @@
 package bo.com.qbit.webapp.service;
 
-import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
@@ -13,35 +12,32 @@ import bo.com.qbit.webapp.model.DetalleTomaInventario;
 @Stateless
 public class DetalleTomaInventarioRegistration {
 	
-	@Inject
-    private Logger log;
-
     @Inject
     private EntityManager em;
 
     @Inject
     private Event<DetalleTomaInventario> tomaInventarioEventSrc;
     
-    public DetalleTomaInventario register(DetalleTomaInventario tomaInventario) throws Exception {
-        log.info("Registering DetalleTomaInventario " );
-        this.em.persist(tomaInventario);
+    public DetalleTomaInventario register(DetalleTomaInventario detalleTomaInventario) throws Exception {
+        System.out.println("Registering detalleTomaInventario " );
+        this.em.persist(detalleTomaInventario);
         this.em.flush();
-        this.em.refresh(tomaInventario);
-        tomaInventarioEventSrc.fire(tomaInventario);
-        return tomaInventario;
+        this.em.refresh(detalleTomaInventario);
+        tomaInventarioEventSrc.fire(detalleTomaInventario);
+        return detalleTomaInventario;
     }
     
-    public void updated(DetalleTomaInventario almacen) throws Exception {
-    	log.info("Updated DetalleTomaInventario ");
-        em.merge(almacen);
-        tomaInventarioEventSrc.fire(almacen);
+    public void updated(DetalleTomaInventario detalleTomaInventario) throws Exception {
+    	System.out.println("Updated detalleTomaInventario ");
+        em.merge(detalleTomaInventario);
+        tomaInventarioEventSrc.fire(detalleTomaInventario);
     }
     
-    public void remover(DetalleTomaInventario almacen){
-    	log.info("Remover DetalleTomaInventario ");
-    	almacen.setEstado("RM");
-        em.merge(almacen);
-        tomaInventarioEventSrc.fire(almacen);
+    public void remover(DetalleTomaInventario detalleTomaInventario){
+    	System.out.println("Remover detalleTomaInventario ");
+    	detalleTomaInventario.setEstado("RM");
+        em.merge(detalleTomaInventario);
+        tomaInventarioEventSrc.fire(detalleTomaInventario);
     }
 	
 }
