@@ -28,7 +28,7 @@ public class UnidadMedidaRepository {
 	
 	public UnidadMedida findByNombre(String nombre) {
 		try{
-			String query = "select em from UnidadMedida em where em.estado='AC' and em.nombre='"+nombre+"'";
+			String query = "select em from UnidadMedida em where em.estado='AC' and upper(em.nombre)='"+nombre+"'";
 			System.out.println("Query UnidadMedida: " + query);
 			return (UnidadMedida) em.createQuery(query).getSingleResult();
 		}catch(Exception e){

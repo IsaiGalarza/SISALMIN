@@ -71,10 +71,9 @@ public class ProductoRepository {
 		}
 	}
 
-
 	public Producto findByCodigo(String codigo) {
 		try{
-			String query = "select ser from Producto ser where (ser.estado='AC' or ser.estado='IN') and ser.codigo='"+ codigo + "'";
+			String query = "select ser from Producto ser where (ser.estado='AC' or ser.estado='IN') and upper(ser.codigo)='"+ codigo + "'";
 			System.out.println("Query Producto: " + query);
 			return (Producto) em.createQuery(query).getSingleResult();
 		}catch(Exception e){
@@ -82,8 +81,6 @@ public class ProductoRepository {
 			return null;
 		}
 	}
-
-
 
 	public List<Producto> findAllProductoByFechaRegistro() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();

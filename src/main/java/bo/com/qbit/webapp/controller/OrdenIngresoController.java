@@ -646,7 +646,7 @@ public class OrdenIngresoController implements Serializable {
 			String telefono = Cifrado.Desencriptar( br.readLine(),12);
 			//6 tipoAlmacen
 			String tipoAlmacen = Cifrado.Desencriptar( br.readLine(),12);
-			selectedAlmacen = almacenRepository.findByCodigo(codigo);
+			selectedAlmacen = almacenRepository.findByCodigo(codigo.toUpperCase());
 			if(selectedAlmacen == null){
 				Almacen almacen = new Almacen();
 				almacen.setCodigo(codigo);
@@ -692,7 +692,7 @@ public class OrdenIngresoController implements Serializable {
 				//19 precioUnitario
 				String precioUnitarioDOI = Cifrado.Desencriptar( br.readLine(),12);
 
-				Partida partida = partidaRepository.findByCodigo(codigoPartida);
+				Partida partida = partidaRepository.findByCodigo(codigoPartida.toUpperCase());
 				if(partida==null){
 					partida = new Partida();
 					partida.setCodigo(codigoPartida);
@@ -703,7 +703,7 @@ public class OrdenIngresoController implements Serializable {
 					partida.setUsuarioRegistro(usuarioSession);
 					partida = partidaRegistration.register(partida);
 				}
-				UnidadMedida unidadMedida =  unidadMedidaRepository.findByNombre(unidadMedidaProducto);
+				UnidadMedida unidadMedida =  unidadMedidaRepository.findByNombre(unidadMedidaProducto.toUpperCase());
 				if(unidadMedida == null){
 					unidadMedida = new UnidadMedida();
 					unidadMedida.setNombre(unidadMedidaProducto);
@@ -712,7 +712,7 @@ public class OrdenIngresoController implements Serializable {
 					unidadMedida.setUsuarioRegistro(usuarioSession);
 					unidadMedida.setFechaRegistro(new Date());
 				}
-				Producto producto = productoRepository.findByCodigo(codigoProducto);
+				Producto producto = productoRepository.findByCodigo(codigoProducto.toUpperCase());
 				if(producto == null){
 					producto = new Producto();
 					producto.setCodigo(codigoProducto);

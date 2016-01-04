@@ -62,7 +62,7 @@ public class AlmacenRepository {
 
 	public Almacen findByCodigo(String codigo) {
 		try{
-			String query = "select ser from Almacen ser where (ser.estado='AC' or ser.estado='IN') and ser.codigo='"
+			String query = "select ser from Almacen ser where (ser.estado='AC' or ser.estado='IN') and upper(ser.codigo)='"
 					+ codigo + "'";
 			System.out.println("Query Almacen: " + query);
 			return (Almacen) em.createQuery(query).getSingleResult();

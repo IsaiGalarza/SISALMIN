@@ -39,8 +39,7 @@ public class PartidaRepository {
 
 	public Partida findByCodigo(String codigo) {
 		try{
-			String query = "select ser from Partida ser where (ser.estado='AC' or ser.estado='IN') and ser.codigo='"
-					+ codigo+"'";
+			String query = "select ser from Partida ser where (ser.estado='AC' or ser.estado='IN') and upper(ser.codigo)='"+ codigo+"'";
 			System.out.println("Query Partida: " + query);
 			return (Partida) em.createQuery(query).getSingleResult();
 		}catch(Exception e){
