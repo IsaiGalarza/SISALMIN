@@ -27,6 +27,7 @@ import bo.com.qbit.webapp.model.Producto;
 import bo.com.qbit.webapp.model.UnidadMedida;
 import bo.com.qbit.webapp.service.PartidaRegistration;
 import bo.com.qbit.webapp.service.ProductoRegistration;
+import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.SessionMain;
 
 @Named(value = "partidaController")
@@ -219,6 +220,10 @@ public class PartidaController implements Serializable {
 
 	public void registrarPartida() {
 		try {
+			if(newPartida.getCodigo().isEmpty() || newPartida.getNombre().isEmpty()){
+				FacesUtil.infoMessage("VALIDACION","No pueden haber campos vacíos.");
+				return;
+			}
 			System.out.println("Ingreso a registrarPartida: ");
 			partidaRegistration.register(newPartida);
 

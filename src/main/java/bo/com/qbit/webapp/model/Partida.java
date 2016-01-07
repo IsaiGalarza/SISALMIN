@@ -45,6 +45,9 @@ public class Partida implements Serializable {
 	public Partida() {
 		super();
 		this.id = 0;
+		this.nombre="";
+		this.codigo="";
+		this.descripcion="Ninguna";
 	}
 	
 	@Override
