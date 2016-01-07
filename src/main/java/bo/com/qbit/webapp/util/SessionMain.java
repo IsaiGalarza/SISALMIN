@@ -8,7 +8,6 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
 import org.primefaces.model.UploadedFile;
 
 import bo.com.qbit.webapp.data.EmpresaRepository;
@@ -36,12 +35,12 @@ import java.util.List;
 
 //sessionMain.usuarioLogin
 @Named
-@SuppressWarnings("serial")
 @SessionScoped
 public class SessionMain implements Serializable {
 
+	private static final long serialVersionUID = 9114105051707972603L;
+	
 	private @Inject FacesContext facesContext;
-	private Logger log = Logger.getLogger(this.getClass());
 
 	//Repository
 	private @Inject PermisoRepository permmisoRepository;
@@ -125,7 +124,7 @@ public class SessionMain implements Serializable {
 			HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
 			session.setAttribute(key, value);
 		}catch(Exception e){
-			log.error("setAttributeSession() ERROR: "+e.getMessage());
+			System.out.println("setAttributeSession() ERROR: "+e.getMessage());
 		}		
 	}
 
@@ -182,7 +181,7 @@ public class SessionMain implements Serializable {
 				empresaLogin = empresaRepository.findById(1);
 			}catch(Exception e){
 				empresaLogin =  null;
-				log.error("getEmpresaLoggin() ERROR: "+e.getMessage());
+				System.out.println("getEmpresaLoggin() ERROR: "+e.getMessage());
 			}
 		}
 		return empresaLogin;

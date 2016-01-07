@@ -242,6 +242,10 @@ public class PartidaController implements Serializable {
 
 	public void modificarPartida() {
 		try {
+			if(newPartida.getCodigo().isEmpty() || newPartida.getNombre().isEmpty()){
+				FacesUtil.infoMessage("VALIDACION","No pueden haber campos vacíos.");
+				return;
+			}
 			System.out.println("Ingreso a modificarPartida: "
 					+ newPartida.getId());
 			partidaRegistration.updated(newPartida);

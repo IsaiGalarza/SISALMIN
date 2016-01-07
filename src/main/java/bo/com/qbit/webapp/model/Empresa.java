@@ -19,8 +19,9 @@ import bo.com.qbit.webapp.validator.Validator;
 
 @Entity
 @Table(name = "empresa", catalog = "public", uniqueConstraints = @UniqueConstraint(columnNames="razonSocial"))
-@SuppressWarnings("serial")
 public class Empresa extends Validator implements Serializable {
+
+	private static final long serialVersionUID = 8780729092507900621L;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
