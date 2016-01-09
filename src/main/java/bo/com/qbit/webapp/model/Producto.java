@@ -91,6 +91,7 @@ public class Producto implements Serializable {
 			}
 		}
 	}
+	
 	public Integer getId() {
 		return this.id;
 	}

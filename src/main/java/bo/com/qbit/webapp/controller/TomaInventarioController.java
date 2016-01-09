@@ -327,16 +327,15 @@ public class TomaInventarioController implements Serializable {
 		}catch(Exception e){
 			System.out.println("procesarTomaInventarioInicial() Error "+e.getMessage());
 		}
-
 	}
 
 	public void registrarTomaInventario() {
 		//validaciones
-		if(selectedProveedor.getId()==0 && newTomaInventario.getTipo().equals("INICIAL")){
+		if(selectedProveedor.getId().equals(0) && newTomaInventario.getTipo().equals("INICIAL")){
 			FacesUtil.infoMessage("VALIDACION", "Seleccione un proveedor");
 			return;
 		}
-		if( selectedAlmacen.getId()==0 || newTomaInventario.getNombreInventariador().isEmpty() || newTomaInventario.getNombreResponsable().isEmpty() || newTomaInventario.getHoja().isEmpty()){
+		if( selectedAlmacen.getId().equals(0) || newTomaInventario.getNombreInventariador().isEmpty() || newTomaInventario.getNombreResponsable().isEmpty() || newTomaInventario.getHoja().isEmpty()){
 			FacesUtil.infoMessage("VALIDACION", "No pueden haber campos vacios");
 			return;
 		}
@@ -388,10 +387,21 @@ public class TomaInventarioController implements Serializable {
 			newTomaInventario.setAlmacen(selectedAlmacen);
 			newTomaInventario.setEstado("AC");
 			tomaInventarioRegistration.updated(newTomaInventario);
-			//modificar detalle orden ingreso(Solo para inicial)
+			//primero eliminar los items seleccionados
+			for(DetalleOrdenIngreso detalleOI2: listDetalleOrdenIngresoEliminados){
+				if(!detalleOI2.getId().equals(0)){
+					detalleOI2.setEstado("RM");
+					detalleOrdenIngresoRegistration.updated(detalleOI2);
+					//actualizar DetalleTomaInventario
+					DetalleTomaInventario detalleAux = obtenerDetalleTomaInventarioByProducto( detalleOI2.getProducto());
+					detalleAux.setEstado("RM");
+					detalleTomaInventarioRegistration.updated(detalleAux);
+				}
+			}
+			//actualizar y registrar nuevos y modificaciones de ites
 			for(DetalleOrdenIngreso detalleOI1 : listaDetalleOrdenIngreso){
 				System.out.println("detalleOI1 id:"+detalleOI1.getId());
-				if(detalleOI1.getId()==0){
+				if(detalleOI1.getId().equals(0)){
 					detalleOI1.setEstado("AC");
 					detalleOI1.setFechaRegistro(fechaActual);
 					detalleOI1.setOrdenIngreso(newOrdenIngreso);
@@ -420,16 +430,7 @@ public class TomaInventarioController implements Serializable {
 					detalleTomaInventarioRegistration.updated(detalleAux);
 				}
 			}
-			for(DetalleOrdenIngreso detalleOI2: listDetalleOrdenIngresoEliminados){
-				if(detalleOI2.getId()!=0){
-					detalleOI2.setEstado("RM");
-					detalleOrdenIngresoRegistration.updated(detalleOI2);
-					//actualizar DetalleTomaInventario
-					DetalleTomaInventario detalleAux = obtenerDetalleTomaInventarioByProducto( detalleOI2.getProducto());
-					detalleAux.setEstado("RM");
-					detalleTomaInventarioRegistration.updated(detalleAux);
-				}
-			}
+			
 			FacesUtil.infoMessage("Orden de Ingreso Modificada!", "");
 			initNewTomaInventario();
 		} catch (Exception e) {
@@ -440,6 +441,7 @@ public class TomaInventarioController implements Serializable {
 	}
 
 	private DetalleTomaInventario obtenerDetalleTomaInventarioByProducto(Producto producto){
+		System.out.println("producto id:"+producto.getId()+"-nombre:"+producto.getNombre()+"-");
 		for(DetalleTomaInventario detalle : listDetalleTomaInventario){
 			if(detalle.getProducto().equals(producto)){
 				return detalle;
@@ -462,7 +464,7 @@ public class TomaInventarioController implements Serializable {
 	//cierre de almacen por gestion
 	public void cerrarAlmacenPorGestion(){
 		//validaciones
-		if(selectedAlmacen.getId() == 0){
+		if(selectedAlmacen.getId().equals(0)){
 			FacesUtil.infoMessage("VALIDACION", "Seleccione un Almacém");
 			return;
 		}
@@ -588,7 +590,7 @@ public class TomaInventarioController implements Serializable {
 
 	public void procesarConsulta(){
 		try {
-			if(selectedAlmacen.getId()==0){
+			if(selectedAlmacen.getId().equals(0)){
 				FacesUtil.infoMessage("INFORMACION", "Seleccione un almacen ");
 				return;
 			}
@@ -962,7 +964,7 @@ public class TomaInventarioController implements Serializable {
 
 	private boolean verificarProductoAgregado(Producto selectedProducto){
 		for(DetalleOrdenIngreso detalle : listaDetalleOrdenIngreso){
-			if(detalle.getProducto().getId()==selectedProducto.getId()){
+			if(detalle.getProducto().equals(selectedProducto)){
 				return true;
 			}
 		}

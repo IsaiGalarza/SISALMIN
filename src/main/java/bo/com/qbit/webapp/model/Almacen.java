@@ -80,7 +80,7 @@ public class Almacen implements Serializable {
 			if(!(obj instanceof Almacen)){
 				return false;
 			}else{
-				if(((Almacen)obj).id==this.id){
+				if(((Almacen)obj).id.intValue()==this.id.intValue()){
 					return true;
 				}else{
 					return false;

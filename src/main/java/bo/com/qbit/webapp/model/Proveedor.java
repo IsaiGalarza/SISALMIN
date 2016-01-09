@@ -80,7 +80,7 @@ public class Proveedor implements Serializable {
 			if(!(obj instanceof Proveedor)){
 				return false;
 			}else{
-				if(((Proveedor)obj).id==this.id){
+				if(((Proveedor)obj).id.intValue()==this.id.intValue()){
 					return true;
 				}else{
 					return false;

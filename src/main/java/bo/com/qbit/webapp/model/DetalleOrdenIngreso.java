@@ -59,6 +59,35 @@ public class DetalleOrdenIngreso implements Serializable{
 		this.observacion = "ninguna";
 	}
 	
+	@Override
+	public String toString() {
+		return String.valueOf(id) ;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 0;
+		hash += (id != null ? id.hashCode() : 0);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(obj==null){
+			return false;
+		}else{
+			if(!(obj instanceof DetalleOrdenIngreso)){
+				return false;
+			}else{
+				if(((DetalleOrdenIngreso)obj).id.intValue() == this.id.intValue()){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		}
+	}
+	
 	public double getCantidad() {
 		return cantidad;
 	}
