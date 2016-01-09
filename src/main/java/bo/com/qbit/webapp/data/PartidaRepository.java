@@ -60,9 +60,8 @@ public class PartidaRepository {
 
 	@SuppressWarnings("unchecked")
 	public List<Partida> findAllPartidaForDescription(String criterio) {
-		try {
-			String query = "select ser from Partida ser where ser.nombre like '%"
-					+ criterio + "%' and ser.estado='AC' order by ser.nombre asc";
+		try {//upper(ser.codigo)='"+ codigo+"'"
+			String query = "select ser from Partida ser where upper(ser.nombre) like '%" + criterio + "%' and ser.estado='AC' order by ser.nombre asc";
 			System.out.println("Consulta: " + query);
 			List<Partida> listaPartida = em.createQuery(query).getResultList();
 			return listaPartida;

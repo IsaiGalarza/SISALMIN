@@ -31,11 +31,12 @@ import bo.com.qbit.webapp.util.SessionMain;
 @Named(value = "productoController")
 @ConversationScoped
 public class ProductoController implements Serializable {
-
+ 
 	private static final long serialVersionUID = 4656764987882579263L;
 
 	public static final String PUSH_CDI_TOPIC = "pushCdi";
 
+	//test 2
 	@Inject
 	private FacesContext facesContext;
 
@@ -146,7 +147,8 @@ public class ProductoController implements Serializable {
 	
 	// SELECCIONAR AUTOCOMPLETES AREA PRODUCTO
 	public List<Partida> completePartida(String query) {
-		return partidaRepository.findAllPartidaForDescription(query);
+		String upperQuery = query.toUpperCase();
+		return partidaRepository.findAllPartidaForDescription(upperQuery);
 	}
 	
 	public void onRowSelectPartidaClick() {

@@ -49,8 +49,8 @@ public class UnidadMedidaRepository {
 	
 	@SuppressWarnings("unchecked")
 	public List<UnidadMedida> findAllUnidadMedidaForDescription(String criterio) {
-		try {
-			String query = "select ser from UnidadMedida ser where ser.nombre like '%"
+		try {//upper(ser.codigo)='"+ codigo+"'"
+			String query = "select ser from UnidadMedida ser where upper(ser.nombre) like '%"
 					+ criterio + "%' and ser.estado='AC' order by ser.nombre asc";
 			System.out.println("Consulta: " + query);
 			List<UnidadMedida> listaUnidadMedida = em.createQuery(query).getResultList();

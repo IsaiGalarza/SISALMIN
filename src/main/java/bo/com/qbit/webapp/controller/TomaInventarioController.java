@@ -375,6 +375,7 @@ public class TomaInventarioController implements Serializable {
 			FacesUtil.infoMessage("Toma Inventario Registrada!", "");
 			initNewTomaInventario();
 		} catch (Exception e) {
+			e.printStackTrace();
 			System.out.println("Error : "+e.getMessage());
 			FacesUtil.errorMessage("Error al Registrar.");
 		}
@@ -389,6 +390,7 @@ public class TomaInventarioController implements Serializable {
 			tomaInventarioRegistration.updated(newTomaInventario);
 			//modificar detalle orden ingreso(Solo para inicial)
 			for(DetalleOrdenIngreso detalleOI1 : listaDetalleOrdenIngreso){
+				System.out.println("detalleOI1 id:"+detalleOI1.getId());
 				if(detalleOI1.getId()==0){
 					detalleOI1.setEstado("AC");
 					detalleOI1.setFechaRegistro(fechaActual);
@@ -406,7 +408,8 @@ public class TomaInventarioController implements Serializable {
 					detalle.setProducto(detalleOI1.getProducto());
 					detalle.setTomaInventario(newTomaInventario);
 					detalle.setUsuarioRegistro(usuarioSession);
-					detalleTomaInventarioRegistration.register(detalle);
+					detalle = detalleTomaInventarioRegistration.register(detalle);
+					listDetalleTomaInventario.add(detalle);
 				}else{
 					detalleOrdenIngresoRegistration.updated(detalleOI1);
 					DetalleTomaInventario detalleAux = obtenerDetalleTomaInventarioByProducto( detalleOI1.getProducto());
@@ -430,6 +433,7 @@ public class TomaInventarioController implements Serializable {
 			FacesUtil.infoMessage("Orden de Ingreso Modificada!", "");
 			initNewTomaInventario();
 		} catch (Exception e) {
+			e.getStackTrace();
 			System.out.println("Error "+e.getMessage());
 			FacesUtil.errorMessage("Error al Modificar.");
 		}
@@ -437,7 +441,7 @@ public class TomaInventarioController implements Serializable {
 
 	private DetalleTomaInventario obtenerDetalleTomaInventarioByProducto(Producto producto){
 		for(DetalleTomaInventario detalle : listDetalleTomaInventario){
-			if(detalle.getProducto().getId()==producto.getId()){
+			if(detalle.getProducto().equals(producto)){
 				return detalle;
 			}
 		}
@@ -452,7 +456,7 @@ public class TomaInventarioController implements Serializable {
 			initNewTomaInventario();
 		} catch (Exception e) {
 			FacesUtil.errorMessage("Error al Eliminar.");
-		} 
+		}
 	}
 
 	//cierre de almacen por gestion
@@ -866,7 +870,8 @@ public class TomaInventarioController implements Serializable {
 
 	// SELECCIONAR AUTOCOMPLETES AREA PRODUCTO
 	public List<Partida> completePartida(String query) {
-		listPartida =  partidaRepository.findAllPartidaForDescription(query);
+		String upperQuery = query.toUpperCase();
+		listPartida =  partidaRepository.findAllPartidaForDescription(upperQuery);
 		return listPartida;
 	}
 
@@ -882,14 +887,15 @@ public class TomaInventarioController implements Serializable {
 	private List<Producto> listProducto = new ArrayList<Producto>();
 	// ONCOMPLETETEXT PRODUCTO
 	public List<Producto> completeProducto(String query) {
-		listProducto =  productoRepository.findAllProductoForQueryNombre(query);
+		String upperQuery = query.toUpperCase();
+		listProducto =  productoRepository.findAllProductoForQueryNombre(upperQuery);
 		return listProducto;
 	}
 
 	public void onRowSelectProductoClick(SelectEvent event) {
 		String nombre =  event.getObject().toString();
 		for(Producto i : listProducto){
-			if(i.getNombre().equals(nombre)){
+			if(i.getNombre().toUpperCase().equals(nombre.toUpperCase())){
 				selectedProducto = i;
 				calcular();
 				return;

@@ -68,6 +68,29 @@ public class Producto implements Serializable {
 		return nombre ;
 	}
 
+	@Override
+	public int hashCode() {
+		int hash = 0;
+		hash += (id != null ? id.hashCode() : 0);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(obj==null){
+			return false;
+		}else{
+			if(!(obj instanceof Producto)){
+				return false;
+			}else{
+				if(((Producto)obj).id.intValue() == this.id.intValue()){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		}
+	}
 	public Integer getId() {
 		return this.id;
 	}

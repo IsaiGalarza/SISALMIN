@@ -39,9 +39,8 @@ public class ProductoRepository {
 
 	@SuppressWarnings("unchecked")
 	public List<Producto> findAllProductoForQueryNombre(String criterio) {
-		try {
-			String query = "select ser from Producto ser where ser.nombre like '%"
-					+ criterio + "%' and ser.estado='AC' order by ser.nombre asc";
+		try {//upper(ser.codigo)='"+ codigo+"'"
+			String query = "select ser from Producto ser where upper(ser.nombre) like '%" + criterio + "%' and ser.estado='AC' order by ser.nombre asc";
 			System.out.println("Consulta: " + query);
 			List<Producto> listaProducto = em.createQuery(query).getResultList();
 			return listaProducto;
