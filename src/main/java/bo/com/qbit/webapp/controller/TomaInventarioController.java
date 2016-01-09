@@ -452,7 +452,7 @@ public class TomaInventarioController implements Serializable {
 			initNewTomaInventario();
 		} catch (Exception e) {
 			FacesUtil.errorMessage("Error al Eliminar.");
-		}
+		} 
 	}
 
 	//cierre de almacen por gestion
