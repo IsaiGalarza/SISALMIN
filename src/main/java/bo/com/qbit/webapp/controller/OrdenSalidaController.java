@@ -12,7 +12,6 @@ import javax.enterprise.event.Event;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
 import org.primefaces.event.SelectEvent;
@@ -163,9 +162,9 @@ public class OrdenSalidaController implements Serializable {
 		//obtener la primer unidad solicitante
 		//List<DetalleUnidad> l = detalleUnidadRepository.findAll100UltimosDetalleUnidad();
 		//selectedDetalleUnidad = l.size()>0?l.get(0):new DetalleUnidad();
-
+		int numeroCorrelativo = ordenSalidaRepository.obtenerNumeroOrdenSalida(gestionSesion);
 		newOrdenSalida = new OrdenSalida();
-		newOrdenSalida.setCorrelativo(cargarCorrelativo(listaOrdenSalida.size()+1));
+		newOrdenSalida.setCorrelativo(cargarCorrelativo(numeroCorrelativo));
 		newOrdenSalida.setEstado("AC");
 		newOrdenSalida.setGestion(gestionSesion);
 		newOrdenSalida.setFechaPedido(new Date());

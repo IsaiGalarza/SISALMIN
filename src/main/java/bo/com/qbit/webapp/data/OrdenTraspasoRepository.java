@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import bo.com.qbit.webapp.model.Gestion;
+import bo.com.qbit.webapp.model.OrdenIngreso;
 import bo.com.qbit.webapp.model.OrdenTraspaso;
 
 @ApplicationScoped
@@ -20,6 +21,16 @@ public class OrdenTraspasoRepository {
 	public OrdenTraspaso findById(int id) {
 		return em.find(OrdenTraspaso.class, id);
 	}
+	
+	@SuppressWarnings("unchecked")
+	public int obtenerNumeroOrdenTraspaso(Gestion gestion){
+		String query = "select em from OrdenTraspaso em where (em.estado='AC' or em.estado='IN' or em.estado='PR') and em.gestion.id="+gestion.getId()+" order by em.id asc";
+		System.out.println("Query OrdenTraspaso: "+query);
+		List<OrdenTraspaso> list = em.createQuery(query).getResultList();
+		OrdenTraspaso orden = list.size()>0?list.get(list.size()-1):null;
+		return orden==null? 1 :Integer.valueOf(orden.getCorrelativo())+ 1;
+	}
+
 
 	@SuppressWarnings("unchecked")
 	public List<OrdenTraspaso> findAllOrderedByID() {

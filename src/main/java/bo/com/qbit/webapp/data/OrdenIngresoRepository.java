@@ -38,9 +38,11 @@ public class OrdenIngresoRepository {
 	@SuppressWarnings("unchecked")
 	public int obtenerNumeroOrdenIngreso(Date date, Gestion gestion){
 		Integer year = Integer.parseInt( new SimpleDateFormat("yyyy").format(date));
-		String query = "select em from OrdenIngreso em where (em.estado='AC' or em.estado='IN' or em.estado='PR') and em.gestion.id="+gestion.getId()+" and date_part('year', em.fechaDocumento) ="+year;
+		String query = "select em from OrdenIngreso em where (em.estado='AC' or em.estado='IN' or em.estado='PR') and em.gestion.id="+gestion.getId()+" and date_part('year', em.fechaDocumento) ="+year+" order by em.id asc";
 		System.out.println("Query OrdenIngreso: "+query);
-		return (( List<OrdenIngreso>)em.createQuery(query).getResultList()).size() + 1;
+		List<OrdenIngreso> list = em.createQuery(query).getResultList();
+		OrdenIngreso orden = list.size()>0?list.get(list.size()-1):null;
+		return orden==null? 1 :Integer.valueOf(orden.getCorrelativo())+ 1;
 	}
 
 	public double contarOrdenesActivas(Gestion gestion){

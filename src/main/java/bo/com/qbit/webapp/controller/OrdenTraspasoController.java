@@ -176,8 +176,9 @@ public class OrdenTraspasoController implements Serializable {
 		//la lista de almacen se obtendra al hacer click en nuevo orden traspaso
 		// y luego de verificar que almacen tiene el usuario, no mostrara dicho almacen en la lista
 		//de almacenes
+		int numeroCorrelativo = ordenTraspasoRepository.obtenerNumeroOrdenTraspaso(gestionSesion);
 		newOrdenTraspaso = new OrdenTraspaso();
-		newOrdenTraspaso.setCorrelativo(cargarCorrelativo(listaOrdenTraspaso.size()+1));
+		newOrdenTraspaso.setCorrelativo(cargarCorrelativo(numeroCorrelativo));
 		newOrdenTraspaso.setEstado("AC");
 		newOrdenTraspaso.setGestion(gestionSesion);
 		newOrdenTraspaso.setFechaDocumento(new Date());
@@ -1063,7 +1064,8 @@ public class OrdenTraspasoController implements Serializable {
 
 	// ONCOMPLETETEXT PRODUCTO
 	public List<Producto> completeProducto(String query) {
-		return productoRepository.findAllProductoForQueryNombre(query);
+		String upperQuery = query.toUpperCase();
+		return productoRepository.findAllProductoForQueryNombre(upperQuery);
 	}
 
 	public void onRowSelectProductoClick(SelectEvent event) {

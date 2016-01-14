@@ -1,5 +1,6 @@
 package bo.com.qbit.webapp.data;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import javax.persistence.EntityManager;
 
 import bo.com.qbit.webapp.model.DetalleOrdenSalida;
 import bo.com.qbit.webapp.model.Gestion;
+import bo.com.qbit.webapp.model.OrdenIngreso;
 import bo.com.qbit.webapp.model.OrdenSalida;
 
 @ApplicationScoped
@@ -19,6 +21,15 @@ public class OrdenSalidaRepository {
 
 	public OrdenSalida findById(int id) {
 		return em.find(OrdenSalida.class, id);
+	}
+
+	@SuppressWarnings("unchecked")
+	public int obtenerNumeroOrdenSalida( Gestion gestion){
+		String query = "select em from OrdenSalida em where (em.estado='AC' or em.estado='IN' or em.estado='PR') and em.gestion.id="+gestion.getId()+" order by em.id asc";
+		System.out.println("Query OrdenSalida: "+query);
+		List<OrdenSalida> list = em.createQuery(query).getResultList();
+		OrdenSalida orden = list.size()>0?list.get(list.size()-1):null;
+		return orden==null? 1 :Integer.valueOf(orden.getCorrelativo())+ 1;
 	}
 
 	@SuppressWarnings("unchecked")
