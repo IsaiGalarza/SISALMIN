@@ -515,7 +515,7 @@ public class TomaInventarioController implements Serializable {
 			Date fechaActual = new Date();
 			calcularTotal();
 			System.out.println("Ingreso a registrarOrdenIngreso: ");
-			int numeroCorrelativo = ordenIngresoRepository.obtenerNumeroOrdenIngreso(new Date(),gestionSesion);
+			int numeroCorrelativo = ordenIngresoRepository.obtenerNumeroOrdenIngreso(gestionSesion);
 			System.out.println("numeroCorrelativo="+numeroCorrelativo);
 			newOrdenIngreso.setMotivoIngreso("TOMA INVENTARIO INICIAL");
 			newOrdenIngreso.setTipoDocumento("SIN DOCUMENTO");

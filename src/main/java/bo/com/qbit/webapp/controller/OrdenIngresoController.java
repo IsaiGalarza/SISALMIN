@@ -179,7 +179,7 @@ public class OrdenIngresoController implements Serializable {
 		listaAlmacen = almacenRepository.findAllActivosOrderedByID();
 		listaProveedor = proveedorRepository.findAllActivoOrderedByID();
 
-		int numeroCorrelativo = ordenIngresoRepository.obtenerNumeroOrdenIngreso(new Date(),gestionSesion);
+		int numeroCorrelativo = ordenIngresoRepository.obtenerNumeroOrdenIngreso(gestionSesion);
 		newOrdenIngreso = new OrdenIngreso();
 		//newOrdenIngreso.setCorrelativo(cargarCorrelativo(listaOrdenIngreso.size()+1));
 		newOrdenIngreso.setCorrelativo(cargarCorrelativo(numeroCorrelativo));
