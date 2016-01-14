@@ -199,7 +199,7 @@
 													</div>
 
 													<div class="form-group ">
-														<div class="col-md-4">Unidad</div>
+														<div class="col-md-4">Area Trabajo</div>
 														<div class="col-md-8">
 
 															<p:autoComplete id="unidadID" style="width: 93%"
@@ -282,33 +282,45 @@
 													update=":formTableFuncionario, :formBotonesHeader"
 													listener="#{funcionarioController.onRowSelectFuncionarioClick}" />
 
-												<p:column width="8%" headerText="Id"
+												<p:column width="5%" headerText="Id"
 													filterBy="#{_Funcionario.id}" style="text-align:center;"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_Funcionario.id}" />
 												</p:column>
 
-												<p:column width="30%" headerText="Nombre Completo"
+												<p:column width="18%" headerText="Nombre Completo"
 													filterBy="#{_Funcionario.nombre}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText
 														value="#{_Funcionario.nombre} #{_Funcionario.apellidos}" />
 												</p:column>
+												
+												<p:column width="15%" headerText="Cargo"
+													filterBy="#{_Funcionario.cargo}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_Funcionario.cargo}" />
+												</p:column>
+												
+												<p:column width="15%" headerText="Area Trabajo"
+													filterBy="#{_Funcionario.detalleUnidad.nombre}"
+													filterStyle="width: 100%;" filterMatchMode="contains">
+													<h:outputText value="#{_Funcionario.detalleUnidad.nombre}" />
+												</p:column>
 
-												<p:column width="30%" headerText="Dirección"
+												<p:column width="15%" headerText="Dirección"
 													filterBy="#{_Funcionario.direccion}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_Funcionario.direccion}" />
 												</p:column>
 
-												<p:column width="10%" headerText="Teléfono"
+												<p:column width="7%" headerText="Teléfono"
 													style="text-align:center;"
 													filterBy="#{_Funcionario.telefono}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_Funcionario.telefono}" />
 												</p:column>
 
-												<p:column width="10%" headerText="Estado"
+												<p:column width="7%" headerText="Estado"
 													style="text-align:center;"
 													filterBy="#{_Funcionario.estado}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
@@ -318,7 +330,7 @@
 															rendered="#{_Funcionario.estado=='IN'}" value="Inactivo" /></span>
 												</p:column>
 
-												<p:column width="10%" headerText="Fecha"
+												<p:column width="7%" headerText="Fecha"
 													style="text-align:center;"
 													filterBy="#{_Funcionario.fechaRegistro}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
@@ -326,7 +338,7 @@
 														<f:convertDateTime pattern="dd/MM/yyyy" />
 													</h:outputText>
 												</p:column>
-												<p:column width="10%" headerText="Registro"
+												<p:column width="7%" headerText="Registro"
 													style="text-align:center;"
 													filterBy="#{_Funcionario.usuarioRegistro}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
