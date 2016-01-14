@@ -258,7 +258,10 @@
 																	<p:ajax event="itemSelect"
 																		update="formTableOrdenTraspaso:proyectoID,formTableOrdenTraspaso:tipoDocumentoAdjID"
 																		listener="#{ordenTraspasoController.onRowSelectProyectoClick}" />
-
+																		
+																	<p:column >
+																	<h:outputText value="#{_var.codigo}" />
+																	</p:column>
 																	<p:column>
 																		<h:outputText value="#{_var.nombre}" />
 																	</p:column>

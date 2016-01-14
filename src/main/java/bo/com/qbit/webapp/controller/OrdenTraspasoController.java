@@ -56,6 +56,7 @@ import bo.com.qbit.webapp.service.KardexProductoRegistration;
 import bo.com.qbit.webapp.service.OrdenTraspasoRegistration;
 import bo.com.qbit.webapp.util.Cifrado;
 import bo.com.qbit.webapp.util.FacesUtil;
+import bo.com.qbit.webapp.util.NumberUtil;
 import bo.com.qbit.webapp.util.SessionMain;
 
 @Named(value = "ordenTraspasoController")
@@ -512,7 +513,7 @@ public class OrdenTraspasoController implements Serializable {
 	}
 
 	private double total = 0;
-	
+
 	public void procesarOrdenTraspaso(){
 		try {
 			System.out.println("procesarOrdenTraspaso()");
@@ -521,7 +522,7 @@ public class OrdenTraspasoController implements Serializable {
 			//actualizar estado de orden Traspaso
 			selectedOrdenTraspaso.setEstado("PR");
 			selectedOrdenTraspaso.setFechaAprobacion(fechaActual);
-			
+
 			Proveedor proveedor = null;
 
 			//	newOrdenTraspaso.setAlmacenOrigen(selectedAlmacenOrigen);//selectedAlmacen; -> almacen destino
@@ -785,10 +786,10 @@ public class OrdenTraspasoController implements Serializable {
 			//register orden traspaso - almacen de destino
 			kardexProductoRegistration.register(kardexProducto);
 			///----------------------------------------------------------------------------------------
-			
+
 			//registrar Kardex
-		    kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProductoAlmacen(prod,selectedOrdenTraspaso.getAlmacenOrigen());
-		    System.out.println("kardexProductoAnt "+kardexProductoAnt);
+			kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProductoAlmacen(prod,selectedOrdenTraspaso.getAlmacenOrigen());
+			System.out.println("kardexProductoAnt "+kardexProductoAnt);
 			stockAnterior = 0;
 			if(kardexProductoAnt != null){
 				//se obtiene el saldo anterior del producto
@@ -990,11 +991,19 @@ public class OrdenTraspasoController implements Serializable {
 	public List<Proyecto> completeProyecto(String query) {
 		String upperQuery = query.toUpperCase();
 		List<Proyecto> results = new ArrayList<Proyecto>();
-		for(Proyecto i : listaProyecto) {
-			if(i.getNombre().toUpperCase().startsWith(upperQuery)){
-				results.add(i);
+		if(NumberUtil.isNumeric(query)){//si es numero
+			for(Proyecto i : listaProyecto) {
+				if(i.getCodigo().startsWith(query)){
+					results.add(i);
+				}
 			}
-		}         
+		}else{//es letra
+			for(Proyecto i : listaProyecto) {
+				if(i.getNombre().toUpperCase().startsWith(upperQuery)){
+					results.add(i);
+				}
+			}
+		}
 		return results;
 	}
 

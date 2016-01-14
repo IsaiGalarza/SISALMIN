@@ -12,6 +12,7 @@ import javax.enterprise.event.Event;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
 import org.primefaces.event.SelectEvent;
@@ -43,6 +44,7 @@ import bo.com.qbit.webapp.service.DetalleOrdenSalidaRegistration;
 import bo.com.qbit.webapp.service.DetalleProductoRegistration;
 import bo.com.qbit.webapp.service.OrdenSalidaRegistration;
 import bo.com.qbit.webapp.util.FacesUtil;
+import bo.com.qbit.webapp.util.NumberUtil;
 import bo.com.qbit.webapp.util.SessionMain;
 
 @Named(value = "ordenSalidaController")
@@ -374,7 +376,7 @@ public class OrdenSalidaController implements Serializable {
 	}
 	//contabiliza la cantidad verdadera que se entrego, aplicado en el metodo actualizarDetalleProductoByOrdenSalida(...);
 	private double cantidadEntregada = 0;
-	
+
 	/**
 	 * Actualiza el stock, verifica existencias de acuerdo al metodo PEPS
 	 * @param almacen De que almacen se sacara los productos
@@ -680,10 +682,13 @@ public class OrdenSalidaController implements Serializable {
 	}
 
 	// ONCOMPLETETEXT PROYECTO
-
 	public List<Proyecto> completeProyecto(String query) {
-		String upperQuery = query.toUpperCase();
-		listaProyecto = proyectoRepository.findAllProyectoForQueryNombre(upperQuery);      
+		if(NumberUtil.isNumeric(query)){//si es numero
+			listaProyecto = proyectoRepository.findAllProyectoForQueryCodigo(query);
+		}else{//es letra		
+			String upperQuery = query.toUpperCase();
+			listaProyecto = proyectoRepository.findAllProyectoForQueryNombre(upperQuery);
+		}
 		return listaProyecto;
 	}
 

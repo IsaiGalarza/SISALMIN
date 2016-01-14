@@ -129,7 +129,7 @@ public class AlmacenRepository {
 	@SuppressWarnings("unchecked")
 	public List<Almacen> findAllAlmacenForQueryNombre(String criterio) {
 		try {
-			String query = "select ser from Almacen ser where ser.nombre like '%"
+			String query = "select ser from Almacen ser where upper(ser.nombre) like '%"
 					+ criterio + "%' and ser.estado='AC' order by ser.nombre asc";
 			System.out.println("Consulta: " + query);
 			List<Almacen> listaAlmacen = em.createQuery(query).getResultList();

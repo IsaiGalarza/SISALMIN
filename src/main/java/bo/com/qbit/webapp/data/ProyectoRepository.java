@@ -73,7 +73,7 @@ public class ProyectoRepository {
 	@SuppressWarnings("unchecked")
 	public List<Proyecto> findAllProyectoForDescription(String criterio) {
 		try {
-			String query = "select ser from Proyecto ser where upper(ser.nombre) like '%"
+			String query = "select ser from Proyecto ser where ser.nombre like '%"
 					+ criterio + "%'";
 			System.out.println("Consulta: " + query);
 			List<Proyecto> listaProyecto = em.createQuery(query).getResultList();
@@ -117,7 +117,7 @@ public class ProyectoRepository {
 	@SuppressWarnings("unchecked")
 	public List<Proyecto> findAllProyectoForQueryNombre(String criterio) {
 		try {
-			String query = "select ser from Proyecto ser where upper(ser.nombre) like '%"
+			String query = "select ser from Proyecto ser where ser.nombre like '%"
 					+ criterio + "%' and ser.estado='AC' order by ser.nombre asc";
 			System.out.println("Consulta: " + query);
 			List<Proyecto> listaProyecto = em.createQuery(query).getResultList();
@@ -127,6 +127,13 @@ public class ProyectoRepository {
 					+ e.getMessage());
 			return null;
 		}
+	}
+	
+	@SuppressWarnings("unused")
+	public List<Proyecto> findAllProyectoForQueryCodigo(String codigo){
+		String query = "select ser from Proyecto ser where ser.codigo like '%" + codigo + "%' and ser.estado='AC' order by ser.nombre asc";
+		List<Proyecto> listaProyecto = em.createQuery(query).getResultList();
+		return listaProyecto;
 	}
 
 }

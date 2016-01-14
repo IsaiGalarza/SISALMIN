@@ -109,7 +109,7 @@ public class DetalleUnidadRepository {
 	@SuppressWarnings("unchecked")
 	public List<DetalleUnidad> findAllDetalleUnidadForQueryNombre(String criterio) {
 		try {
-			String query = "select ser from DetalleUnidad ser where ser.nombre like '%"
+			String query = "select ser from DetalleUnidad ser where upper(ser.nombre) like '%"
 					+ criterio + "%' and ser.estado='AC' order by ser.nombre asc";
 			System.out.println("Consulta: " + query);
 			List<DetalleUnidad> listaDetalleUnidad = em.createQuery(query).getResultList();
