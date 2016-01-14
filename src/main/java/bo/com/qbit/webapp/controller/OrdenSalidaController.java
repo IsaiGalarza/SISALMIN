@@ -673,6 +673,7 @@ public class OrdenSalidaController implements Serializable {
 			}
 		}
 	}
+	
 	private  boolean verificarExistencias(Producto producto, double cantidad){
 		List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoOrderByFecha(selectedProducto);
 		if(listDetalleProducto.size()>0){
