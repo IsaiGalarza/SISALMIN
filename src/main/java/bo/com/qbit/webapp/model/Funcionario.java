@@ -131,4 +131,10 @@ public class Funcionario implements Serializable {
 		this.cargo = cargo;
 	}
 
+	@Override
+	public String toString() {
+		return  nombre + " " + apellidos;
+	}
+
+	
 }

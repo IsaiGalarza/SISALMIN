@@ -554,7 +554,8 @@ public class OrdenIngresoController implements Serializable {
 
 	// ONCOMPLETETEXT PRODUCTO
 	public List<Producto> completeProducto(String query) {
-		return productoRepository.findAllProductoForQueryNombre(query);
+		String upperQuery = query.toUpperCase();
+		return productoRepository.findAllProductoForQueryNombre(upperQuery);
 	}
 
 	public void onRowSelectProductoClick(SelectEvent event) {
@@ -760,7 +761,8 @@ public class OrdenIngresoController implements Serializable {
 
 	// SELECCIONAR AUTOCOMPLETES AREA PRODUCTO
 	public List<Partida> completePartida(String query) {
-		return partidaRepository.findAllPartidaForDescription(query);
+		String upperQuery = query.toUpperCase();
+		return partidaRepository.findAllPartidaForDescription(upperQuery);
 	}
 
 	public void onRowSelectPartidaClick() {
