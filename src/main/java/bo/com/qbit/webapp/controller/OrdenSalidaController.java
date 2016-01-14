@@ -682,7 +682,7 @@ public class OrdenSalidaController implements Serializable {
 		return true;
 	}
 
-	// ONCOMPLETETEXT PROYECTO
+	// ONCOMPLETETEXT PROYECTO ..........
 	public List<Proyecto> completeProyecto(String query) {
 		if(NumberUtil.isNumeric(query)){//si es numero
 			listaProyecto = proyectoRepository.findAllProyectoForQueryCodigo(query);
