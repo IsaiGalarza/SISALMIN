@@ -59,7 +59,7 @@ public class FuncionarioRepository {
 	@SuppressWarnings("unchecked")
 	public List<Funcionario> findAllFuncionarioForNombre(String criterio) {
 		try {
-			String query = "select ser from Funcionario ser where ser.nombre like '%"
+			String query = "select ser from Funcionario ser where upper(ser.nombre) like '%"
 					+ criterio + "%' or ser.apellidos like '%"+ criterio + "%'";
 			System.out.println("Consulta: " + query);
 			List<Funcionario> listaFuncionario = em.createQuery(query).getResultList();
@@ -103,7 +103,7 @@ public class FuncionarioRepository {
 	@SuppressWarnings("unchecked")
 	public List<Funcionario> findAllFuncionarioForQueryNombre(String criterio) {
 		try {
-			String query = "select ser from Funcionario ser where ser.nombre like '%"
+			String query = "select ser from Funcionario ser where upper(ser.nombre) like '%"
 					+ criterio + "%' and ser.estado='AC' order by ser.nombre asc";
 			System.out.println("Consulta: " + query);
 			List<Funcionario> listaFuncionario = em.createQuery(query).getResultList();
