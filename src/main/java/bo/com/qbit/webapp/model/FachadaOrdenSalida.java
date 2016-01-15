@@ -33,12 +33,12 @@ public class FachadaOrdenSalida implements Serializable {
 	private @Inject AlmacenProductoRegistration almacenProductoRegistration;
 	private @Inject KardexProductoRegistration kardexProductoRegistration;
 
-	public void actualizarDetalleProducto(Almacen almacen,Producto producto,double cantidadSolicitada){
+	public void actualizarDetalleProducto(Gestion gestion, Almacen almacen,Producto producto,double cantidadSolicitada){
 		try{
 			double precioPonderado = 0;
 			int cantidadPrecios = 0;
 			//obtener todos los detalles del producto, para poder descontar stock de acuerdo a la cantidad solicitada
-			List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almacen,producto);
+			List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almacen,producto,gestion);
 			if(listDetalleProducto.size()>0){
 				for(DetalleProducto d : listDetalleProducto){
 					double stockActual = d.getStockActual();
@@ -67,14 +67,14 @@ public class FachadaOrdenSalida implements Serializable {
 	 * @param detalle
 	 * @return true si hay stock, false si no hay existencias
 	 */
-	public boolean actualizarDetalleProductoByOrdenSalida(Almacen almacen,DetalleOrdenSalida detalle){
+	public boolean actualizarDetalleProductoByOrdenSalida(Gestion gestion,Almacen almacen,DetalleOrdenSalida detalle){
 		try{
 			Producto producto = detalle.getProducto();
 			double cantidadAux = detalle.getCantidadSolicitada();
 			double cantidadSolicitada = detalle.getCantidadSolicitada();//6
 			int cantidad = 1;
 			//obtener todos los detalles del producto, para poder descontar stock de acuerdo a la cantidad solicitada
-			List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almacen,producto);
+			List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almacen,producto,gestion);
 			//5 | 10
 			if(listDetalleProducto.size()>0){
 				for(DetalleProducto d : listDetalleProducto){

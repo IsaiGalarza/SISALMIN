@@ -132,10 +132,11 @@ public class EmpresaController implements Serializable {
 					g.setEmpresa(newEmpresa);
 					g.setFechaRegistro(fechaActual);
 					g = gestionRegistration.create(g);
-					sessionMain.setGestionLogin(g);//asignar la gestion a la session
 				}else{
 					g.setFechaModificacion(fechaActual);
-					gestionRegistration.update(g);
+					gestionRegistration.update(g);					
+				}
+				if(g.getEstadoCierre().equals("AC")){
 					sessionMain.setGestionLogin(g);//asignar la gestion a la session
 				}
 			}

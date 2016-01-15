@@ -258,14 +258,43 @@ public class TomaInventarioController implements Serializable {
 			return;
 		}
 
+		if(this.newTomaInventario.getTipo().equals("INICIAL")){
+			gestionAnterior = obtenerGestionAnterior();
+			if(gestionAnterior!=null){
+				//si hay, hay que jalar todos los datos de su cierre de almacen en la toma de inventario final
+				hayGestionAnterior = true;
+			}
+			verLista = false;
+			modificar = false;
+			registrar = true;
+			crear = false;
+		} else{
+
+			verLista = false;
+			modificar = false;
+			registrar = true;
+			crear = false;
+		}
+	}
+
+	public void cargarDatosDeGestionAnterior(){
+		if(selectedAlmacen.getId()==0){
+			FacesUtil.infoMessage("VALIDACION", "Seleccione un almacen");
+			return;
+		}
 		//verificar si hay una gestion anterior
 		gestionAnterior = obtenerGestionAnterior();
 		if(gestionAnterior!=null){
 			//si hay, hay que jalar todos los datos de su cierre de almacen en la toma de inventario final
-			//hayGestionAnterior = true;
+			hayGestionAnterior = true;
 			//1. obtener la toma inventario Anterior Gestion (tipo = 'FINAL')
-			TomaInventario tomaAnteriorGestion = tomaInventarioRepository.findByGestionAnterior(gestionAnterior);
-			int var1 = 2;
+			TomaInventario tomaAnteriorGestion = tomaInventarioRepository.findByGestionAnteriorAndAlmacen(gestionAnterior,selectedAlmacen);
+			if(tomaAnteriorGestion == null){
+				FacesUtil.infoMessage("VALIDACION", "Este almacén no fué cerrado en la gestión pasada.");
+				return;
+			}
+			System.out.println("tomaAnteriorGestion: "+tomaAnteriorGestion);
+			int var1 = 1;//no cargar todavia
 			if(tomaAnteriorGestion!=null && 1==var1){
 				//DetalleTomaInventario detalle = detalleTomaInventarioRepository.findByTomaInventario(tomaAnteriorGestion);
 				List<DetalleTomaInventario>  detalleTomaInventario = detalleTomaInventarioRepository.findAllActivosByTomaInventario(tomaAnteriorGestion);
@@ -274,53 +303,28 @@ public class TomaInventarioController implements Serializable {
 				//2.cargar los datos para par lista de DetalleTomaInventarioOrdenIngreso
 				for(DetalleTomaInventario var: detalleTomaInventario){
 					DetalleOrdenIngreso detalleOI = new DetalleOrdenIngreso();
+					detalleOI.setCantidad(var.getCantidadRegistrada());
+					detalleOI.setProducto(var.getProducto());
+					detalleOI.setObservacion("Levantamiento Inicial");
+					detalleOI.setPrecioUnitario(var.getPrecioUnitario());
+					detalleOI.setTotal(var.getTotal());
 					detalleOI.setEstado("AC");
 					detalleOI.setFechaRegistro(fechaActual);
-					listaDetalleOrdenIngreso.add(detalleOI);
-					/**
-					 * 				d.setFechaRegistro(fechaActual);
-				d.setUsuarioRegistro(usuarioSession);
-				d.setOrdenIngreso(newOrdenIngreso);
-				d= detalleOrdenIngresoRegistration.register(d);
-				//Registrar detalle toma inventario
-				DetalleTomaInventario detalle = new DetalleTomaInventario();
-				detalle.setCantidadRegistrada(d.getCantidad());
-				detalle.setCantidadVerificada(d.getCantidad());
-				detalle.setDiferencia(0d);
-				detalle.setEstado("AC");
-				detalle.setFechaRegistro(fechaActual);
-				detalle.setObservacion("Ninguna");
-				detalle.setProducto(d.getProducto());
-				detalle.setTomaInventario(newTomaInventario);
-				detalle.setUsuarioRegistro(usuarioSession);
-				detalleTomaInventarioRegistration.register(detalle);
-					 */
-					
+					listaDetalleOrdenIngreso.add(detalleOI);					
 				}
 				listDetalleTomaInventario = detalleTomaInventario;
 
 				//detalle toma inventario
-				editarTomaInventarioIncial = true;
-				verLista = false;
-				modificar = false;
-				registrar = true;
-				verButtonReport = false;
-				newTomaInventario = selectedTomaInventario;
+				//editarTomaInventarioIncial = true;
+				//verLista = false;
+				//modificar = false;
+				//registrar = true;
+				//verButtonReport = false;
+				//newTomaInventario = selectedTomaInventario;
 				// ocultar botones
-				buttonEditarTomaInventarioIncial = false;
-				buttonProcesarTomaInventarioIncial = false;
+				//buttonEditarTomaInventarioIncial = false;
+				//buttonProcesarTomaInventarioIncial = false;
 			}
-			verLista = false;
-			modificar = false;
-			registrar = true;
-			crear = false;
-
-		}else{
-
-			verLista = false;
-			modificar = false;
-			registrar = true;
-			crear = false;
 		}
 	}
 
@@ -557,6 +561,7 @@ public class TomaInventarioController implements Serializable {
 			newTomaInventario.setAlmacen(selectedAlmacen);
 			newTomaInventario.setEstado("CE");
 			newTomaInventario.setFechaRegistro(fechaActual);
+			newTomaInventario.setGestion(gestionSesion);
 			newTomaInventario = tomaInventarioRegistration.register(newTomaInventario);
 			for(DetalleTomaInventario detalle : listDetalleTomaInventario){
 				double diferencia = 0;
@@ -654,11 +659,11 @@ public class TomaInventarioController implements Serializable {
 			for(DetalleOrdenIngreso d: listaDetalleOrdenIngreso){
 				Producto prod = d.getProducto();
 				//actualiza el esstock por producto almacen(teniendo en cuenta la agrupacion de productos)
-				fachadaOrdenIngreso.actualizarStock(newOrdenIngreso.getAlmacen(),proveedor,prod, d.getCantidad(),fechaActual,d.getPrecioUnitario(),usuarioSession);
+				fachadaOrdenIngreso.actualizarStock(gestionSesion,newOrdenIngreso.getAlmacen(),proveedor,prod, d.getCantidad(),fechaActual,d.getPrecioUnitario(),usuarioSession);
 				//registra la transaccion de entrada del producto
 				fachadaOrdenIngreso.actualizarKardexProducto(newOrdenIngreso.getCorrelativo(),newOrdenIngreso.getAlmacen(),gestionSesion, prod,fechaActual, d.getCantidad(),d.getPrecioUnitario(),usuarioSession);
 				//registra los stock de los producto , para luego utilizar PEPS en ordenes de traspaso y salida
-				fachadaOrdenIngreso.cargarDetalleProducto(fechaActual,newOrdenIngreso.getAlmacen(),d.getProducto(), d.getCantidad(), d.getPrecioUnitario(), d.getFechaRegistro(), newOrdenIngreso.getCorrelativo(),usuarioSession);
+				fachadaOrdenIngreso.cargarDetalleProducto(gestionSesion,fechaActual,newOrdenIngreso.getAlmacen(),d.getProducto(), d.getCantidad(), d.getPrecioUnitario(), d.getFechaRegistro(), newOrdenIngreso.getCorrelativo(),usuarioSession);
 			}
 
 		} catch (Exception e) {
@@ -676,6 +681,7 @@ public class TomaInventarioController implements Serializable {
 				FacesUtil.infoMessage("INFORMACION", "El lmacen "+selectedAlmacen.getNombre()+" fué cerrado");
 				return ;
 			}
+
 			listAlmacenProducto = almacenProductoRepository.findByAlmacen(selectedAlmacen);
 			if(listAlmacenProducto.size()==0){//validacion de almacen
 				FacesUtil.infoMessage("INFORMACION", "No se encontraron existencias en el almacen "+selectedAlmacen.getNombre());
@@ -686,6 +692,8 @@ public class TomaInventarioController implements Serializable {
 				DetalleTomaInventario detalle = new DetalleTomaInventario();
 				detalle.setProducto(ap.getProducto());
 				detalle.setCantidadRegistrada(ap.getStock());
+				detalle.setPrecioUnitario(ap.getPrecioUnitario());
+				detalle.setTotal(ap.getPrecioUnitario()*ap.getStock());
 				listDetalleTomaInventario.add(detalle);
 			}
 			if(newTomaInventario.getTipo().equals("FINAL")){
@@ -742,7 +750,7 @@ public class TomaInventarioController implements Serializable {
 					if(d.getCantidadRegistrada() - d.getCantidadVerificada() > 0){//si faltaron
 						//actualizar en AlmacenProducto
 						fachadaOrdenTraspaso.actualizarStock(almacen,d);//-1 para que no actualize el precio
-						fachadaOrdenSalida.actualizarDetalleProducto(selectedTomaInventario.getAlmacen(), d.getProducto(), d.getDiferencia());
+						fachadaOrdenSalida.actualizarDetalleProducto(gestionSesion,selectedTomaInventario.getAlmacen(), d.getProducto(), d.getDiferencia());
 						//actualizar en kardex(NOSE) como una salida (como baja de producto)
 						//fachadaOrdenSalida.actualizarKardexProducto("Por Baja de Producto", gestionSesion, selectedOrdenSalida, prod, fechaActual, cantidad, precioUnitario, usuarioSession);
 						bajaProductoRegistration.register(baja);

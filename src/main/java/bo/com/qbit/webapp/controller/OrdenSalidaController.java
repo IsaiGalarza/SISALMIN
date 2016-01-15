@@ -390,7 +390,7 @@ public class OrdenSalidaController implements Serializable {
 			double cantidadSolicitada = detalle.getCantidadSolicitada();//6
 			int cantidad = 1;
 			//obtener todos los detalles del producto, para poder descontar stock de acuerdo a la cantidad solicitada
-			List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almacen,producto);
+			List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almacen,producto,gestionSesion);
 			//5 | 10
 			if(listDetalleProducto.size()>0){
 				for(DetalleProducto d : listDetalleProducto){
@@ -487,7 +487,7 @@ public class OrdenSalidaController implements Serializable {
 
 	private double cantidadExistenciasByProductoAlmacen(Almacen almacen,Producto producto){
 		double cantidad = 0;
-		List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almacen,producto);
+		List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almacen,producto,gestionSesion);
 		for(DetalleProducto detalle:listDetalleProducto){
 			cantidad = cantidad + detalle.getStockActual();
 		}
@@ -674,7 +674,7 @@ public class OrdenSalidaController implements Serializable {
 	}
 	
 	private  boolean verificarExistencias(Producto producto, double cantidad){
-		List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoOrderByFecha(selectedProducto);
+		List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoOrderByFecha(selectedProducto,gestionSesion);
 		if(listDetalleProducto.size()>0){
 
 		}

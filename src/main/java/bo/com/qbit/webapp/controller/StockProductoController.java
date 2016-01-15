@@ -95,7 +95,8 @@ public class StockProductoController implements Serializable {
 	}
 
 	public List<Producto> completeProducto(String query) {
-		listaProducto = productoRepository.findAllProductoForQueryNombre(query);
+		String upperQuery = query.toUpperCase();
+		listaProducto = productoRepository.findAllProductoForQueryNombre(upperQuery);
 		return listaProducto;
 	}
 
@@ -142,7 +143,7 @@ public class StockProductoController implements Serializable {
 			if(tipoConsulta.equals("PRODUCTO")){
 				calcularStockAndPrecioUnificados(selectedProducto);
 			}else if(tipoConsulta.equals("PROVEEDOR")){
-				listaAlmacenProducto  = almacenProductoRepository.findAllByProducto(selectedProducto);
+				listaAlmacenProducto  = almacenProductoRepository.findAllByProductoAndGestion(selectedProducto,selectedGestion);
 			}
 		}
 	}

@@ -452,7 +452,9 @@
 													style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
 													selection="#{ordenSalidaController.selectedOrdenSalida}"
 													selectionMode="single" rowKey="#{_var}" id="itemsTable2"
-													var="_var"
+													var="_var" rows="20" paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													rowsPerPageTemplate="5,20,30"
 													value="#{ordenSalidaController.listaOrdenSalida}"
 													emptyMessage="No se encontraron Registros de ITEMS.">
 
@@ -622,7 +624,8 @@
 								Solicitada</label>
 							<div class="col-sm-9">
 								<p:inputText id="cantidadID" required="true"
-									requiredMessage="Cantidad Requerido." onkeypress="return validateOnlyNumber(event)"
+									requiredMessage="Cantidad Requerido."
+									onkeypress="return validateOnlyNumber(event)"
 									value="#{ordenSalidaController.selectedDetalleOrdenSalida.cantidadSolicitada}"
 									size="40">
 									<p:ajax event="change" update="totalID"
@@ -667,7 +670,6 @@
 								<div class="col-md-4">
 									<p:commandLink value="&#160; Aceptar"
 										styleClass="btn btn-success ion-checkmark btn-block"
-										
 										rendered="#{ ! ordenSalidaController.editarOrdenSalida}">
 										<p:ajax
 											update="dialog100,formGrowl:msgs1,formTableOrdenSalida:itemsTable1,formTableOrdenSalida:editarDetalleOrdenIngreso,formTableOrdenSalida:eliminarDetalleOrdenIngreso"
@@ -676,7 +678,6 @@
 
 									<p:commandLink value="&#160; Modificar"
 										styleClass="btn btn-success ion-checkmark btn-block"
-										
 										rendered="#{ordenSalidaController.editarOrdenSalida}">
 										<p:ajax
 											update="dialog100,formTableOrdenSalida:itemsTable1,formTableOrdenSalida:editarDetalleOrdenIngreso,formTableOrdenSalida:eliminarDetalleOrdenIngreso"
@@ -774,7 +775,7 @@
 
 
 		<p:dialog header="VALIDACION DE EXISTENCIAS DE ALMACÉN"
-			widgetVar="dlgValidacionExistenciasAlmacen" 
+			widgetVar="dlgValidacionExistenciasAlmacen"
 			visible="#{not empty facesContext.maximumSeverity}" resizable="false"
 			position="center" width="50%">
 			<h:form id="dialog100">

@@ -443,7 +443,9 @@
 													style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
 													selection="#{ordenIngresoController.selectedOrdenIngreso}"
 													selectionMode="single" rowKey="#{_var}" id="itemsTable2"
-													var="_var"
+													var="_var" rows="20" paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													rowsPerPageTemplate="5,20,30"
 													value="#{ordenIngresoController.listaOrdenIngreso}"
 													emptyMessage="No se encontraron Registros de ITEMS.">
 
@@ -606,7 +608,8 @@
 								Unitario</label>
 							<div class="col-sm-9">
 								<p:inputText id="precioID" required="true"
-									requiredMessage="Precio Requerido." disabled="#{ordenIngresoController.devolucion}"
+									requiredMessage="Precio Requerido."
+									disabled="#{ordenIngresoController.devolucion}"
 									value="#{ordenIngresoController.selectedDetalleOrdenIngreso.precioUnitario}"
 									size="40">
 									<p:ajax event="change" update="totalID"
@@ -716,7 +719,7 @@
 
 								</div>
 							</div>
-							
+
 							<div class="form-group ">
 								<div class="col-md-4">Código</div>
 								<div class="col-md-8">

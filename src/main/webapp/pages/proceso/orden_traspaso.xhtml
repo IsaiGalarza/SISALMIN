@@ -258,9 +258,9 @@
 																	<p:ajax event="itemSelect"
 																		update="formTableOrdenTraspaso:proyectoID,formTableOrdenTraspaso:tipoDocumentoAdjID"
 																		listener="#{ordenTraspasoController.onRowSelectProyectoClick}" />
-																		
-																	<p:column >
-																	<h:outputText value="#{_var.codigo}" />
+
+																	<p:column>
+																		<h:outputText value="#{_var.codigo}" />
 																	</p:column>
 																	<p:column>
 																		<h:outputText value="#{_var.nombre}" />
@@ -459,7 +459,9 @@
 													style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
 													selection="#{ordenTraspasoController.selectedOrdenTraspaso}"
 													selectionMode="single" rowKey="#{_var}" id="itemsTable2"
-													var="_var"
+													var="_var" rows="20" paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													rowsPerPageTemplate="5,20,30"
 													value="#{ordenTraspasoController.listaOrdenTraspaso}"
 													emptyMessage="No se encontraron Registros de ITEMS.">
 
@@ -671,7 +673,6 @@
 								<div class="col-md-4">
 									<p:commandLink value="&#160; Aceptar"
 										styleClass="btn btn-success ion-checkmark btn-block"
-										
 										rendered="#{ ! ordenTraspasoController.editarOrdenTraspaso}">
 										<p:ajax
 											update="dialog100,formTableOrdenTraspaso:itemsTable1,formTableOrdenTraspaso:editarDetalleOrdenTraspaso,formTableOrdenTraspaso:eliminarDetalleOrdenTraspaso"
@@ -680,7 +681,6 @@
 
 									<p:commandLink value="&#160; Modificar"
 										styleClass="btn btn-success ion-checkmark btn-block"
-										
 										rendered="#{ordenTraspasoController.editarOrdenTraspaso}">
 										<p:ajax
 											update="dialog100,formTableOrdenTraspaso:itemsTable1,formTableOrdenTraspaso:editarDetalleOrdenTraspaso,formTableOrdenTraspaso:eliminarDetalleOrdenTraspaso"

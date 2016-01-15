@@ -589,6 +589,7 @@ public class OrdenTraspasoController implements Serializable {
 			detalleProducto.setFechaRegistro(fechaActual);
 			detalleProducto.setProducto(producto);
 			detalleProducto.setUsuarioRegistro(usuarioSession);
+			detalleProducto.setGestion(gestionSesion);
 			detalleProductoRegistration.register(detalleProducto);
 		}catch(Exception e){
 			System.out.println("ERROR cargarDetalleProducto() "+e.getMessage());
@@ -613,7 +614,7 @@ public class OrdenTraspasoController implements Serializable {
 			double cantidadSolicitada = detalle.getCantidadSolicitada();// 15
 			int cantidad = 1;
 			//obtener todos los detalles del producto, para poder descontar stock de acuerdo a la cantidad solicitada
-			List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almacen,producto);
+			List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almacen,producto,gestionSesion);
 			System.out.println("listDetalleProducto.size()"+listDetalleProducto.size());
 			//50 | 10
 			//52 | 10
@@ -687,6 +688,7 @@ public class OrdenTraspasoController implements Serializable {
 			almProd.setProveedor(proveedor);//proveedor = null (Ingreso or Orden Traspaso)
 			almProd.setStock(newStock);
 			almProd.setEstado("AC");
+			almProd.setGestion(gestionSesion);
 			almProd.setFechaRegistro(date);
 			almProd.setUsuarioRegistro(usuarioSession);
 			almacenProductoRegistration.register(almProd);
@@ -891,7 +893,7 @@ public class OrdenTraspasoController implements Serializable {
 
 	private double cantidadExistenciasByProductoAlmacen(Almacen almacen,Producto producto){
 		double cantidad = 0;
-		List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almacen,producto);
+		List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almacen,producto,gestionSesion);
 		for(DetalleProducto detalle:listDetalleProducto){
 			cantidad = cantidad + detalle.getStockActual();
 		}

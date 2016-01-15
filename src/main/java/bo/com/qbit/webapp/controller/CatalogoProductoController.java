@@ -19,6 +19,7 @@ import org.richfaces.cdi.push.Push;
 
 import bo.com.qbit.webapp.data.AlmacenProductoRepository;
 import bo.com.qbit.webapp.model.AlmacenProducto;
+import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.SessionMain;
 
@@ -48,6 +49,7 @@ public class CatalogoProductoController implements Serializable {
 	//SESSION
 	private @Inject SessionMain sessionMain; //variable del login
 	private String usuarioSession;
+	private Gestion gestionLogin;
 
 	@PostConstruct
 	public void initNewOrdenIngreso() {
@@ -55,8 +57,9 @@ public class CatalogoProductoController implements Serializable {
 		beginConversation();
 
 		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
+		gestionLogin = sessionMain.getGestionLogin();
 		
-		listaAlmacenProducto = almacenProductoRepository.findProductoConStockOrderedByID();
+		listaAlmacenProducto = almacenProductoRepository.findProductoConStockOrderedByIDAndGestion(gestionLogin);
 
 	}
 

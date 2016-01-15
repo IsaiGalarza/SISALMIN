@@ -65,6 +65,10 @@ public class DetalleProducto {
 	@Column(name="usuario_registro",nullable=false )
 	private String usuarioRegistro;
 	
+	@ManyToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name="id_gestion", nullable=true)
+	private Gestion gestion;
+	
 	public DetalleProducto(){
 		super();
 		this.id = 0;
@@ -194,6 +198,14 @@ public class DetalleProducto {
 
 	public void setAlmacen(Almacen almacen) {
 		this.almacen = almacen;
+	}
+
+	public Gestion getGestion() {
+		return gestion;
+	}
+
+	public void setGestion(Gestion gestion) {
+		this.gestion = gestion;
 	}
 
 }

@@ -27,6 +27,12 @@ public class DetalleTomaInventario implements Serializable{
 
 	private String estado;
 	
+	@Column(name="precio_unitario",nullable=true)
+	private double precioUnitario;
+	
+	@Column(name="total",nullable=true)
+	private double total;
+	
 	@Column(name="observacion",nullable=true)
 	private String observacion;
 	
@@ -151,6 +157,22 @@ public class DetalleTomaInventario implements Serializable{
 
 	public void setTomaInventario(TomaInventario tomaInventario) {
 		this.tomaInventario = tomaInventario;
+	}
+
+	public double getPrecioUnitario() {
+		return precioUnitario;
+	}
+
+	public void setPrecioUnitario(double precioUnitario) {
+		this.precioUnitario = precioUnitario;
+	}
+
+	public double getTotal() {
+		return total;
+	}
+
+	public void setTotal(double total) {
+		this.total = total;
 	}
 
 }

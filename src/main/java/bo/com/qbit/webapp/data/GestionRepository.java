@@ -61,7 +61,8 @@ public class GestionRepository {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Gestion> criteria = cb.createQuery(Gestion.class);
 		Root<Gestion> gestion = criteria.from(Gestion.class);
-		criteria.select(gestion);
+		criteria.select(gestion).orderBy(
+				cb.desc(gestion.get("id")));
 		return em.createQuery(criteria).getResultList();
 	}
 

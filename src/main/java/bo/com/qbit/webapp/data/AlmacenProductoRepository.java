@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 
 import bo.com.qbit.webapp.model.Almacen;
 import bo.com.qbit.webapp.model.AlmacenProducto;
+import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.Producto;
 
 @Stateless
@@ -93,10 +94,30 @@ public class AlmacenProductoRepository {
 			return null;
 		}
 	}
+	
+
+	@SuppressWarnings("unchecked")
+	public List<AlmacenProducto> findAllByProductoAndGestion(Producto producto,Gestion gestion) {
+		try{
+			String query = "select em from AlmacenProducto em where ( em.estado='AC' or em.estado='IN' ) and em.gestion.id="+gestion.getId()+" and em.producto.id="
+					+ producto.getId() ;
+			System.out.println("Query AlmacenProducto: " + query);
+			return em.createQuery(query).getResultList();
+		}catch(Exception e){
+			return null;
+		}
+	}
 
 	@SuppressWarnings("unchecked")
 	public List<AlmacenProducto> findProductoConStockOrderedByID() {
 		String query = "select ser from AlmacenProducto ser where ser.estado='AC' and ser.stock > 0 order by ser.id asc";
+		System.out.println("Query AlmacenProducto: " + query);
+		return em.createQuery(query).getResultList();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<AlmacenProducto> findProductoConStockOrderedByIDAndGestion( Gestion gestion) {
+		String query = "select ser from AlmacenProducto ser where ser.estado='AC' and ser.stock > 0 and ser.gestion.id="+gestion.getId()+" order by ser.id asc";
 		System.out.println("Query AlmacenProducto: " + query);
 		return em.createQuery(query).getResultList();
 	}

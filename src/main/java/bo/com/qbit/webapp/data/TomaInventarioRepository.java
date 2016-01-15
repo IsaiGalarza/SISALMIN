@@ -6,6 +6,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
+import bo.com.qbit.webapp.model.Almacen;
 import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.TomaInventario;
 
@@ -19,9 +20,9 @@ public class TomaInventarioRepository {
 		return em.find(TomaInventario.class, id);
 	}
 
-	public TomaInventario findByGestionAnterior(Gestion gestionAnterior) {
+	public TomaInventario findByGestionAnteriorAndAlmacen(Gestion gestionAnterior,Almacen almacen) {
 		try{
-			String query = "select em from TomaInventario em where em.tipo='FINAL' and  em.gestion.id="+gestionAnterior.getId();
+			String query = "select em from TomaInventario em where em.tipo='FINAL' and em.almacen.id="+almacen.getId()+" and  em.gestion.id="+gestionAnterior.getId();
 			System.out.println("Query TomaInventario: "+query);
 			return (TomaInventario) em.createQuery(query).getSingleResult();
 		}catch(Exception e){

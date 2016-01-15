@@ -59,7 +59,7 @@ public class FachadaOrdenIngreso implements Serializable{
 	 * @param usuarioSession
 	 * @throws Exception
 	 */
-	public void actualizarStock(Almacen almacen,Proveedor proveedor,Producto prod ,double newStock,Date date,double precioUnitario,String usuarioSession)  {
+	public void actualizarStock(Gestion gesstion ,Almacen almacen,Proveedor proveedor,Producto prod ,double newStock,Date date,double precioUnitario,String usuarioSession)  {
 		try{
 			AlmacenProducto almProd = new AlmacenProducto();
 			/*
@@ -86,6 +86,7 @@ public class FachadaOrdenIngreso implements Serializable{
 			almProd.setEstado("AC");
 			almProd.setFechaRegistro(date);
 			almProd.setUsuarioRegistro(usuarioSession);
+			almProd.setGestion(gesstion);
 			almacenProductoRegistration.register(almProd);
 		}catch(Exception e){
 			System.out.println("ERROR actualizarStock() "+e.getMessage());
@@ -161,7 +162,7 @@ public class FachadaOrdenIngreso implements Serializable{
 	 * @param usuarioSession
 	 * @throws Exception
 	 */
-	public void cargarDetalleProducto(Date fechaActual,Almacen almacen,Producto producto,double cantidad, double precio, Date fecha, String correlativoTransaccion,String usuarioSession ) {
+	public void cargarDetalleProducto(Gestion gestion,Date fechaActual,Almacen almacen,Producto producto,double cantidad, double precio, Date fecha, String correlativoTransaccion,String usuarioSession ) {
 		try{
 			DetalleProducto detalleProducto = new DetalleProducto();
 			detalleProducto.setCodigo("OI"+correlativoTransaccion+fecha.toString());
@@ -175,6 +176,7 @@ public class FachadaOrdenIngreso implements Serializable{
 			detalleProducto.setFechaRegistro(fechaActual);
 			detalleProducto.setProducto(producto);
 			detalleProducto.setUsuarioRegistro(usuarioSession);
+			detalleProducto.setGestion(gestion);
 			detalleProductoRegistration.register(detalleProducto);
 		}catch(Exception e){
 			System.out.println("ERROR cargarDetalleProducto() "+e.getMessage());

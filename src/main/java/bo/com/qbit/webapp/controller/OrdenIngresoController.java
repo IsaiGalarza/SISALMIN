@@ -100,7 +100,7 @@ public class OrdenIngresoController implements Serializable {
 	private boolean verReport = false;
 	private boolean nuevoProducto = false;
 	private boolean importarFile = false;//para habilitar importacion
-	private boolean devolucion = false;//tipo DEVOLUCION PARA SACAR PRECIO PROMEDIO(SE PUSO TODO EN FALSO PARA QUE NO PROMEDIE)
+	private boolean devolucion = false;//tipo DEVOLUCION PARA SACAR PRECIO PROMEDIO(SE PUSO TODOs EN FALSO PARA QUE NO PROMEDIE)
 
 	private String tituloProducto = "Agregar Producto";
 	private String tituloPanel = "Registrar Almacen";
@@ -380,13 +380,13 @@ public class OrdenIngresoController implements Serializable {
 				Producto prod = d.getProducto();
 				//actualiza el esstock por producto almacen(teniendo en cuenta la agrupacion de productos)
 				System.out.println("fachadaOrdenIngreso.actualizarStock() ");
-				fachadaOrdenIngreso.actualizarStock(selectedOrdenIngreso.getAlmacen(),proveedor,prod, d.getCantidad(),fechaActual,d.getPrecioUnitario(),usuarioSession);
+				fachadaOrdenIngreso.actualizarStock(gestionSesion,selectedOrdenIngreso.getAlmacen(),proveedor,prod, d.getCantidad(),fechaActual,d.getPrecioUnitario(),usuarioSession);
 				//registra la transaccion de entrada del producto
 				System.out.println("fachadaOrdenIngreso.actualizarKardexProducto() ");
 				fachadaOrdenIngreso.actualizarKardexProducto(selectedOrdenIngreso.getCorrelativo(),selectedOrdenIngreso.getAlmacen(),gestionSesion, prod,fechaActual, d.getCantidad(),d.getPrecioUnitario(),usuarioSession);
 				//registra los stock de los producto , para luego utilizar PEPS en ordenes de traspaso y salida
 				System.out.println("fachadaOrdenIngreso.cargarDetalleProducto() ");
-				fachadaOrdenIngreso.cargarDetalleProducto(fechaActual,selectedOrdenIngreso.getAlmacen(),d.getProducto(), d.getCantidad(), d.getPrecioUnitario(), d.getFechaRegistro(), selectedOrdenIngreso.getCorrelativo(),usuarioSession);
+				fachadaOrdenIngreso.cargarDetalleProducto(gestionSesion,fechaActual,selectedOrdenIngreso.getAlmacen(),d.getProducto(), d.getCantidad(), d.getPrecioUnitario(), d.getFechaRegistro(), selectedOrdenIngreso.getCorrelativo(),usuarioSession);
 			}
 
 			FacesUtil.infoMessage("Orden de Ingreso Procesada!", "");

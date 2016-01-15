@@ -54,6 +54,10 @@ public class AlmacenProducto implements Serializable {
 	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="id_proveedor", nullable=true)
 	private Proveedor proveedor;
+	
+	@ManyToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name="id_gestion", nullable=true)
+	private Gestion gestion;
 
 	public AlmacenProducto() {
 		this.producto = new Producto();
@@ -154,6 +158,14 @@ public class AlmacenProducto implements Serializable {
 
 	public void setPrecioUnitario(double precioUnitario) {
 		this.precioUnitario = precioUnitario;
+	}
+
+	public Gestion getGestion() {
+		return gestion;
+	}
+
+	public void setGestion(Gestion gestion) {
+		this.gestion = gestion;
 	}
 
 }
