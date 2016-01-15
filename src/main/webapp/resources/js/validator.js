@@ -35,16 +35,23 @@ function permiteKey(e,t){
 	return false;
 }
 
+/**
+ * if ((key < 48 || key > 57) && key!=46 && key!=44 && key!=45)
+58-57 numeros
+46 es el código del punto
+44 de la coma y
+45 del guión
+ */
 
 //permite solo numeros y puto decinmal
-/**
-       function isNumberAndDecimalKey(evt)
-       {
-          var charCode = (evt.which) ? evt.which : evt.keyCode;
-          if (charCode != 46 && charCode > 31 
-            && (charCode < 48 || charCode > 57))
-             return false;
+function isNumberAndDecimalKey(evt)  {
+	var charCode = (evt.which) ? evt.which : evt.keyCode;
+	// 48 - 57  numeros
+	// 44 - coma
+	// 46 - punto
+	// 8 - borrar
+	if ((key < 48 || key > 57) && key!=46 && key!=45 && key!=8)
+		return false;
 
-          return true;
-       }
- **/
+	return true;
+}

@@ -1,6 +1,7 @@
 package bo.com.qbit.webapp.controller;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,10 +20,12 @@ import org.richfaces.cdi.push.Push;
 import bo.com.qbit.webapp.data.DetalleOrdenSalidaRepository;
 import bo.com.qbit.webapp.data.GestionRepository;
 import bo.com.qbit.webapp.data.OrdenSalidaRepository;
+import bo.com.qbit.webapp.data.PartidaRepository;
 import bo.com.qbit.webapp.model.DetalleOrdenSalida;
 import bo.com.qbit.webapp.model.Empresa;
 import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.OrdenSalida;
+import bo.com.qbit.webapp.model.Partida;
 import bo.com.qbit.webapp.model.Producto;
 import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.Fechas;
@@ -42,23 +45,28 @@ public class ReportTotalPartidaController implements Serializable {
 	private @Inject DetalleOrdenSalidaRepository detalleOrdenSalidaRepository;
 	private @Inject OrdenSalidaRepository ordenSalidaRepository;
 	private @Inject GestionRepository gesionRepository;
+	private @Inject PartidaRepository partidaRepository;
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
 	Event<String> pushEventSucursal;
-	
+
 	@Inject
 	private FacesContext facesContext;
-	
-	private String urlTotalPartida;
-	private boolean verReporte ;
 
 	private String nuevaGestion;
+	private String urlTotalPartida;
 	private double total;
+	private String tipoConsulta;
+
+	//estados
+	private boolean verReporte ;
+	private boolean todos;
 
 	//OBJECT
 	private Producto selectedProducto;
 	private Gestion selectedGestion;
+	private Partida selectedPartida;
 
 	//LIST
 	private List<Gestion> listGestion = new ArrayList<Gestion>();
@@ -70,7 +78,7 @@ public class ReportTotalPartidaController implements Serializable {
 	private Gestion gestionLogin;
 	private Empresa empresaLogin;
 	private String usuarioLogin;
-	
+
 	//
 	private Date fechaInicial ;
 	private Date fechaFinal;
@@ -84,18 +92,22 @@ public class ReportTotalPartidaController implements Serializable {
 		gestionLogin = sessionMain.getGestionLogin();
 		empresaLogin = sessionMain.getEmpresaLogin();
 
+		selectedPartida = new Partida();
 		listGestion = gesionRepository.findAll();
 		selectedGestion = listGestion.get(0);
 		nuevaGestion = String.valueOf(selectedGestion.getGestion());
-		
+
 		listaDetalleOrdenSalida = new ArrayList<DetalleOrdenSalida>();
 		listaOrdenSalida = new ArrayList<OrdenSalida>();
 		total = 0;
+		tipoConsulta = "T";
+		urlTotalPartida = "";
 
+		todos = true;
 		verReporte = false;
 		selectedProducto = new Producto();
 		setTotal(0);
-		
+
 		setFechaInicial(new Date());
 		setFechaFinal(new Date());
 
@@ -160,22 +172,51 @@ public class ReportTotalPartidaController implements Serializable {
 		listOrdenSalidaAux.add(ordenSalida);
 	}
 
-	
+	// SELECCIONAR AUTOCOMPLETES AREA PRODUCTO
+	public List<Partida> completePartida(String query) {
+		String upperQuery = query.toUpperCase();
+		return partidaRepository.findAllPartidaForDescription(upperQuery);
+	}
+
+	public void onRowSelectPartidaClick() {
+		System.out.println("Seleccionado onRowSelectPartidaClick: "
+				+ this.selectedPartida.getNombre());
+
+		List<Partida> listPartida = partidaRepository.traerPartidaActivas();
+		for (Partida row : listPartida) {
+			if (row.getNombre().equals(this.selectedPartida.getNombre())) {
+				this.selectedPartida = row ;
+			}
+		}
+	}
+
 	public void cargarReporte(){
 		try {
+			if(tipoConsulta.equals("S")){
+				if(selectedPartida.getId()==0){
+					FacesUtil.infoMessage("VALIDACION", "Seleccione una partida");
+					return;
+				}
+			}
 			urlTotalPartida = loadURL();
 			verReporte = true;
 		} catch (Exception e) {
 			FacesUtil.errorMessage("Proceso Incorrecto.");
 		}
 	}
-	
+
 	public String loadURL(){
 		try{
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
 			String urlPath = request.getRequestURL().toString();
 			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
-			String urlPDFreporte = urlPath+"ReporteTotalPartida?pFechaInicio="+Fechas.deDateAString(fechaInicial)+"&pFechaFin="+Fechas.deDateAString(fechaFinal)+"&pIdProducto="+selectedProducto.getId()+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial()+"&pIdGestion="+selectedGestion.getId()+"&pUsuario="+usuarioLogin;
+			String urlPDFreporte ="";
+			System.out.println("tipoConsulta: "+tipoConsulta);
+			if(tipoConsulta.equals("T")){
+				urlPDFreporte = urlPath+"ReporteTotalPartida?pFechaInicio="+Fechas.obtenerFormatoYYYYMMDD(fechaInicial)+"&pFechaFin="+Fechas.obtenerFormatoYYYYMMDD(fechaFinal)+"&pIdPartida=-1"+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial()+"&pIdGestion="+selectedGestion.getId()+"&pUsuario="+usuarioLogin;
+			}else{
+				urlPDFreporte = urlPath+"ReporteTotalPartida?pFechaInicio="+Fechas.obtenerFormatoYYYYMMDD(fechaInicial)+"&pFechaFin="+Fechas.obtenerFormatoYYYYMMDD(fechaFinal)+"&pIdPartida="+selectedPartida.getId()+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial()+"&pIdGestion="+selectedGestion.getId()+"&pUsuario="+usuarioLogin;
+			}
 			return urlPDFreporte;
 		}catch(Exception e){
 			return "error";
@@ -271,6 +312,30 @@ public class ReportTotalPartidaController implements Serializable {
 
 	public void setUrlTotalPartida(String urlTotalPartida) {
 		this.urlTotalPartida = urlTotalPartida;
+	}
+
+	public Partida getSelectedPartida() {
+		return selectedPartida;
+	}
+
+	public void setSelectedPartida(Partida selectedPartida) {
+		this.selectedPartida = selectedPartida;
+	}
+
+	public boolean isTodos() {
+		return todos;
+	}
+
+	public void setTodos(boolean todos) {
+		this.todos = todos;
+	}
+
+	public String getTipoConsulta() {
+		return tipoConsulta;
+	}
+
+	public void setTipoConsulta(String tipoConsulta) {
+		this.tipoConsulta = tipoConsulta;
 	}
 
 }

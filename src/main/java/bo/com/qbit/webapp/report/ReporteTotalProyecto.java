@@ -21,6 +21,7 @@ import java.util.Map;
 
 
 
+
 //--datasource
 import javax.sql.DataSource;
 import javax.naming.Context;
@@ -31,7 +32,7 @@ import javax.naming.InitialContext;
 public class ReporteTotalProyecto  extends HttpServlet{
 
 	private static final long serialVersionUID = 1031215904122053423L;
-	
+
 	//private Logger log = Logger.getLogger(this.getClass());
 
 	@SuppressWarnings({ "unchecked", "deprecation" })
@@ -65,6 +66,7 @@ public class ReporteTotalProyecto  extends HttpServlet{
 		try {
 			String pNombreEmpresa = request.getParameter("pNombreEmpresa");
 			String pNitEmpresa = request.getParameter("pNitEmpresa");
+			String pIdProyecto = request.getParameter("pIdProyecto");
 			String pFechaInicio =  request.getParameter("pFechaInicio");
 			String pFechaFin = request.getParameter("pFechaFin");
 			Integer pIdGestion = Integer.parseInt(request.getParameter("pIdGestion"));
@@ -77,20 +79,31 @@ public class ReporteTotalProyecto  extends HttpServlet{
 			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
 			System.out.println("URL ::::: "+urlPath);
 
-			String rutaReporte = urlPath+"resources/report/totales_proyecto.jasper";
-			System.out.println("rutaReporte: "+rutaReporte);
-			
-			String URL_SERVLET_LOGO = urlPath+"ServletImageLogo?id=1&type=EMPRESA";
-			
 			// create a map of parameters to pass to the report.   
 			@SuppressWarnings("rawtypes")
 			Map parameters = new HashMap();
+			String rutaReporte = "";
+			String rutaSubReporte = "";
+			if(pIdProyecto.equals("-1")){
+				 rutaReporte = urlPath+"resources/report/totales_proyecto_todos.jasper";
+				rutaSubReporte = urlPath+"resources/report/";
+				parameters.put("SUBREPORT_DIR", rutaSubReporte);
+			}else{
+			 rutaReporte = urlPath+"resources/report/totales_proyecto_individual.jasper";
+			 parameters.put("pIdProyecto", new Integer( pIdProyecto));
+			}
+			 
+			System.out.println("rutaReporte: "+rutaReporte);
+			System.out.println("rutaSubReporte: "+rutaSubReporte);
+
+			String URL_SERVLET_LOGO = urlPath+"ServletImageLogo?id=1&type=EMPRESA";
+
 			parameters.put("pDirPhoto", URL_SERVLET_LOGO);
 			parameters.put("pNombreEmpresa", pNombreEmpresa);
 			parameters.put("pNitEmpresa", pNitEmpresa);
 			parameters.put("pIdGestion", pIdGestion);
-			parameters.put("pFechaInicio", pFechaInicio);
-			parameters.put("pFechaFin", pFechaFin);
+			parameters.put("pFechaInicio",  new Integer(pFechaInicio));
+			parameters.put("pFechaFin",  new Integer(pFechaFin));
 			parameters.put("pUsuario", pUsuario);
 
 			System.out.println("parameters "+parameters.toString());
@@ -122,7 +135,7 @@ public class ReporteTotalProyecto  extends HttpServlet{
 		} catch (Exception e) {
 			// display stack trace in the browser
 			e.printStackTrace();
-			System.out.println("Error en reporte OrdenIngreso: " + e.getMessage());
+			System.out.println("Error en reporte Total Partida: " + e.getMessage());
 			StringWriter stringWriter = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(stringWriter);
 			e.printStackTrace(printWriter);
@@ -132,3 +145,4 @@ public class ReporteTotalProyecto  extends HttpServlet{
 
 	}
 }
+

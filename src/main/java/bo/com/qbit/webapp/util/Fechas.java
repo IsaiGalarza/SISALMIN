@@ -146,6 +146,19 @@ public class Fechas {
 		System.out.println("hora actual "+ sumarFechaDia(new Date(), 1));
 
 	}
+	
+	 public static String obtenerFormatoYYYYMMDD(Date date){
+	    	try {
+	    		String DATE_FORMAT = "yyyyMMdd";
+				SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+	    		return sdf.format(date);
+	    		
+			} catch (Exception e) {
+				// TODO: handle exception
+				System.out.println("Error en obtenerFormatoYYYYMMDD: "+e.getMessage());
+				return null;
+			}
+	 }
 
 
 

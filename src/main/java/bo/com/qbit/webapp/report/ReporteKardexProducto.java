@@ -35,8 +35,6 @@ public class ReporteKardexProducto  extends HttpServlet{
 
 	private static final long serialVersionUID = 1031215904122053423L;
 
-	private Logger log = Logger.getLogger(this.getClass());
-
 	@SuppressWarnings({ "unchecked", "deprecation" })
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -57,13 +55,13 @@ public class ReporteKardexProducto  extends HttpServlet{
 
 
 			if(conn!=null){
-				log.info("Conexion Exitosa datasource...");
+				System.out.println("Conexion Exitosa datasource...");
 			}else{
-				log.info("Error Conexion datasource...");
+				System.out.println("Error Conexion datasource...");
 			}
 
 		} catch (Exception e) {
-			log.error("Error al conectar JDBC: "+e.getMessage());
+			System.out.println("Error al conectar JDBC: "+e.getMessage());
 		}
 		try {
 			String pNombreEmpresa = request.getParameter("pNombreEmpresa");
@@ -74,11 +72,11 @@ public class ReporteKardexProducto  extends HttpServlet{
 			Integer pIdAlmacen = Integer.parseInt(request.getParameter("pIdAlmacen"));
 
 			String realPath = request.getRealPath("/");
-			log.info("Real Path: "+realPath);
+			System.out.println("Real Path: "+realPath);
 
 			String urlPath = request.getRequestURL().toString();
 			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
-			log.info("URL ::::: "+urlPath);
+			System.out.println("URL ::::: "+urlPath);
 			// create a map of parameters to pass to the report.   
 			@SuppressWarnings("rawtypes")
 			Map parameters = new HashMap();
@@ -90,7 +88,7 @@ public class ReporteKardexProducto  extends HttpServlet{
 				rutaReporte = urlPath+"resources/report/kardex_producto_almacen.jasper";
 				parameters.put("pIdAlmacen", pIdAlmacen);
 			}
-			log.info("rutaReporte: "+rutaReporte);
+			System.out.println("rutaReporte: "+rutaReporte);
 
 			String URL_SERVLET_LOGO = urlPath+"ServletImageLogo?id=1&type=EMPRESA";
 
@@ -103,22 +101,22 @@ public class ReporteKardexProducto  extends HttpServlet{
 			parameters.put("pIdGestion", pIdGestion);
 			parameters.put("pUsuario", pUsuario);
 
-			log.info("parameters "+parameters.toString());
+			System.out.println("parameters "+parameters.toString());
 
 			//find file .jasper
 			jasperReport = (JasperReport)JRLoader.loadObject (new URL(rutaReporte));
 
 			if(jasperReport!=null){
-				log.info("jasperReport : "+jasperReport.getName()+" loading.....");
-				//log.info("jasperReport query: "+jasperReport.getQuery().getText());
+				System.out.println("jasperReport : "+jasperReport.getName()+" loading.....");
+				//System.out.println("jasperReport query: "+jasperReport.getQuery().getText());
 			}
 
 			JasperPrint jasperPrint2 = JasperFillManager.fillReport(jasperReport, parameters, conn);
 
 			if(jasperPrint2!=null){
-				log.info("jasperPrint name: "+jasperPrint2.getName());
+				System.out.println("jasperPrint name: "+jasperPrint2.getName());
 			}else{
-				log.info("jasperPrint null");
+				System.out.println("jasperPrint null");
 			}
 
 			//save report to path
@@ -132,7 +130,7 @@ public class ReporteKardexProducto  extends HttpServlet{
 		} catch (Exception e) {
 			// display stack trace in the browser
 			e.printStackTrace();
-			log.info("Error en reporte OrdenIngreso: " + e.getMessage());
+			System.out.println("Error en reporte OrdenIngreso: " + e.getMessage());
 			StringWriter stringWriter = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(stringWriter);
 			e.printStackTrace(printWriter);

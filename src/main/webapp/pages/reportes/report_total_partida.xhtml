@@ -21,7 +21,7 @@
 					<h:form id="formBotonesHeader" style="padding-left: 10px;">
 						<div class="btn-group-demo">
 							<div class="btn-group">
-							    <p:commandLink id="buttonAtras" value="&#160; Atras"
+								<p:commandLink id="buttonAtras" value="&#160; Atras"
 									styleClass="btn btn-warning ion-minus-circled"
 									update="formFilterProducto, formBotonesHeader"
 									rendered="#{reportTotalPartidaController.verReporte}"
@@ -30,7 +30,7 @@
 								</p:commandLink>
 								<p:commandLink id="buttonProcesar" value="&#160; Procesar"
 									styleClass="btn btn-info ion-ios7-loop-strong"
-									rendered="#{! reportTotalPartidaController.verReporte}"
+									rendered="false"
 									style="height:31px; padding:center"
 									update=" formFilterProducto,formBotonesHeader"
 									action="#{reportTotalPartidaController.procesarConsulta()}">
@@ -38,7 +38,7 @@
 
 								<p:commandLink id="buttonVerReporte" value="&#160; Ver Reporte"
 									styleClass="btn btn-info ion-printer"
-									rendered="#{reportTotalPartidaController.listaDetalleOrdenSalida.size() > 0}"
+									rendered="true"
 									style="height:31px; padding:center"
 									update="formFilterProducto ,formBotonesHeader"
 									action="#{reportTotalPartidaController.cargarReporte()}">
@@ -63,9 +63,8 @@
 					<div class="row">
 						<h:form id="formFilterProducto" styleClass="form-horizontal">
 
-							<ui:fragment
-								rendered="#{ !reportTotalPartidaController.verReporte}">
-								<div class="col-md-4">
+							
+								<div class="col-md-12">
 									<div class="panel panel-default">
 										<div class="panel-heading">
 											<h3 class="panel-title">Filtro Partida</h3>
@@ -92,13 +91,52 @@
 															<p:calendar pattern="dd/MM/yyyy" id="fechaFinal"
 																locale="es"
 																value="#{reportTotalPartidaController.fechaFinal}"
-																
 																onkeypress="return permiteKey(event, 'none')"
 																style=" color: #555555; background-image: none;">
-																<p:ajax event="dateSelect"  />
+																<p:ajax event="dateSelect" />
 															</p:calendar>
 														</div>
 													</div>
+													<div class="form-group ">
+														<div class="col-md-12">Buscar Partida</div>
+														<div class="col-md-12">
+															<p:selectOneRadio id="oneMenuTipoConsulta"
+																value="#{reportTotalPartidaController.tipoConsulta}">
+																<p:ajax update="@form" />
+																<f:selectItem
+																	itemLabel="&#160; Todos	&#160; &#160; &#160;"
+																	itemValue="T" />
+																<f:selectItem itemLabel="&#160; Seleccionar"
+																	itemValue="S" />
+															</p:selectOneRadio>
+														</div>
+													</div>
+													<ui:fragment
+														rendered="#{ reportTotalPartidaController.tipoConsulta.equals('S')}">
+														<div class="form-group ">
+															<div class="col-md-12">Partida</div>
+															<div class="col-md-12">
+																<p:autoComplete id="partidaID" style="width: 93%"
+																	inputStyle="width: 93%; color: #555555; background-image: none;"
+																	value="#{reportTotalPartidaController.selectedPartida.nombre}"
+																	completeMethod="#{reportTotalPartidaController.completePartida}"
+																	minQueryLength="3" dropdown="true" required="true"
+																	requiredMessage="Partida Requerido."
+																	forceSelection="true" var="_var" itemLabel="#{_var}"
+																	itemValue="#{_var.nombre}"
+																	placeholder="[Escriba Partida]" maxResults="10">
+
+																	<p:ajax event="itemSelect"
+																		listener="#{reportTotalPartidaController.onRowSelectPartidaClick}"
+																		update="partidaID" />
+																	<p:column>
+																		<h:outputText value="#{_var.nombre}" />
+																	</p:column>
+																</p:autoComplete>
+
+															</div>
+														</div>
+													</ui:fragment>
 
 												</div>
 
@@ -106,7 +144,8 @@
 										</div>
 									</div>
 								</div>
-
+								<ui:fragment
+								rendered="false">
 								<div class="col-md-8">
 									<div class="panel panel-default">
 										<div class="panel-heading">
@@ -131,7 +170,8 @@
 												</p:column>
 
 												<p:column width="15%" headerText="Orden Salida"
-													style="text-align:center" filterBy="#{_var.ordenSalida.correlativo}"
+													style="text-align:center"
+													filterBy="#{_var.ordenSalida.correlativo}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.ordenSalida.correlativo}" />
 												</p:column>
@@ -155,7 +195,7 @@
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.total}" />
 												</p:column>
-												
+
 
 												<f:facet name="footer">
 													<h:outputText
@@ -172,9 +212,9 @@
 									</div>
 								</div>
 							</ui:fragment>
-							
+
 							<ui:fragment
-								rendered="#{reportTotalPartidaController.verReporte}">
+								rendered="true">
 								<div class="col-md-12">
 									<div class="panel panel-default">
 										<div class="panel-body" style="text-align: center;">
