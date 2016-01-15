@@ -73,7 +73,7 @@ public class AlmacenProductoRepository {
 	@SuppressWarnings("unchecked")
 	public List<AlmacenProducto> findByAlmacen(Almacen almacen) {
 		try{
-			String query = "select em from AlmacenProducto em where ( em.estado='AC' or em.estado='IN' ) and em.almacen.id="
+			String query = "select em from AlmacenProducto em where ( em.estado='AC' or em.estado='IN' ) and em.stock > 0 and em.almacen.id="
 					+ almacen.getId() ;
 			System.out.println("Query AlmacenProducto: " + query);
 			return em.createQuery(query).getResultList();
