@@ -8,7 +8,7 @@
 	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
 	template="/WEB-INF/templates/template_main.xhtml">
 	<ui:define name="head">
-		<title>Report</title>
+		<title>Reporte Partida</title>
 		<f:event listener="#{reportTotalProyectoController.initConversation}"
 			type="preRenderView"></f:event>
 	</ui:define>
@@ -21,7 +21,7 @@
 					<h:form id="formBotonesHeader" style="padding-left: 10px;">
 						<div class="btn-group-demo">
 							<div class="btn-group">
-							    <p:commandLink id="buttonAtras" value="&#160; Atras"
+								<p:commandLink id="buttonAtras" value="&#160; Atras"
 									styleClass="btn btn-warning ion-minus-circled"
 									update="formFilterProducto, formBotonesHeader"
 									rendered="#{reportTotalProyectoController.verReporte}"
@@ -29,16 +29,14 @@
 									action="#{reportTotalProyectoController.initReporteProyecto()}">
 								</p:commandLink>
 								<p:commandLink id="buttonProcesar" value="&#160; Procesar"
-									styleClass="btn btn-info ion-ios7-loop-strong"
-									rendered="#{! reportTotalProyectoController.verReporte}"
+									styleClass="btn btn-info ion-ios7-loop-strong" rendered="false"
 									style="height:31px; padding:center"
 									update=" formFilterProducto,formBotonesHeader"
 									action="#{reportTotalProyectoController.procesarConsulta()}">
 								</p:commandLink>
 
 								<p:commandLink id="buttonVerReporte" value="&#160; Ver Reporte"
-									styleClass="btn btn-info ion-printer"
-									rendered="#{reportTotalProyectoController.listaDetalleOrdenSalida.size() > 0}"
+									styleClass="btn btn-info ion-printer" rendered="true"
 									style="height:31px; padding:center"
 									update="formFilterProducto ,formBotonesHeader"
 									action="#{reportTotalProyectoController.cargarReporte()}">
@@ -54,7 +52,8 @@
 						<li><a
 							href="#{request.contextPath}/pages/reportes/report_total_proyecto.xhtml"
 							style="color: #0090FF; font-size: 12px;">Reporte</a></li>
-						<li class="active" style="font-size: 12px;">Total por Proyecto</li>
+						<li class="active" style="font-size: 12px;">Total por
+							Proyecto</li>
 					</ol>
 				</div>
 			</section>
@@ -63,49 +62,92 @@
 					<div class="row">
 						<h:form id="formFilterProducto" styleClass="form-horizontal">
 
-							<ui:fragment
-								rendered="#{ !reportTotalProyectoController.verReporte}">
-								<div class="col-md-4">
-									<div class="panel panel-default">
-										<div class="panel-heading">
-											<h3 class="panel-title">Filtro Proyecto</h3>
-										</div>
-										<!-- start here datatable -->
-										<div class="panel-body">
-											<div class="row">
-												<div class="col-md-12">
-													<div class="form-group ">
-														<div class="col-md-12">Fecha Inicial</div>
-														<div class="col-md-12">
-															<p:calendar pattern="dd/MM/yyyy" id="fechaInicial"
-																locale="es"
-																value="#{reportTotalProyectoController.fechaInicial}"
-																onkeypress="return permiteKey(event, 'none')"
-																style=" color: #555555; background-image: none;">
-																<p:ajax event="dateSelect" />
-															</p:calendar>
-														</div>
-													</div>
-													<div class="form-group ">
-														<div class="col-md-12">Fecha Final</div>
-														<div class="col-md-12">
-															<p:calendar pattern="dd/MM/yyyy" id="fechaFinal"
-																locale="es"
-																value="#{reportTotalProyectoController.fechaFinal}"
-																
-																onkeypress="return permiteKey(event, 'none')"
-																style=" color: #555555; background-image: none;">
-																<p:ajax event="dateSelect"  />
-															</p:calendar>
-														</div>
-													</div>
 
+							<div class="col-md-12">
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h3 class="panel-title">Filtro Proyecto</h3>
+									</div>
+									<!-- start here datatable -->
+									<div class="panel-body">
+										<div class="row">
+											<div class="col-md-12">
+												<div class="form-group ">
+													<div class="col-md-12">Fecha Inicial</div>
+													<div class="col-md-12">
+														<p:calendar pattern="dd/MM/yyyy" id="fechaInicial"
+															locale="es"
+															value="#{reportTotalProyectoController.fechaInicial}"
+															onkeypress="return permiteKey(event, 'none')"
+															style=" color: #555555; background-image: none;">
+															<p:ajax event="dateSelect" />
+														</p:calendar>
+													</div>
 												</div>
+												<div class="form-group ">
+													<div class="col-md-12">Fecha Final</div>
+													<div class="col-md-12">
+														<p:calendar pattern="dd/MM/yyyy" id="fechaFinal"
+															locale="es"
+															value="#{reportTotalProyectoController.fechaFinal}"
+															onkeypress="return permiteKey(event, 'none')"
+															style=" color: #555555; background-image: none;">
+															<p:ajax event="dateSelect" />
+														</p:calendar>
+													</div>
+												</div>
+												<div class="form-group ">
+														<div class="col-md-12">Buscar Partida</div>
+														<div class="col-md-12">
+															<p:selectOneRadio id="oneMenuTipoConsulta"
+																value="#{reportTotalPartidaController.tipoConsulta}">
+																<p:ajax update="@form" />
+																<f:selectItem
+																	itemLabel="&#160; Todos	&#160; &#160; &#160;"
+																	itemValue="T" />
+																<f:selectItem itemLabel="&#160; Seleccionar"
+																	itemValue="S" />
+															</p:selectOneRadio>
+														</div>
+													</div>
+													<ui:fragment
+														rendered="#{ reportTotalProyectoController.tipoConsulta.equals('S')}">
+														<div class="form-group ">
+															<div class="col-md-12">Proyecto</div>
+															<div class="col-md-4">
+																<p:autoComplete id="proyectoID" style="width: 93%"
+																	inputStyle="width: 93%; color: #555555; background-image: none;"
+																	value="#{reportTotalProyectoController.selectedProyecto.nombre}"
+																	completeMethod="#{reportTotalProyectoController.completeProyecto}"
+																	minQueryLength="3" dropdown="true" required="true"
+																	requiredMessage="Proyecto Requerido."
+																	forceSelection="true" var="_var" itemLabel="#{_var}"
+																	itemValue="#{_var.nombre}"
+																	placeholder="[Escriba Proyecto]" maxResults="10">
 
+																	<p:ajax event="itemSelect"
+																		update="proyectoID"
+																		listener="#{reportTotalProyectoController.onRowSelectProyectoClick}" />
+																	<p:column>
+																		<h:outputText value="#{_var.codigo}" />
+																	</p:column>
+																	<p:column>
+																		<h:outputText value="#{_var.nombre}" />
+																	</p:column>
+
+																</p:autoComplete>
+
+															</div>
+														</div>
+													</ui:fragment>
 											</div>
+
 										</div>
 									</div>
 								</div>
+							</div>
+
+							<ui:fragment rendered="false">
 
 								<div class="col-md-8">
 									<div class="panel panel-default">
@@ -131,7 +173,8 @@
 												</p:column>
 
 												<p:column width="15%" headerText="Orden Salida"
-													style="text-align:center" filterBy="#{_var.ordenSalida.correlativo}"
+													style="text-align:center"
+													filterBy="#{_var.ordenSalida.correlativo}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.ordenSalida.correlativo}" />
 												</p:column>
@@ -146,7 +189,8 @@
 												<p:column headerText="Descripcion"
 													filterBy="#{_var.ordenSalida.proyecto.descripcion}"
 													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.ordenSalida.proyecto.descripcion}" />
+													<h:outputText
+														value="#{_var.ordenSalida.proyecto.descripcion}" />
 												</p:column>
 
 
@@ -155,7 +199,7 @@
 													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.total}" />
 												</p:column>
-												
+
 
 												<f:facet name="footer">
 													<h:outputText
@@ -173,7 +217,7 @@
 							</ui:fragment>
 
 							<ui:fragment
-								rendered="#{reportTotalProyectoController.verReporte}">
+								rendered="true">
 								<div class="col-md-12">
 									<div class="panel panel-default">
 										<div class="panel-body" style="text-align: center;">

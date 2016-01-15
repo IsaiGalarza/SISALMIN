@@ -8,7 +8,7 @@
 	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
 	template="/WEB-INF/templates/template_main.xhtml">
 	<ui:define name="head">
-		<title>Report</title>
+		<title>Reporte Partida</title>
 		<f:event listener="#{reportTotalPartidaController.initConversation}"
 			type="preRenderView"></f:event>
 	</ui:define>
@@ -115,7 +115,7 @@
 														rendered="#{ reportTotalPartidaController.tipoConsulta.equals('S')}">
 														<div class="form-group ">
 															<div class="col-md-12">Partida</div>
-															<div class="col-md-12">
+															<div class="col-md-4">
 																<p:autoComplete id="partidaID" style="width: 93%"
 																	inputStyle="width: 93%; color: #555555; background-image: none;"
 																	value="#{reportTotalPartidaController.selectedPartida.nombre}"

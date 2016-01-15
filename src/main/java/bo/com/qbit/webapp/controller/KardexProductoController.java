@@ -110,7 +110,8 @@ public class KardexProductoController implements Serializable {
 	}
 
 	public List<Producto> completeProducto(String query) {
-		listaProducto = productoRepository.findAllProductoForQueryNombre(query);
+		String upperQuery = query.toUpperCase();
+		listaProducto = productoRepository.findAllProductoForQueryNombre(upperQuery);
 		return listaProducto;
 	}
 

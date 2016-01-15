@@ -14,18 +14,22 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
+import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
 
 import bo.com.qbit.webapp.data.DetalleOrdenSalidaRepository;
 import bo.com.qbit.webapp.data.GestionRepository;
 import bo.com.qbit.webapp.data.OrdenSalidaRepository;
+import bo.com.qbit.webapp.data.ProyectoRepository;
 import bo.com.qbit.webapp.model.DetalleOrdenSalida;
 import bo.com.qbit.webapp.model.Empresa;
 import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.OrdenSalida;
 import bo.com.qbit.webapp.model.Producto;
+import bo.com.qbit.webapp.model.Proyecto;
 import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.Fechas;
+import bo.com.qbit.webapp.util.NumberUtil;
 import bo.com.qbit.webapp.util.SessionMain;
 
 @Named(value = "reportTotalProyectoController")
@@ -42,6 +46,7 @@ public class ReportTotalProyectoController implements Serializable {
 	private @Inject DetalleOrdenSalidaRepository detalleOrdenSalidaRepository;
 	private @Inject OrdenSalidaRepository ordenSalidaRepository;
 	private @Inject GestionRepository gesionRepository;
+	private @Inject ProyectoRepository proyectoRepository;
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
@@ -51,19 +56,22 @@ public class ReportTotalProyectoController implements Serializable {
 	private FacesContext facesContext;
 	
 	private String urlTotalProyecto;
-	private boolean verReporte ;
-
+	private String tipoConsulta;
 	private String nuevaGestion;
 	private double total;
+	
+	private boolean verReporte ;
 
 	//OBJECT
 	private Producto selectedProducto;
 	private Gestion selectedGestion;
+	private Proyecto selectedProyecto;
 
 	//LIST
 	private List<Gestion> listGestion = new ArrayList<Gestion>();
 	private List<DetalleOrdenSalida> listaDetalleOrdenSalida = new ArrayList<DetalleOrdenSalida>();
 	private List<OrdenSalida> listaOrdenSalida = new ArrayList<OrdenSalida>();
+	private List<Proyecto> listaProyecto;
 
 	//SESSION
 	private @Inject SessionMain sessionMain; //variable del login
@@ -90,9 +98,12 @@ public class ReportTotalProyectoController implements Serializable {
 		
 		listaDetalleOrdenSalida = new ArrayList<DetalleOrdenSalida>();
 		listaOrdenSalida = new ArrayList<OrdenSalida>();
+		listaProyecto = new ArrayList<Proyecto>();
 
+		tipoConsulta = "T";
 		verReporte = false;
 		selectedProducto = new Producto();
+		selectedProyecto= new Proyecto();
 		setTotal(0);
 		
 		setFechaInicial(new Date());
@@ -158,11 +169,15 @@ public class ReportTotalProyectoController implements Serializable {
 		}
 		listOrdenSalidaAux.add(ordenSalida);
 	}
-
-
 	
 	public void cargarReporte(){
 		try {
+			if(tipoConsulta.equals("S")){
+				if(selectedProyecto.getId()==0){
+					FacesUtil.infoMessage("VALIDACION", "Seleccione un proyecto");
+					return;
+				}
+			}
 			urlTotalProyecto = loadURL();
 			verReporte = true;
 		} catch (Exception e) {
@@ -172,21 +187,40 @@ public class ReportTotalProyectoController implements Serializable {
 	
 	public String loadURL(){
 		try{
-			/*
-			 * 			String pNombreEmpresa = request.getParameter("pNombreEmpresa");
-			String pNitEmpresa = request.getParameter("pNitEmpresa");
-			String pFechaInicio =  request.getParameter("pFechaInicio");
-			String pFechaFin = request.getParameter("pFechaFin");
-			Integer pIdGestion = Integer.parseInt(request.getParameter("pIdGestion"));
-			String  pUsuario = request.getParameter("pUsuario");
-			 */
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
 			String urlPath = request.getRequestURL().toString();
 			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
-			String urlPDFreporte = urlPath+"ReporteTotalProyecto?pFechaInicio="+Fechas.deDateAString(fechaInicial)+"&pFechaFin="+Fechas.deDateAString(fechaFinal)+"&pIdProducto="+selectedProducto.getId()+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial()+"&pIdGestion="+selectedGestion.getId()+"&pUsuario="+usuarioLogin;
+			String urlPDFreporte ="";
+			System.out.println("tipoConsulta: "+tipoConsulta);
+			if(tipoConsulta.equals("T")){
+				urlPDFreporte = urlPath+"ReporteTotalProyecto?pFechaInicio="+Fechas.obtenerFormatoYYYYMMDD(fechaInicial)+"&pFechaFin="+Fechas.obtenerFormatoYYYYMMDD(fechaFinal)+"&pIdProyecto=-1"+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial()+"&pIdGestion="+selectedGestion.getId()+"&pUsuario="+usuarioLogin;
+			}else{
+				urlPDFreporte = urlPath+"ReporteTotalProyecto?pFechaInicio="+Fechas.obtenerFormatoYYYYMMDD(fechaInicial)+"&pFechaFin="+Fechas.obtenerFormatoYYYYMMDD(fechaFinal)+"&pIdProyecto="+selectedProyecto.getId()+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial()+"&pIdGestion="+selectedGestion.getId()+"&pUsuario="+usuarioLogin;
+			}
 			return urlPDFreporte;
 		}catch(Exception e){
 			return "error";
+		}
+	}
+	
+	// ONCOMPLETETEXT PROYECTO ..........
+	public List<Proyecto> completeProyecto(String query) {
+		if(NumberUtil.isNumeric(query)){//si es numero
+			listaProyecto = proyectoRepository.findAllProyectoForQueryCodigo(query);
+		}else{//es letra		
+			String upperQuery = query.toUpperCase();
+			listaProyecto = proyectoRepository.findAllProyectoForQueryNombre(upperQuery);
+		}
+		return listaProyecto;
+	}
+
+	public void onRowSelectProyectoClick(SelectEvent event) {
+		String nombre =  event.getObject().toString();
+		for(Proyecto i : listaProyecto){
+			if(i.getNombre().equals(nombre)){
+				selectedProyecto = i;
+				return;
+			}
 		}
 	}
 
@@ -279,6 +313,30 @@ public class ReportTotalProyectoController implements Serializable {
 
 	public void setVerReporte(boolean verReporte) {
 		this.verReporte = verReporte;
+	}
+
+	public String getTipoConsulta() {
+		return tipoConsulta;
+	}
+
+	public void setTipoConsulta(String tipoConsulta) {
+		this.tipoConsulta = tipoConsulta;
+	}
+
+	public Proyecto getSelectedProyecto() {
+		return selectedProyecto;
+	}
+
+	public void setSelectedProyecto(Proyecto selectedProyecto) {
+		this.selectedProyecto = selectedProyecto;
+	}
+
+	public List<Proyecto> getListaProyecto() {
+		return listaProyecto;
+	}
+
+	public void setListaProyecto(List<Proyecto> listaProyecto) {
+		this.listaProyecto = listaProyecto;
 	}
 
 }
