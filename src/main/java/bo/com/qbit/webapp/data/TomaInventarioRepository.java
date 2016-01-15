@@ -19,6 +19,17 @@ public class TomaInventarioRepository {
 		return em.find(TomaInventario.class, id);
 	}
 
+	public TomaInventario findByGestionAnterior(Gestion gestionAnterior) {
+		try{
+			String query = "select em from TomaInventario em where em.tipo='FINAL' and  em.gestion.id="+gestionAnterior.getId();
+			System.out.println("Query TomaInventario: "+query);
+			return (TomaInventario) em.createQuery(query).getSingleResult();
+		}catch(Exception e){
+			System.out.println("Error : "+e.getMessage());
+			return null;
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	public List<TomaInventario> findAllOrderedByID() {
 		String query = "select ser from TomaInventario ser where (ser.estado='AC' or ser.estado='IN' or ser.estado='RE' or ser.estado='PR' or ser.estado='CN' or ser.estado='CE') order by ser.id desc";

@@ -197,6 +197,10 @@ public class SessionMain implements Serializable {
 		}
 		return gestionLogin;
 	}
+	
+	public void setGestionLogin(Gestion gestionLogin){
+		this.gestionLogin = gestionLogin;
+	}
 
 	public Almacen getAlmacenLogin() {
 		if(almacenLogin == null){

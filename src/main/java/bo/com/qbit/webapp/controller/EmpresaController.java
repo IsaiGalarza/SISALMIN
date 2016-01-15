@@ -131,12 +131,15 @@ public class EmpresaController implements Serializable {
 					g.setUsuarioRegistro(nombreUsuario);
 					g.setEmpresa(newEmpresa);
 					g.setFechaRegistro(fechaActual);
-					gestionRegistration.create(g);
+					g = gestionRegistration.create(g);
+					sessionMain.setGestionLogin(g);//asignar la gestion a la session
 				}else{
 					g.setFechaModificacion(fechaActual);
 					gestionRegistration.update(g);
+					sessionMain.setGestionLogin(g);//asignar la gestion a la session
 				}
 			}
+			
 			FacesUtil.infoMessage("Empresa Modificada", "Empresa "+newEmpresa.getRazonSocial());
 			modificar = false;
 			loadValuesDefault();

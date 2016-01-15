@@ -23,6 +23,7 @@ import bo.com.qbit.webapp.data.CierreGestionAlmacenRepository;
 import bo.com.qbit.webapp.data.DetalleOrdenIngresoRepository;
 import bo.com.qbit.webapp.data.DetalleTomaInventarioOrdenIngresoRepository;
 import bo.com.qbit.webapp.data.DetalleTomaInventarioRepository;
+import bo.com.qbit.webapp.data.GestionRepository;
 import bo.com.qbit.webapp.data.OrdenIngresoRepository;
 import bo.com.qbit.webapp.data.PartidaRepository;
 import bo.com.qbit.webapp.data.ProductoRepository;
@@ -83,6 +84,7 @@ public class TomaInventarioController implements Serializable {
 	private @Inject ProveedorRepository proveedorRepository;
 	private @Inject OrdenIngresoRepository ordenIngresoRepository;
 	private @Inject CierreGestionAlmacenRepository cierreGestionAlmacenRepository;
+	private @Inject GestionRepository gestionRepository;
 
 	private @Inject TomaInventarioRegistration tomaInventarioRegistration;
 	private @Inject DetalleTomaInventarioRegistration detalleTomaInventarioRegistration;
@@ -120,6 +122,7 @@ public class TomaInventarioController implements Serializable {
 	private boolean editarOrdenIngreso = false;
 	private boolean nuevoProducto = false;
 	private boolean editarTomaInventarioIncial = false;//estado, modificar toma de inventario inicial
+	private boolean hayGestionAnterior;
 
 	//VAR
 	private String tituloPanel = "Registrar Almacen";
@@ -180,6 +183,7 @@ public class TomaInventarioController implements Serializable {
 		// tituloPanel
 		tituloPanel = "Registrar Toma Inventario";
 
+		hayGestionAnterior = false;
 		crear = true;
 		verProcesar = true;
 		verReport = false;
@@ -241,17 +245,90 @@ public class TomaInventarioController implements Serializable {
 
 	}
 
+	public void registrarTomaInventarioInicialDesdeGestionAnterior(){
+
+	}
+
+	private Gestion gestionAnterior = null;
+
 	public void cambiarAspecto(){
 		//verificar si ya hay una tomma de inventario inicial en esa gestion
 		if(existeTomaInventarioIncialByGestion()){
 			FacesUtil.infoMessage("VALIDACION", "Ya se registro una toma Inventario Inicial, gestion "+gestionSesion.getGestion());
 			return;
 		}
-		verLista = false;
-		modificar = false;
-		registrar = true;
-		crear = false;
+
+		//verificar si hay una gestion anterior
+		gestionAnterior = obtenerGestionAnterior();
+		if(gestionAnterior!=null){
+			//si hay, hay que jalar todos los datos de su cierre de almacen en la toma de inventario final
+			//hayGestionAnterior = true;
+			//1. obtener la toma inventario Anterior Gestion (tipo = 'FINAL')
+			TomaInventario tomaAnteriorGestion = tomaInventarioRepository.findByGestionAnterior(gestionAnterior);
+			int var1 = 2;
+			if(tomaAnteriorGestion!=null && 1==var1){
+				//DetalleTomaInventario detalle = detalleTomaInventarioRepository.findByTomaInventario(tomaAnteriorGestion);
+				List<DetalleTomaInventario>  detalleTomaInventario = detalleTomaInventarioRepository.findAllActivosByTomaInventario(tomaAnteriorGestion);
+				System.out.println("DetalleTomaInventario : "+detalleTomaInventario.size());
+				Date fechaActual = new Date();
+				//2.cargar los datos para par lista de DetalleTomaInventarioOrdenIngreso
+				for(DetalleTomaInventario var: detalleTomaInventario){
+					DetalleOrdenIngreso detalleOI = new DetalleOrdenIngreso();
+					detalleOI.setEstado("AC");
+					detalleOI.setFechaRegistro(fechaActual);
+					listaDetalleOrdenIngreso.add(detalleOI);
+					/**
+					 * 				d.setFechaRegistro(fechaActual);
+				d.setUsuarioRegistro(usuarioSession);
+				d.setOrdenIngreso(newOrdenIngreso);
+				d= detalleOrdenIngresoRegistration.register(d);
+				//Registrar detalle toma inventario
+				DetalleTomaInventario detalle = new DetalleTomaInventario();
+				detalle.setCantidadRegistrada(d.getCantidad());
+				detalle.setCantidadVerificada(d.getCantidad());
+				detalle.setDiferencia(0d);
+				detalle.setEstado("AC");
+				detalle.setFechaRegistro(fechaActual);
+				detalle.setObservacion("Ninguna");
+				detalle.setProducto(d.getProducto());
+				detalle.setTomaInventario(newTomaInventario);
+				detalle.setUsuarioRegistro(usuarioSession);
+				detalleTomaInventarioRegistration.register(detalle);
+					 */
+					
+				}
+				listDetalleTomaInventario = detalleTomaInventario;
+
+				//detalle toma inventario
+				editarTomaInventarioIncial = true;
+				verLista = false;
+				modificar = false;
+				registrar = true;
+				verButtonReport = false;
+				newTomaInventario = selectedTomaInventario;
+				// ocultar botones
+				buttonEditarTomaInventarioIncial = false;
+				buttonProcesarTomaInventarioIncial = false;
+			}
+			verLista = false;
+			modificar = false;
+			registrar = true;
+			crear = false;
+
+		}else{
+
+			verLista = false;
+			modificar = false;
+			registrar = true;
+			crear = false;
+		}
 	}
+
+	private Gestion obtenerGestionAnterior(){
+		Gestion gestion = gestionRepository.findGestionAnterior(gestionSesion);
+		return gestion;
+	}
+
 	private boolean existeTomaInventarioIncialByGestion(){
 		return tomaInventarioRepository.findTIInicialByGestion(gestionSesion);
 	}
@@ -430,7 +507,7 @@ public class TomaInventarioController implements Serializable {
 					detalleTomaInventarioRegistration.updated(detalleAux);
 				}
 			}
-			
+
 			FacesUtil.infoMessage("Orden de Ingreso Modificada!", "");
 			initNewTomaInventario();
 		} catch (Exception e) {
@@ -765,7 +842,7 @@ public class TomaInventarioController implements Serializable {
 		// ocultar botones
 		buttonEditarTomaInventarioIncial = false;
 		buttonProcesarTomaInventarioIncial = false;
-		
+
 		//
 		listDetalleTomaInventario = detalleTomaInventarioRepository.findAllByTomaInventario(selectedTomaInventario);
 	}
@@ -1361,6 +1438,14 @@ public class TomaInventarioController implements Serializable {
 
 	public void setEditarTomaInventarioIncial(boolean editarTomaInventarioIncial) {
 		this.editarTomaInventarioIncial = editarTomaInventarioIncial;
+	}
+
+	public boolean isHayGestionAnterior() {
+		return hayGestionAnterior;
+	}
+
+	public void setHayGestionAnterior(boolean hayGestionAnterior) {
+		this.hayGestionAnterior = hayGestionAnterior;
 	}
 
 }
