@@ -601,7 +601,7 @@ public class OrdenSalidaController implements Serializable {
 			return new ArrayList<Funcionario>();
 		}
 		String upperQuery = query.toUpperCase();
-		listaFuncionario = funcionarioRepository.findAllFuncionarioForQueryNombreAndDetalleUnidad(upperQuery,selectedDetalleUnidad);       
+		listaFuncionario = funcionarioRepository.findAllFuncionarioForQueryNombreAndDetalleUnidad(upperQuery,selectedDetalleUnidad,gestionSesion);       
 		return listaFuncionario;
 	}
 
@@ -684,10 +684,10 @@ public class OrdenSalidaController implements Serializable {
 	// ONCOMPLETETEXT PROYECTO ..........
 	public List<Proyecto> completeProyecto(String query) {
 		if(NumberUtil.isNumeric(query)){//si es numero
-			listaProyecto = proyectoRepository.findAllProyectoForQueryCodigo(query);
+			listaProyecto = proyectoRepository.findAllProyectoForQueryCodigo(query,gestionSesion);
 		}else{//es letra		
 			String upperQuery = query.toUpperCase();
-			listaProyecto = proyectoRepository.findAllProyectoForQueryNombre(upperQuery);
+			listaProyecto = proyectoRepository.findAllProyectoForQueryNombre(upperQuery,gestionSesion);
 		}
 		return listaProyecto;
 	}

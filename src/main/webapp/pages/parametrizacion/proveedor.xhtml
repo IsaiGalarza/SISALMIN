@@ -186,7 +186,10 @@
 												selection="#{proveedorController.selectedProveedor}"
 												emptyMessage="No se encontraron Proveedores"
 												rowKey="#{item.id}" reflow="true"
-												filteredValue="#{proveedorController.listFilterProveedor}">
+												filteredValue="#{proveedorController.listFilterProveedor}"
+												rows="20" paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													rowsPerPageTemplate="5,20,30">
 												<p:ajax event="rowSelect"
 													listener="#{proveedorController.onRowSelect}"
 													update=":formReg,:formBotonesHeader,:formTableProveedor" />

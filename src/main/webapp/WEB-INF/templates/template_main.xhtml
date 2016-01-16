@@ -424,6 +424,16 @@
 	<ui:insert name="scripts">
 
 	</ui:insert>
+	
+		<!-- AJAX STATUS -->
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+
+	<p:dialog widgetVar="statusDialog" position="right bottom" width="1px;"
+		height="1px;" style="opacity: 1.0 !important;" closable="false"
+		resizable="false" showHeader="false">
+		<p:graphicImage name="/gfx/loading.gif" width="60px;" height="60px;" />
+	</p:dialog>
 
 </h:body>
 </html>

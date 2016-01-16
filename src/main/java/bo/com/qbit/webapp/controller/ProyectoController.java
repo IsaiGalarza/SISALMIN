@@ -19,6 +19,7 @@ import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
 
 import bo.com.qbit.webapp.data.ProyectoRepository;
+import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.Proyecto;
 import bo.com.qbit.webapp.service.ProyectoRegistration;
 import bo.com.qbit.webapp.util.SessionMain;
@@ -75,6 +76,7 @@ public class ProyectoController implements Serializable {
 	//SESSION
 	private @Inject SessionMain sessionMain; //variable del login
 	private String usuarioSession;
+	private Gestion gestionSesion;
 	
 	@PostConstruct
 	public void initNewProyecto() {
@@ -83,11 +85,13 @@ public class ProyectoController implements Serializable {
 		beginConversation();
 
 		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
+		gestionSesion = sessionMain.getGestionLogin();
 
 		newProyecto = new Proyecto();
 		newProyecto.setEstado("AC");
 		newProyecto.setFechaRegistro(new Date());
 		newProyecto.setUsuarioRegistro(usuarioSession);
+		newProyecto.setGestion(gestionSesion);
 		
 
 		selectedProyecto = null;
@@ -95,7 +99,7 @@ public class ProyectoController implements Serializable {
 		tituloPanel = "Registrar Proyecto";
 
 		// traer todos las Proyectoes ordenados por ID Desc
-		listaProyecto = proyectoRepository.traerProyectoActivas();
+		listaProyecto = proyectoRepository.traerProyectoActivas(gestionSesion);
 		
 		modificar = false;
 		registrar = false;

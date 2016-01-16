@@ -23,6 +23,7 @@ import bo.com.qbit.webapp.data.DetalleUnidadRepository;
 import bo.com.qbit.webapp.data.FuncionarioRepository;
 import bo.com.qbit.webapp.model.DetalleUnidad;
 import bo.com.qbit.webapp.model.Funcionario;
+import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.service.FuncionarioRegistration;
 import bo.com.qbit.webapp.util.SessionMain;
 
@@ -73,6 +74,7 @@ public class FuncionarioController implements Serializable {
 	//SESSION
 	private @Inject SessionMain sessionMain; //variable del login
 	private String usuarioSession;
+	private Gestion gestionSesion;
 	
 	private boolean atencionCliente=false;
 
@@ -91,19 +93,20 @@ public class FuncionarioController implements Serializable {
 		beginConversation();
 
 		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
+		gestionSesion = sessionMain.getGestionLogin();
 
 		selectedFuncionario = null;
 		newFuncionario = new Funcionario();
 		newFuncionario.setEstado("AC");
 		newFuncionario.setFechaRegistro(new Date());
 		newFuncionario.setUsuarioRegistro(usuarioSession);
-		
+		newFuncionario.setGestion(gestionSesion);
 
 		// tituloPanel
 		tituloPanel = "Registrar Funcionario";
 
 		// traer todos las Funcionarioes ordenados por ID Desc
-		listaFuncionario = FuncionarioRepository.traerFuncionarioActivas();
+		listaFuncionario = FuncionarioRepository.traerFuncionarioActivas(gestionSesion);
 		listDetalleUnidad = detalleUnidadRepository.traerDetalleUnidadActivas();
 		
 		modificar = false;

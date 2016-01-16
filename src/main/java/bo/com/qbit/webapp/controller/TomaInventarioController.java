@@ -23,11 +23,13 @@ import bo.com.qbit.webapp.data.CierreGestionAlmacenRepository;
 import bo.com.qbit.webapp.data.DetalleOrdenIngresoRepository;
 import bo.com.qbit.webapp.data.DetalleTomaInventarioOrdenIngresoRepository;
 import bo.com.qbit.webapp.data.DetalleTomaInventarioRepository;
+import bo.com.qbit.webapp.data.FuncionarioRepository;
 import bo.com.qbit.webapp.data.GestionRepository;
 import bo.com.qbit.webapp.data.OrdenIngresoRepository;
 import bo.com.qbit.webapp.data.PartidaRepository;
 import bo.com.qbit.webapp.data.ProductoRepository;
 import bo.com.qbit.webapp.data.ProveedorRepository;
+import bo.com.qbit.webapp.data.ProyectoRepository;
 import bo.com.qbit.webapp.data.TomaInventarioRepository;
 import bo.com.qbit.webapp.data.UnidadMedidaRepository;
 import bo.com.qbit.webapp.model.Almacen;
@@ -41,11 +43,13 @@ import bo.com.qbit.webapp.model.Empresa;
 import bo.com.qbit.webapp.model.FachadaOrdenIngreso;
 import bo.com.qbit.webapp.model.FachadaOrdenSalida;
 import bo.com.qbit.webapp.model.FachadaOrdenTraspaso;
+import bo.com.qbit.webapp.model.Funcionario;
 import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.OrdenIngreso;
 import bo.com.qbit.webapp.model.Partida;
 import bo.com.qbit.webapp.model.Producto;
 import bo.com.qbit.webapp.model.Proveedor;
+import bo.com.qbit.webapp.model.Proyecto;
 import bo.com.qbit.webapp.model.TomaInventario;
 import bo.com.qbit.webapp.model.UnidadMedida;
 import bo.com.qbit.webapp.model.Usuario;
@@ -54,9 +58,11 @@ import bo.com.qbit.webapp.service.CierreGestionAlmacenRegistration;
 import bo.com.qbit.webapp.service.DetalleOrdenIngresoRegistration;
 import bo.com.qbit.webapp.service.DetalleTomaInventarioOrdenIngresoRegistration;
 import bo.com.qbit.webapp.service.DetalleTomaInventarioRegistration;
+import bo.com.qbit.webapp.service.FuncionarioRegistration;
 import bo.com.qbit.webapp.service.GestionRegistration;
 import bo.com.qbit.webapp.service.OrdenIngresoRegistration;
 import bo.com.qbit.webapp.service.ProductoRegistration;
+import bo.com.qbit.webapp.service.ProyectoRegistration;
 import bo.com.qbit.webapp.service.TomaInventarioRegistration;
 import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.SessionMain;
@@ -84,7 +90,9 @@ public class TomaInventarioController implements Serializable {
 	private @Inject ProveedorRepository proveedorRepository;
 	private @Inject OrdenIngresoRepository ordenIngresoRepository;
 	private @Inject CierreGestionAlmacenRepository cierreGestionAlmacenRepository;
+	private @Inject ProyectoRepository proyectoRepository;
 	private @Inject GestionRepository gestionRepository;
+	private @Inject FuncionarioRepository funcionarioRepository;
 
 	private @Inject TomaInventarioRegistration tomaInventarioRegistration;
 	private @Inject DetalleTomaInventarioRegistration detalleTomaInventarioRegistration;
@@ -95,6 +103,8 @@ public class TomaInventarioController implements Serializable {
 	private @Inject DetalleTomaInventarioOrdenIngresoRegistration detalleTomaInventarioOrdenIngresoRegistration;
 	private @Inject BajaProductoRegistration bajaProductoRegistration;
 	private @Inject CierreGestionAlmacenRegistration CierreGestionAlmacenRegistration;
+	private @Inject FuncionarioRegistration funcionarioRegistration;
+	private @Inject ProyectoRegistration proyectoRegistration;
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
@@ -123,6 +133,8 @@ public class TomaInventarioController implements Serializable {
 	private boolean nuevoProducto = false;
 	private boolean editarTomaInventarioIncial = false;//estado, modificar toma de inventario inicial
 	private boolean hayGestionAnterior;
+	private boolean stateProyecto;
+	private boolean stateFuncionario;
 
 	//VAR
 	private String tituloPanel = "Registrar Almacen";
@@ -133,6 +145,7 @@ public class TomaInventarioController implements Serializable {
 	private Almacen selectedAlmacen;
 	private TomaInventario newTomaInventario;
 	private TomaInventario selectedTomaInventario;
+	private Gestion gestionAnterior;
 
 	//LIST
 	private List<Usuario> listUsuario = new ArrayList<Usuario>();
@@ -183,6 +196,8 @@ public class TomaInventarioController implements Serializable {
 		// tituloPanel
 		tituloPanel = "Registrar Toma Inventario";
 
+		stateProyecto = true;
+		stateFuncionario = true;
 		hayGestionAnterior = false;
 		crear = true;
 		verProcesar = true;
@@ -249,8 +264,6 @@ public class TomaInventarioController implements Serializable {
 
 	}
 
-	private Gestion gestionAnterior = null;
-
 	public void cambiarAspecto(){
 		//verificar si ya hay una tomma de inventario inicial en esa gestion
 		if(existeTomaInventarioIncialByGestion()){
@@ -259,6 +272,7 @@ public class TomaInventarioController implements Serializable {
 		}
 
 		if(this.newTomaInventario.getTipo().equals("INICIAL")){
+			gestionAnterior = null;
 			gestionAnterior = obtenerGestionAnterior();
 			if(gestionAnterior!=null){
 				//si hay, hay que jalar todos los datos de su cierre de almacen en la toma de inventario final
@@ -278,6 +292,7 @@ public class TomaInventarioController implements Serializable {
 	}
 
 	public void cargarDatosDeGestionAnterior(){
+		System.out.println("cargarDatosDeGestionAnterior()");
 		if(selectedAlmacen.getId()==0){
 			FacesUtil.infoMessage("VALIDACION", "Seleccione un almacen");
 			return;
@@ -299,6 +314,9 @@ public class TomaInventarioController implements Serializable {
 				//DetalleTomaInventario detalle = detalleTomaInventarioRepository.findByTomaInventario(tomaAnteriorGestion);
 				List<DetalleTomaInventario>  detalleTomaInventario = detalleTomaInventarioRepository.findAllActivosByTomaInventario(tomaAnteriorGestion);
 				System.out.println("DetalleTomaInventario : "+detalleTomaInventario.size());
+
+				//unificar producros con precio iguales
+				//detalleTomaInventario = unificarProductosConPreciosIguales(detalleTomaInventario);
 				Date fechaActual = new Date();
 				//2.cargar los datos para par lista de DetalleTomaInventarioOrdenIngreso
 				for(DetalleTomaInventario var: detalleTomaInventario){
@@ -326,6 +344,40 @@ public class TomaInventarioController implements Serializable {
 				//buttonProcesarTomaInventarioIncial = false;
 			}
 		}
+	}
+
+	private List<DetalleTomaInventario>  listTemp = new ArrayList<>();
+
+	private List<DetalleTomaInventario>  unificarProductosConPreciosIguales(List<DetalleTomaInventario>  detalleTomaInventario){
+		System.out.println("unificarProductosConPreciosIguales size: "+detalleTomaInventario.size());
+		listTemp = new ArrayList<>();
+		for(DetalleTomaInventario detalle: detalleTomaInventario){
+			Producto prod = detalle.getProducto();
+			double precio = detalle.getPrecioUnitario();
+			double stock = detalle.getCantidadRegistrada();
+
+			DetalleTomaInventario det = actualizarProductoEnListDetalleTomaInventario(prod);
+			if(det!=null){
+				System.out.println("SI- producto: "+prod.getId());
+				double precio2 = (det.getPrecioUnitario() + precio) / 2;
+				double stock2 = det.getCantidadRegistrada() + stock;
+				det.setCantidadRegistrada(stock2);
+				det.setPrecioUnitario(precio2);
+				det.setTotal(stock2*precio2);
+			}else{
+				listTemp.add(detalle);
+			}
+		}
+		return listTemp;
+	}
+
+	private  DetalleTomaInventario actualizarProductoEnListDetalleTomaInventario(Producto producto){
+		for(DetalleTomaInventario det: listTemp){	
+			if(det.getProducto().equals(producto)){
+				return det;
+			}
+		}
+		return null;
 	}
 
 	private Gestion obtenerGestionAnterior(){
@@ -410,7 +462,7 @@ public class TomaInventarioController implements Serializable {
 		}
 	}
 
-	public void registrarTomaInventario() {
+	public void registrarTomaInventarioPrevio(){
 		//validaciones
 		if(selectedProveedor.getId().equals(0) && newTomaInventario.getTipo().equals("INICIAL")){
 			FacesUtil.infoMessage("VALIDACION", "Seleccione un proveedor");
@@ -427,6 +479,15 @@ public class TomaInventarioController implements Serializable {
 			FacesUtil.infoMessage("VALIDACION", "Debe Agregar items.");
 			return;
 		}
+		if(hayGestionAnterior){
+			FacesUtil.showDialog("dlgValidacionProyFunc");
+			FacesUtil.updateComponent("formValidacionProyFunc");
+			return;
+		}
+		registrarTomaInventario();
+	}
+
+	public void registrarTomaInventario() {
 		try {
 			Date fechaActual = new Date();
 			newTomaInventario.setAlmacen(selectedAlmacen);
@@ -451,6 +512,41 @@ public class TomaInventarioController implements Serializable {
 				detalle.setTomaInventario(newTomaInventario);
 				detalle.setUsuarioRegistro(usuarioSession);
 				detalleTomaInventarioOrdenIngresoRegistration.register(detalle);
+
+				//validacion para registro de proyectos y funcionarios
+				if(hayGestionAnterior){
+					if(stateFuncionario){
+						List<Funcionario> listaFuncionario = funcionarioRepository.traerFuncionarioActivas(gestionAnterior);
+						for(Funcionario f: listaFuncionario){
+							try{
+								f.setId(0);
+								f.setGestion(gestionSesion);
+								funcionarioRegistration.register(f);
+							}catch(Exception e){
+								System.out.println("Error : "+e.getMessage());
+							}
+						}
+					}
+					if(stateProyecto){
+						List<Proyecto> listProyecto = proyectoRepository.traerProyectoActivas(gestionAnterior);
+						for(Proyecto p: listProyecto){
+							try{
+								Proyecto proy = new Proyecto();
+								proy.setCodigo(p.getCodigo());
+								proy.setDescripcion(p.getDescripcion());
+								proy.setEstado(p.getEstado());
+								proy.setFechaRegistro(p.getFechaRegistro());
+								proy.setNombre(p.getNombre());
+								proy.setUsuarioRegistro(usuarioSession);
+								proy.setGestion(gestionSesion);
+								proyectoRegistration.register(proy);
+							}catch(Exception e){
+								e.printStackTrace();
+								System.out.println("Error : "+e.getMessage());
+							}
+						}
+					}
+				}
 			}
 			FacesUtil.infoMessage("Toma Inventario Registrada!", "");
 			initNewTomaInventario();
@@ -696,6 +792,8 @@ public class TomaInventarioController implements Serializable {
 				detalle.setTotal(ap.getPrecioUnitario()*ap.getStock());
 				listDetalleTomaInventario.add(detalle);
 			}
+			//unificar producros con precio iguales
+			listDetalleTomaInventario = unificarProductosConPreciosIguales(listDetalleTomaInventario);
 			if(newTomaInventario.getTipo().equals("FINAL")){
 				cierreAlmacen = true;
 			}else{
@@ -1454,6 +1552,22 @@ public class TomaInventarioController implements Serializable {
 
 	public void setHayGestionAnterior(boolean hayGestionAnterior) {
 		this.hayGestionAnterior = hayGestionAnterior;
+	}
+
+	public boolean isStateProyecto() {
+		return stateProyecto;
+	}
+
+	public void setStateProyecto(boolean stateProyecto) {
+		this.stateProyecto = stateProyecto;
+	}
+
+	public boolean isStateFuncionario() {
+		return stateFuncionario;
+	}
+
+	public void setStateFuncionario(boolean stateFuncionario) {
+		this.stateFuncionario = stateFuncionario;
 	}
 
 }

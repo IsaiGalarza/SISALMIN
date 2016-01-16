@@ -511,6 +511,11 @@
 														filterStyle="width: 100%;" filterMatchMode="contains">
 														<h:outputText value="#{_var.usuarioRegistro}" />
 													</p:column>
+													
+													<f:facet name="footer">
+														<h:outputText
+															value="#{ordenSalidaController.listaOrdenSalida.size()} Registros en Total" />
+													</f:facet>
 
 												</p:dataTable>
 											</div>

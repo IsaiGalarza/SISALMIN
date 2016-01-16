@@ -49,12 +49,12 @@
 									style="height:31px;">
 								</p:commandLink>
 
-								<p:commandLink id="buttonRegistrar" value="&#160; Registrar "
+								<p:commandLink id="buttonRegistrar" value="&#160; Registrar"
 									styleClass="btn btn-success ion-checkmark"
 									rendered="#{tomaInventarioController.verGuardar}"
 									update="formTableTomaInventario, formBotonesHeader,formGrowl:msgs1"
 									style="height:31px; padding:center"
-									action="#{tomaInventarioController.registrarTomaInventario()}">
+									action="#{tomaInventarioController.registrarTomaInventarioPrevio()}">
 								</p:commandLink>
 
 								<p:commandLink id="buttonProcesar" value="&#160; Procesar "
@@ -89,7 +89,7 @@
 									action="#{tomaInventarioController.cargarReporte()}">
 								</p:commandLink>
 
-								<p:commandLink id="buttonRegistrar2" value="&#160; Registrar "
+								<p:commandLink id="buttonRegistrar2" value="&#160; Registrar"
 									styleClass="btn btn-success ion-checkmark"
 									rendered="#{ tomaInventarioController.revisarReport and (tomaInventarioController.listDetalleTomaInventario.size()>0)}"
 									update="formTableTomaInventario, formBotonesHeader,formGrowl:msgs1"
@@ -97,7 +97,7 @@
 									action="#{tomaInventarioController.verificacionTomaInventario()}">
 								</p:commandLink>
 
-								<p:commandLink id="buttonRevisar" value="&#160; Revisar "
+								<p:commandLink id="buttonRevisar" value="&#160; Revisar"
 									styleClass="btn btn-info ion-ios7-loop-strong"
 									style="height:31px; padding:center"
 									rendered="#{ tomaInventarioController.revisarReport and (tomaInventarioController.listDetalleTomaInventario.size()==0) and sessionMain.tienePermisoPaginaAccion('TOMA DE INVENTARIO','REVISAR')}"
@@ -121,12 +121,12 @@
 									action="#{tomaInventarioController.conciliarTomaInventario()}">
 								</p:commandLink>
 
-								<p:commandLink id="buttonRegistrar3" value="&#160; Registrar "
+								<p:commandLink id="buttonRegistrar3" value="&#160; Registrar"
 									styleClass="btn btn-success ion-checkmark"
 									rendered="#{tomaInventarioController.newTomaInventario.tipo.equals('INICIAL') and tomaInventarioController.registrar and !tomaInventarioController.editarTomaInventarioIncial }"
 									update="formTableTomaInventario, formBotonesHeader,formGrowl:msgs1"
 									style="height:31px; padding:center"
-									action="#{tomaInventarioController.registrarTomaInventario()}">
+									action="#{tomaInventarioController.registrarTomaInventarioPrevio()}">
 								</p:commandLink>
 
 								<p:commandLink id="buttonRegistrar4" value="&#160; Registrar "
@@ -145,8 +145,9 @@
 									update="formTableTomaInventario,formBotonesHeader"
 									action="#{tomaInventarioController.cerrarAlmacenPorGestion()}">
 								</p:commandLink>
-								
-								<p:commandLink id="buttonCargarGestionAnterior" value="&#160; Cargar Desde Gestión Anterior"
+
+								<p:commandLink id="buttonCargarGestionAnterior"
+									value="&#160; Cargar Desde Gestión Anterior"
 									styleClass="btn btn-info ion-ios7-loop-strong"
 									style="height:31px; padding:center"
 									rendered="#{tomaInventarioController.hayGestionAnterior}"
@@ -269,6 +270,10 @@
 													<h:outputText value="#{_var.usuarioRegistro}" />
 												</p:column>
 
+												<f:facet name="footer">
+													<h:outputText
+														value="#{tomaInventarioController.listTomaInventario.size()} Registros en Total" />
+												</f:facet>
 
 											</p:dataTable>
 										</div>
@@ -464,7 +469,7 @@
 
 									<div class="panel panel-default">
 										<div class="panel-heading">
-											<h3 class="panel-title">Lista Producto </h3>
+											<h3 class="panel-title">Lista Producto</h3>
 										</div>
 										<!-- start here datatable -->
 										<div class="box-content no-padding">
@@ -684,7 +689,7 @@
 
 									<div class="panel panel-default">
 										<div class="panel-heading">
-											<h3 class="panel-title">Lista Producto </h3>
+											<h3 class="panel-title">Lista Producto</h3>
 										</div>
 										<!-- start here datatable -->
 										<div class="box-content no-padding">
@@ -783,7 +788,7 @@
 
 									<div class="panel panel-default">
 										<div class="panel-heading">
-											<h3 class="panel-title">Lista Producto </h3>
+											<h3 class="panel-title">Lista Producto</h3>
 										</div>
 										<!-- start here datatable -->
 										<div class="box-content no-padding">
@@ -820,9 +825,8 @@
 												</p:column>
 
 												<p:column headerText="Cantidad" width="10%"
-													filterBy="#{_var.producto.unidadMedidas.nombre}"
-													style="text-align:center;" filterStyle="width: 100%;"
-													filterMatchMode="contains">
+													filterBy="#{_var.cantidad}" style="text-align:center;"
+													filterStyle="width: 100%;" filterMatchMode="contains">
 													<h:outputText value="#{_var.cantidad}" />
 												</p:column>
 
@@ -854,50 +858,49 @@
 										</div>
 										<br />
 										<div class="row">
-												<div class="col-sm-12">
-													<div class="form-group">
-														<div class="col-md-9"></div>
-														<div class="col-md-1">
-															<p:commandLink id="buttonIconAgregarProducto"
-																value="&#160;"
-																styleClass="btn btn-success ion-plus-round "
-																update="formTableTomaInventario,formDialogProducto"
-																oncomplete="PF('dlgProducto').show();" immediate="true">
-															</p:commandLink>
+											<div class="col-sm-12">
+												<div class="form-group">
+													<div class="col-md-9"></div>
+													<div class="col-md-1">
+														<p:commandLink id="buttonIconAgregarProducto"
+															value="&#160;"
+															styleClass="btn btn-success ion-plus-round "
+															update="formTableTomaInventario,formDialogProducto"
+															oncomplete="PF('dlgProducto').show();" immediate="true">
+														</p:commandLink>
 
-															<p:tooltip id="toolTipbuttonAddProducto"
-																for="buttonIconAgregarProducto"
-																value="Agregar nuevo producto" trackMouse="true" />
-
-														</div>
-														<div class="col-md-1">
-															<p:commandLink id="editarDetalleOrdenIngreso"
-																disabled="#{tomaInventarioController.verButtonDetalle}"
-																value="&#160;" styleClass="btn btn-primary ion-edit"
-																update="formTableTomaInventario,formDialogProducto"
-																oncomplete="PF('dlgProducto').show();" immediate="true"
-																action="#{tomaInventarioController.editarDetalleOrdenIngreso()}">
-															</p:commandLink>
-															<p:tooltip id="toolTipbuttonEditarProducto"
-																for="editarDetalleOrdenIngreso"
-																value="Modificar producto seleccionado"
-																trackMouse="true" />
-														</div>
-														<div class="col-md-1">
-															<p:commandLink id="eliminarDetalleOrdenIngreso"
-																value="&#160;" styleClass="btn btn-danger ion-close"
-																disabled="#{tomaInventarioController.verButtonDetalle}"
-																update="formTableTomaInventario" immediate="true"
-																action="#{tomaInventarioController.borrarDetalleOrdenIngreso()}">
-															</p:commandLink>
-															<p:tooltip id="toolTipbuttonDeleteProducto"
-																for="eliminarDetalleOrdenIngreso"
-																value="Eliminar producto seleccionado" trackMouse="true" />
-														</div>
+														<p:tooltip id="toolTipbuttonAddProducto"
+															for="buttonIconAgregarProducto"
+															value="Agregar nuevo producto" trackMouse="true" />
 
 													</div>
+													<div class="col-md-1">
+														<p:commandLink id="editarDetalleOrdenIngreso"
+															disabled="#{tomaInventarioController.verButtonDetalle}"
+															value="&#160;" styleClass="btn btn-primary ion-edit"
+															update="formTableTomaInventario,formDialogProducto"
+															oncomplete="PF('dlgProducto').show();" immediate="true"
+															action="#{tomaInventarioController.editarDetalleOrdenIngreso()}">
+														</p:commandLink>
+														<p:tooltip id="toolTipbuttonEditarProducto"
+															for="editarDetalleOrdenIngreso"
+															value="Modificar producto seleccionado" trackMouse="true" />
+													</div>
+													<div class="col-md-1">
+														<p:commandLink id="eliminarDetalleOrdenIngreso"
+															value="&#160;" styleClass="btn btn-danger ion-close"
+															disabled="#{tomaInventarioController.verButtonDetalle}"
+															update="formTableTomaInventario" immediate="true"
+															action="#{tomaInventarioController.borrarDetalleOrdenIngreso()}">
+														</p:commandLink>
+														<p:tooltip id="toolTipbuttonDeleteProducto"
+															for="eliminarDetalleOrdenIngreso"
+															value="Eliminar producto seleccionado" trackMouse="true" />
+													</div>
+
 												</div>
 											</div>
+										</div>
 
 									</div>
 								</div>
@@ -928,6 +931,70 @@
 			<p:growl id="msgs1" showDetail="true" />
 		</h:form>
 		<!-- END GROWL -->
+
+
+		<!-- dlgValidacionProyFunc -->
+		<p:dialog header="Validación" widgetVar="dlgValidacionProyFunc"
+			modal="true" visible="#{not empty facesContext.maximumSeverity}"
+			resizable="false" position="center" width="500px">
+			<h:form id="formValidacionProyFunc">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="form-group">
+							<div class="col-md-12">Desea agregar todos los Proyectos a
+								la Nueva Gestión ?</div>
+							<div class="col-md-12">
+								<label class="switch switch-success switch-sm">
+										<h:selectBooleanCheckbox
+											value="#{tomaInventarioController.stateProyecto}"
+											styleClass="switch">
+										</h:selectBooleanCheckbox>
+										<span class="switch"></span>
+								</label>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-md-12">Desea agregar todos los Funcionarios
+								a la Nueva Gestión?</div>
+							<div class="col-md-12">
+								<label class="switch switch-success switch-sm"> 
+										<h:selectBooleanCheckbox
+											value="#{tomaInventarioController.stateFuncionario}"
+											styleClass="switch">
+										</h:selectBooleanCheckbox>
+										<span class="switch"></span>
+									
+								</label>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-md-12">
+						<div class="form-group">
+							<div class="col-md-4"></div>
+							<div class="col-md-4">
+								<p:commandLink id="buttonCancelardlgValidacionProyFunc"
+									value="&#160; Cancelar"
+									styleClass="btn btn-warning ion-minus-circled btn-block"
+									onclick="PF('dlgValidacionProyFunc').hide();" immediate="true">
+								</p:commandLink>
+							</div>
+							<div class="col-md-4">
+								<p:commandLink id="buttonRegistardlgValidacionProyFunc"
+									value="&#160; Registrar"
+									styleClass="btn btn-success ion-checkmark btn-block"
+									onclick="PF('dlgValidacionProyFunc').hide();">
+									<p:ajax update="formTableTomaInventario, formBotonesHeader,formGrowl:msgs1"
+										listener="#{tomaInventarioController.registrarTomaInventario()}" />
+								</p:commandLink>
+							</div>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
 
 		<!-- DIALOG PRODUCTO -->
 		<p:dialog widgetVar="dlgProducto" resizable="false"

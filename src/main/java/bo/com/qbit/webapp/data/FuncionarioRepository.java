@@ -11,6 +11,7 @@ import javax.persistence.criteria.Root;
 
 import bo.com.qbit.webapp.model.DetalleUnidad;
 import bo.com.qbit.webapp.model.Funcionario;
+import bo.com.qbit.webapp.model.Gestion;
 
 @ApplicationScoped
 public class FuncionarioRepository {
@@ -72,9 +73,9 @@ public class FuncionarioRepository {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Funcionario> traerFuncionarioActivas() {
+	public List<Funcionario> traerFuncionarioActivas(Gestion gestion) {
 		try {
-			String query = "select ser from Funcionario ser where ser.estado='AC' order by ser.id desc";
+			String query = "select ser from Funcionario ser where ser.estado='AC' and ser.gestion.id="+gestion.getId()+" order by ser.id desc";
 			System.out.println("Consulta traerFuncionarioActivas: " + query);
 			List<Funcionario> listaFuncionario = em.createQuery(query).getResultList();
 			return listaFuncionario;
@@ -86,9 +87,9 @@ public class FuncionarioRepository {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Funcionario> findAll100UltimosFuncionario() {
+	public List<Funcionario> findAll100UltimosFuncionario(Gestion gestion) {
 		try {
-			String query = "select ser from Funcionario ser order by ser.fechaRegistro desc";
+			String query = "select ser from Funcionario ser where  ser.gestion.id="+gestion.getId()+" order by ser.fechaRegistro desc";
 			System.out.println("Consulta: " + query);
 			List<Funcionario> listaFuncionario = em.createQuery(query)
 					.setMaxResults(100).getResultList();
@@ -101,10 +102,10 @@ public class FuncionarioRepository {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Funcionario> findAllFuncionarioForQueryNombre(String criterio) {
+	public List<Funcionario> findAllFuncionarioForQueryNombre(String criterio,Gestion gestion) {
 		try {
 			String query = "select ser from Funcionario ser where ser.nombre like '%"
-					+ criterio + "%' and ser.estado='AC' order by ser.nombre asc";
+					+ criterio + "%' and ser.estado='AC'  and ser.gestion.id="+gestion.getId()+"  order by ser.nombre asc";
 			System.out.println("Consulta: " + query);
 			List<Funcionario> listaFuncionario = em.createQuery(query).getResultList();
 			return listaFuncionario;
@@ -116,10 +117,10 @@ public class FuncionarioRepository {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<Funcionario> findAllFuncionarioForQueryNombreAndDetalleUnidad(String criterio,DetalleUnidad detalleUnidad) {
+	public List<Funcionario> findAllFuncionarioForQueryNombreAndDetalleUnidad(String criterio,DetalleUnidad detalleUnidad,Gestion gestion) {
 		try {
 			String query = "select ser from Funcionario ser,DetalleUnidad det where ser.detalleUnidad.id=det.id and upper(ser.nombre) like '%"
-					+ criterio + "%' and ser.estado='AC' and det.id="+detalleUnidad.getId()+" order by ser.nombre asc";
+					+ criterio + "%' and ser.estado='AC' and det.id="+detalleUnidad.getId()+"  and ser.gestion.id="+gestion.getId()+"  order by ser.nombre asc";
 			System.out.println("Consulta: " + query);
 			List<Funcionario> listaFuncionario = em.createQuery(query).getResultList();
 			return listaFuncionario;

@@ -3,6 +3,7 @@ package bo.com.qbit.webapp.model;
 import java.io.Serializable;
 
 import javax.persistence.*;
+
 import java.util.Date;
 
 
@@ -12,7 +13,6 @@ import java.util.Date;
  */
 @Entity 
 @Table(name="proyecto" ,schema="public")
-@NamedQuery(name="Proyecto.findAll", query="SELECT p FROM Proyecto p")
 public class Proyecto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -32,13 +32,16 @@ public class Proyecto implements Serializable {
 	@Column(name="fecha_registro")
 	private Date fechaRegistro;
 
-	
 	@Column(name="usuario_registro")
 	private String usuarioRegistro;
 
+	@ManyToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name="id_gestion", nullable=true)
+	private Gestion gestion;
 
 	public Proyecto() {
-		
+		super();
+		this.id = 0;
 	}
 
 	public Integer getId() {
@@ -95,6 +98,14 @@ public class Proyecto implements Serializable {
 
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
+	}
+
+	public Gestion getGestion() {
+		return gestion;
+	}
+
+	public void setGestion(Gestion gestion) {
+		this.gestion = gestion;
 	}
 
 }

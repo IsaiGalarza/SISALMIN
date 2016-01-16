@@ -52,7 +52,10 @@
 											style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
 											rowKey="#{_var.id}" id="productoTable" var="_var"
 											value="#{catalogoProductoController.listaAlmacenProducto}"
-											emptyMessage="No se encontraron Registros.">
+											emptyMessage="No se encontraron Registros."
+											rows="20" paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													rowsPerPageTemplate="5,20,30">
 
 											<p:column width="5%" headerText="Id" filterBy="#{_var.id}"
 												style="text-align:center;" filterStyle="width: 100%;"

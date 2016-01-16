@@ -41,10 +41,12 @@ public class Funcionario implements Serializable {
 	@Column(name="fecha_registro")
 	private Date fechaRegistro;
 
-	
 	@Column(name="usuario_registro")
 	private String usuarioRegistro;
 
+	@ManyToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name="id_gestion", nullable=true)
+	private Gestion gestion;
 
 	public Funcionario() {
 		this.id  = 0 ;
@@ -134,6 +136,14 @@ public class Funcionario implements Serializable {
 	@Override
 	public String toString() {
 		return  nombre + " " + apellidos;
+	}
+
+	public Gestion getGestion() {
+		return gestion;
+	}
+
+	public void setGestion(Gestion gestion) {
+		this.gestion = gestion;
 	}
 
 	

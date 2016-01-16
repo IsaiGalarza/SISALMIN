@@ -9,6 +9,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.Proyecto;
 import bo.com.qbit.webapp.model.Usuario;
 
@@ -86,9 +87,9 @@ public class ProyectoRepository {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Proyecto> traerProyectoActivas() {
+	public List<Proyecto> traerProyectoActivas(Gestion gestion) {
 		try {
-			String query = "select ser from Proyecto ser where ser.estado='AC' order by ser.id desc";
+			String query = "select ser from Proyecto ser where ser.estado='AC'  and ser.gestion.id="+gestion.getId()+"  order by ser.id desc";
 			System.out.println("Consulta traerProyectoActivas: " + query);
 			List<Proyecto> listaProyecto = em.createQuery(query).getResultList();
 			return listaProyecto;
@@ -100,9 +101,9 @@ public class ProyectoRepository {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Proyecto> findAll100UltimosProyecto() {
+	public List<Proyecto> findAll100UltimosProyecto(Gestion gestion) {
 		try {
-			String query = "select ser from Proyecto ser order by ser.fechaRegistro desc";
+			String query = "select ser from Proyecto ser where  ser.gestion.id="+gestion.getId()+"  order by ser.fechaRegistro desc";
 			System.out.println("Consulta: " + query);
 			List<Proyecto> listaProyecto = em.createQuery(query)
 					.setMaxResults(100).getResultList();
@@ -115,10 +116,10 @@ public class ProyectoRepository {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Proyecto> findAllProyectoForQueryNombre(String criterio) {
+	public List<Proyecto> findAllProyectoForQueryNombre(String criterio,Gestion gestion) {
 		try {
 			String query = "select ser from Proyecto ser where ser.nombre like '%"
-					+ criterio + "%' and ser.estado='AC' order by ser.nombre asc";
+					+ criterio + "%' and ser.estado='AC'  and ser.gestion.id="+gestion.getId()+"  order by ser.nombre asc";
 			System.out.println("Consulta: " + query);
 			List<Proyecto> listaProyecto = em.createQuery(query).getResultList();
 			return listaProyecto;
@@ -130,8 +131,8 @@ public class ProyectoRepository {
 	}
 	
 	@SuppressWarnings("unused")
-	public List<Proyecto> findAllProyectoForQueryCodigo(String codigo){
-		String query = "select ser from Proyecto ser where ser.codigo like '%" + codigo + "%' and ser.estado='AC' order by ser.nombre asc";
+	public List<Proyecto> findAllProyectoForQueryCodigo(String codigo,Gestion gestion){
+		String query = "select ser from Proyecto ser where ser.codigo like '%" + codigo + "%' and ser.estado='AC'  and ser.gestion.id="+gestion.getId()+"  order by ser.nombre asc";
 		List<Proyecto> listaProyecto = em.createQuery(query).getResultList();
 		return listaProyecto;
 	}

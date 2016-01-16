@@ -220,7 +220,10 @@
 												selection="#{proyectoController.selectedProyecto}"
 												selectionMode="single" rowKey="#{_Proyecto.id}"
 												id="ProyectoTable" var="_Proyecto" value="#{listaProyecto}"
-												emptyMessage="No se encontraron Registros.">
+												emptyMessage="No se encontraron Registros."
+												rows="20" paginator="true"
+													paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+													rowsPerPageTemplate="5,20,30">
 
 												<p:ajax event="rowSelect"
 													update=":formTableProyecto, :formBotonesHeader"

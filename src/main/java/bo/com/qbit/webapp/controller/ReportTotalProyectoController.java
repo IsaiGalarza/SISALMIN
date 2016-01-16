@@ -206,10 +206,10 @@ public class ReportTotalProyectoController implements Serializable {
 	// ONCOMPLETETEXT PROYECTO ..........
 	public List<Proyecto> completeProyecto(String query) {
 		if(NumberUtil.isNumeric(query)){//si es numero
-			listaProyecto = proyectoRepository.findAllProyectoForQueryCodigo(query);
+			listaProyecto = proyectoRepository.findAllProyectoForQueryCodigo(query,gestionLogin);
 		}else{//es letra		
 			String upperQuery = query.toUpperCase();
-			listaProyecto = proyectoRepository.findAllProyectoForQueryNombre(upperQuery);
+			listaProyecto = proyectoRepository.findAllProyectoForQueryNombre(upperQuery,gestionLogin);
 		}
 		return listaProyecto;
 	}
