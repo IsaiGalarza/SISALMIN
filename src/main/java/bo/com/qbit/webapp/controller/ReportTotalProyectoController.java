@@ -193,9 +193,9 @@ public class ReportTotalProyectoController implements Serializable {
 			String urlPDFreporte ="";
 			System.out.println("tipoConsulta: "+tipoConsulta);
 			if(tipoConsulta.equals("T")){
-				urlPDFreporte = urlPath+"ReporteTotalProyecto?pFechaInicio="+Fechas.obtenerFormatoYYYYMMDD(fechaInicial)+"&pFechaFin="+Fechas.obtenerFormatoYYYYMMDD(fechaFinal)+"&pIdProyecto=-1"+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial()+"&pIdGestion="+selectedGestion.getId()+"&pUsuario="+usuarioLogin;
+				urlPDFreporte = urlPath+"ReporteTotalProyecto?pFechaInicio="+Fechas.obtenerFormatoYYYYMMDD(fechaInicial)+"&pFechaFin="+Fechas.obtenerFormatoYYYYMMDD(fechaFinal)+"&pIdProyecto=-1"+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial()+"&pIdGestion="+gestionLogin.getId()+"&pUsuario="+usuarioLogin;
 			}else{
-				urlPDFreporte = urlPath+"ReporteTotalProyecto?pFechaInicio="+Fechas.obtenerFormatoYYYYMMDD(fechaInicial)+"&pFechaFin="+Fechas.obtenerFormatoYYYYMMDD(fechaFinal)+"&pIdProyecto="+selectedProyecto.getId()+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial()+"&pIdGestion="+selectedGestion.getId()+"&pUsuario="+usuarioLogin;
+				urlPDFreporte = urlPath+"ReporteTotalProyecto?pFechaInicio="+Fechas.obtenerFormatoYYYYMMDD(fechaInicial)+"&pFechaFin="+Fechas.obtenerFormatoYYYYMMDD(fechaFinal)+"&pIdProyecto="+selectedProyecto.getId()+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial()+"&pIdGestion="+gestionLogin.getId()+"&pUsuario="+usuarioLogin;
 			}
 			return urlPDFreporte;
 		}catch(Exception e){
