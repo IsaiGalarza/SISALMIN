@@ -79,7 +79,7 @@ public class DetalleUnidadRepository {
 
 	public List<DetalleUnidad> traerDetalleUnidadActivas() {
 		try {
-			String query = "select ser from DetalleUnidad ser where ser.estado='AC' order by ser.id desc";
+			String query = "select ser from DetalleUnidad ser where ser.estado='AC' order by ser.nombre asc";
 			System.out.println("Consulta traerDetalleUnidadActivas: " + query);
 			List<DetalleUnidad> listaDetalleUnidad = em.createQuery(query).getResultList();
 			return listaDetalleUnidad;
@@ -108,8 +108,8 @@ public class DetalleUnidadRepository {
 	
 	@SuppressWarnings("unchecked")
 	public List<DetalleUnidad> findAllDetalleUnidadForQueryNombre(String criterio) {
-		try {
-			String query = "select ser from DetalleUnidad ser where upper(ser.nombre) like '%"
+		try {//translate (ser.nombre, 'áéíóúÁÉÍÓÚäëïöüÄËÏÖÜñ', 'aeiouAEIOUaeiouAEIOUÑ') 
+			String query = "select ser from DetalleUnidad ser where upper(translate (ser.nombre, 'áéíóúÁÉÍÓÚäëïöüÄËÏÖÜñ', 'aeiouAEIOUaeiouAEIOUÑ')) like '%"
 					+ criterio + "%' and ser.estado='AC' order by ser.nombre asc";
 			System.out.println("Consulta: " + query);
 			List<DetalleUnidad> listaDetalleUnidad = em.createQuery(query).getResultList();

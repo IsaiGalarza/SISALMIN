@@ -51,7 +51,7 @@ public class ProveedorRepository {
 	
 	@SuppressWarnings("unchecked")
 	public List<Proveedor> findAllByEmpresa() {
-		String query = "select em from Proveedor em where (em.estado='AC' or em.estado='IN')  order by em.id desc";
+		String query = "select em from Proveedor em where (em.estado='AC' or em.estado='IN')  order by em.nombre asc";
 		System.out.println("Query Proveedor: "+query);
 		return em.createQuery(query).getResultList();
 	}

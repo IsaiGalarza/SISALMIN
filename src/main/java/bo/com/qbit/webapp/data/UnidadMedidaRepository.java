@@ -39,7 +39,7 @@ public class UnidadMedidaRepository {
 	@SuppressWarnings("unchecked")
 	public List<UnidadMedida> findAllActivosOrderedByID() {
 		try{
-			String query = "select em from UnidadMedida em where em.estado='AC' order by em.id desc";
+			String query = "select em from UnidadMedida em where em.estado='AC' order by em.nombre asc";
 			System.out.println("Query UnidadMedida: " + query);
 			return em.createQuery(query).getResultList();
 		}catch(Exception e){

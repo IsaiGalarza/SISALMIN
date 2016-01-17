@@ -100,7 +100,7 @@ public class AlmacenRepository {
 	@SuppressWarnings("unchecked")
 	public List<Almacen> traerAlmacenActivas() {
 		try {
-			String query = "select ser from Almacen ser where ser.estado='AC' order by ser.id desc";
+			String query = "select ser from Almacen ser where ser.estado='AC' order by ser.nombre asc";
 			System.out.println("Consulta traerAlmacenActivas: " + query);
 			List<Almacen> listaAlmacen = em.createQuery(query).getResultList();
 			return listaAlmacen;

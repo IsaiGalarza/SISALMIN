@@ -75,7 +75,7 @@ public class FuncionarioRepository {
 	@SuppressWarnings("unchecked")
 	public List<Funcionario> traerFuncionarioActivas(Gestion gestion) {
 		try {
-			String query = "select ser from Funcionario ser where ser.estado='AC' and ser.gestion.id="+gestion.getId()+" order by ser.id desc";
+			String query = "select ser from Funcionario ser where ser.estado='AC' and ser.gestion.id="+gestion.getId()+" order by ser.nombre asc";
 			System.out.println("Consulta traerFuncionarioActivas: " + query);
 			List<Funcionario> listaFuncionario = em.createQuery(query).getResultList();
 			return listaFuncionario;

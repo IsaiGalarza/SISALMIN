@@ -46,7 +46,7 @@ public class OrdenSalida implements Serializable{
 	
 	@Column(name = "usuario_registro")
 	private String usuarioRegistro;
-	
+	//length=225
 	@Column(name = "observacion", nullable = true)
 	private String observacion;
 

@@ -252,6 +252,7 @@ public class FuncionarioController implements Serializable {
 	
 	public List<DetalleUnidad> completeDetalleUnidad(String query) {
 		String upperQuery = query.toUpperCase();
+		System.out.println("completeDetalleUnidad upperQuery:"+upperQuery);
 		List<DetalleUnidad> results = new ArrayList<DetalleUnidad>();
 		for(DetalleUnidad i : listDetalleUnidad) {
 			if(i.getNombre().toUpperCase().startsWith(upperQuery)){

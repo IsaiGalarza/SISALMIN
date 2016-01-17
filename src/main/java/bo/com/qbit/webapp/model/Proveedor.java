@@ -51,6 +51,10 @@ public class Proveedor implements Serializable {
 	
 	@Column(name="usuario_registro",nullable=false )
 	private String UsuarioRegistro;
+	
+	@ManyToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name="id_gestion", nullable=true)
+	private Gestion gestion;
 
 	public Proveedor() {
 		super();
@@ -191,6 +195,14 @@ public class Proveedor implements Serializable {
 
 	public void setNumeroAutorizacion(String numeroAutorizacion) {
 		this.numeroAutorizacion = numeroAutorizacion;
+	}
+
+	public Gestion getGestion() {
+		return gestion;
+	}
+
+	public void setGestion(Gestion gestion) {
+		this.gestion = gestion;
 	}
 	
 

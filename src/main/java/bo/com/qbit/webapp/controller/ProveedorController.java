@@ -3,9 +3,7 @@ package bo.com.qbit.webapp.controller;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-
-import org.apache.log4j.Logger;
+import java.util.List;	
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Conversation;
@@ -22,11 +20,11 @@ import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
 
 import bo.com.qbit.webapp.data.ProveedorRepository;
-import bo.com.qbit.webapp.model.Empresa;
+import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.Proveedor;
-import bo.com.qbit.webapp.service.EstadoUsuarioLogin;
 import bo.com.qbit.webapp.service.ProveedorRegistration;
 import bo.com.qbit.webapp.util.FacesUtil;
+import bo.com.qbit.webapp.util.SessionMain;
 
 @Named(value = "proveedorController")
 @SuppressWarnings("serial")
@@ -46,8 +44,6 @@ public class ProveedorController implements Serializable {
 
 	@Inject
 	private ProveedorRepository proveedorRepository;
-
-	Logger log = Logger.getLogger(ProveedorController.class);
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
@@ -77,9 +73,10 @@ public class ProveedorController implements Serializable {
 	private Proveedor selectedProveedor;
 
 	//login
-	private String nombreUsuario;	
-	private EstadoUsuarioLogin estadoUsuarioLogin;
-	private Empresa empresaLogin;
+	//SESSION
+	private @Inject SessionMain sessionMain; //variable del login
+	private String usuarioSession;
+	private Gestion gestionSesion;
 
 	@Produces
 	@Named
@@ -89,10 +86,10 @@ public class ProveedorController implements Serializable {
 
 	@PostConstruct
 	public void initNewProveedor() {
-		log.info(" init new initNewSucursal");
+		System.out.println(" init new initNewSucursal");
 		beginConversation();		
-		estadoUsuarioLogin = new EstadoUsuarioLogin(facesContext);
-		nombreUsuario =  estadoUsuarioLogin.getNombreUsuarioSession();
+		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
+		gestionSesion = sessionMain.getGestionLogin();
 		loadValuesDefault();
 	}
 
@@ -114,9 +111,9 @@ public class ProveedorController implements Serializable {
 
 	public void beginConversation() {
 		if (conversation.isTransient()) {
-			log.info("beginning conversation : " + this.conversation);
+			System.out.println("beginning conversation : " + this.conversation);
 			conversation.begin();
-			log.info("---> Init Conversation");
+			System.out.println("---> Init Conversation");
 		}
 	}
 
@@ -131,8 +128,9 @@ public class ProveedorController implements Serializable {
 			//proveedor
 			String estado = nombreEstado.equals("ACTIVO")?"AC":"IN";
 			newProveedor.setEstado(estado);
-			newProveedor.setUsuarioRegistro(nombreUsuario);
+			newProveedor.setUsuarioRegistro(usuarioSession);
 			newProveedor.setFechaRegistro(new Date());
+			newProveedor.setGestion(gestionSesion);
 			newProveedor = proveedorRegistration.create(newProveedor);
 
 			FacesUtil.infoMessage("Proveedor Registrado!", newProveedor.getNombre());
@@ -144,7 +142,7 @@ public class ProveedorController implements Serializable {
 			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_ERROR,
 					errorMessage, "Registro Incorrecto.");
 			facesContext.addMessage(null, m);
-			log.info("registrar() ERROR: "+errorMessage); 
+			System.out.println("registrar() ERROR: "+errorMessage); 
 		}
 	}
 
@@ -154,7 +152,7 @@ public class ProveedorController implements Serializable {
 			String estado = nombreEstado.equals("ACTIVO")?"AC":"IN";
 			newProveedor.setEstado(estado);
 			proveedorRegistration.update(newProveedor);
-			newProveedor.setUsuarioRegistro(nombreUsuario);
+			newProveedor.setUsuarioRegistro(usuarioSession);
 			newProveedor.setFechaRegistro(new Date());
 			
 
@@ -172,7 +170,7 @@ public class ProveedorController implements Serializable {
 			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_ERROR,
 					errorMessage, "Modificado Incorrecto.");
 			facesContext.addMessage(null, m);
-			log.info("modificar() ERROR: "+errorMessage); 
+			System.out.println("modificar() ERROR: "+errorMessage); 
 		}
 	}
 
@@ -294,15 +292,7 @@ public class ProveedorController implements Serializable {
 	public String getTest(){
 		return "test";
 	}
-
-	public Empresa getEmpresaLogin() {
-		return empresaLogin;
-	}
-
-	public void setEmpresaLogin(Empresa empresaLogin) {
-		this.empresaLogin = empresaLogin;
-	}
-
+	
 	public String getNombreEstado() {
 		return nombreEstado;
 	}

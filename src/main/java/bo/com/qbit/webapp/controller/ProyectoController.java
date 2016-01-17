@@ -165,6 +165,7 @@ public class ProyectoController implements Serializable {
 	public void registrarProyecto() {
 		try {
 			System.out.println("Ingreso a registrarProyecto: ");
+			newProyecto.setFechaRegistro(new Date());
 			proyectoRegistration.register(newProyecto);
 			
 			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,

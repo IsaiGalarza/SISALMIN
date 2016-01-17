@@ -89,7 +89,7 @@ public class ProyectoRepository {
 	@SuppressWarnings("unchecked")
 	public List<Proyecto> traerProyectoActivas(Gestion gestion) {
 		try {
-			String query = "select ser from Proyecto ser where ser.estado='AC'  and ser.gestion.id="+gestion.getId()+"  order by ser.id desc";
+			String query = "select ser from Proyecto ser where ser.estado='AC'  and ser.gestion.id="+gestion.getId()+"  order by ser.nombre asc";
 			System.out.println("Consulta traerProyectoActivas: " + query);
 			List<Proyecto> listaProyecto = em.createQuery(query).getResultList();
 			return listaProyecto;
