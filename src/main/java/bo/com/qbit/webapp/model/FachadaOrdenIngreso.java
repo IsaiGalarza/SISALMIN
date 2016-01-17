@@ -29,10 +29,10 @@ public class FachadaOrdenIngreso implements Serializable{
 	private @Inject AlmacenProductoRegistration almacenProductoRegistration;
 	private @Inject KardexProductoRegistration kardexProductoRegistration;
 
-	public void actualizarStockExistente(Almacen almacen,Producto prod ,double newStock)  {
+	public void actualizarStockExistente(Gestion gestionSesion,Almacen almacen,Producto prod ,double newStock)  {
 		try{
 			//0 . verificar si existe el producto en el almacen
-			AlmacenProducto almProd =  almacenProductoRepository.findByAlmacenProducto(almacen,prod);
+			AlmacenProducto almProd =  almacenProductoRepository.findByAlmacenProducto(gestionSesion,almacen,prod);
 			System.out.println("aqui ");
 			if(almProd != null){
 				// 1 .  si existe el producto
@@ -107,7 +107,7 @@ public class FachadaOrdenIngreso implements Serializable{
 	public void actualizarKardexProducto(String correlativo,Almacen almacen,Gestion gestionSesion,Producto prod,Date fechaActual,double cantidad,Double precioUnitario,String usuarioSession) {
 		try{
 			//registrar Kardex
-			KardexProducto kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProductoAlmacen(prod,almacen);
+			KardexProducto kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProductoAlmacen(gestionSesion,prod,almacen);
 			double stockAnterior = 0;
 			if(kardexProductoAnt != null){
 				//se obtiene el saldo anterior del producto

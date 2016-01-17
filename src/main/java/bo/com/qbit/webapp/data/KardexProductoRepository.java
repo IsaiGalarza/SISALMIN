@@ -36,16 +36,16 @@ public class KardexProductoRepository {
 	}
 
 	@SuppressWarnings("unchecked")
-	public KardexProducto findKardexStockAnteriorByProducto(Producto producto) {
-		String query = "select ser from KardexProducto ser, Producto prod,Gestion ges where ser.producto.id = prod.id  and ser.gestion.id = ges.id and (ser.estado='AC' or ser.estado='IN') and ser.producto.id="+producto.getId()+" order by ser.id desc";
+	public KardexProducto findKardexStockAnteriorByProducto(Gestion gestion, Producto producto) {
+		String query = "select ser from KardexProducto ser, Producto prod,Gestion ges where ser.producto.id = prod.id  and ser.gestion.id = ges.id and (ser.estado='AC' or ser.estado='IN') and ser.producto.id="+producto.getId()+" and ser.gestion.id="+gestion.getId()+"  order by ser.id desc";
 		System.out.println("Query KardexProducto: " + query);
 		List<KardexProducto> list =  em.createQuery(query).getResultList();
 		return list.size()>0?list.get(0):null;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public KardexProducto findKardexStockAnteriorByProductoAlmacen(Producto producto,Almacen almacen) {
-		String query = "select ser from KardexProducto ser, Producto prod,Gestion ges where ser.producto.id = prod.id  and ser.gestion.id = ges.id and (ser.estado='AC' or ser.estado='IN') and ser.producto.id="+producto.getId()+" and ser.almacen.id="+almacen.getId()+" order by ser.id desc";
+	public KardexProducto findKardexStockAnteriorByProductoAlmacen(Gestion gestion, Producto producto,Almacen almacen) {
+		String query = "select ser from KardexProducto ser, Producto prod,Gestion ges where ser.producto.id = prod.id  and ser.gestion.id = ges.id and (ser.estado='AC' or ser.estado='IN') and ser.producto.id="+producto.getId()+" and ser.almacen.id="+almacen.getId()+" and ser.gestion.id="+gestion.getId()+" order by ser.id desc";
 		System.out.println("Query KardexProducto: " + query);
 		List<KardexProducto> list =  em.createQuery(query).getResultList();
 		return list.size()>0?list.get(0):null;

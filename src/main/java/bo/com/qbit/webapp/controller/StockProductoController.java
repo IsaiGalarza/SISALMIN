@@ -59,14 +59,14 @@ public class StockProductoController implements Serializable {
 
 	//SESSION
 	private @Inject SessionMain sessionMain; //variable del login
-	private Gestion gestionLogin;
+	private Gestion gestionSesion;
 
 	@PostConstruct
 	public void initNewStockProducto() {
 
 		System.out.println("initNewStockProducto()");
 
-		gestionLogin = sessionMain.getGestionLogin();
+		gestionSesion = sessionMain.getGestionLogin();
 
 		listGestion = gesionRepository.findAll();
 		selectedGestion = listGestion.get(0);
@@ -126,7 +126,7 @@ public class StockProductoController implements Serializable {
 		System.out.println("calcularStockUnificado("+prod+")");
 		totalStockUnificado = 0;
 		precioUnificado = 0;
-		List<AlmacenProducto> list = almacenProductoRepository.findAllByProducto(prod);
+		List<AlmacenProducto> list = almacenProductoRepository.findAllByProducto(selectedGestion,prod);
 		for(AlmacenProducto alm : list){
 			totalStockUnificado = totalStockUnificado + alm.getStock();
 			precioUnificado = precioUnificado + alm.getPrecioUnitario();

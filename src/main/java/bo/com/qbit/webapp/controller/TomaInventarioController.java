@@ -778,7 +778,7 @@ public class TomaInventarioController implements Serializable {
 				return ;
 			}
 
-			listAlmacenProducto = almacenProductoRepository.findByAlmacen(selectedAlmacen);
+			listAlmacenProducto = almacenProductoRepository.findByAlmacen(gestionSesion,selectedAlmacen);
 			if(listAlmacenProducto.size()==0){//validacion de almacen
 				FacesUtil.infoMessage("INFORMACION", "No se encontraron existencias en el almacen "+selectedAlmacen.getNombre());
 				return ;
@@ -847,7 +847,7 @@ public class TomaInventarioController implements Serializable {
 					//actualizar en DetalleProducto
 					if(d.getCantidadRegistrada() - d.getCantidadVerificada() > 0){//si faltaron
 						//actualizar en AlmacenProducto
-						fachadaOrdenTraspaso.actualizarStock(almacen,d);//-1 para que no actualize el precio
+						fachadaOrdenTraspaso.actualizarStock(gestionSesion,almacen,d);//-1 para que no actualize el precio
 						fachadaOrdenSalida.actualizarDetalleProducto(gestionSesion,selectedTomaInventario.getAlmacen(), d.getProducto(), d.getDiferencia());
 						//actualizar en kardex(NOSE) como una salida (como baja de producto)
 						//fachadaOrdenSalida.actualizarKardexProducto("Por Baja de Producto", gestionSesion, selectedOrdenSalida, prod, fechaActual, cantidad, precioUnitario, usuarioSession);

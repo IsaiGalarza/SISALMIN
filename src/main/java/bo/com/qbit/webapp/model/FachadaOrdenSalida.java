@@ -129,7 +129,7 @@ public class FachadaOrdenSalida implements Serializable {
 		try{
 			System.out.println("actualizarKardexProducto()");
 			//registrar Kardex
-			KardexProducto kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProductoAlmacen(prod,selectedOrdenSalida.getAlmacen());
+			KardexProducto kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProductoAlmacen(gestionSesion,prod,selectedOrdenSalida.getAlmacen());
 			double stockAnterior = 0;
 			if(kardexProductoAnt != null){
 				stockAnterior = kardexProductoAnt.getStockAnterior();
@@ -175,7 +175,7 @@ public class FachadaOrdenSalida implements Serializable {
 	 * @param DetalleOrdenSalida
 	 * @throws Exception
 	 */
-	public void actualizarStock(Almacen almacen,Producto producto,double cantidadSolicitada) throws Exception {
+	public void actualizarStock(Gestion gestionSesion,Almacen almacen,Producto producto,double cantidadSolicitada) throws Exception {
 		System.out.println("actualizarStock()");
 		try{/*
 			//0 . verificar si existe el producto en el almacen
@@ -194,7 +194,7 @@ public class FachadaOrdenSalida implements Serializable {
 			//Producto producto = detalle.getProducto();
 			//double cantidadSolicitada = detalle.getCantidadSolicitada();// 15
 			//obtener listAlmacenProducto ordenado por fecha segun metodo PEPS
-			List<AlmacenProducto> listAlmacenProducto =  almacenProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almacen,producto);
+			List<AlmacenProducto> listAlmacenProducto =  almacenProductoRepository.findAllByProductoAndAlmacenOrderByFecha(gestionSesion,almacen,producto);
 			
 			if(listAlmacenProducto.size()>0){
 				for(AlmacenProducto d : listAlmacenProducto){

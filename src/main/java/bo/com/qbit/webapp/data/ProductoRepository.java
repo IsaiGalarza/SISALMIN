@@ -108,7 +108,7 @@ public class ProductoRepository {
 	@SuppressWarnings("unchecked")
 	public List<Producto> traerProductoActivas() {
 		try {
-			String query = "select ser from Producto ser where ser.estado='AC' order by ser.id desc";
+			String query = "select ser from Producto ser where ser.estado='AC' order by ser.nombre asc";
 			System.out.println("Consulta traerProductoActivas: " + query);
 			List<Producto> listaProducto = em.createQuery(query).getResultList();
 			return listaProducto;

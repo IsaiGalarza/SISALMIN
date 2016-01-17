@@ -28,7 +28,7 @@ public class FachadaOrdenTraspaso implements Serializable {
 	 * @param DetalleOrdenSalida
 	 * @throws Exception
 	 */
-	public void actualizarStock(Almacen almacen,DetalleTomaInventario detalle) throws Exception {
+	public void actualizarStock(Gestion gestionSesion,Almacen almacen,DetalleTomaInventario detalle) throws Exception {
 		System.out.println("actualizarStock()");
 		try{/*
 			//0 . verificar si existe el producto en el almacen
@@ -47,7 +47,7 @@ public class FachadaOrdenTraspaso implements Serializable {
 			Producto producto = detalle.getProducto();
 			double cantidadSolicitada = detalle.getDiferencia();// 15
 			//obtener listAlmacenProducto ordenado por fecha segun metodo PEPS
-			List<AlmacenProducto> listAlmacenProducto =  almacenProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almacen,producto);
+			List<AlmacenProducto> listAlmacenProducto =  almacenProductoRepository.findAllByProductoAndAlmacenOrderByFecha(gestionSesion,almacen,producto);
 			
 			if(listAlmacenProducto.size()>0){
 				for(AlmacenProducto d : listAlmacenProducto){

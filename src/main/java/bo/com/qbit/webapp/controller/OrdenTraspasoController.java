@@ -549,7 +549,7 @@ public class OrdenTraspasoController implements Serializable {
 
 					//4.-
 					System.out.println("actualizarKardexProducto("+almOrig.getNombre()+","+almDest.getNombre()+","+prod.getNombre()+","+fechaActual+","+totalCantidaEntregada+","+d.getPrecioUnitario());
-					actualizarKardexProducto(almOrig,almDest,prod, fechaActual, totalCantidaEntregada,d.getPrecioUnitario());
+					actualizarKardexProducto(gestionSesion,almOrig,almDest,prod, fechaActual, totalCantidaEntregada,d.getPrecioUnitario());
 					//total = total + (totalCantidaEntregada * d.getPrecioUnitario());
 				}
 				//agregar detalleProductos al almacen destino
@@ -718,7 +718,7 @@ public class OrdenTraspasoController implements Serializable {
 			//Producto producto = detalle.getProducto();
 			//double cantidadSolicitada = detalle.getCantidadSolicitada();// 15
 			//obtener listAlmacenProducto ordenado por fecha segun metodo PEPS
-			List<AlmacenProducto> listAlmacenProducto =  almacenProductoRepository.findAllByProductoAndAlmacenOrderByFecha(almOrig,producto);
+			List<AlmacenProducto> listAlmacenProducto =  almacenProductoRepository.findAllByProductoAndAlmacenOrderByFecha(gestionSesion,almOrig,producto);
 			System.out.println("listAlmacenProducto.size()"+listAlmacenProducto.size());
 
 			if(listAlmacenProducto.size()>0){
@@ -740,11 +740,11 @@ public class OrdenTraspasoController implements Serializable {
 	}
 
 	//registro en la tabla kardex_producto, un ingreso y una salida 
-	private void actualizarKardexProducto(Almacen almOrig,Almacen almDest,Producto prod,Date fechaActual,double cantidad,double precioUnitario) throws Exception{
+	private void actualizarKardexProducto(Gestion gestionSesion,Almacen almOrig,Almacen almDest,Producto prod,Date fechaActual,double cantidad,double precioUnitario) throws Exception{
 		System.out.println("actualizarKardexProducto()");
 		try{
 			//registrar Kardex
-			KardexProducto kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProductoAlmacen(prod,selectedOrdenTraspaso.getAlmacenDestino());
+			KardexProducto kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProductoAlmacen(gestionSesion,prod,selectedOrdenTraspaso.getAlmacenDestino());
 			System.out.println("kardexProductoAnt "+kardexProductoAnt);
 			double stockAnterior = 0;
 			if(kardexProductoAnt != null){
@@ -791,7 +791,7 @@ public class OrdenTraspasoController implements Serializable {
 			///----------------------------------------------------------------------------------------
 
 			//registrar Kardex
-			kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProductoAlmacen(prod,selectedOrdenTraspaso.getAlmacenOrigen());
+			kardexProductoAnt = kardexProductoRepository.findKardexStockAnteriorByProductoAlmacen(gestionSesion,prod,selectedOrdenTraspaso.getAlmacenOrigen());
 			System.out.println("kardexProductoAnt "+kardexProductoAnt);
 			stockAnterior = 0;
 			if(kardexProductoAnt != null){

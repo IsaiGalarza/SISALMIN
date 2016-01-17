@@ -576,7 +576,7 @@ public class OrdenIngresoController implements Serializable {
 	}
 
 	private void calcularPrecioPromedioForDevolucion(Producto producto){
-		precioPromedio = almacenProductoRepository.findPrecioPromedioByProducto(producto);
+		precioPromedio = almacenProductoRepository.findPrecioPromedioByProducto(gestionSesion,producto);
 		selectedDetalleOrdenIngreso.setPrecioUnitario(precioPromedio);
 	}
 
