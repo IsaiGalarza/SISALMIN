@@ -117,7 +117,7 @@ public class AlmacenProductoRepository {
 	
 	@SuppressWarnings("unchecked")
 	public List<AlmacenProducto> findProductoConStockOrderedByIDAndGestion( Gestion gestion) {
-		String query = "select ser from AlmacenProducto ser where ser.estado='AC' and ser.stock > 0 and ser.gestion.id="+gestion.getId()+" order by ser.id asc";
+		String query = "select ser from AlmacenProducto ser, Producto pr where ser.producto.id = pr.id and  ser.estado='AC' and ser.stock > 0 and ser.gestion.id="+gestion.getId()+" order by pr.nombre asc";
 		System.out.println("Query AlmacenProducto: " + query);
 		return em.createQuery(query).getResultList();
 	}

@@ -300,6 +300,17 @@
 																</p:autoComplete>
 															</div>
 														</div>
+														<div class="form-group ">
+															<div class="col-md-4">Observación</div>
+															<div class="col-md-8">
+																<p:inputTextarea id="descripcionID"
+																	styleClass="form-control" size="40"
+																	value="#{ordenSalidaController.newOrdenSalida.observacion}"
+																	required="true" requiredMessage="Requerido." rows="5">
+																	<p:ajax event="change" />
+																</p:inputTextarea>
+															</div>
+														</div>
 
 														<div class="form-group ">
 															<div class="col-md-4">Fecha</div>

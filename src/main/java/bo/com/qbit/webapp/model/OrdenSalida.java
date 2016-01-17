@@ -46,6 +46,9 @@ public class OrdenSalida implements Serializable{
 	
 	@Column(name = "usuario_registro")
 	private String usuarioRegistro;
+	
+	@Column(name = "observacion", nullable = true)
+	private String observacion;
 
 	// bi-directional many-to-one association 
 	@OneToMany(mappedBy = "ordenSalida")
@@ -78,6 +81,7 @@ public class OrdenSalida implements Serializable{
 		this.setProyecto(new Proyecto());
 		this.almacen = new Almacen();
 		this.numeroPedidoMateriales = "";
+		this.observacion = "Ninguna";
 	}
 
 	public Integer getId() {
@@ -198,6 +202,14 @@ public class OrdenSalida implements Serializable{
 
 	public void setNumeroPedidoMateriales(String numeroPedidoMateriales) {
 		this.numeroPedidoMateriales = numeroPedidoMateriales;
+	}
+
+	public String getObservacion() {
+		return observacion;
+	}
+
+	public void setObservacion(String observacion) {
+		this.observacion = observacion;
 	}
 
 }
