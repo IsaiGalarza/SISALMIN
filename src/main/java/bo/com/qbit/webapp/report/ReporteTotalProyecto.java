@@ -86,12 +86,12 @@ public class ReporteTotalProyecto  extends HttpServlet{
 			String rutaSubReporte = "";
 			if(pIdProyecto.equals("-1")){
 				 rutaReporte = urlPath+"resources/report/totales_proyecto_todos.jasper";
-				rutaSubReporte = urlPath+"resources/report/";
-				parameters.put("SUBREPORT_DIR", rutaSubReporte);
 			}else{
 			 rutaReporte = urlPath+"resources/report/totales_proyecto_individual.jasper";
 			 parameters.put("pIdProyecto", new Integer( pIdProyecto));
 			}
+			rutaSubReporte = urlPath+"resources/report/";
+			parameters.put("SUBREPORT_DIR", rutaSubReporte);
 			 
 			System.out.println("rutaReporte: "+rutaReporte);
 			System.out.println("rutaSubReporte: "+rutaSubReporte);

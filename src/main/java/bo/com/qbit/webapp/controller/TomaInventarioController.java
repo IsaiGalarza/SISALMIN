@@ -493,14 +493,17 @@ public class TomaInventarioController implements Serializable {
 			newTomaInventario.setAlmacen(selectedAlmacen);
 			newTomaInventario.setEstado("AC");
 			newTomaInventario.setFechaRegistro(fechaActual);
+			newTomaInventario.setGestion(gestionSesion);
 			newTomaInventario = tomaInventarioRegistration.register(newTomaInventario);
 			System.out.println("newTomaInventario:"+newTomaInventario.getId());
-			//			for(DetalleTomaInventario detalle : listDetalleTomaInventario){
-			//				detalle.setTomaInventario(newTomaInventario);
-			//				detalle.setFechaRegistro(fechaActual);
-			//				detalle.setUsuarioRegistro(usuarioSession);
-			//				detalleTomaInventarioRegistration.register(detalle);
-			//			}
+			if(newTomaInventario.getTipo().equals("PARCIAL")){
+				for(DetalleTomaInventario detalle : listDetalleTomaInventario){
+					detalle.setTomaInventario(newTomaInventario);
+					detalle.setFechaRegistro(fechaActual);
+					detalle.setUsuarioRegistro(usuarioSession);
+					detalleTomaInventarioRegistration.register(detalle);
+				}
+			}
 			//si es de Tipo INICIAL
 			if(newTomaInventario.getTipo().equals("INICIAL")){
 				//registrar ordenIngreso
@@ -920,6 +923,7 @@ public class TomaInventarioController implements Serializable {
 			String urlPath = request.getRequestURL().toString();
 			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
 			String urlPDFreporte = urlPath+"ReporteTomaInventario?pIdTomaInventario="+selectedTomaInventario.getId()+"&pUsuario="+usuarioSession+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial();
+			System.out.println("urlPDFreporte: "+urlPDFreporte);
 			return urlPDFreporte;
 		}catch(Exception e){
 			return "error";

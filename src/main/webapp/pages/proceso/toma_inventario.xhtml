@@ -49,7 +49,7 @@
 									style="height:31px;">
 								</p:commandLink>
 
-								<p:commandLink id="buttonRegistrar" value="&#160; Registrar"
+								<p:commandLink id="buttonRegistrar" value="&#160; Registrar 0"
 									styleClass="btn btn-success ion-checkmark"
 									rendered="#{tomaInventarioController.verGuardar}"
 									update="formTableTomaInventario, formBotonesHeader,formGrowl:msgs1"
@@ -57,7 +57,7 @@
 									action="#{tomaInventarioController.registrarTomaInventarioPrevio()}">
 								</p:commandLink>
 
-								<p:commandLink id="buttonProcesar" value="&#160; Procesar "
+								<p:commandLink id="buttonProcesar" value="&#160; Procesar 1"
 									styleClass="btn btn-info ion-ios7-loop-strong"
 									style="height:31px; padding:center"
 									rendered="#{tomaInventarioController.registrar and ! tomaInventarioController.newTomaInventario.tipo.equals('INICIAL') and sessionMain.tienePermisoPaginaAccion('TOMA DE INVENTARIO','PROCESAR')}"
@@ -73,7 +73,7 @@
 									action="#{tomaInventarioController.cargarSelectedTomaInventario()}">
 								</p:commandLink>
 
-								<p:commandLink id="buttonProcesar2" value="&#160; Procesar "
+								<p:commandLink id="buttonProcesar2" value="&#160; Procesar"
 									styleClass="btn btn-info ion-ios7-loop-strong"
 									style="height:31px; padding:center"
 									rendered="#{tomaInventarioController.buttonProcesarTomaInventarioIncial and sessionMain.tienePermisoPaginaAccion('TOMA DE INVENTARIO','PROCESAR')}"
@@ -121,7 +121,7 @@
 									action="#{tomaInventarioController.conciliarTomaInventario()}">
 								</p:commandLink>
 
-								<p:commandLink id="buttonRegistrar3" value="&#160; Registrar"
+								<p:commandLink id="buttonRegistrar3" value="&#160; Registrar"  
 									styleClass="btn btn-success ion-checkmark"
 									rendered="#{tomaInventarioController.newTomaInventario.tipo.equals('INICIAL') and tomaInventarioController.registrar and !tomaInventarioController.editarTomaInventarioIncial }"
 									update="formTableTomaInventario, formBotonesHeader,formGrowl:msgs1"
