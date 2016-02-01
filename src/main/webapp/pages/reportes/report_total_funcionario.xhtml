@@ -8,9 +8,8 @@
 	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
 	template="/WEB-INF/templates/template_main.xhtml">
 	<ui:define name="head">
-		<title>Report</title>
-		<f:event
-			listener="#{reportTotalFuncionarioController.initConversation}"
+		<title>Reporte Unidad</title>
+		<f:event listener="#{reportTotalUnidadPartidaController.initConversation}"
 			type="preRenderView"></f:event>
 	</ui:define>
 
@@ -25,32 +24,24 @@
 								<p:commandLink id="buttonAtras" value="&#160; Atras"
 									styleClass="btn btn-warning ion-minus-circled"
 									update="formFilterProducto, formBotonesHeader"
-									rendered="#{reportTotalFuncionarioController.verReporte}"
+									rendered="#{reportTotalUnidadPartidaController.verReporte}"
 									style="height:31px; padding:center"
-									action="#{reportTotalFuncionarioController.initReporteProyecto()}">
+									action="#{reportTotalUnidadPartidaController.init()}">
 								</p:commandLink>
 								<p:commandLink id="buttonProcesar" value="&#160; Procesar"
 									styleClass="btn btn-info ion-ios7-loop-strong"
-									rendered="#{! reportTotalFuncionarioController.verReporte}"
+									rendered="false"
 									style="height:31px; padding:center"
 									update=" formFilterProducto,formBotonesHeader"
-									action="#{reportTotalFuncionarioController.procesarConsulta()}">
+									action="#{reportTotalUnidadPartidaController.procesarConsulta()}">
 								</p:commandLink>
 
-								<p:commandLink id="buttonVerReporte1" value="&#160; Print 1"
+								<p:commandLink id="buttonVerReporte" value="&#160; Ver Reporte"
 									styleClass="btn btn-info ion-printer"
-									rendered="#{reportTotalFuncionarioController.listaDetalleOrdenSalida.size() > 0}"
+									rendered="true"
 									style="height:31px; padding:center"
 									update="formFilterProducto ,formBotonesHeader"
-									action="#{reportTotalFuncionarioController.cargarReporte()}">
-								</p:commandLink>
-								
-								<p:commandLink id="buttonVerReporte2" value="&#160; Print 2"
-									styleClass="btn btn-info ion-printer"
-									rendered="#{reportTotalFuncionarioController.listaDetalleOrdenSalida.size() > 0}"
-									style="height:31px; padding:center"
-									update="formFilterProducto ,formBotonesHeader"
-									action="#{listaItemController.imprimir()}">
+									action="#{reportTotalUnidadPartidaController.cargarReporte()}">
 								</p:commandLink>
 							</div>
 						</div>
@@ -61,10 +52,9 @@
 						<li><a href="#{request.contextPath}/pages/dashboard.xhtml"
 							style="color: #0090FF; font-size: 12px;">Inicio</a></li>
 						<li><a
-							href="#{request.contextPath}/pages/reportes/report_total_unidad_solicitante.xhtml"
+							href="#{request.contextPath}/pages/reportes/report_total_funcionario.xhtml"
 							style="color: #0090FF; font-size: 12px;">Reporte</a></li>
-						<li class="active" style="font-size: 12px;">Total Gastado por
-							Funcionario</li>
+						<li class="active" style="font-size: 12px;">Total Gastos de Unidad segun Partida</li>
 					</ol>
 				</div>
 			</section>
@@ -73,12 +63,11 @@
 					<div class="row">
 						<h:form id="formFilterProducto" styleClass="form-horizontal">
 
-							<ui:fragment
-								rendered="#{ !reportTotalFuncionarioController.verReporte}">
-								<div class="col-md-4">
+							
+								<div class="col-md-12">
 									<div class="panel panel-default">
 										<div class="panel-heading">
-											<h3 class="panel-title">Filtro Funcionario</h3>
+											<h3 class="panel-title">Filtro Unidad</h3>
 										</div>
 										<!-- start here datatable -->
 										<div class="panel-body">
@@ -89,7 +78,7 @@
 														<div class="col-md-12">
 															<p:calendar pattern="dd/MM/yyyy" id="fechaInicial"
 																locale="es"
-																value="#{reportTotalFuncionarioController.fechaInicial}"
+																value="#{reportTotalUnidadPartidaController.fechaInicial}"
 																onkeypress="return permiteKey(event, 'none')"
 																style=" color: #555555; background-image: none;">
 																<p:ajax event="dateSelect" />
@@ -101,13 +90,53 @@
 														<div class="col-md-12">
 															<p:calendar pattern="dd/MM/yyyy" id="fechaFinal"
 																locale="es"
-																value="#{reportTotalFuncionarioController.fechaFinal}"
+																value="#{reportTotalUnidadPartidaController.fechaFinal}"
 																onkeypress="return permiteKey(event, 'none')"
 																style=" color: #555555; background-image: none;">
 																<p:ajax event="dateSelect" />
 															</p:calendar>
 														</div>
 													</div>
+													<div class="form-group ">
+														<div class="col-md-12">Buscar Unidad</div>
+														<div class="col-md-12">
+															<p:selectOneRadio id="oneMenuTipoConsulta"
+																value="#{reportTotalUnidadPartidaController.tipoConsulta}">
+																<p:ajax update="@form" />
+																<f:selectItem
+																	itemLabel="&#160; Todos	&#160; &#160; &#160;"
+																	itemValue="T" />
+																<f:selectItem itemLabel="&#160; Seleccionar"
+																	itemValue="S" />
+															</p:selectOneRadio>
+														</div>
+													</div>
+													<ui:fragment
+														rendered="#{ reportTotalUnidadPartidaController.tipoConsulta.equals('S')}">
+														<div class="form-group ">
+															<div class="col-md-12">Unidad</div>
+															<div class="col-md-4">
+																<p:autoComplete id="unidadID" style="width: 93%"
+																	inputStyle="width: 93%; color: #555555; background-image: none;"
+																	value="#{reportTotalUnidadPartidaController.selectedDetalleUnidad.nombre}"
+																	completeMethod="#{reportTotalUnidadPartidaController.completeUnidad}"
+																	minQueryLength="3" dropdown="true" required="true"
+																	requiredMessage="Partida Requerido."
+																	forceSelection="true" var="_var" itemLabel="#{_var}"
+																	itemValue="#{_var.nombre}"
+																	placeholder="[Escriba Partida]" maxResults="10">
+
+																	<p:ajax event="itemSelect"
+																		listener="#{reportTotalUnidadPartidaController.onRowSelectUnidadClick}"
+																		update="unidadID" />
+																	<p:column>
+																		<h:outputText value="#{_var.nombre}" />
+																	</p:column>
+																</p:autoComplete>
+
+															</div>
+														</div>
+													</ui:fragment>
 
 												</div>
 
@@ -115,81 +144,15 @@
 										</div>
 									</div>
 								</div>
-
-								<div class="col-md-8">
-									<div class="panel panel-default">
-										<div class="panel-heading">
-											<h3 class="panel-title">Lista de Items</h3>
-										</div>
-										<!-- start here datatable -->
-										<div class="box-content no-padding">
-										<p:dataTable
-												style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
-												rowKey="#{_var.id}" id="productoTable2" var="_var"
-												value="#{reportTotalFuncionarioController.listaDetalleOrdenSalida}"
-												emptyMessage="No se encontraron Registros.">
-
-												<p:column width="10%" headerText="Fecha"
-													style="text-align:center"
-													filterBy="#{_var.ordenSalida.fechaAprobacion}"
-													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.ordenSalida.fechaAprobacion}">
-														<f:convertDateTime pattern="dd/MM/yyyy" />
-													</h:outputText>
-												</p:column>
-
-												<p:column width="15%" headerText="Orden Salida"
-													style="text-align:center" filterBy="#{_var.ordenSalida.correlativo}"
-													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.ordenSalida.correlativo}" />
-												</p:column>
-
-												<p:column width="30%" headerText="Funcionario"
-													filterBy="#{_var.ordenSalida.funcionario.nombre}"
-													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.ordenSalida.funcionario.nombre}" />
-												</p:column>
-
-
-												<p:column headerText="Cargo"
-													filterBy="#{_var.ordenSalida.funcionario.cargo}"
-													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.ordenSalida.funcionario.cargo}" />
-												</p:column>
-
-
-												<p:column width="15%" headerText="Total"
-													style="text-align:center" filterBy="#{_var.total}"
-													filterStyle="width: 100%;" filterMatchMode="contains">
-													<h:outputText value="#{_var.total}" />
-												</p:column>
-												
-
-												<f:facet name="footer">
-													<h:outputText
-														value="#{reportTotalFuncionarioController.listaDetalleOrdenSalida.size()} Registros en Total" />
-												</f:facet>
-
-											</p:dataTable>
-
-											
-
-										</div>
-
-										<!-- end here datatable -->
-										<div class="panel-body"></div>
-
-									</div>
-								</div>
-							</ui:fragment>
+								
 
 							<ui:fragment
-								rendered="#{reportTotalFuncionarioController.verReporte}">
+								rendered="true">
 								<div class="col-md-12">
 									<div class="panel panel-default">
 										<div class="panel-body" style="text-align: center;">
 											<p:media player="pdf" rendered="true"
-												value="#{reportTotalFuncionarioController.urlTotalFuncionario}"
+												value="#{reportTotalUnidadPartidaController.urlTotalUnidadProyecto}"
 												width="800px" height="1125px" />
 										</div>
 									</div>
@@ -211,8 +174,6 @@
 			<p:growl id="msgs1" showDetail="true" />
 		</h:form>
 		<!-- END GROWL -->
-
-
 
 	</ui:define>
 
