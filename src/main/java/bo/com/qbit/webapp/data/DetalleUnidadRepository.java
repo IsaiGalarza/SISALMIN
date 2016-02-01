@@ -69,9 +69,9 @@ public class DetalleUnidadRepository {
 //	}
 
 	@SuppressWarnings("unchecked")
-	public List<DetalleUnidad> findAllDetalleUnidadForDescription(String criterio,Gestion gestion) {
+	public List<DetalleUnidad> findAllDetalleUnidadForCodigo(String criterio,Gestion gestion) {
 		try {
-			String query = "select ser from DetalleUnidad ser where ser.gestion.id="+gestion.getId()+" and ser.nombre like '%"
+			String query = "select ser from DetalleUnidad ser where ser.gestion.id="+gestion.getId()+" and sr.codigo like '%"
 					+ criterio + "%'";
 			System.out.println("Consulta: " + query);
 			List<DetalleUnidad> listaDetalleUnidad = em.createQuery(query).getResultList();
