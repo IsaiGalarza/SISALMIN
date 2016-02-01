@@ -188,7 +188,7 @@
 																	requiredMessage="Almacen Requerido."
 																	forceSelection="true" var="_var" itemLabel="#{_var}"
 																	itemValue="#{_var.nombre}"
-																	placeholder="[Escriba Almacen]" maxResults="10">
+																	placeholder="[Escriba Almacen]" scrollHeight="300" >
 
 																	<p:ajax event="itemSelect"
 																		update="formTableOrdenTraspaso:almacenID"
@@ -213,8 +213,8 @@
 																	minQueryLength="3" dropdown="true" required="true"
 																	requiredMessage="Funcionario Requerido."
 																	forceSelection="true" var="_var" itemLabel="#{_var}"
-																	itemValue="#{_var.nombre}"
-																	placeholder="[Escriba Funcionario]" maxResults="10">
+																	itemValue="#{_var.nombre}"																	
+																	placeholder="[Escriba Funcionario]" scrollHeight="300">
 
 																	<p:ajax event="itemSelect"
 																		update="formTableOrdenTraspaso:servidorPublicoID,formTableOrdenTraspaso:cargoID"
@@ -256,7 +256,7 @@
 																	requiredMessage="Proyecto Requerido."
 																	forceSelection="true" var="_var" itemLabel="#{_var}"
 																	itemValue="#{_var.nombre}"
-																	placeholder="[Escriba Proyecto]" maxResults="10">
+																	placeholder="[Escriba Proyecto]" scrollHeight="300">
 
 																	<p:ajax event="itemSelect"
 																		update="formTableOrdenTraspaso:proyectoID,formTableOrdenTraspaso:tipoDocumentoAdjID"
@@ -581,7 +581,7 @@
 									minQueryLength="3" size="35" dropdown="true" required="true"
 									requiredMessage="Producto Requerido." forceSelection="true"
 									var="_var" itemLabel="#{_var}" itemValue="#{_var.nombre}"
-									placeholder="[Escriba Producto]" maxResults="10">
+									placeholder="[Escriba Producto]" scrollHeight="300">
 
 									<p:ajax event="itemSelect" update="totalID,precioID"
 										listener="#{ordenTraspasoController.onRowSelectProductoClick}" />

@@ -30,7 +30,7 @@ public class OrdenIngresoRepository {
 	
 	@SuppressWarnings("unchecked")
 	public List<OrdenIngreso> findAllOrderedByIDGestion(Gestion gestion) {
-		String query = "select ser from OrdenIngreso ser where ( ser.estado='AC' or ser.estado='PR') and ser.gestion.id="+gestion.getId()+" order by ser.id desc";
+		String query = "select ser from OrdenIngreso ser where ( ser.estado='AC' or ser.estado='PR' or ser.estado='AN') and ser.gestion.id="+gestion.getId()+" order by ser.id desc";
 		System.out.println("Query OrdenIngreso: " + query);
 		return em.createQuery(query).getResultList();
 	}

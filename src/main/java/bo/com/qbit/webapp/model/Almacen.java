@@ -48,6 +48,10 @@ public class Almacen implements Serializable {
 	@ManyToOne(fetch=FetchType.EAGER, optional=false)
 	@JoinColumn(name="id_encargado",nullable= true)
 	private Usuario encargado;
+	
+	@ManyToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name="id_gestion", nullable=true)
+	private Gestion gestion;
 
 	public Almacen() {
 		this.id = 0 ;
@@ -176,6 +180,14 @@ public class Almacen implements Serializable {
 
 	public void setCodigo(String codigo) {
 		this.codigo = codigo;
+	}
+
+	public Gestion getGestion() {
+		return gestion;
+	}
+
+	public void setGestion(Gestion gestion) {
+		this.gestion = gestion;
 	}
 
 }

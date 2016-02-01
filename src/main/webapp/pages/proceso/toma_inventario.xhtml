@@ -10,7 +10,7 @@
 	<ui:define name="head">
 		<title>Toma de Inventario</title>
 
-		<f:event listener="#{kardexProductoController.initConversation}"
+		<f:event listener="#{tomaInventarioController.initConversation}"
 			type="preRenderView"></f:event>
 
 	</ui:define>
@@ -49,7 +49,7 @@
 									style="height:31px;">
 								</p:commandLink>
 
-								<p:commandLink id="buttonRegistrar" value="&#160; Registrar 0"
+								<p:commandLink id="buttonRegistrar" value="&#160; Registrar "
 									styleClass="btn btn-success ion-checkmark"
 									rendered="#{tomaInventarioController.verGuardar}"
 									update="formTableTomaInventario, formBotonesHeader,formGrowl:msgs1"
@@ -57,7 +57,7 @@
 									action="#{tomaInventarioController.registrarTomaInventarioPrevio()}">
 								</p:commandLink>
 
-								<p:commandLink id="buttonProcesar" value="&#160; Procesar 1"
+								<p:commandLink id="buttonProcesar" value="&#160; Procesar "
 									styleClass="btn btn-info ion-ios7-loop-strong"
 									style="height:31px; padding:center"
 									rendered="#{tomaInventarioController.registrar and ! tomaInventarioController.newTomaInventario.tipo.equals('INICIAL') and sessionMain.tienePermisoPaginaAccion('TOMA DE INVENTARIO','PROCESAR')}"
@@ -329,7 +329,7 @@
 																	forceSelection="true" var="_var" itemLabel="#{_var}"
 																	itemValue="#{_var.nombre}"
 																	disabled="#{tomaInventarioController.conciliar}"
-																	placeholder="[Escriba Proveedor]" maxResults="10">
+																	placeholder="[Escriba Proveedor]" scrollHeight="300">
 																	<p:ajax event="itemSelect"
 																		update="formTableTomaInventario:proveedorID"
 																		listener="#{tomaInventarioController.onRowSelectProveedorClick}" />
@@ -356,7 +356,7 @@
 																forceSelection="true" var="_var" itemLabel="#{_var}"
 																itemValue="#{_var.nombre}"
 																disabled="#{tomaInventarioController.modificar or tomaInventarioController.conciliar}"
-																placeholder="[Escriba Almacen]" maxResults="10">
+																placeholder="[Escriba Almacen]" scrollHeight="300">
 
 																<p:ajax event="itemSelect"
 																	update="formTableTomaInventario:almacenID,responsableAlmacenID"
@@ -967,6 +967,34 @@
 								</label>
 							</div>
 						</div>
+						<div class="form-group">
+							<div class="col-md-12">Desea agregar todos los Proveedores
+								a la Nueva Gestión?</div>
+							<div class="col-md-12">
+								<label class="switch switch-success switch-sm"> 
+										<h:selectBooleanCheckbox
+											value="#{tomaInventarioController.stateProveedor}"
+											styleClass="switch">
+										</h:selectBooleanCheckbox>
+										<span class="switch"></span>
+									
+								</label>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-md-12">Desea agregar todas las Areas de Trabajo
+								a la Nueva Gestión?</div>
+							<div class="col-md-12">
+								<label class="switch switch-success switch-sm"> 
+										<h:selectBooleanCheckbox
+											value="#{tomaInventarioController.stateDetalleUnidad}"
+											styleClass="switch">
+										</h:selectBooleanCheckbox>
+										<span class="switch"></span>
+									
+								</label>
+							</div>
+						</div>
 					</div>
 				</div>
 
@@ -1016,7 +1044,7 @@
 									minQueryLength="3" size="30" dropdown="true" required="true"
 									requiredMessage="Producto Requerido." forceSelection="true"
 									var="_var" itemLabel="#{_var}" itemValue="#{_var.nombre}"
-									placeholder="[Escriba Producto]" maxResults="10">
+									placeholder="[Escriba Producto]" scrollHeight="300">
 
 									<p:ajax event="itemSelect" update="totalID,precioID"
 										listener="#{tomaInventarioController.onRowSelectProductoClick}" />
@@ -1249,7 +1277,7 @@
 										requiredMessage="Unidad Medida Requerido."
 										forceSelection="true" var="_var" itemLabel="#{_var}"
 										itemValue="#{_var.nombre}"
-										placeholder="[Escriba Unidad Medida]" maxResults="10">
+										placeholder="[Escriba Unidad Medida]" scrollHeight="300">
 
 										<p:ajax event="itemSelect"
 											listener="#{tomaInventarioController.onRowSelectUnidadMedidaClick}"

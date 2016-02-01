@@ -22,6 +22,7 @@ import org.richfaces.cdi.push.Push;
 import bo.com.qbit.webapp.data.AlmacenRepository;
 import bo.com.qbit.webapp.data.UsuarioRepository;
 import bo.com.qbit.webapp.model.Almacen;
+import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.model.Usuario;
 import bo.com.qbit.webapp.service.AlmacenRegistration;
 import bo.com.qbit.webapp.util.FacesUtil;
@@ -78,6 +79,7 @@ public class AlmacenController implements Serializable {
 	//SESSION
 	private @Inject SessionMain sessionMain; //variable del login
 	private String usuarioSession;
+	private Gestion gestionSession;
 
 	@PostConstruct
 	public void initNewAlmacen() {
@@ -93,6 +95,7 @@ public class AlmacenController implements Serializable {
 		newAlmacen.setEstado("AC");
 		newAlmacen.setFechaRegistro(new Date());
 		newAlmacen.setUsuarioRegistro(usuarioSession);
+		newAlmacen.setGestion(gestionSession);
 
 		selectedAlmacen = null;
 

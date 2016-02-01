@@ -20,6 +20,7 @@ import org.richfaces.cdi.push.Push;
 
 import bo.com.qbit.webapp.data.DetalleUnidadRepository;
 import bo.com.qbit.webapp.model.DetalleUnidad;
+import bo.com.qbit.webapp.model.Gestion;
 import bo.com.qbit.webapp.service.DetalleUnidadRegistration;
 import bo.com.qbit.webapp.util.SessionMain;
 
@@ -74,6 +75,7 @@ public class DetalleUnidadController implements Serializable {
 	//SESSION
 	private @Inject SessionMain sessionMain; //variable del login
 	private String usuarioSession;
+	private Gestion gestionSession;
 	
 	@PostConstruct
 	public void initNewDetalleUnidad() {
@@ -87,6 +89,7 @@ public class DetalleUnidadController implements Serializable {
 		newDetalleUnidad.setEstado("AC");
 		newDetalleUnidad.setFechaRegistro(new Date());
 		newDetalleUnidad.setUsuarioRegistro(usuarioSession);
+		newDetalleUnidad.setGestion(gestionSession);
 		
 		selectedDetalleUnidad = null;
 
@@ -94,7 +97,7 @@ public class DetalleUnidadController implements Serializable {
 		tituloPanel = "Registrar Unidad";
 
 		// traer todos las DetalleUnidades ordenados por ID Desc
-		listaDetalleUnidad = detalleUnidadRepository.traerDetalleUnidadActivas();
+		listaDetalleUnidad = detalleUnidadRepository.traerDetalleUnidadActivas(gestionSession);
 		
 		modificar = false;
 		registrar = false;

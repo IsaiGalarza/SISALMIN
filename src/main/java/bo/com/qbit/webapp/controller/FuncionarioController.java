@@ -107,7 +107,7 @@ public class FuncionarioController implements Serializable {
 
 		// traer todos las Funcionarioes ordenados por ID Desc
 		listaFuncionario = FuncionarioRepository.traerFuncionarioActivas(gestionSesion);
-		listDetalleUnidad = detalleUnidadRepository.traerDetalleUnidadActivas();
+		listDetalleUnidad = detalleUnidadRepository.traerDetalleUnidadActivas(gestionSesion);
 		
 		modificar = false;
 		registrar = false;

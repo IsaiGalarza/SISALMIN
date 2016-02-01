@@ -62,7 +62,7 @@ public class ProductoController implements Serializable {
 	private Producto newProducto= new Producto();
 	private UnidadMedida selectedUnidadMedida;
 	
-	private List<Partida> listPartida = new ArrayList<Partida>();
+	private List<Partida> listPartida ;
 	private List<UnidadMedida> listUnidadMedida = new ArrayList<UnidadMedida>();
 	
 
@@ -88,7 +88,7 @@ public class ProductoController implements Serializable {
 
 		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
 		
-		listPartida = partidaRepository.findAllPartidaByID();
+		listPartida =  new ArrayList<Partida>();
 
 		newProducto = new Producto();
 		newProducto.setEstado("AC");
@@ -144,18 +144,15 @@ public class ProductoController implements Serializable {
 		}
 	}
 	
-	
 	// SELECCIONAR AUTOCOMPLETES AREA PRODUCTO
 	public List<Partida> completePartida(String query) {
 		String upperQuery = query.toUpperCase();
-		return partidaRepository.findAllPartidaForDescription(upperQuery);
+		listPartida = partidaRepository.findAllPartidaForDescription(upperQuery);
+		return listPartida;
 	}
 	
 	public void onRowSelectPartidaClick() {
-		System.out.println("Seleccionado onRowSelectPartidaClick: "
-				+ this.newProducto.getPartida().getNombre());
-		
-		List<Partida> listPartida = partidaRepository.traerPartidaActivas();
+		System.out.println("Seleccionado onRowSelectPartidaClick: " + this.newProducto.getPartida().getNombre());
 		for (Partida row : listPartida) {
 			if (row.getNombre().equals(this.newProducto.getPartida().getNombre())) {
 				this.newProducto.setPartida(row);
@@ -163,11 +160,10 @@ public class ProductoController implements Serializable {
 		}
 	}
 	
-	
 	// SELECCIONAR AUTOCOMPLETE UNIDAD DE MEDIDA
 	public List<UnidadMedida> completeUnidadMedida(String query) {
 		String upperQuery = query.toUpperCase();
-		listUnidadMedida = unidadMedidaRepository.findAllUnidadMedidaForDescription(upperQuery);
+		listUnidadMedida = unidadMedidaRepository.findAllByNombre(upperQuery);
 		System.out.println("listUnidadMedida.size(): "+listUnidadMedida.size());
 		return listUnidadMedida;
 	}

@@ -37,10 +37,13 @@ public class DetalleUnidad implements Serializable {
 	
 	@Column(name="fecha_registro")
 	private Date fechaRegistro;
-
 	
 	@Column(name="usuario_registro")
 	private String usuarioRegistro;
+	
+	@ManyToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name="id_gestion", nullable=true)
+	private Gestion gestion;
 
 
 	public DetalleUnidad() {
@@ -138,6 +141,14 @@ public class DetalleUnidad implements Serializable {
 
 	public void setFuncionario(List<Funcionario> funcionario) {
 		this.funcionario = funcionario;
+	}
+
+	public Gestion getGestion() {
+		return gestion;
+	}
+
+	public void setGestion(Gestion gestion) {
+		this.gestion = gestion;
 	}
 
 }

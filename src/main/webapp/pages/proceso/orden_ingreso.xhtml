@@ -102,6 +102,14 @@
 									rendered="#{ordenIngresoController.importarFile and sessionMain.tienePermisoPaginaAccion('ORDEN INGRESO','IMPORTAR')}"
 									update="formDialogImport" onclick="PF('dlgImportExcel').show()">
 								</p:commandLink>
+								
+								<p:commandLink id="buttonAnular" value="&#160; Eliminar"
+									styleClass="btn btn-danger ion-close"
+									update="formTableOrdenIngreso, :formBotonesHeader"
+									rendered="#{ordenIngresoController.verButtonAnular}"
+									action="#{ordenIngresoController.anularOrden()}"
+									style="height:31px; padding:center">
+								</p:commandLink>
 
 							</div>
 						</div>
@@ -182,7 +190,7 @@
 																	requiredMessage="Proveedor Requerido."
 																	forceSelection="true" var="_var" itemLabel="#{_var}"
 																	itemValue="#{_var.nombre}"
-																	placeholder="[Escriba Proveedor]" maxResults="10">
+																	placeholder="[Escriba Proveedor]" scrollHeight="300">
 
 																	<p:ajax event="itemSelect"
 																		update="formTableOrdenIngreso:proveedorID"
@@ -209,7 +217,7 @@
 																	requiredMessage="Almacen Requerido."
 																	forceSelection="true" var="_var" itemLabel="#{_var}"
 																	itemValue="#{_var.nombre}"
-																	placeholder="[Escriba Almacen]" maxResults="10">
+																	placeholder="[Escriba Almacen]" scrollHeight="300">
 
 																	<p:ajax event="itemSelect"
 																		update="formTableOrdenIngreso:almacenID"
@@ -490,6 +498,8 @@
 																rendered="#{_var.estado=='IN'}" value="Inactivo" /></span>
 														<span class="label label-success"><h:outputText
 																rendered="#{_var.estado=='PR'}" value="Procesado" /></span>
+														<span class="label label-danger"><h:outputText
+																rendered="#{_var.estado=='AN'}" value="Anulada" /></span>
 													</p:column>
 
 													<p:column width="10%" headerText="Fecha"
@@ -570,7 +580,7 @@
 									minQueryLength="3" size="30" dropdown="true" required="true"
 									requiredMessage="Producto Requerido." forceSelection="true"
 									var="_var" itemLabel="#{_var}" itemValue="#{_var.nombre}"
-									placeholder="[Escriba Producto]" maxResults="10">
+									placeholder="[Escriba Producto]" scrollHeight="300">
 
 									<p:ajax event="itemSelect" update="totalID,precioID"
 										listener="#{ordenIngresoController.onRowSelectProductoClick}" />
@@ -712,7 +722,7 @@
 										minQueryLength="3" dropdown="true" required="true"
 										requiredMessage="Partida Requerido." forceSelection="true"
 										var="_var" itemLabel="#{_var}" itemValue="#{_var.nombre}"
-										placeholder="[Escriba Partida]" maxResults="10">
+										placeholder="[Escriba Partida]" scrollHeight="300">
 
 										<p:ajax event="itemSelect"
 											listener="#{ordenIngresoController.onRowSelectPartidaClick}"
@@ -807,7 +817,7 @@
 										requiredMessage="Unidad Medida Requerido."
 										forceSelection="true" var="_var" itemLabel="#{_var}"
 										itemValue="#{_var.nombre}"
-										placeholder="[Escriba Unidad Medida]" maxResults="10">
+										placeholder="[Escriba Unidad Medida]" scrollHeight="300">
 
 										<p:ajax event="itemSelect"
 											listener="#{ordenIngresoController.onRowSelectUnidadMedidaClick}"

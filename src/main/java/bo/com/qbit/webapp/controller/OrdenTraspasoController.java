@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -80,6 +81,7 @@ public class OrdenTraspasoController implements Serializable {
 	private @Inject FuncionarioRepository funcionarioRepository;
 	private @Inject KardexProductoRepository kardexProductoRepository;
 	private @Inject DetalleProductoRepository detalleProductoRepository;
+	private @Inject CierreGestionAlmacenRepository cierreGestionAlmacenRepository;
 
 	//Registration
 	private @Inject OrdenTraspasoRegistration ordenTraspasoRegistration;
@@ -108,6 +110,10 @@ public class OrdenTraspasoController implements Serializable {
 	private String tituloProducto = "Agregar Producto";
 	private String tituloPanel = "Registrar Almacen";
 	private String urlOrdenTraspaso = "";
+	private double total = 0;
+	private double totalCantidaEntregada = 0;
+	private double verificacionCantidadEntregada = 0;
+	private String textDialogExistencias = "";
 
 	//OBJECT
 	private Proyecto selectedProyecto;
@@ -170,8 +176,8 @@ public class OrdenTraspasoController implements Serializable {
 		listaDetalleOrdenTraspaso = new ArrayList<DetalleOrdenTraspaso>();
 		listaOrdenTraspaso = ordenTraspasoRepository.findAllOrderedByID();
 
-		listaProyecto = proyectoRepository.findAllActivosOrderedByID();
-		listFuncionario = funcionarioRepository.findAllActivoOrderedByID();
+		listaProyecto = proyectoRepository.findAllActivosOrderedByID(gestionSesion);
+		listFuncionario = funcionarioRepository.findAllActivoOrderedByID(gestionSesion);
 		//-::::::::: OJO :::::::
 		//la lista de almacen se obtendra al hacer click en nuevo orden traspaso
 		// y luego de verificar que almacen tiene el usuario, no mostrara dicho almacen en la lista
@@ -189,13 +195,11 @@ public class OrdenTraspasoController implements Serializable {
 	private void cargarAlmacen(){
 		listaAlmacen = almacenRepository.findAllActivosOrderedByID();
 		if(listaAlmacen.size()>0){
-			listaAlmacen.remove(selectedAlmacenOrigen);
+			// listaAlmacen.remove(selectedAlmacenOrigen); //establecer si se va a restringir el traspaso entre el mismo almacen
 		}
 	}
-	private @Inject CierreGestionAlmacenRepository cierreGestionAlmacenRepository;
 
 	public void cambiarAspecto(){
-
 		//verificar si el usuario logeado tiene almacen registrado
 		selectedAlmacenOrigen = almacenRepository.findAlmacenForUser(sessionMain.getUsuarioLogin());
 		if(selectedAlmacenOrigen.getId() == -1){
@@ -513,8 +517,6 @@ public class OrdenTraspasoController implements Serializable {
 		}
 	}
 
-	private double total = 0;
-
 	public void procesarOrdenTraspaso(){
 		try {
 			System.out.println("procesarOrdenTraspaso()");
@@ -597,8 +599,6 @@ public class OrdenTraspasoController implements Serializable {
 		}
 	}
 
-	private double totalCantidaEntregada = 0;
-	private double verificacionCantidadEntregada = 0;
 	/**
 	 * Actualiza el stock, verifica existencias de acuerdo al metodo PEPS
 	 * @param almacen De que almacen se sacara los productos
@@ -857,7 +857,7 @@ public class OrdenTraspasoController implements Serializable {
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
 			String urlPath = request.getRequestURL().toString();
 			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
-			String urlPDFreporte = urlPath+"ReporteOrdenTraspaso?pIdOrdenTraspaso="+selectedOrdenTraspaso.getId()+"&pUsuario="+usuarioSession+"&pTypeExport=pdf"+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial();
+			String urlPDFreporte = urlPath+"ReporteOrdenTraspaso?pIdOrdenTraspaso="+selectedOrdenTraspaso.getId()+"&pUsuario="+URLEncoder.encode(usuarioSession,"ISO-8859-1")+"&pTypeExport=pdf"+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+URLEncoder.encode(empresaLogin.getRazonSocial(),"ISO-8859-1");
 			return urlPDFreporte;
 		}catch(Exception e){
 			return "error";
@@ -888,8 +888,6 @@ public class OrdenTraspasoController implements Serializable {
 		verButtonDetalle = true;
 		editarOrdenTraspaso = false;
 	}
-
-	private String textDialogExistencias = "";
 
 	private double cantidadExistenciasByProductoAlmacen(Almacen almacen,Producto producto){
 		double cantidad = 0;
@@ -1080,7 +1078,6 @@ public class OrdenTraspasoController implements Serializable {
 				return;
 			}
 		}
-
 	}
 
 	// -------- get and set -------

@@ -1,6 +1,7 @@
 package bo.com.qbit.webapp.controller;
 
 import java.io.Serializable;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -17,17 +18,20 @@ import javax.servlet.http.HttpServletRequest;
 import org.primefaces.event.SelectEvent;
 import org.richfaces.cdi.push.Push;
 
+import bo.com.qbit.webapp.data.AlmacenProductoRepository;
 import bo.com.qbit.webapp.data.AlmacenRepository;
 import bo.com.qbit.webapp.data.CierreGestionAlmacenRepository;
 import bo.com.qbit.webapp.data.DetalleOrdenSalidaRepository;
 import bo.com.qbit.webapp.data.DetalleProductoRepository;
 import bo.com.qbit.webapp.data.DetalleUnidadRepository;
 import bo.com.qbit.webapp.data.FuncionarioRepository;
+import bo.com.qbit.webapp.data.KardexProductoRepository;
 import bo.com.qbit.webapp.data.OrdenSalidaRepository;
 import bo.com.qbit.webapp.data.ProductoRepository;
 import bo.com.qbit.webapp.data.ProyectoRepository;
 import bo.com.qbit.webapp.data.UsuarioRepository;
 import bo.com.qbit.webapp.model.Almacen;
+import bo.com.qbit.webapp.model.AlmacenProducto;
 import bo.com.qbit.webapp.model.DetalleOrdenSalida;
 import bo.com.qbit.webapp.model.DetalleProducto;
 import bo.com.qbit.webapp.model.DetalleUnidad;
@@ -35,12 +39,15 @@ import bo.com.qbit.webapp.model.Empresa;
 import bo.com.qbit.webapp.model.FachadaOrdenSalida;
 import bo.com.qbit.webapp.model.Funcionario;
 import bo.com.qbit.webapp.model.Gestion;
+import bo.com.qbit.webapp.model.KardexProducto;
 import bo.com.qbit.webapp.model.OrdenSalida;
 import bo.com.qbit.webapp.model.Producto;
 import bo.com.qbit.webapp.model.Proyecto;
 import bo.com.qbit.webapp.model.Usuario;
+import bo.com.qbit.webapp.service.AlmacenProductoRegistration;
 import bo.com.qbit.webapp.service.DetalleOrdenSalidaRegistration;
 import bo.com.qbit.webapp.service.DetalleProductoRegistration;
+import bo.com.qbit.webapp.service.KardexProductoRegistration;
 import bo.com.qbit.webapp.service.OrdenSalidaRegistration;
 import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.NumberUtil;
@@ -88,10 +95,14 @@ public class OrdenSalidaController implements Serializable {
 	private boolean editarOrdenSalida = false;
 	private boolean verProcesar = true;
 	private boolean verReport = false;
+	private boolean verButtonAnular;
 
 	private String tituloProducto = "Agregar Producto";
 	private String tituloPanel = "Registrar Orden Salida";
 	private String urlOrdenSalida = "";
+	//contabiliza la cantidad verdadera que se entrego, aplicado en el metodo actualizarDetalleProductoByOrdenSalida(...);
+	private double cantidadEntregada = 0;
+	private String textDialogExistencias = "";
 
 	//OBJECT
 	private Funcionario selectedFuncionario;
@@ -149,6 +160,7 @@ public class OrdenSalidaController implements Serializable {
 		// tituloPanel
 		tituloPanel = "Registrar Orden Salida";
 
+		verButtonAnular= false;
 		modificar = false;
 		registrar = false;
 		crear = true;
@@ -171,6 +183,21 @@ public class OrdenSalidaController implements Serializable {
 		newOrdenSalida.setFechaRegistro(new Date());
 		newOrdenSalida.setUsuarioRegistro(usuarioSession);
 
+	}
+
+	public void initConversation() {
+		if (!FacesContext.getCurrentInstance().isPostback() && conversation.isTransient()) {
+			conversation.begin();
+			System.out.println(">>>>>>>>>> CONVERSACION INICIADA...");
+		}
+	}
+
+	public String endConversation() {
+		if (!conversation.isTransient()) {
+			conversation.end();
+			System.out.println(">>>>>>>>>> CONVERSACION TERMINADA...");
+		}
+		return "orden_ingreso.xhtml?faces-redirect=true";
 	}
 
 	public void cambiarAspecto(){
@@ -197,19 +224,128 @@ public class OrdenSalidaController implements Serializable {
 		listaDetalleOrdenSalida = detalleOrdenSalidaRepository.findAllByOrdenSalida(selectedOrdenSalida);
 	}
 
-	public void initConversation() {
-		if (!FacesContext.getCurrentInstance().isPostback() && conversation.isTransient()) {
-			conversation.begin();
-			System.out.println(">>>>>>>>>> CONVERSACION INICIADA...");
+	private @Inject KardexProductoRepository kardexProductoRepository;
+	private @Inject AlmacenProductoRepository almacenProductoRepository;
+	private @Inject KardexProductoRegistration kardexProductoRegistration;
+	private @Inject AlmacenProductoRegistration almacenProductoRegistration;
+
+	public void anularOrden(){
+		System.out.println("anularOrden()");
+		FacesUtil.infoMessage("PROCESO ANULACION", "El proceso de anulacion puede demorar varios segundos...");
+		try{
+			//actualizar estado de orden de ingreso
+			selectedOrdenSalida.setEstado("AN");
+			ordenSalidaRegistration.updated(selectedOrdenSalida);
+			KardexProducto kpAnt = null;
+			KardexProducto kpUltimo;
+			Gestion gestion = selectedOrdenSalida.getGestion();
+			String numeroTransaccion = "I-"+selectedOrdenSalida.getCorrelativo();
+
+			//obtener kardex de acuerdo a la orden de ingreso a anular
+			KardexProducto kpSelected = kardexProductoRepository.findFirstByNumeroTransaccionAndGestion(numeroTransaccion, gestion);
+
+			//otener el ultimo kardex registrado
+			kpUltimo = kardexProductoRepository.findUltimo();
+			if(kpUltimo == null){
+				System.out.println("kpUltimo = "+kpUltimo);
+			}else{
+				System.out.println("kpUltimo = "+kpUltimo.getId());
+			}
+
+			//====================================
+			//eliminar los kardex deacuerdo a la transaccion
+			String correlativo =  "I-"+selectedOrdenSalida.getCorrelativo();
+			List<KardexProducto> listKardexProductoEliminar = kardexProductoRepository.findAllByNumeroTransaccionAndGestion(correlativo,gestion);
+			System.out.println("listKardexProductoEliminar.size() = "+listKardexProductoEliminar.size());
+			System.out.println("otro kpAnt = "+listKardexProductoEliminar.get(0).getId());
+			if(listKardexProductoEliminar.size()>0){
+				kpAnt = listKardexProductoEliminar.get(0);
+			}
+			for(KardexProducto object: listKardexProductoEliminar){
+				object.setEstado("RM");
+				kardexProductoRegistration.updated(object);
+			}
+			listKardexProductoEliminar = null;//liberar
+
+			//actualizar DetalleProducto and AlmacenProducto
+			Date fech1 = kpSelected.getFechaRegistro();
+			Producto prod1 = kpSelected.getProducto();
+			Almacen alm1 = kpSelected.getAlmacen();
+			Gestion ges1 = kpSelected.getGestion();
+			actualizarAlmacenProductoAndDetalleProducto(prod1, alm1, ges1, fech1);
+
+			//recalcular kardex por producto
+			if( kpUltimo!=null){
+				if(kpAnt==null){
+					kpAnt = new KardexProducto();
+				}
+				List<KardexProducto> listKardexProductoRecalcular = kardexProductoRepository.findAllDesdeHastaOrderedByID(kpAnt, kpUltimo);
+				System.out.println("listKardexProductoRecalcular.size() = "+listKardexProductoRecalcular.size());
+				System.out.println("INICIO= "+listKardexProductoRecalcular.get(0).getId());
+				System.out.println("FIN = "+listKardexProductoRecalcular.get(listKardexProductoRecalcular.size()-1).getId());
+				for(KardexProducto kpR: listKardexProductoRecalcular){
+					if(kpR.getEstado().equals("AC")){
+						Producto prod = kpR.getProducto();
+						Almacen alm = kpR.getAlmacen();
+						Gestion ges = kpR.getGestion();
+						KardexProducto kardexAnterior = obtenerAnteriorKardexProducto(alm,prod,ges);
+						if(kardexAnterior!=null){
+							//cantidad anterior
+							double aentradaCantidad =  kardexAnterior.getStock();
+							double asalidaCantidad = kardexAnterior.getStockActual();
+							double asaldoCantidad = kardexAnterior.getStockAnterior();
+							//valor anterior
+							double atotalEntrada = kardexAnterior.getTotalEntrada();
+							double atotalSalida = kardexAnterior.getTotalSalida();
+							double atotalSaldo = kardexAnterior.getTotalSaldo();
+							//cantidad nuevo
+							double nsaldoCantidad = kardexAnterior.getStockAnterior();
+							//valor nuevo
+							double ntotalSaldo = kardexAnterior.getTotalSaldo();
+							if(kpR.getTipoMovimiento().equals("ORDEN INGRESO")){
+								nsaldoCantidad = asaldoCantidad + aentradaCantidad;
+								ntotalSaldo = atotalSaldo + atotalEntrada;
+							}else if(kpR.getTipoMovimiento().equals("ORDEN SALIDA")){
+								nsaldoCantidad = asaldoCantidad - asalidaCantidad;
+								ntotalSaldo = atotalSaldo - atotalSalida;
+							}
+							kpR.setStockAnterior(nsaldoCantidad);
+							kpR.setTotalSaldo(ntotalSaldo);
+							kardexProductoRegistration.updated(kpR);
+						}
+					}
+				}
+			}
+			FacesUtil.infoMessage("Orden Salida Anulada ", "Codigo: "+selectedOrdenSalida.getCorrelativo());
+			//=====================================
+		}catch(Exception e){
+			System.out.println("Error al anular : "+e.getMessage());
 		}
 	}
 
-	public String endConversation() {
-		if (!conversation.isTransient()) {
-			conversation.end();
-			System.out.println(">>>>>>>>>> CONVERSACION TERMINADA...");
+	private KardexProducto obtenerAnteriorKardexProducto(Almacen almacen, Producto producto,Gestion gestion){
+		KardexProducto res = kardexProductoRepository.findKardexStockAnteriorByProductoAlmacen(gestion,producto,almacen);
+		return res;
+	}
+
+	private void actualizarAlmacenProductoAndDetalleProducto(Producto prod,Almacen alm, Gestion ges, Date fech){
+		//actualizar almacen_producto
+		try{
+			List<AlmacenProducto> listAlmProd =almacenProductoRepository.findByAlmacenProductoAndFecha(ges, alm, prod,fech);
+			for(AlmacenProducto almProd: listAlmProd){
+				almProd.setEstado("RM");
+				almacenProductoRegistration.updated(almProd);
+			}
+
+			//actualizar detalle_producto
+			List<DetalleProducto> listDetProd = detalleProductoRepository.findByAlmacenProductoAndFecha(ges, alm, prod, fech);
+			for(DetalleProducto detProd: listDetProd){
+				detProd.setEstado("RM");
+				detalleProductoRegistration.updated(detProd);
+			}
+		}catch(Exception e){
+			System.out.println("actualizarAlmacenProductoAndDetalleProducto Error: "+e.getMessage());
 		}
-		return "orden_ingreso.xhtml?faces-redirect=true";
 	}
 
 	//correlativo incremental por gestion
@@ -226,8 +362,14 @@ public class OrdenSalidaController implements Serializable {
 		try {
 			if(selectedOrdenSalida.getEstado().equals("PR")){
 				verProcesar = false;
+				verButtonAnular = true;
 			}else{
 				verProcesar = true;
+				verButtonAnular = false;
+			}
+			if(selectedOrdenSalida.getEstado().equals("AN")){
+				verProcesar = false;
+				verButtonAnular = false;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -282,7 +424,6 @@ public class OrdenSalidaController implements Serializable {
 			System.out.println("registrarOrdenSalida() ERROR: "+ e.getMessage());
 		}
 	}
-
 
 	public void modificarOrdenSalida() {
 		try {
@@ -373,8 +514,6 @@ public class OrdenSalidaController implements Serializable {
 			FacesUtil.errorMessage("Error al Procesar!");
 		}
 	}
-	//contabiliza la cantidad verdadera que se entrego, aplicado en el metodo actualizarDetalleProductoByOrdenSalida(...);
-	private double cantidadEntregada = 0;
 
 	/**
 	 * Actualiza el stock, verifica existencias de acuerdo al metodo PEPS
@@ -450,15 +589,14 @@ public class OrdenSalidaController implements Serializable {
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
 			String urlPath = request.getRequestURL().toString();
 			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
-			String urlPDFreporte = urlPath+"ReporteOrdenSalida?pIdOrdenSalida="+selectedOrdenSalida.getId()+"&pUsuario="+usuarioSession+"&pTypeExport=pdf"+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial();
+			String urlPDFreporte = urlPath+"ReporteOrdenSalida?pIdOrdenSalida="+selectedOrdenSalida.getId()+"&pUsuario="+URLEncoder.encode(usuarioSession,"ISO-8859-1")+"&pTypeExport=pdf"+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+URLEncoder.encode(empresaLogin.getRazonSocial(),"ISO-8859-1");
 			return urlPDFreporte;
 		}catch(Exception e){
 			return "error";
 		}
 	}
 
-	// DETALLE ORDEN SALIDA ITEMS
-
+	// DETALLE ORDEN  ITEMS
 	public void editarDetalleOrdenIngreso(){
 		tituloProducto = "Modificar Producto";
 		selectedProducto = selectedDetalleOrdenSalida.getProducto();
@@ -481,9 +619,6 @@ public class OrdenSalidaController implements Serializable {
 		verButtonDetalle = true;
 		editarOrdenSalida = false;
 	}
-
-	private String textDialogExistencias = "";
-
 
 	private double cantidadExistenciasByProductoAlmacen(Almacen almacen,Producto producto){
 		double cantidad = 0;
@@ -618,7 +753,7 @@ public class OrdenSalidaController implements Serializable {
 	// ONCOMPLETETEXT DETALLE UNIDAD
 	public List<DetalleUnidad> completeDetalleUnidad(String query) {
 		String upperQuery = query.toUpperCase();
-		listDetalleUnidad =  detalleUnidadRepository.findAllDetalleUnidadForQueryNombre(upperQuery);
+		listDetalleUnidad =  detalleUnidadRepository.findAllDetalleUnidadForQueryNombre(upperQuery,gestionSesion);
 		return listDetalleUnidad;
 	}
 
@@ -672,11 +807,10 @@ public class OrdenSalidaController implements Serializable {
 			}
 		}
 	}
-	
+
 	private  boolean verificarExistencias(Producto producto, double cantidad){
 		List<DetalleProducto> listDetalleProducto = detalleProductoRepository.findAllByProductoOrderByFecha(selectedProducto,gestionSesion);
 		if(listDetalleProducto.size()>0){
-
 		}
 		return true;
 	}
@@ -934,6 +1068,14 @@ public class OrdenSalidaController implements Serializable {
 
 	public void setTextDialogExistencias(String textDialogExistencias) {
 		this.textDialogExistencias = textDialogExistencias;
+	}
+
+	public boolean isVerButtonAnular() {
+		return verButtonAnular;
+	}
+
+	public void setVerButtonAnular(boolean verButtonAnular) {
+		this.verButtonAnular = verButtonAnular;
 	}
 
 }

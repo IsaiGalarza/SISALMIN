@@ -40,10 +40,9 @@
 										<h:form id="formPerfil" enctype="multipart/form-data">
 											<div class="profile-name text-center mtm mbsm">
 												<p:graphicImage value="#{loginController.imageUserSession}"
-													cache="false"
-													styleClass="img-circle inline-block" width="150"
-													height="150" />
-												
+													cache="false" styleClass="img-circle inline-block"
+													width="150" height="150" />
+
 											</div>
 											<div class="profile-name text-center mtm mbsm">
 												<h3>
@@ -52,19 +51,19 @@
 											</div>
 
 											<center>
-												<p:commandLink value="Modificar" update=":formPerfil"
+												<p:commandLink value="Cmbiar Imagen" update=":formPerfil"
 													rendered="#{! loginController.modificar}"
 													action="#{loginController.setModificar(true)}"
-													styleClass="btn btn-primary btn-circle width-100 mrs">
+													styleClass="btn btn-primary btn-circle  mrs">
 												</p:commandLink>
 											</center>
 
 											<p:fileUpload value="#{loginController.file}" mode="simple"
 												rendered="#{loginController.modificar}" skinSimple="false"
 												style="text-align: left; " />
-											
+
 											<br />
-											
+
 											<div class="col-md-6">
 												<p:commandLink value="Cancelar" update=":formPerfil"
 													rendered="#{loginController.modificar}"
@@ -75,38 +74,71 @@
 											<div class="col-md-6">
 												<p:commandLink value="Guardar" update=":formPerfil"
 													rendered="#{loginController.modificar}"
-													styleClass="btn btn-success btn-block"  ajax="false"
+													styleClass="btn btn-success btn-block" ajax="false"
 													actionListener="#{loginController.upload}">
 												</p:commandLink>
 											</div>
-
-
 										</h:form>
 									</div>
 								</div>
-								<div class="profile-menu mtl">
-									<div class="list-group list-group-striped list-group-border">
-										<div class="list-group-item active">
-											<a href="#tab-board" data-toggle="tab" class="block"><i
-												class="icon-home mrm"></i>#{sessionMain.usuarioLogin.nombre}</a>
+								<h:form id="formPerfil002">
+									<div class="profile-menu mtl">
+										<div class="list-group list-group-striped list-group-border">
+											<div class="list-group-item active">
+												<div class="row">
+													<a href="#tab-board" data-toggle="tab" class="block"><i
+														class="icon-home mrm"></i>#{sessionMain.usuarioLogin.nombre}
+														<i class=" "></i>
+														<div
+															style="padding-right: 10px; padding-top: 0px; height: 20px;"
+															class="pull-right">
+															<p:commandLink id="buttonPerfilModificarID" update="formPerfil002"
+																action="#{perfilController.actionButtonModificar()}"
+																styleClass="btn ion-edit " immediate="true">
+															</p:commandLink>
+															<p:tooltip id="toolTipbuttonRevertir"
+																for="buttonPerfilModificarID"
+																value="Haz click para modificar contraseña"
+																trackMouse="true" />
+														</div> </a>
+												</div>
+
+											</div>
+											<div class="list-group-item">
+												<a href="#tab-followers" data-toggle="tab" class="block">
+													<i class="icon-star mrm"></i>#{sessionMain.usuarioLogin.login}
+												</a>
+											</div>
+											<ui:fragment rendered="#{perfilController.modificarPerfil}">
+												<div class="list-group-item">
+													<a href="#tab-history" data-toggle="tab" class="block">
+														<i class="icon-clock mrm"></i>
+														<p:password id="passwordPass1" redisplay="true"
+															value="#{perfilController.newUsuario.password}" autocomplete="off"
+															style=" color: #555555; background-image: none;"
+															styleClass="input-sm form-control">
+															<p:ajax event="change" />
+														</p:password>
+													</a>
+												</div>
+												<div class="form-group ">
+													<div class="col-md-6">
+														<p:commandLink value="Cancelar" update="formPerfil002"
+															action="#{perfilController.setModificarPerfil(false)}"
+															styleClass="btn btn-warning btn-block">
+														</p:commandLink>
+													</div>
+													<div class="col-md-6">
+														<p:commandLink value="Guardar" update="formPerfil002"
+															styleClass="btn btn-success btn-block" ajax="false"
+															actionListener="#{perfilController.modificarUsuario()}">
+														</p:commandLink>
+													</div>
+												</div>
+											</ui:fragment>
 										</div>
-										<div class="list-group-item">
-											<a href="#tab-followers" data-toggle="tab" class="block"><i
-												class="icon-star mrm"></i>#{sessionMain.usuarioLogin.login}
-											</a>
-										</div>
-										<ui:fragment rendered="false">
-										<div class="list-group-item">
-											<a href="#tab-history" data-toggle="tab" class="block"><i
-												class="icon-clock mrm"></i>Ult. vez Logeado 11:39 19/07/2015</a>
-										</div>
-										</ui:fragment>
 									</div>
-								</div>
-
-
-
-
+								</h:form>
 							</div>
 						</div>
 						<div class="col-md-4"></div>

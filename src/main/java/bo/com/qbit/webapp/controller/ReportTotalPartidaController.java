@@ -1,6 +1,7 @@
 package bo.com.qbit.webapp.controller;
 
 import java.io.Serializable;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -213,9 +214,9 @@ public class ReportTotalPartidaController implements Serializable {
 			String urlPDFreporte ="";
 			System.out.println("tipoConsulta: "+tipoConsulta);
 			if(tipoConsulta.equals("T")){
-				urlPDFreporte = urlPath+"ReporteTotalPartida?pFechaInicio="+Fechas.obtenerFormatoYYYYMMDD(fechaInicial)+"&pFechaFin="+Fechas.obtenerFormatoYYYYMMDD(fechaFinal)+"&pIdPartida=-1"+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial()+"&pIdGestion="+gestionLogin.getId()+"&pUsuario="+usuarioLogin;
+				urlPDFreporte = urlPath+"ReporteTotalPartida?pFechaInicio="+Fechas.obtenerFormatoYYYYMMDD(fechaInicial)+"&pFechaFin="+Fechas.obtenerFormatoYYYYMMDD(fechaFinal)+"&pIdPartida=-1"+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+URLEncoder.encode(empresaLogin.getRazonSocial(),"ISO-8859-1")+"&pIdGestion="+gestionLogin.getId()+"&pUsuario="+URLEncoder.encode(usuarioLogin,"ISO-8859-1");
 			}else{
-				urlPDFreporte = urlPath+"ReporteTotalPartida?pFechaInicio="+Fechas.obtenerFormatoYYYYMMDD(fechaInicial)+"&pFechaFin="+Fechas.obtenerFormatoYYYYMMDD(fechaFinal)+"&pIdPartida="+selectedPartida.getId()+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial()+"&pIdGestion="+gestionLogin.getId()+"&pUsuario="+usuarioLogin;
+				urlPDFreporte = urlPath+"ReporteTotalPartida?pFechaInicio="+Fechas.obtenerFormatoYYYYMMDD(fechaInicial)+"&pFechaFin="+Fechas.obtenerFormatoYYYYMMDD(fechaFinal)+"&pIdPartida="+selectedPartida.getId()+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+URLEncoder.encode(empresaLogin.getRazonSocial(),"ISO-8859-1")+"&pIdGestion="+gestionLogin.getId()+"&pUsuario="+URLEncoder.encode(usuarioLogin,"ISO-8859-1");
 			}
 			return urlPDFreporte;
 		}catch(Exception e){

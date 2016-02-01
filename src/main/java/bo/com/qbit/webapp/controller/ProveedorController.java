@@ -99,13 +99,14 @@ public class ProveedorController implements Serializable {
 		modificar = false;
 
 		newProveedor = new Proveedor();
+		newProveedor.setGestion(gestionSesion);
 		selectedProveedor = new Proveedor();
 		textoAutoCompleteCuenta = "";
 		textoAutoCompleteCuentaAnticipo = "";
 		// tituloPanel
 		tituloPanel = "Registrar Sucursal";
 		// traer todos por Empresa ordenados por ID Desc
-		listProveedor = proveedorRepository.findAllByEmpresa();
+		listProveedor = proveedorRepository.findAllByEmpresa(gestionSesion);
 	}
 
 

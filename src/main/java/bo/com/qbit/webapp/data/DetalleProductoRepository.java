@@ -1,5 +1,7 @@
 package bo.com.qbit.webapp.data;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -22,19 +24,33 @@ public class DetalleProductoRepository {
 	}
 
 	@SuppressWarnings("unchecked")
+	public List<DetalleProducto> findByAlmacenProductoAndFecha(Gestion gestion,Almacen almacen,Producto producto,Date fecha) {
+		System.out.println("findByAlmacenProductoAndFecha() ");
+		try{
+			String query = "select em from DetalleProducto em where ( em.estado='AC' or em.estado='IN' ) and em.gestion.id="+gestion.getId()+" and em.almacen.id="
+					+ almacen.getId() + " and em.producto.id="+producto.getId()+" and em.fechaRegistro='"+fecha+"'";
+			System.out.println("Query DetalleProducto: " + query);
+			return em.createQuery(query).getResultList();
+		}catch(Exception e){
+			System.out.println("findByAlmacenProducto() "+e.getMessage());
+			return new ArrayList<DetalleProducto>();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
 	public List<DetalleProducto> findAllOrderedByID(Gestion gestion) {
 		String query = "select em from DetalleProducto em where em.estado='AC' or em.estado='IN' and em.gestion.id="+gestion.getId()+" order by em.id desc";
 		System.out.println("Query DetalleProducto: " + query);
 		return em.createQuery(query).getResultList();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<DetalleProducto> findAllActivoOrderedByID(Gestion gestion) {
 		String query = "select em from DetalleProducto em where em.estado='AC' and em.gestion.id="+gestion.getId()+" order by em.fecha asc";
 		System.out.println("Query DetalleProducto: " + query);
 		return em.createQuery(query).getResultList();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<DetalleProducto> findAllActivoAndGestionOrderedByID(Gestion gestion) {
 		String query = "select em from DetalleProducto em where em.estado='AC' and em.gestion.id="+gestion.getId()+" order by em.fecha asc";
@@ -59,7 +75,7 @@ public class DetalleProductoRepository {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * PEPS
 	 * Obtener detalleProducto por fechas

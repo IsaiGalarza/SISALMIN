@@ -1,5 +1,7 @@
 package bo.com.qbit.webapp.data;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -38,6 +40,20 @@ public class AlmacenProductoRepository {
 		}catch(Exception e){
 			System.out.println("findByAlmacenProducto() "+e.getMessage());
 			return null;
+		}
+	}	
+	
+	@SuppressWarnings("unchecked")
+	public List<AlmacenProducto> findByAlmacenProductoAndFecha(Gestion gestion,Almacen almacen,Producto producto,Date fecha) {
+		System.out.println("findByAlmacenProducto() ");
+		try{
+			String query = "select em from AlmacenProducto em where ( em.estado='AC' or em.estado='IN' ) and em.gestion.id="+gestion.getId()+" and em.almacen.id="
+					+ almacen.getId() + " and em.producto.id="+producto.getId()+" and em.fechaRegistro='"+fecha+"'";
+			System.out.println("Query AlmacenProducto: " + query);
+			return  em.createQuery(query).getResultList();
+		}catch(Exception e){
+			System.out.println("findByAlmacenProducto() "+e.getMessage());
+			return new ArrayList<AlmacenProducto>();
 		}
 	}	
 

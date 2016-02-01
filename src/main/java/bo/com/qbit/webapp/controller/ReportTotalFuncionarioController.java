@@ -1,6 +1,7 @@
 package bo.com.qbit.webapp.controller;
 
 import java.io.Serializable;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -182,7 +183,7 @@ public class ReportTotalFuncionarioController implements Serializable {
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
 			String urlPath = request.getRequestURL().toString();
 			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
-			String urlPDFreporte = urlPath+"ReporteTotalFuncionario?pFechaInicio="+Fechas.deDateAString(fechaInicial)+"&pFechaFin="+Fechas.deDateAString(fechaFinal)+"&pIdProducto="+selectedProducto.getId()+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial()+"&pIdGestion="+selectedGestion.getId()+"&pUsuario="+usuarioLogin;
+			String urlPDFreporte = urlPath+"ReporteTotalFuncionario?pFechaInicio="+Fechas.deDateAString(fechaInicial)+"&pFechaFin="+Fechas.deDateAString(fechaFinal)+"&pIdProducto="+selectedProducto.getId()+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+URLEncoder.encode(empresaLogin.getRazonSocial(),"ISO-8859-1")+"&pIdGestion="+selectedGestion.getId()+"&pUsuario="+URLEncoder.encode(usuarioLogin,"ISO-8859-1");
 			return urlPDFreporte;
 		}catch(Exception e){
 			return "error";

@@ -15,7 +15,7 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @SuppressWarnings("serial")
-@Table(name = "proveedor", schema = "public", uniqueConstraints = @UniqueConstraint(columnNames = "nombre"))
+@Table(name = "proveedor", schema = "public")
 public class Proveedor implements Serializable {
 
 	@Id

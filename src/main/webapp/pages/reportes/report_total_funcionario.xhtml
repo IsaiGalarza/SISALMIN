@@ -37,12 +37,20 @@
 									action="#{reportTotalFuncionarioController.procesarConsulta()}">
 								</p:commandLink>
 
-								<p:commandLink id="buttonVerReporte" value="&#160; Ver Reporte"
+								<p:commandLink id="buttonVerReporte1" value="&#160; Print 1"
 									styleClass="btn btn-info ion-printer"
 									rendered="#{reportTotalFuncionarioController.listaDetalleOrdenSalida.size() > 0}"
 									style="height:31px; padding:center"
 									update="formFilterProducto ,formBotonesHeader"
 									action="#{reportTotalFuncionarioController.cargarReporte()}">
+								</p:commandLink>
+								
+								<p:commandLink id="buttonVerReporte2" value="&#160; Print 2"
+									styleClass="btn btn-info ion-printer"
+									rendered="#{reportTotalFuncionarioController.listaDetalleOrdenSalida.size() > 0}"
+									style="height:31px; padding:center"
+									update="formFilterProducto ,formBotonesHeader"
+									action="#{listaItemController.imprimir()}">
 								</p:commandLink>
 							</div>
 						</div>

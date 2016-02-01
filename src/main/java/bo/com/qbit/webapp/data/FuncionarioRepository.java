@@ -40,8 +40,8 @@ public class FuncionarioRepository {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<Funcionario> findAllActivoOrderedByID() {
-		String query = "select ser from Funcionario ser where ser.estado='AC' order by ser.id desc";
+	public List<Funcionario> findAllActivoOrderedByID(Gestion gestion) {
+		String query = "select ser from Funcionario ser where ser.estado='AC' and ser.gestion.id="+gestion.getId()+" order by ser.id desc";
 		System.out.println("Query Funcionario: " + query);
 		return em.createQuery(query).getResultList();
 	}
@@ -58,9 +58,9 @@ public class FuncionarioRepository {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Funcionario> findAllFuncionarioForNombre(String criterio) {
+	public List<Funcionario> findAllFuncionarioForNombre(String criterio,Gestion gestion) {
 		try {
-			String query = "select ser from Funcionario ser where ser.nombre like '%"
+			String query = "select ser from Funcionario ser where ser.gestion.id="+gestion.getId()+" and ser.nombre like '%"
 					+ criterio + "%' or ser.apellidos like '%"+ criterio + "%'";
 			System.out.println("Consulta: " + query);
 			List<Funcionario> listaFuncionario = em.createQuery(query).getResultList();

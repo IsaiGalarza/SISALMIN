@@ -11,6 +11,7 @@ import javax.enterprise.event.Event;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.primefaces.component.datatable.DataTable;
@@ -33,16 +34,16 @@ public class ListaItemController implements Serializable {
 
 	@Inject
 	Conversation conversation;
-	
+
 	private @Inject DetalleProductoRepository detalleProductoRepository;
-	
+
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
 	Event<String> pushEventSucursal;
 
 	@Inject
 	private FacesContext facesContext;
-	
+
 	private List<DetalleProducto> listDetalleProducto = new ArrayList<DetalleProducto>();
 
 	//SESSION
@@ -57,7 +58,7 @@ public class ListaItemController implements Serializable {
 
 		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
 		gestionSesion = sessionMain.getGestionLogin();
-		
+
 		listDetalleProducto = detalleProductoRepository.findAllActivoAndGestionOrderedByID(gestionSesion);
 
 	}

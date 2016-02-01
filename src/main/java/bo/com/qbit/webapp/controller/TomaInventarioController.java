@@ -1,6 +1,7 @@
 package bo.com.qbit.webapp.controller;
 
 import java.io.Serializable;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,6 +24,7 @@ import bo.com.qbit.webapp.data.CierreGestionAlmacenRepository;
 import bo.com.qbit.webapp.data.DetalleOrdenIngresoRepository;
 import bo.com.qbit.webapp.data.DetalleTomaInventarioOrdenIngresoRepository;
 import bo.com.qbit.webapp.data.DetalleTomaInventarioRepository;
+import bo.com.qbit.webapp.data.DetalleUnidadRepository;
 import bo.com.qbit.webapp.data.FuncionarioRepository;
 import bo.com.qbit.webapp.data.GestionRepository;
 import bo.com.qbit.webapp.data.OrdenIngresoRepository;
@@ -39,6 +41,7 @@ import bo.com.qbit.webapp.model.CierreGestionAlmacen;
 import bo.com.qbit.webapp.model.DetalleOrdenIngreso;
 import bo.com.qbit.webapp.model.DetalleTomaInventario;
 import bo.com.qbit.webapp.model.DetalleTomaInventarioOrdenIngreso;
+import bo.com.qbit.webapp.model.DetalleUnidad;
 import bo.com.qbit.webapp.model.Empresa;
 import bo.com.qbit.webapp.model.FachadaOrdenIngreso;
 import bo.com.qbit.webapp.model.FachadaOrdenSalida;
@@ -58,10 +61,12 @@ import bo.com.qbit.webapp.service.CierreGestionAlmacenRegistration;
 import bo.com.qbit.webapp.service.DetalleOrdenIngresoRegistration;
 import bo.com.qbit.webapp.service.DetalleTomaInventarioOrdenIngresoRegistration;
 import bo.com.qbit.webapp.service.DetalleTomaInventarioRegistration;
+import bo.com.qbit.webapp.service.DetalleUnidadRegistration;
 import bo.com.qbit.webapp.service.FuncionarioRegistration;
 import bo.com.qbit.webapp.service.GestionRegistration;
 import bo.com.qbit.webapp.service.OrdenIngresoRegistration;
 import bo.com.qbit.webapp.service.ProductoRegistration;
+import bo.com.qbit.webapp.service.ProveedorRegistration;
 import bo.com.qbit.webapp.service.ProyectoRegistration;
 import bo.com.qbit.webapp.service.TomaInventarioRegistration;
 import bo.com.qbit.webapp.util.FacesUtil;
@@ -93,6 +98,7 @@ public class TomaInventarioController implements Serializable {
 	private @Inject ProyectoRepository proyectoRepository;
 	private @Inject GestionRepository gestionRepository;
 	private @Inject FuncionarioRepository funcionarioRepository;
+	private @Inject DetalleUnidadRepository detalleUnidadRepository;
 
 	private @Inject TomaInventarioRegistration tomaInventarioRegistration;
 	private @Inject DetalleTomaInventarioRegistration detalleTomaInventarioRegistration;
@@ -105,6 +111,8 @@ public class TomaInventarioController implements Serializable {
 	private @Inject CierreGestionAlmacenRegistration CierreGestionAlmacenRegistration;
 	private @Inject FuncionarioRegistration funcionarioRegistration;
 	private @Inject ProyectoRegistration proyectoRegistration;
+	private @Inject DetalleUnidadRegistration detalleUnidadRegistration;
+	private @Inject ProveedorRegistration proveedorRegistration;
 
 	@Inject
 	@Push(topic = PUSH_CDI_TOPIC)
@@ -135,6 +143,8 @@ public class TomaInventarioController implements Serializable {
 	private boolean hayGestionAnterior;
 	private boolean stateProyecto;
 	private boolean stateFuncionario;
+	private boolean stateProveedor;
+	private boolean stateDetalleUnidad;//area trabajo
 
 	//VAR
 	private String tituloPanel = "Registrar Almacen";
@@ -198,6 +208,9 @@ public class TomaInventarioController implements Serializable {
 
 		stateProyecto = true;
 		stateFuncionario = true;
+		stateProveedor = true;
+		stateDetalleUnidad = true;
+
 		hayGestionAnterior = false;
 		crear = true;
 		verProcesar = true;
@@ -530,7 +543,7 @@ public class TomaInventarioController implements Serializable {
 							}
 						}
 					}
-					if(stateProyecto){
+					if(stateProyecto){//PROYECTO
 						List<Proyecto> listProyecto = proyectoRepository.traerProyectoActivas(gestionAnterior);
 						for(Proyecto p: listProyecto){
 							try{
@@ -543,6 +556,50 @@ public class TomaInventarioController implements Serializable {
 								proy.setUsuarioRegistro(usuarioSession);
 								proy.setGestion(gestionSesion);
 								proyectoRegistration.register(proy);
+							}catch(Exception e){
+								e.printStackTrace();
+								System.out.println("Error : "+e.getMessage());
+							}
+						}
+					}
+					if(stateProveedor){//PROVEEDOR
+						List<Proveedor> listProveedor = proveedorRepository.findAllActivoOrderedByID(gestionAnterior);
+						for(Proveedor p: listProveedor){
+							try{
+								Proveedor prov = new Proveedor();
+								prov.setCiudad(p.getCiudad());
+								prov.setCodigo(prov.getCodigo());
+								prov.setDescripcion(prov.getDescripcion());
+								prov.setDireccion(p.getDireccion());
+								prov.setEstado("AC");
+								prov.setFechaRegistro(p.getFechaRegistro());
+								prov.setGestion(gestionSesion);
+								prov.setNit(prov.getNit());
+								prov.setNombre(prov.getNombre());
+								prov.setNumeroAutorizacion(prov.getNumeroAutorizacion());
+								prov.setPais(prov.getPais());
+								prov.setTelefono(prov.getTelefono());
+								prov.setUsuarioRegistro(usuarioSession);
+								proveedorRegistration.create(prov);
+							}catch(Exception e){
+								e.printStackTrace();
+								System.out.println("Error : "+e.getMessage());
+							}
+						}
+					}
+					if(stateDetalleUnidad){//AREA TRABAJO
+						List<DetalleUnidad> listDetalleUnidad = detalleUnidadRepository.findAllActivosOrderedByID(gestionAnterior);
+						for(DetalleUnidad p: listDetalleUnidad){
+							try{
+								DetalleUnidad det = new DetalleUnidad();
+								det.setCodigo(p.getCodigo());
+								det.setDescripcion(p.getDescripcion());
+								det.setEstado("AC");
+								det.setFechaRegistro(p.getFechaRegistro());
+								det.setGestion(gestionSesion);
+								det.setNombre(p.getNombre());
+								det.setUsuarioRegistro(usuarioSession);
+								detalleUnidadRegistration.register(det);
 							}catch(Exception e){
 								e.printStackTrace();
 								System.out.println("Error : "+e.getMessage());
@@ -866,7 +923,6 @@ public class TomaInventarioController implements Serializable {
 		}catch(Exception e){
 			System.out.println("ERROR "+e.getMessage());
 		}
-
 	}
 
 	public void buttonRevisar(){
@@ -922,7 +978,7 @@ public class TomaInventarioController implements Serializable {
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();  
 			String urlPath = request.getRequestURL().toString();
 			urlPath = urlPath.substring(0, urlPath.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
-			String urlPDFreporte = urlPath+"ReporteTomaInventario?pIdTomaInventario="+selectedTomaInventario.getId()+"&pUsuario="+usuarioSession+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial();
+			String urlPDFreporte = urlPath+"ReporteTomaInventario?pIdTomaInventario="+selectedTomaInventario.getId()+"&pUsuario="+URLEncoder.encode(usuarioSession,"ISO-8859-1")+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+URLEncoder.encode(empresaLogin.getRazonSocial(),"ISO-8859-1");
 			System.out.println("urlPDFreporte: "+urlPDFreporte);
 			return urlPDFreporte;
 		}catch(Exception e){
@@ -974,7 +1030,6 @@ public class TomaInventarioController implements Serializable {
 				buttonEditarTomaInventarioIncial = false;
 				buttonProcesarTomaInventarioIncial = false;
 			}
-
 			return;
 		}
 		if(selectedTomaInventario.getEstadoRevision().equals("NO")){
@@ -1095,7 +1150,7 @@ public class TomaInventarioController implements Serializable {
 	// ONCOMPLETETEXT PROVEEDOR
 	public List<Proveedor> completeProveedor(String query) {
 		String upperQuery = query.toUpperCase();
-		listProveedor = proveedorRepository.findAllProveedorForQueryNombre(upperQuery);
+		listProveedor = proveedorRepository.findAllProveedorForQueryNombre(upperQuery,gestionSesion);
 		return listProveedor;
 	}
 
@@ -1572,6 +1627,22 @@ public class TomaInventarioController implements Serializable {
 
 	public void setStateFuncionario(boolean stateFuncionario) {
 		this.stateFuncionario = stateFuncionario;
+	}
+
+	public boolean isStateProveedor() {
+		return stateProveedor;
+	}
+
+	public void setStateProveedor(boolean stateProveedor) {
+		this.stateProveedor = stateProveedor;
+	}
+
+	public boolean isStateDetalleUnidad() {
+		return stateDetalleUnidad;
+	}
+
+	public void setStateDetalleUnidad(boolean stateDetalleUnidad) {
+		this.stateDetalleUnidad = stateDetalleUnidad;
 	}
 
 }

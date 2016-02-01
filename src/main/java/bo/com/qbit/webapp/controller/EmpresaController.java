@@ -123,6 +123,8 @@ public class EmpresaController implements Serializable {
 		try {
 			Date fechaActual = new Date();
 			newEmpresa.setFechaModificacion(fechaActual);
+			String nombreUpper = newEmpresa.getRazonSocial().toUpperCase();
+			newEmpresa.setRazonSocial(nombreUpper);
 			empresaRegistration.update(newEmpresa);
 
 			for(Gestion g: listGestion ){

@@ -95,6 +95,14 @@
 									update="formTableOrdenSalida, :formBotonesHeader,formModalVistaPrevia"
 									action="#{ordenSalidaController.cargarReporte()}">
 								</p:commandLink>
+								
+								<p:commandLink id="buttonAnular" value="&#160; Eliminar"
+									styleClass="btn btn-danger ion-close"
+									update="formTableOrdenSalida, formBotonesHeader"
+									rendered="#{ordenSalidaController.verButtonAnular}"
+									action="#{ordenSalidaController.anularOrden()}"
+									style="height:31px; padding:center">
+								</p:commandLink>
 
 							</div>
 						</div>
@@ -156,7 +164,7 @@
 																	requiredMessage="Unidad Solicitante Requerido."
 																	forceSelection="true" var="_var" itemLabel="#{_var}"
 																	itemValue="#{_var.nombre}"
-																	placeholder="[Escriba Unidad]" maxResults="10">
+																	placeholder="[Escriba Unidad]" scrollHeight="300">
 
 																	<p:ajax event="itemSelect"
 																		update="formTableOrdenSalida:unidadID"
@@ -182,7 +190,7 @@
 																	requiredMessage="Funcionario Requerido."
 																	forceSelection="true" var="_var" itemLabel="#{_var}"
 																	itemValue="#{_var.nombre}"
-																	placeholder="[Escriba Funcionario]" maxResults="10">
+																	placeholder="[Escriba Funcionario]" scrollHeight="300">
 
 																	<p:ajax event="itemSelect"
 																		update="formTableOrdenSalida:servidorPublicoID,formTableOrdenSalida:cargoID"
@@ -223,7 +231,7 @@
 																	requiredMessage="Proyecto Requerido."
 																	forceSelection="true" var="_var" itemLabel="#{_var}"
 																	itemValue="#{_var.nombre}"
-																	placeholder="[Escriba Proyecto]" maxResults="10">
+																	placeholder="[Escriba Proyecto]" scrollHeight="300">
 
 																	<p:ajax event="itemSelect"
 																		update="formTableOrdenSalida:proyectoID,formTableOrdenSalida:tipoDocumentoAdjID"
@@ -252,6 +260,7 @@
 																</p:inputText>
 															</div>
 														</div>
+														
 														<div class="form-group ">
 															<div class="col-md-4">Nro Pedido Materiales</div>
 															<div class="col-md-8">
@@ -263,6 +272,7 @@
 																</p:inputText>
 															</div>
 														</div>
+														
 														<div class="form-group ">
 															<div class="col-md-4">Fecha Pedido</div>
 															<div class="col-md-8">
@@ -275,6 +285,7 @@
 																</p:calendar>
 															</div>
 														</div>
+														
 														<div class="form-group ">
 															<div class="col-md-4">Almacén</div>
 															<div class="col-md-8">
@@ -287,12 +298,11 @@
 																	requiredMessage="Almacen Requerido."
 																	forceSelection="true" var="_var" itemLabel="#{_var}"
 																	itemValue="#{_var.nombre}"
-																	placeholder="[Escriba Almacén]" maxResults="10">
+																	placeholder="[Escriba Almacén]" scrollHeight="300">
 
 																	<p:ajax event="itemSelect"
 																		update="formTableOrdenSalida:almacenID"
 																		listener="#{ordenSalidaController.onRowSelectAlmacenClick}" />
-
 																	<p:column>
 																		<h:outputText value="#{_var.nombre}" />
 																	</p:column>
@@ -584,7 +594,7 @@
 									minQueryLength="3" size="35" dropdown="true" required="true"
 									requiredMessage="Producto Requerido." forceSelection="true"
 									var="_var" itemLabel="#{_var}" itemValue="#{_var.nombre}"
-									placeholder="[Escriba Producto]" maxResults="10">
+									placeholder="[Escriba Producto]" scrollHeight="300">
 
 									<p:ajax event="itemSelect" update="totalID,precioID"
 										listener="#{ordenSalidaController.onRowSelectProductoClick}" />

@@ -40,8 +40,8 @@ public class ProyectoRepository {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<Proyecto> findAllActivosOrderedByID() {
-		String query = "select ser from Proyecto ser where ser.estado='AC' order by ser.id desc";
+	public List<Proyecto> findAllActivosOrderedByID(Gestion gestion) {
+		String query = "select ser from Proyecto ser where ser.estado='AC' and ser.gestion.id="+gestion.getId()+" order by ser.id desc";
 		System.out.println("Query Proyecto: " + query);
 		return em.createQuery(query).getResultList();
 	}
@@ -72,9 +72,9 @@ public class ProyectoRepository {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Proyecto> findAllProyectoForDescription(String criterio) {
+	public List<Proyecto> findAllProyectoForDescription(String criterio,Gestion gestion) {
 		try {
-			String query = "select ser from Proyecto ser where ser.nombre like '%"
+			String query = "select ser from Proyecto ser where  ser.gestion.id="+gestion.getId()+"  and ser.nombre like '%"
 					+ criterio + "%'";
 			System.out.println("Consulta: " + query);
 			List<Proyecto> listaProyecto = em.createQuery(query).getResultList();

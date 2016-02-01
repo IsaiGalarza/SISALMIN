@@ -61,5 +61,20 @@ public class UnidadMedidaRepository {
 			return null;
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<UnidadMedida> findAllByNombre(String criterio) {
+		try {//upper(ser.codigo)='"+ codigo+"'"
+			String query = "select ser from UnidadMedida ser where upper(ser.nombre) like '%"
+					+ criterio + "%' and ser.estado='AC' order by ser.nombre asc";
+			System.out.println("Consulta: " + query);
+			List<UnidadMedida> listaUnidadMedida = em.createQuery(query).getResultList();
+			return listaUnidadMedida;
+		} catch (Exception e) {
+			System.out.println("Error en findAllUnidadMedidaForDescription: "
+					+ e.getMessage());
+			return null;
+		}
+	}
 
 }

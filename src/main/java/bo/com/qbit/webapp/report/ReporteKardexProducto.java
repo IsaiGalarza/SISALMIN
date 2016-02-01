@@ -65,6 +65,7 @@ public class ReporteKardexProducto  extends HttpServlet{
 		}
 		try {
 			String pNombreEmpresa = request.getParameter("pNombreEmpresa");
+			System.out.println("pNombreEmpresa: "+pNombreEmpresa);
 			String pNitEmpresa = request.getParameter("pNitEmpresa");
 			Integer pIdProducto = Integer.parseInt(request.getParameter("pIdProducto"));
 			Integer pIdGestion = Integer.parseInt(request.getParameter("pIdGestion"));
@@ -122,6 +123,8 @@ public class ReporteKardexProducto  extends HttpServlet{
 			//save report to path
 			//JasperExportManager.exportReportToPdfFile(jasperPrint,"C:/etiquetas/Etiqueta+"+pCodigoPre+"-"+pNombreElaborado+".pdf");
 			response.setContentType("application/pdf");// text/html  application/pdf   application/html
+			response.setCharacterEncoding("UTF-8");
+			// cambiar de configuracion UTF-8 con ISO- 
 			JasperExportManager.exportReportToPdfStream(jasperPrint2,servletOutputStream);
 
 			servletOutputStream.flush();

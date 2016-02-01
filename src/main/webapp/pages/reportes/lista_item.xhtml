@@ -29,8 +29,7 @@
 						<li><a
 							href="#{request.contextPath}/pages/reportes/lista_item.xhtml"
 							style="color: #0090FF; font-size: 12px;">Reporte</a></li>
-						<li class="active" style="font-size: 12px;">Lista de
-							Item</li>
+						<li class="active" style="font-size: 12px;">Lista de Item</li>
 					</ol>
 				</div>
 			</section>
@@ -52,16 +51,17 @@
 											style="font-size: 12px !important; line-height: 1.33846154 !important; font-family: sans-serif !important;"
 											rowKey="#{_var.id}" id="productoTable" var="_var"
 											value="#{listaItemController.listDetalleProducto}"
-											
 											emptyMessage="No se encontraron Registros.">
 
-											<p:column width="7%" headerText="Código" filterBy="#{_var.correlativoTransaccion}"
+											<p:column width="7%" headerText="Código"
+												filterBy="#{_var.correlativoTransaccion}"
 												style="text-align:center;" filterStyle="width: 100%;"
 												filterMatchMode="contains">
 												<h:outputText value="#{_var.correlativoTransaccion}" />
 											</p:column>
 
-											<p:column width="6%" headerText="Partida" style="text-align:center;"
+											<p:column width="6%" headerText="Partida"
+												style="text-align:center;"
 												filterBy="#{_var.producto.partida.codigo}"
 												filterStyle="width: 100%;" filterMatchMode="contains">
 												<h:outputText value="#{_var.producto.partida.codigo}" />
@@ -72,13 +72,13 @@
 												filterStyle="width: 100%;" filterMatchMode="contains">
 												<h:outputText value="#{_var.producto.nombre}" />
 											</p:column>
-											
+
 											<p:column width="19%" headerText="Almacén"
-												filterBy="#{_var.almacen.nombre}"
-												filterStyle="width: 100%;" filterMatchMode="contains">
+												filterBy="#{_var.almacen.nombre}" filterStyle="width: 100%;"
+												filterMatchMode="contains">
 												<h:outputText value="#{_var.almacen.nombre}" />
 											</p:column>
-											
+
 											<p:column width="8%" headerText="Precio U."
 												filterBy="#{_var.precio}" style="text-align:center;"
 												filterStyle="width: 100%;" filterMatchMode="contains">
@@ -86,28 +86,28 @@
 													<f:convertNumber pattern="#,##0.00" />
 												</h:outputText>
 											</p:column>
-											<p:column width="8%" headerText="Stock Inicial"  style="text-align:center;"
-												filterBy="#{_var.stockInicial}" filterStyle="width: 100%; "
-												filterMatchMode="contains">
+											<p:column width="8%" headerText="Stock Inicial"
+												style="text-align:center;" filterBy="#{_var.stockInicial}"
+												filterStyle="width: 100%; " filterMatchMode="contains">
 												<h:outputText value="#{_var.stockInicial}" />
 											</p:column>
-											
-											<p:column  width="8%" headerText="Stock Actual" style="text-align:center;"
-												filterBy="#{_var.stockActual}" filterStyle="width: 100%; "
-												filterMatchMode="contains">
+
+											<p:column width="8%" headerText="Stock Actual"
+												style="text-align:center;" filterBy="#{_var.stockActual}"
+												filterStyle="width: 100%; " filterMatchMode="contains">
 												<h:outputText value="#{_var.stockActual}" />
 											</p:column>
 
-											<p:column width="13%"  headerText="Fecha"
+											<p:column width="13%" headerText="Fecha"
 												filterBy="#{_var.fecha}" style="text-align:center;"
 												filterStyle="width: 100%;" filterMatchMode="contains">
 												<h:outputText value="#{_var.fecha}" />
 											</p:column>
-											
+
 											<f:facet name="footer">
-													<h:outputText
-														value="#{listaItemController.listDetalleProducto.size()} Registros en Total" />
-												</f:facet>
+												<h:outputText
+													value="#{listaItemController.listDetalleProducto.size()} Registros en Total" />
+											</f:facet>
 
 										</p:dataTable>
 
@@ -115,12 +115,9 @@
 
 									<!-- end here datatable -->
 									<div class="panel-body"></div>
-
 								</div>
 							</div>
-
 						</h:form>
-
 					</div>
 				</section>
 			</section>
@@ -133,8 +130,6 @@
 			<p:growl id="msgs1" showDetail="true" />
 		</h:form>
 		<!-- END GROWL -->
-
-
 
 	</ui:define>
 

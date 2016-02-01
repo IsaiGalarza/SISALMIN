@@ -1,6 +1,7 @@
 package bo.com.qbit.webapp.controller;
 
 import java.io.Serializable;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -177,8 +178,10 @@ public class KardexProductoController implements Serializable {
 			if(selectedAlmacen.getNombre().isEmpty()){
 				pIdAlmacen = "0";
 			}
-			String urlPDFreporte = urlPath+"ReporteKardexProducto?pIdProducto="+selectedProducto.getId()+"&pIdGestion="+selectedGestion.getId()+"&pUsuario="+usuarioSession+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+empresaLogin.getRazonSocial()+"&pIdAlmacen="+pIdAlmacen;
-			System.out.println(">>>>>>>>>> urlPDFreporte = "+urlPDFreporte);
+			//URLEncoder.encode(q, "UTF-8") ; ISO-8859-1
+			
+			String urlPDFreporte = urlPath+"ReporteKardexProducto?pIdProducto="+selectedProducto.getId()+"&pIdGestion="+selectedGestion.getId()+"&pUsuario="+URLEncoder.encode(usuarioSession,"ISO-8859-1")+"&pNitEmpresa="+empresaLogin.getNIT()+"&pNombreEmpresa="+URLEncoder.encode(empresaLogin.getRazonSocial(),"ISO-8859-1")+"&pIdAlmacen="+pIdAlmacen;
+			System.out.println(">>>>>>>>>>   urlPDFreporte = "+urlPDFreporte);
 			return urlPDFreporte;
 		}catch(Exception e){
 			return "error";
