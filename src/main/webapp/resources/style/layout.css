@@ -159,3 +159,10 @@ a:hover{
 .calendar-style{
 	whidth:100%;
 }
+
+ .myWid100 input.hasDatepicker {
+    width: 100%;
+    padding: 3px;
+    border-color: #C4C0B9;
+    color: #555555;
+}

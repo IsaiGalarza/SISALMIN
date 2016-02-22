@@ -311,7 +311,7 @@ public class OrdenTraspasoController implements Serializable {
 			Date date = new Date();
 			calcularTotal();
 			System.out.println("paso a registrarOrdenTraspaso: ");
-			newOrdenTraspaso.setFechaRegistro(date);
+			//newOrdenTraspaso.setFechaRegistro(date); (Se habilito la fecha de registro en el form)
 			newOrdenTraspaso.setProyecto(selectedProyecto);
 			newOrdenTraspaso.setFuncionario(selectedFuncionario);
 			newOrdenTraspaso.setAlmacenOrigen(selectedAlmacenOrigen);//selectedAlmacen; -> almacen destino

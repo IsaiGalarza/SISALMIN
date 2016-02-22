@@ -12,6 +12,8 @@
 
 		<f:event listener="#{ordenIngresoController.initConversation}"
 			type="preRenderView"></f:event>
+			
+			<h:outputScript name="js/calendar-localization.js" />
 
 	</ui:define>
 
@@ -268,7 +270,7 @@
 															<div class="col-md-4">Fecha Documento</div>
 															<div class="col-md-8">
 																<p:calendar pattern="dd/MM/yyyy" id="fechaComp"
-																	locale="es"
+																	styleClass="myWid100" locale="es"
 																	value="#{ordenIngresoController.newOrdenIngreso.fechaDocumento}"
 																	onkeypress="return permiteKey(event, 'none')">
 																	<p:ajax event="dateSelect" />
@@ -291,14 +293,12 @@
 														<div class="form-group ">
 															<div class="col-md-4">Fecha</div>
 															<div class="col-md-8">
-																<p:inputText id="fechaRegistroID"
-																	style=" color: #555555; background-image: none;"
-																	styleClass="input-sm form-control" size="40"
+																<p:calendar pattern="dd/MM/yyyy" id="fechaRegistroID"
+																	styleClass="myWid100" locale="es"
 																	value="#{ordenIngresoController.newOrdenIngreso.fechaRegistro}"
-																	disabled="true" required="true"
-																	requiredMessage="Requerido.">
-																	<f:convertDateTime pattern="dd/MM/yyyy" />
-																</p:inputText>
+																	onkeypress="return permiteKey(event, 'none')">
+																	<p:ajax event="dateSelect" />
+																</p:calendar>
 															</div>
 														</div>
 

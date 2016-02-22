@@ -445,7 +445,7 @@ public class OrdenIngresoController implements Serializable {
 			Date date = new Date();
 			calcularTotal();
 			System.out.println("Ingreso a registrarOrdenIngreso: ");
-			newOrdenIngreso.setFechaRegistro(date);
+			//newOrdenIngreso.setFechaRegistro(date); (se habilito el campo de fecha)
 			newOrdenIngreso.setAlmacen(selectedAlmacen);
 			newOrdenIngreso.setProveedor(selectedProveedor);
 			newOrdenIngreso = ordenIngresoRegistration.register(newOrdenIngreso);

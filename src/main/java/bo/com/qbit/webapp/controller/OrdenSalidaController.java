@@ -407,7 +407,7 @@ public class OrdenSalidaController implements Serializable {
 			newOrdenSalida.setAlmacen(selectedAlmacen);
 			newOrdenSalida.setGestion(gestionSesion);
 			newOrdenSalida.setEstado("AC");
-			newOrdenSalida.setFechaRegistro(fechaActual);
+			//newOrdenSalida.setFechaRegistro(fechaActual);   (se habilito la fecha en el formulario)
 			newOrdenSalida.setUsuarioRegistro(usuarioSession);
 			newOrdenSalida = ordenSalidaRegistration.register(newOrdenSalida);
 			for(DetalleOrdenSalida d: listaDetalleOrdenSalida){
