@@ -65,6 +65,13 @@ public class GestionRepository {
 				cb.desc(gestion.get("id")));
 		return em.createQuery(criteria).getResultList();
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Gestion> findAll2(){
+		String query = "select em from Gestion em order by em.gestion desc";
+		log.info("Query Gestion: "+query);
+		return em.createQuery(query).getResultList();
+	}
 
 	@SuppressWarnings("unchecked")
 	public List<Gestion> findAllByEmpresa(Empresa empresa){

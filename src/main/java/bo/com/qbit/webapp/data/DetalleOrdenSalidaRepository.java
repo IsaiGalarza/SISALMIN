@@ -25,6 +25,13 @@ public class DetalleOrdenSalidaRepository {
 	public DetalleOrdenSalida findById(int id) {
 		return em.find(DetalleOrdenSalida.class, id);
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<DetalleOrdenSalida> findAll() {
+		String query = "select em from DetalleOrdenSalida em ";
+		log.info("Query DetalleOrdenSalida: "+query);
+		return em.createQuery(query).getResultList();
+	}
 
 	@SuppressWarnings("unchecked")
 	public List<DetalleOrdenSalida> findAllOrderByDesc() {

@@ -59,16 +59,16 @@ public class StockProductoController implements Serializable {
 
 	//SESSION
 	private @Inject SessionMain sessionMain; //variable del login
-	private Gestion gestionSesion;
+	//private Gestion gestionSesion;
 
 	@PostConstruct
 	public void initNewStockProducto() {
 
 		System.out.println("initNewStockProducto()");
 
-		gestionSesion = sessionMain.getGestionLogin();
+		//gestionSesion = sessionMain.getGestionLogin();
 
-		listGestion = gesionRepository.findAll();
+		listGestion = gesionRepository.findAll2();
 		selectedGestion = listGestion.get(0);
 		nuevaGestion = String.valueOf(selectedGestion.getGestion());
 
@@ -115,7 +115,7 @@ public class StockProductoController implements Serializable {
 
 	private Gestion findGestionByLocal(String gestion){
 		for(Gestion g: listGestion){
-			if(g.getGestion() == Integer.valueOf(gestion)){
+			if(g.getGestion().intValue() == Integer.valueOf(gestion)){
 				return g;
 			}
 		}
@@ -143,6 +143,7 @@ public class StockProductoController implements Serializable {
 			if(tipoConsulta.equals("PRODUCTO")){
 				calcularStockAndPrecioUnificados(selectedProducto);
 			}else if(tipoConsulta.equals("PROVEEDOR")){
+				System.out.println("selectedProducto:"+selectedProducto+" - selectedGestion:"+selectedGestion);
 				listaAlmacenProducto  = almacenProductoRepository.findAllByProductoAndGestion(selectedProducto,selectedGestion);
 			}
 		}
