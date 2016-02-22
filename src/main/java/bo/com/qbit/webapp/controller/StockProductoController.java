@@ -119,6 +119,7 @@ public class StockProductoController implements Serializable {
 				return g;
 			}
 		}
+		
 		return null;
 	}
 
