@@ -84,6 +84,7 @@ public class DetalleUnidadController implements Serializable {
 		beginConversation();
 
 		usuarioSession = sessionMain.getUsuarioLogin().getLogin();
+		gestionSession = sessionMain.getGestionLogin();
 
 		newDetalleUnidad = new DetalleUnidad();
 		newDetalleUnidad.setEstado("AC");

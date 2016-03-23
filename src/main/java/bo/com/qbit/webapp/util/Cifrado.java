@@ -5,7 +5,7 @@ package bo.com.qbit.webapp.util;
  *
  */
 public class Cifrado {
-	private static String caracteres = "abcdefghijklmnopqrstuvwxyzáéíóú 1234567890@.,-_|";  //  @jve:decl-index=0:
+	private static String caracteres = "abcdefghijklmnopqrstuvwxyzáéíóú 1234567890@.,-_|";  //  @jve:decl-index=0: //dig=48
 	
 	 public static String Encriptar(String text, int key){       
 	        String texto = LimpiarCadena(text);
@@ -58,7 +58,7 @@ public class Cifrado {
     } 
 	
 	public static void main(String[] arg){
-		int key = 12;
+		int key = 44;
 		String dato = "|mauricio|bejarano|rivera|";
 		
 		String datoEncriptado = Encriptar(dato,key);
