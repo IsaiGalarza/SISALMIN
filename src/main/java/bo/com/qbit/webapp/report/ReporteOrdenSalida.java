@@ -25,6 +25,7 @@ import java.util.Map;
 
 
 
+
 //--datasource
 import javax.sql.DataSource;
 import javax.naming.Context;
@@ -146,7 +147,16 @@ public class ReporteOrdenSalida  extends HttpServlet{
 			e.printStackTrace(printWriter);
 			response.setContentType("text/plain");
 			response.getOutputStream().print(stringWriter.toString());			
-		} 
+		} finally{
+			try{
+				if(!conn.isClosed()){
+					System.out.println("cerrando conexion...");
+					conn.close();
+				}
+			}catch(Exception e){
+				System.out.println("No se pudo cerrar la conexion, Error: "+e.getMessage());
+			}
+		}
 
 	}
 }

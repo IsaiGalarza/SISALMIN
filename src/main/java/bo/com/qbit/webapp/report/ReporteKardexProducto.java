@@ -22,6 +22,7 @@ import java.util.Map;
 
 
 
+
 //--datasource
 import javax.sql.DataSource;
 import javax.naming.Context;
@@ -81,7 +82,7 @@ public class ReporteKardexProducto  extends HttpServlet{
 			// create a map of parameters to pass to the report.   
 			@SuppressWarnings("rawtypes")
 			Map parameters = new HashMap();
-			
+
 			String rutaReporte = "";
 			if(pIdAlmacen==0){
 				rutaReporte = urlPath+"resources/report/kardex_producto.jasper";
@@ -139,7 +140,16 @@ public class ReporteKardexProducto  extends HttpServlet{
 			e.printStackTrace(printWriter);
 			response.setContentType("text/plain");
 			response.getOutputStream().print(stringWriter.toString());			
-		} 
+		}finally{
+			try{
+				if(!conn.isClosed()){
+					System.out.println("cerrando conexion...");
+					conn.close();
+				}
+			}catch(Exception e){
+				System.out.println("No se pudo cerrar la conexion, Error: "+e.getMessage());
+			}
+		}
 
 	}
 }

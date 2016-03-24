@@ -20,11 +20,15 @@ import net.sf.jasperreports.engine.util.JRLoader;
 import java.util.HashMap;
 import java.util.Map;
 
+
+
 //--datasource
 //import javax.sql.DataSource;
 import javax.inject.Inject;
 //import javax.naming.Context;
 //import javax.naming.InitialContext;
+
+
 
 
 
@@ -152,11 +156,13 @@ public class ReporteOrdenIngreso  extends HttpServlet{
 			response.setContentType("text/plain");
 			response.getOutputStream().print(stringWriter.toString());			
 		} finally{
-			
-			try {
-				conn.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
+			try{
+				if(!conn.isClosed()){
+					System.out.println("cerrando conexion...");
+					conn.close();
+				}
+			}catch(Exception e){
+				System.out.println("No se pudo cerrar la conexion, Error: "+e.getMessage());
 			}
 		}
 
