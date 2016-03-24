@@ -27,7 +27,7 @@ import bo.com.qbit.webapp.model.Usuario;
 import bo.com.qbit.webapp.service.AlmacenRegistration;
 import bo.com.qbit.webapp.util.FacesUtil;
 import bo.com.qbit.webapp.util.SessionMain;
-//test
+//test 2
 @Named(value = "almacenController")
 @ConversationScoped
 public class AlmacenController implements Serializable {
